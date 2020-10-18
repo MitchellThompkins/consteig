@@ -41,7 +41,7 @@ TEST(matrix, equality)
     ASSERT_FALSE(mat1!=mat2);
 }
 
-TEST(matrix, addition)
+TEST(matrix, static_constexpr_addition)
 {
     static constexpr int s {2};
     static constexpr Matrix<int, s, s> mat1 {{{{3, 4}, {5, 6}}}};
@@ -55,7 +55,34 @@ TEST(matrix, addition)
     {
         for( size_t j {0}; j<s; j++ )
         {
-            ASSERT_EQ( test(i,j),answer(i,j) );
+            ASSERT_EQ( test(i,j), answer(i,j) );
         }
     }
 }
+
+TEST(matrix, regular_addition)
+{
+    static constexpr int r {3};
+    static constexpr int c {2};
+
+    Matrix<int, r, c> mat1 {{{{3, 4}, {5, 6}, {3, 9}}}};
+    Matrix<int, r, c> mat2 {{{{1, 3}, {2, 5}, {1, 10}}}};
+
+    static constexpr Matrix<int, r, c> addAnswer
+    {{{{4, 7}, {7, 11}, {4, 19}}}};
+    static constexpr Matrix<int, r, c> subAnswer
+    {{{{2, 1}, {3, 1}, {2, -1}}}};
+
+    Matrix<int, r, c> add {mat1 + mat2};
+    Matrix<int, r, c> sub {mat1 - mat2};
+
+    for( size_t i {0}; i<r; i++ )
+    {
+        for( size_t j {0}; j<c; j++ )
+        {
+            ASSERT_EQ( add(i,j), addAnswer(i,j) );
+            ASSERT_EQ( sub(i,j), subAnswer(i,j) );
+        }
+    }
+}
+
