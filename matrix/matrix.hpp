@@ -4,7 +4,7 @@
 #include "stddef.h"
 #include "array.hpp"
 
-template< typename T, size_t R, size_t C >
+template<typename T, size_t R, size_t C>
 class Matrix
 {
 public:
@@ -36,7 +36,7 @@ public:
     Array< Array<T, C>, R> _data{};
 };
 
-template< typename T, size_t R, size_t C >
+template<typename T, size_t R, size_t C>
 constexpr Matrix<T,R,C> operator+(
         const Matrix<T,R,C> &lhs,
         const Matrix<T,R,C> &rhs )
@@ -50,7 +50,7 @@ constexpr Matrix<T,R,C> operator+(
     return result;
 }
 
-template< typename T, size_t R, size_t C >
+template<typename T, size_t R, size_t C>
 constexpr Matrix<T,R,C> operator-(
         const Matrix<T,R,C> &lhs,
         const Matrix<T,R,C> &rhs )
@@ -64,7 +64,7 @@ constexpr Matrix<T,R,C> operator-(
     return result;
 }
 
-template< typename T, size_t R1, size_t C1, size_t R2, size_t C2>
+template<typename T, size_t R1, size_t C1, size_t R2, size_t C2>
 constexpr Matrix<T,R1,C2> operator*(
         const Matrix<T,R1,C1> &lhs,
         const Matrix<T,R2,C2> &rhs )
@@ -76,6 +76,19 @@ constexpr Matrix<T,R1,C2> operator*(
         for(size_t j {0}; j<C2; j++)
             for(size_t k {0}; k<C1; k++)
                     result(i,j) += lhs(i,k)*rhs(k,j);
+
+    return result;
+}
+
+template<typename T, size_t R, size_t C>
+constexpr Matrix<T,C,R> transpose(
+        const Matrix<T,R,C> &mat )
+{
+    Matrix<T,C,R> result{};
+
+    for(size_t i {0}; i<R; i++)
+        for(size_t j {0}; j<C; j++)
+            result(j,i) = mat(i,j);
 
     return result;
 }

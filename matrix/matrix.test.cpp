@@ -62,8 +62,8 @@ TEST(matrix, regular_addition)
     static constexpr int r {3};
     static constexpr int c {2};
 
-    Matrix<int, r, c> mat1 {{{{3, 4}, {5, 6}, {3, 9}}}};
-    Matrix<int, r, c> mat2 {{{{1, 3}, {2, 5}, {1, 10}}}};
+    Matrix<int, r, c> mat1 = {{{{3, 4}, {5, 6}, {3, 9}}}};
+    Matrix<int, r, c> mat2 = {{{{1, 3}, {2, 5}, {1, 10}}}};
 
     static constexpr Matrix<int, r, c> addAnswer
     {{{{4, 7}, {7, 11}, {4, 19}}}};
@@ -105,4 +105,26 @@ TEST(matrix, static_constexpr_multiplication)
     ASSERT_TRUE(mult1==answer1);
     ASSERT_TRUE(mult2==answer2);
     ASSERT_TRUE(mult3==answer3);
+}
+
+TEST(matrix, static_constexpr_trans)
+{
+    static constexpr int r {3};
+    static constexpr int c {2};
+
+    static constexpr Matrix<int, r, c> mat1 {{{{3, 4}, {5, 6}, {3, 9}}}};
+    static constexpr Matrix<int, r, r> mat2 {{{{3, 4, 8}, {5, 6, 7}, {3, 9, 8}}}};
+
+    static constexpr Matrix<int, c, r> answer1 {{{{3, 5, 3}, {4, 6, 9}}}};
+    static constexpr Matrix<int, r, r> answer2 {{{{3, 5, 3}, {4, 6, 9}, {8, 7, 8}}}};
+
+    static constexpr Matrix<int, c, r> mat1Transpose {transpose(mat1)};
+    static constexpr Matrix<int, r, r> mat2Transpose {transpose(mat2)};
+
+    // Check that created objects are constexpr
+    static_assert(mat1Transpose==answer1, "Not constexpr");
+    static_assert(mat2Transpose==answer2, "Not constexpr");
+
+    ASSERT_TRUE(mat1Transpose==answer1);
+    ASSERT_TRUE(mat2Transpose==answer2);
 }
