@@ -51,14 +51,10 @@ TEST(matrix, static_constexpr_addition)
 
     static constexpr Matrix<int, s, s> test {mat1 + mat2};
 
+    // Check that created objects are constexpr
+    static_assert(answer==test, "Not constexpr");
 
-    for( size_t i {0}; i<s; i++ )
-    {
-        for( size_t j {0}; j<s; j++ )
-        {
-            ASSERT_EQ( test(i,j), answer(i,j) );
-        }
-    }
+    ASSERT_TRUE(answer==test);
 }
 
 TEST(matrix, regular_addition)
@@ -77,14 +73,8 @@ TEST(matrix, regular_addition)
     Matrix<int, r, c> add {mat1 + mat2};
     Matrix<int, r, c> sub {mat1 - mat2};
 
-    for( size_t i {0}; i<r; i++ )
-    {
-        for( size_t j {0}; j<c; j++ )
-        {
-            ASSERT_EQ( add(i,j), addAnswer(i,j) );
-            ASSERT_EQ( sub(i,j), subAnswer(i,j) );
-        }
-    }
+    ASSERT_TRUE(add==addAnswer);
+    ASSERT_TRUE(sub==subAnswer);
 }
 
 TEST(matrix, static_constexpr_multiplication)
@@ -103,21 +93,11 @@ TEST(matrix, static_constexpr_multiplication)
 
     static constexpr Matrix<int, r, r> mult1 { mat1*mat2 };
     static constexpr Matrix<int, c, c> mult2 { mat2*mat1 };
-    
-    for( size_t i {0}; i<r; i++ )
-    {
-        for( size_t j {0}; j<r; j++ )
-        {
-            ASSERT_EQ( mult1(i,j), answer1(i,j) );
-        }
-    }
 
-    for( size_t i {0}; i<c; i++ )
-    {
-        for( size_t j {0}; j<c; j++ )
-        {
-            ASSERT_EQ( mult2(i,j), answer2(i,j) );
-        }
-    }
+    // Check that created objects are constexpr
+    static_assert(mult1==answer1, "Not constexpr");
+    static_assert(mult2==answer2, "Not constexpr");
 
+    ASSERT_TRUE(mult1==answer1);
+    ASSERT_TRUE(mult2==answer2);
 }
