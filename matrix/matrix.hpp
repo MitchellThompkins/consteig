@@ -20,8 +20,8 @@ public:
     template <typename U>
     constexpr bool operator==(const Matrix<U, R, C> &rhs) const
     {
-        for (size_t i = 0; i < R; i++)
-            for (size_t j = 0; j < C; j++)
+        for (size_t i {0}; i < R; i++)
+            for (size_t j {0}; j < C; j++)
                 if ((*this)(i, j) != rhs(i, j))
                     return false;
         return true;
@@ -43,8 +43,8 @@ constexpr Matrix<T,R,C> operator+(
 {
     Matrix<T,R,C> result{};
 
-    for (size_t i = 0; i < R; ++i)
-        for (size_t j = 0; j < C; ++j)
+    for (size_t i {0}; i < R; ++i)
+        for (size_t j {0}; j < C; ++j)
             result(i, j) = lhs(i, j) + rhs(i, j);
 
     return result;
@@ -57,23 +57,25 @@ constexpr Matrix<T,R,C> operator-(
 {
     Matrix<T,R,C> result{};
 
-    for (size_t i = 0; i < R; ++i)
-        for (size_t j = 0; j < C; ++j)
+    for (size_t i {0}; i < R; ++i)
+        for (size_t j {0}; j < C; ++j)
             result(i, j) = lhs(i, j) - rhs(i, j);
 
     return result;
 }
 
-template< typename T, size_t R, size_t C >
-constexpr Matrix<T,R,C> operator*(
-        const Matrix<T,R,C> &lhs,
-        const Matrix<T,R,C> &rhs )
+template< typename T, size_t R1, size_t C1, size_t R2, size_t C2>
+constexpr Matrix<T,R1,C2> operator*(
+        const Matrix<T,R1,C1> &lhs,
+        const Matrix<T,R2,C2> &rhs )
 {
-    Matrix<T,R,C> result{};
+    static_assert(C1==R2, "Number of columns must equal number of rows");
+    Matrix<T,R1,C2> result{};
 
-    for (size_t i = 0; i < R; ++i)
-        for (size_t j = 0; j < C; ++j)
-            result(i, j) = lhs(i, j) + rhs(i, j);
+    for(size_t i {0}; i<R1; i++)
+        for(size_t j {0}; j<C2; j++)
+            for(size_t k {0}; k<C1; k++)
+                    result(i,j) += lhs(i,k)*rhs(k,j);
 
     return result;
 }
