@@ -84,20 +84,25 @@ TEST(matrix, static_constexpr_multiplication)
 
     static constexpr Matrix<int, r, c> mat1 {{{{3, 4}, {5, 6}, {3, 9}}}};
     static constexpr Matrix<int, c, r> mat2 {{{{1, -3, 7}, {2, 5, 9}}}};
+    static constexpr Matrix<int, c, c> mat3 {{{{0, 1}, {2, 3}}}};
 
     static constexpr Matrix<int, r, r> answer1
     {{{{11, 11, 57}, {17, 15, 89}, {21, 36, 102}}}};
-
     static constexpr Matrix<int, c, c> answer2
     {{{{9, 49}, {58, 119}}}};
+    static constexpr Matrix<int, c, c> answer3
+    {{{{2, 3}, {6, 11}}}};
 
     static constexpr Matrix<int, r, r> mult1 { mat1*mat2 };
     static constexpr Matrix<int, c, c> mult2 { mat2*mat1 };
+    static constexpr Matrix<int, c, c> mult3 { mat3*mat3 };
 
     // Check that created objects are constexpr
     static_assert(mult1==answer1, "Not constexpr");
     static_assert(mult2==answer2, "Not constexpr");
+    static_assert(mult3==answer3, "Not constexpr");
 
     ASSERT_TRUE(mult1==answer1);
     ASSERT_TRUE(mult2==answer2);
+    ASSERT_TRUE(mult3==answer3);
 }
