@@ -77,6 +77,25 @@ TEST(matrix, regular_addition)
     ASSERT_TRUE(sub==subAnswer);
 }
 
+TEST(matrix, static_constexpr_scalar)
+{
+    static constexpr int r {3};
+    static constexpr int c {2};
+
+    static constexpr int scalar {2};
+    static constexpr Matrix<int, r, c> mat {{{{3, 4}, {5, 6}, {3, 9}}}};
+
+    static constexpr Matrix<int, r, c> answer
+    {{{{6, 8}, {10, 12}, {6, 18}}}};
+
+    static constexpr Matrix<int, r, c> mult { scalar*mat };
+
+    // Check that created objects are constexpr
+    static_assert(mult==answer, "Not constexpr");
+
+    ASSERT_TRUE(mult==answer);
+}
+
 TEST(matrix, static_constexpr_multiplication)
 {
     static constexpr int r {3};

@@ -82,6 +82,20 @@ constexpr Matrix<T,R1,C2> operator*(
 }
 
 template<typename T, size_t R, size_t C>
+constexpr Matrix<T,R,C> operator*(
+        const T lhs,
+        const Matrix<T,R,C> &rhs )
+{
+    Matrix<T,R,C> result{};
+
+    for(size_t i {0}; i<R; i++)
+        for(size_t j {0}; j<C; j++)
+            result(i,j) = lhs*result(i,j);
+
+    return result;
+}
+
+template<typename T, size_t R, size_t C>
 constexpr Matrix<T,C,R> transpose(
         const Matrix<T,R,C> &mat )
 {
