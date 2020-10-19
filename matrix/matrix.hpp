@@ -3,6 +3,7 @@
 
 #include "stddef.h"
 #include "array.hpp"
+#include "gcem.hpp"
 
 template<typename T, size_t R, size_t C>
 class Matrix
@@ -102,6 +103,19 @@ constexpr Matrix<T,X,X> diagional( const T val )
         result(i,j) = val;
 
     return result;
+}
+
+template<typename T, size_t R, size_t C>
+constexpr T normE( const Matrix<T,R,C> &mat )
+{
+    T result{};
+
+    for(size_t i {0}; i<R; i++)
+        for(size_t j {0}; j<C; j++)
+            result += (mat(i,j)*mat(i,j));
+
+    return gcem::sqrt(result);
+
 }
 
 #endif // MATRIX_HPP

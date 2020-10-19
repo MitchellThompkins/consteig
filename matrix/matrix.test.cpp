@@ -143,3 +143,25 @@ TEST(matrix, static_constexpr_diag)
 
     ASSERT_TRUE(mat==answer);
 }
+
+TEST(matrix, static_constexpr_norm_euclidean)
+{
+    static constexpr int x {3};
+    static constexpr int r {2};
+
+    static constexpr Matrix<float, x, x> mat1
+    {{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F , 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+
+    static constexpr Matrix<float, r, r> mat2
+    {{{{1.0F, -7.0F}, {-2.0F, 3.0F}}}};
+
+    static constexpr float n1 {normE(mat1)};
+    static constexpr float n2 {normE(mat2)};
+
+    static constexpr float answer1 = 8.0F;
+    static constexpr float answer2 = 7.9373F;
+
+    // ASSER_FLOAT_EQ will fail in this case, as answer2 above was rounded
+    ASSERT_NEAR(n1, answer1, 0.0001F);
+    ASSERT_NEAR(n2, answer2, 0.0001F);
+}
