@@ -93,4 +93,15 @@ constexpr Matrix<T,C,R> transpose(
     return result;
 }
 
+template<typename T, size_t X>
+constexpr Matrix<T,X,X> diagional( const T val )
+{
+    Matrix<T,X,X> result{};
+
+    for(size_t i{0}, j{0}; i<X; i++,j++ )
+        result(i,j) = val;
+
+    return result;
+}
+
 #endif // MATRIX_HPP

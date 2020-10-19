@@ -128,3 +128,18 @@ TEST(matrix, static_constexpr_trans)
     ASSERT_TRUE(mat1Transpose==answer1);
     ASSERT_TRUE(mat2Transpose==answer2);
 }
+
+TEST(matrix, static_constexpr_diag)
+{
+    static constexpr int x {3};
+
+    static constexpr Matrix<float, x, x> answer
+    {{{{1.0F, 0, 0}, {0, 1.0F, 0}, {0, 0, 1.0F}}}};
+
+    static constexpr auto mat {diagional<float,x>(1.0F)};
+
+    // Check that created objects are constexpr
+    static_assert(mat==answer, "Not constexpr");
+
+    ASSERT_TRUE(mat==answer);
+}
