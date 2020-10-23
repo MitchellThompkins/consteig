@@ -81,6 +81,8 @@ constexpr Matrix<T,R1,C2> operator*(
     return result;
 }
 
+// todo(mthompkins): Figure out how to not make it possible to pass the scalar
+// to either side
 template<typename T, size_t R, size_t C>
 constexpr Matrix<T,R,C> operator*(
         const T &lhs,
