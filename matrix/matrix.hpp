@@ -34,6 +34,26 @@ public:
         return !(*this == rhs);
     }
 
+    constexpr Matrix<T,1,C> row(const size_t n) const
+    {
+        Matrix<T,1,C> result{};
+
+        for( size_t j {0}; j<C; j++ )
+            result(0,j) = _data[n][j];
+
+        return result;
+    }
+
+    constexpr Matrix<T,R,1> col(const size_t n) const
+    {
+        Matrix<T,R,1> result{};
+
+        for( size_t i {0}; i<C; i++ )
+            result(i,0) = _data[i][n];
+
+        return result;
+    }
+
     Array< Array<T, C>, R> _data{};
 };
 

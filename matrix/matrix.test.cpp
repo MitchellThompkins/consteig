@@ -184,3 +184,39 @@ TEST(matrix, static_constexpr_norm_euclidean)
     ASSERT_NEAR(n1, answer1, 0.0001F);
     ASSERT_NEAR(n2, answer2, 0.0001F);
 }
+
+TEST(matrix, static_constexpr_row)
+{
+    static constexpr int x {3};
+
+    static constexpr Matrix<float, x, x> mat
+    {{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F , 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+
+    static constexpr Matrix<float, 1, x> rowExtract {mat.row(0)};
+
+    static constexpr Matrix<float, 1, x> answer
+    {{{{5.0F, -4.0F, 2.0F}}}};
+
+    // Check that created objects are constexpr
+    static_assert(rowExtract==answer, "Not constexpr");
+
+    ASSERT_TRUE(rowExtract==answer);
+}
+
+TEST(matrix, static_constexpr_col)
+{
+    static constexpr int x {3};
+
+    static constexpr Matrix<float, x, x> mat
+    {{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F , 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+
+    static constexpr Matrix<float, x, 1> colExtract {mat.col(0)};
+
+    static constexpr Matrix<float, x, 1> answer
+    {{{{5.0F}, {-1.0F}, {-2.0F}}}};
+
+    // Check that created objects are constexpr
+    static_assert(colExtract==answer, "Not constexpr");
+
+    ASSERT_TRUE(colExtract==answer);
+}
