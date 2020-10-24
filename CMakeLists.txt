@@ -26,4 +26,4 @@ endmacro()
 
 add_subdirectory(array)
 add_subdirectory(matrix)
-#add_subdirectory(solver)
+add_subdirectory(solver)

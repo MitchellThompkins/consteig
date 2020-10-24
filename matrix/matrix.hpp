@@ -4,6 +4,7 @@
 #include "stddef.h"
 #include "array.hpp"
 #include "gcem.hpp"
+#include <iostream>
 
 template<typename T, size_t R, size_t C>
 class Matrix
@@ -54,6 +55,22 @@ public:
             result(i,0) = _data[i][n];
 
         return result;
+    }
+
+    constexpr void setRow(const Matrix<T,1,C> &mat, const size_t n)
+    {
+        for( size_t i {0}; i<C; i++ )
+        {
+            _data[n][i] = mat(0,i);
+        }
+    }
+
+    constexpr void setCol(const Matrix<T,R,1> &mat, const size_t n)
+    {
+        for( size_t j {0}; j<R; j++ )
+        {
+            _data[j][n] = mat(j,0);
+        }
     }
 
     Array< Array<T, C>, R> _data{};

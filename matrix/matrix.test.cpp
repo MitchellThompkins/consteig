@@ -156,10 +156,6 @@ TEST(matrix, static_constexpr_dot)
     static constexpr Matrix<int, 1, n> mat2 {{{{3, 5, 3, 9}}}};
     static constexpr Matrix<int, n, 1> mat3 {{{{3}, {5}, {3}, {9}}}};
 
-    //static constexpr Matrix<int, n, 1> mat3 {transpose(mat1)};
-    //static constexpr Matrix<int, 1, n> mat4 {transpose(mat2)};
-
-
     static constexpr int dotProduct1 {dot(mat1,mat2)};
     static constexpr int dotProduct2 {dot(transpose(mat3),mat1)};
     static constexpr int answer {113};
@@ -243,4 +239,54 @@ TEST(matrix, static_constexpr_col)
     static_assert(colExtract==answer, "Not constexpr");
 
     ASSERT_TRUE(colExtract==answer);
+}
+
+TEST(matrix, static_constexpr_set_row)
+{
+    static constexpr int x {3};
+
+    static constexpr Matrix<int, 1, x> mat0
+    {{{{5, -4, 2}}}};
+    static constexpr Matrix<int, 1, x> mat1
+    {{{{-1, 2 , 3}}}};
+    static constexpr Matrix<int, 1, x> mat2
+    {{{{-2, 1, 0}}}};
+
+    Matrix<int,x,x> mat {};
+    mat.setRow(mat0,0);
+    mat.setRow(mat1,1);
+    mat.setRow(mat2,2);
+
+    static constexpr Matrix<int, x, x> answer
+    {{{{5, -4, 2}, {-1, 2 , 3}, {-2, 1, 0}}}};
+
+    // Check that created objects are constexpr
+    //static_assert(mat==answer, "Not constexpr");
+
+    ASSERT_TRUE(mat==answer);
+}
+
+TEST(matrix, static_constexpr_set_col)
+{
+    static constexpr int x {3};
+
+    static constexpr Matrix<int, x, 1> mat0
+    {{{ {5}, {-4}, {2} }}};
+    static constexpr Matrix<int, x, 1> mat1
+    {{{ {-1}, {-2}, {3} }}};
+    static constexpr Matrix<int, x, 1> mat2
+    {{{ {-2}, {1}, {0} }}};
+
+    Matrix<int,x,x> mat {};
+    mat.setCol(mat0,0);
+    mat.setCol(mat1,1);
+    mat.setCol(mat2,2);
+
+    static constexpr Matrix<int, x, x> answer
+    {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
+
+    // Check that created objects are constexpr
+    //static_assert(mat==answer, "Not constexpr");
+
+    ASSERT_TRUE(mat==answer);
 }

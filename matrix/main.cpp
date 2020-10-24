@@ -3,23 +3,39 @@
 
 int main()
 {
-    static constexpr int r {3};
-    static constexpr int c {2};
+    static constexpr int x {3};
 
-    static constexpr int scalar {2};
-    /*static constexpr*/ Matrix<int, r, c> mat {{{{3, 4}, {5, 6}, {3, 9}}}};
+    static constexpr Matrix<int, 1, x> mat0
+    {{{{5, -4, 2}}}};
+    static constexpr Matrix<int, 1, x> mat1
+    {{{{-1, 2 , 3}}}};
+    static constexpr Matrix<int, 1, x> mat2
+    {{{{-2, 1, 0}}}};
 
-    static constexpr Matrix<int, r, c> answer
-    {{{{6, 8}, {10, 12}, {6, 18}}}};
+    Matrix<int,x,x> mat {};
+    mat.setRow(mat0,0);
+    mat.setRow(mat1,1);
+    mat.setRow(mat2,2);
 
-    /*static constexpr*/ Matrix<int, r, c> mult { scalar*mat };
+    static constexpr Matrix<int, x, x> answer
+    {{{{5, -4, 2}, {-1, 2 , 3}, {-2, 1, 0}}}};
 
-    for(size_t i {0}; i<r; i++)
+    for(int i {0}; i<x; i++)
     {
-        for(size_t j {0}; j<c; j++)
+        for(int j {0}; j<x; j++)
         {
-            std::cout << mult(i,j) << " ";
+            std::cout << mat(i,j) << " ";
         }
-            std::cout << "\n";
+        std::cout << "\n";
+    }
+
+    std::cout << "\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            std::cout << answer(i,j) << " ";
+        }
+        std::cout << "\n";
     }
 }
