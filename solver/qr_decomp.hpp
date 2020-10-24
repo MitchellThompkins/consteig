@@ -21,7 +21,7 @@ constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
     QrMatrix<T,R> result{};
 
     Matrix<T,1,R> a[R] {};
-    Matrix<T,1,R> u[R] {};
+    //Matrix<T,1,R> u[R] {};
     Matrix<T,1,R> e[R] {};
 
     //Solve q by gram-schmidt process
@@ -35,7 +35,7 @@ constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
 
         Matrix<T,1,R> temp {};
         for(size_t j {i}; j!=0; j--)
-            temp = temp - dot(a[i],e[i-1])*e[i-1];
+            temp = temp - (dot(a[i],e[i-1])*e[i-1]);
 
         Matrix<T,1,R> u {a[i] - temp};
 
