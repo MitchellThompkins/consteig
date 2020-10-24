@@ -20,9 +20,9 @@ constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
 
     QrMatrix<T,R> result{};
 
-    Matrix<T,1,R> a[R];
-    Matrix<T,1,R> u[R];
-    Matrix<T,1,R> e[R];
+    Matrix<T,1,R> a[R] {};
+    Matrix<T,1,R> u[R] {};
+    Matrix<T,1,R> e[R] {};
 
     //Solve q by gram-schmidt process
     // a[0] = u[0]
@@ -31,15 +31,15 @@ constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
 
     for(size_t i {1}; i<R; i++)
     {
-        Matrix<T,1,R> a[i] {mat.row(i)};
+        a[i] = mat.row(i);
 
         Matrix<T,1,R> temp {};
-        for( size_t j {0}; j<i; j++ )
-             temp = temp - dot(a[i],e[i-1])*e[i-1];
+        for(size_t j {i}; j!=0; j--)
+            temp = temp - dot(a[i],e[i-1])*e[i-1];
 
-        u[i] = a[i] - temp;
+        Matrix<T,1,R> u {a[i] - temp};
 
-        e[i] = (1/normE(a[i])) * a[i];
+        e[i] = (1/normE(u)) * u;
     }
 
     //Matrix<T,1,R> a2 {mat.row(1)};
@@ -51,9 +51,10 @@ constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
     //Matrix<T,1,R> e3 {(1/normE(u3)) * u3};
 
     for(size_t i {0}; i<R; i++)
-    {
         result._q.setCol(transpose(e[i]),i);
-    }
+
+    //for(size_t i {0}; i<R; i++)
+    //    for(size_t j {0}; j<R; j++)
 
     return result;
 }
