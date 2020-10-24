@@ -9,10 +9,12 @@ template<typename T, size_t R, size_t C>
 class Matrix
 {
 public:
+
     constexpr T& operator()(const size_t i, const size_t j)
     {
         return _data[i][j];
     }
+
     constexpr const T& operator()(const size_t i, const size_t j) const
     {
         return _data[i][j];
@@ -113,6 +115,19 @@ constexpr Matrix<T,R,C> operator*(
     for(size_t i {0}; i<R; i++)
         for(size_t j {0}; j<C; j++)
             result(i,j) = lhs*rhs(i,j);
+
+    return result;
+}
+
+// Multiply a 1XN by a Nx1 matrix
+template<typename T, size_t R, size_t C>
+constexpr T dot(
+        const Matrix<T,R,C> &lhs,
+        const Matrix<T,R,C> &rhs )
+{
+    static_assert( R==1, "Dot Product expects two 1xN matrices");
+    Matrix<T,1,1> product {lhs*transpose(rhs)};
+    T result {product(0,0)};
 
     return result;
 }

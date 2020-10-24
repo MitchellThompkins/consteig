@@ -148,6 +148,30 @@ TEST(matrix, static_constexpr_trans)
     ASSERT_TRUE(mat2Transpose==answer2);
 }
 
+TEST(matrix, static_constexpr_dot)
+{
+    static constexpr int n {4};
+
+    static constexpr Matrix<int, 1, n> mat1 {{{{3, 4, 4, 8}}}};
+    static constexpr Matrix<int, 1, n> mat2 {{{{3, 5, 3, 9}}}};
+    static constexpr Matrix<int, n, 1> mat3 {{{{3}, {5}, {3}, {9}}}};
+
+    //static constexpr Matrix<int, n, 1> mat3 {transpose(mat1)};
+    //static constexpr Matrix<int, 1, n> mat4 {transpose(mat2)};
+
+
+    static constexpr int dotProduct1 {dot(mat1,mat2)};
+    static constexpr int dotProduct2 {dot(transpose(mat3),mat1)};
+    static constexpr int answer {113};
+
+    // Check that created objects are constexpr
+    static_assert(dotProduct1==answer, "Not constexpr");
+    static_assert(dotProduct2==answer, "Not constexpr");
+
+    ASSERT_TRUE(dotProduct1==answer);
+    ASSERT_TRUE(dotProduct2==answer);
+}
+
 TEST(matrix, static_constexpr_diag)
 {
     static constexpr int x {3};
