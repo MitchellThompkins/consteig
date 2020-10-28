@@ -21,10 +21,11 @@ constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
     QrMatrix<T,R> result{};
 
     Matrix<T,1,R> a[R] {};
-    //Matrix<T,1,R> u[R] {};
     Matrix<T,1,R> e[R] {};
 
-    //Solve q by gram-schmidt process
+    // Solve q by gram-schmidt process
+    // (https://www.math.ucla.edu/~yanovsky/Teaching/Math151B/handouts/GramSchmidt.pdf)
+
     // a[0] = u[0]
     a[0] = mat.row(0);
     e[0] = (1/normE(a[0])) * a[0];
@@ -32,34 +33,22 @@ constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
     for(size_t i {1}; i<R; i++)
     {
         a[i] = mat.row(i);
-
         Matrix<T,1,R> u {a[i]};
+
         for(size_t j {1}; j<=i; j++)
-        {
-            T val = dot(a[i],e[j-1]);
-            Matrix<T,1,R> s {val*e[j-1]};
-
             u = u - ((dot(a[i],e[j-1]))*e[j-1]);
-        }
-
-        //Matrix<T,1,R> u {a[i] - temp};
 
         e[i] = (1/normE(u)) * u;
     }
 
-    //Matrix<T,1,R> a2 {mat.row(1)};
-    //Matrix<T,1,R> u2 {a2 - dot(a2,e1)*e1};
-    //Matrix<T,1,R> e2 {(1/normE(u2)) * u2};
-
-    //Matrix<T,1,R> a3 {mat.row(2)};
-    //Matrix<T,1,R> u3 {a3 - dot(a3,e1)*e1 - dot(a3,e2)*e2};
-    //Matrix<T,1,R> e3 {(1/normE(u3)) * u3};
-
+    // Create Q Matrix
     for(size_t i {0}; i<R; i++)
         result._q.setCol(transpose(e[i]),i);
 
-    //for(size_t i {0}; i<R; i++)
-    //    for(size_t j {0}; j<R; j++)
+    // Create R Matrix
+    for(size_t i {0}; i<R; i++)
+        for(size_t j {i}; j<R; j++)
+            result._r(i,j) = dot(a[j],e[i]);
 
     return result;
 }
