@@ -6,13 +6,13 @@
 #define THRESHOLD 0.0001F
 
 template<typename T>
-static constexpr bool compareFloat(T a, T b)
+static inline constexpr bool compareFloat(T a, T b)
 {
     return gcem::abs(a - b) < THRESHOLD;
 }
 
 template<typename T, size_t R, size_t C>
-static constexpr bool compare(Matrix<T,R,C> a, Matrix<T,R,C> b)
+static inline constexpr bool compare(Matrix<T,R,C> a, Matrix<T,R,C> b)
 {
     for(int i {0}; i<R; i++)
     {
