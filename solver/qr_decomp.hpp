@@ -33,15 +33,16 @@ constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
     {
         a[i] = mat.row(i);
 
-        Matrix<T,1,R> temp {};
-        for(size_t j {i}; j!=0; j--)
+        Matrix<T,1,R> u {a[i]};
+        for(size_t j {1}; j<=i; j++)
         {
-            T val = -1.0F*dot(a[i],e[i-1]);
-            Matrix<T,1,R> s {val*e[i-1]};
-            temp = temp - ((-1.0F*dot(a[i],e[i-1]))*e[i-1]);
+            T val = dot(a[i],e[j-1]);
+            Matrix<T,1,R> s {val*e[j-1]};
+
+            u = u - ((dot(a[i],e[j-1]))*e[j-1]);
         }
 
-        Matrix<T,1,R> u {a[i] - temp};
+        //Matrix<T,1,R> u {a[i] - temp};
 
         e[i] = (1/normE(u)) * u;
     }
