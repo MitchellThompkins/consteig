@@ -11,7 +11,6 @@ struct QrMatrix
     Matrix<T,S,S> _r;
 };
 
-//template<typename T, size_t S>
 template<typename T, size_t R, size_t C>
 constexpr QrMatrix<T, R> qrDecomp( const Matrix<T,R,C> mat )
 {

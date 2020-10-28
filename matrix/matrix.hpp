@@ -21,6 +21,7 @@ public:
         return _data[i][j];
     }
 
+    //TODO(mthompkins): Need to handle the equal floats case
     template <typename U>
     constexpr bool operator==(const Matrix<U, R, C> &rhs) const
     {

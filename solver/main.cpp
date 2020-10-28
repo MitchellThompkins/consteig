@@ -8,10 +8,10 @@ int main()
 
     static constexpr int x {3};
 
-    Matrix<float, x, x> mat
+    static constexpr Matrix<float, x, x> mat
     {{{ {1.0F, 1.0F, 0.0F}, {1.0F, 0.0F , 1.0F}, {0.0F, 1.0F, 1.0F} }}};
 
-    QrMatrix<float, x> qr {qrDecomp(mat)};
+    static constexpr QrMatrix<float, x> qr {qrDecomp(mat)};
 
     static constexpr Matrix<float, x, x> qAnswer
     {{{
