@@ -17,10 +17,10 @@ constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> mat )
     //TODO(tthompkins): Remove this necessity
     static_assert( R==C, "QR decomposition must be a square matrix");
 
-    QrMatrix<T,R> result{};
+    QrMatrix<T,C> result{};
 
-    Matrix<T,1,R> a[C] {};
-    Matrix<T,1,R> e[C] {};
+    Matrix<T,1,C> a[C] {};
+    Matrix<T,1,C> e[C] {};
 
     // Solve q by gram-schmidt process
     // (https://www.math.ucla.edu/~yanovsky/Teaching/Math151B/handouts/GramSchmidt.pdf)
@@ -32,7 +32,7 @@ constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> mat )
     for(size_t i {1}; i<C; i++)
     {
         a[i] = transpose(mat.col(i));
-        Matrix<T,1,R> u {a[i]};
+        Matrix<T,1,C> u {a[i]};
 
         for(size_t j {1}; j<=i; j++)
             u = u - ((dot(a[i],e[j-1]))*e[j-1]);
