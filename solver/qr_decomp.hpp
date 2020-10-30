@@ -52,4 +52,14 @@ constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> mat )
     return result;
 }
 
+template<typename T, size_t R, size_t C>
+constexpr QrMatrix<T, C> eigenvalues( const Matrix<T,R,C> mat )
+{
+    //TODO(tthompkins): Remove this necessity
+    static_assert( R==C, "Eigenvalue Solver expects a square matrix");
+
+    Matrix<T,R,C> identity {diagional(static_cast<T>(1U)});
+
+}
+
 #endif
