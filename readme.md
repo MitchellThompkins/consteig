@@ -10,4 +10,5 @@ This is a templated constexpr library which will:
 * Remove dependency on qr decomposition only solving for square matrices
 * Add matrix operation to solve determinant
 * Add numerically stable QR decomposition algorithm
+  [Reference](https://www.math.tamu.edu/~yvorobet/MATH304-503/Lect3-07web.pdf)
 * Add more robust test cases
