@@ -31,14 +31,19 @@ int main()
     }}};
 
     static constexpr Matrix<float, x, x> test {qAnswer*transpose(qAnswer)};
+    Matrix<float,x,x> identity {diagional<float,x>(1.0F)};
+    Matrix<float,x,x> iden2 {diagional<float,x>(static_cast<float>(1U))};
 
-    std::cout << "\nQ Matrix:\n";
+    static constexpr UtMatrix<float, x> eigenSolverTest {eigensolver(mat)};
+    static constexpr auto eigenValueTest {eigenvalues(mat)};
+
+    std::cout << "\nU Matrix:\n";
     for(int i {0}; i<x; i++)
     {
         for(int j {0}; j<x; j++)
         {
             //std::cout << qr._q(i,j) << " ";
-            std::cout << test(i,j) << " ";
+            std::cout << eigenSolverTest._u(i,j) << " ";
         }
         std::cout << "\n";
     }
@@ -53,12 +58,12 @@ int main()
     //    std::cout << "\n";
     //}
 
-    std::cout << "\nR Matrix:\n";
+    std::cout << "\nT Matrix:\n";
     for(int i {0}; i<x; i++)
     {
         for(int j {0}; j<x; j++)
         {
-            std::cout << qr._r(i,j) << " ";
+            std::cout << eigenSolverTest._t(i,j) << " ";
         }
         std::cout << "\n";
     }
@@ -72,5 +77,13 @@ int main()
     //    }
     //    std::cout << "\n";
     //}
+    
+
+    std::cout << "\nEigen Values:\n";
+    for(int i {0}; i<x; i++)
+    {
+        std::cout << eigenValueTest(i,0) << "\n";
+    }
+
 
 }
