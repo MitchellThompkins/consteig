@@ -8,11 +8,11 @@ template<typename T, size_t S>
 struct QrMatrix
 {
     Matrix<T,S,S> _q;
-    Matrix<T,S,S> _r;
+   Matrix<T,S,S> _r;
 };
 
 template<typename T, size_t R, size_t C>
-constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> mat )
+constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> input )
 {
     //TODO(tthompkins): Remove this necessity
     static_assert( R==C, "QR decomposition must be a square matrix");
@@ -26,12 +26,12 @@ constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> mat )
     // (https://www.math.ucla.edu/~yanovsky/Teaching/Math151B/handouts/GramSchmidt.pdf)
 
     // a[0] = u[0]
-    a[0] = transpose(mat.col(0));
+    a[0] = transpose(input.col(0));
     e[0] = (1/normE(a[0])) * a[0];
 
     for(size_t i {1}; i<C; i++)
     {
-        a[i] = transpose(mat.col(i));
+        a[i] = transpose(input.col(i));
         Matrix<T,1,C> u {a[i]};
 
         for(size_t j {1}; j<=i; j++)
@@ -52,14 +52,14 @@ constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> mat )
     return result;
 }
 
-template<typename T, size_t R, size_t C>
-constexpr QrMatrix<T, C> eigenvalues( const Matrix<T,R,C> mat )
-{
-    //TODO(tthompkins): Remove this necessity
-    static_assert( R==C, "Eigenvalue Solver expects a square matrix");
-
-    Matrix<T,R,C> identity {diagional(static_cast<T>(1U)});
-
-}
+//template<typename T, size_t R, size_t C>
+//constexpr QrMatrix<T, C> eigenvalues( const Matrix<T,R,C> input )
+//{
+//    //TODO(tthompkins): Remove this necessity
+//    static_assert( R==C, "Eigenvalue Solver expects a square matrix");
+//
+//    Matrix<T,R,C> identity {diagional(static_cast<T>(1U)});
+//
+//}
 
 #endif
