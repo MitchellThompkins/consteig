@@ -3,6 +3,8 @@
 
 #include "gcem.hpp"
 
+#define MSG "Not constexpr or wrong output"
+
 template<typename T>
 static inline constexpr bool compareFloat(T a, T b, T thresh)
 {
