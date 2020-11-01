@@ -6,6 +6,7 @@
 #include "gcem.hpp"
 
 static constexpr float kThresh {0.0001F};
+static constexpr float kThreshEigen {0.0009F};
 
 template<typename T, size_t R, size_t C>
 static inline constexpr bool compare(Matrix<T,R,C> a, Matrix<T,R,C> b)
@@ -23,7 +24,7 @@ static inline constexpr bool compare(Matrix<T,R,C> a, Matrix<T,R,C> b)
 
 template<typename T, size_t R, size_t C>
 static inline constexpr bool checkEigenValues(
-        const Matrix<T,R,C> &a,
+        const Matrix<T,R,C> a,
         const Matrix<T,R,1> lambda )
 {
     //det(A-lambda*I)
@@ -32,7 +33,7 @@ static inline constexpr bool checkEigenValues(
 
     for(int i {0}; i<R; i++)
     {
-        equal &= compareFloat( det( a - lambda(i,0)*identity), static_cast<T>(0), kThresh );
+        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), kThreshEigen );
     }
 
     return equal;
@@ -126,13 +127,19 @@ TEST(qr_decomp, static_constexpr_random)
 
 TEST(qr_decomp, static_constexpr_eigenValues)
 {
-    static constexpr size_t x {3};
+    static constexpr size_t x {4};
 
-    static constexpr Matrix<float, x, x> mat
-    {{{ {1.0F, 1.0F, 0.0F}, {1.0F, 0.0F , 1.0F}, {0.0F, 1.0F, 1.0F} }}};
+    static constexpr Matrix<float,x,x> mat
+    {{{
+        { -4.4529e-01,  4.9063e+00, -8.7871e-01,  6.3036e+00},
+        { -6.3941e+00,  1.3354e+01,  1.6668e+00,  1.1945e+01},
+        {  3.6842e+00, -6.6617e+00, -6.0021e-02, -7.0043e+00},
+        {  3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}
+    }}};
 
     static constexpr auto eigenValueTest {eigenvalues(mat)};
 
-    //static_assert(checkEigenValues<float,x,x>(mat,eigenValueTest), MSG);
-    //ASSERT_TRUE( checkEigenValues<float,x,x>(mat,eigenValueTest) );
+    static constexpr bool checkEigen = checkEigenValues<float,x,x>(mat,eigenValueTest);
+    static_assert(checkEigen==true, MSG);
+    ASSERT_TRUE( checkEigen );
 }

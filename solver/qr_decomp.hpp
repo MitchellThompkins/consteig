@@ -74,7 +74,7 @@ constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> input )
 
     //TODO(mthompkins): Instead of running for a fixed time, continuously check
     //for an upper triangular matrix
-    for( size_t i {1}; i<500; i++ )
+    for( size_t i {1}; i<200; i++ )
     {
         QrMatrix<T, R> aq {qrDecomp(a)};
         a = aq._r*aq._q;
