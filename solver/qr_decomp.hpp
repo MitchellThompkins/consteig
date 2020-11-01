@@ -21,7 +21,7 @@ struct UtMatrix
 template<typename T, size_t R, size_t C>
 constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> input )
 {
-    //TODO(tthompkins): Remove this necessity
+    //TODO(mthompkins): Remove this necessity
     static_assert( R==C, "QR decomposition must be a square matrix");
 
     QrMatrix<T,C> result{};
@@ -59,10 +59,11 @@ constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> input )
     return result;
 }
 
+// https://www.math.kth.se/na/SF2524/matber15/qrmethod.pdf
 template<typename T, size_t R, size_t C>
 constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> input )
 {
-    //TODO(tthompkins): Remove this necessity
+    //TODO(mthompkins): Remove this necessity
     static_assert( R==C, "Eigenvalue Solver expects a square matrix");
 
     Matrix<T,R,R> identity {diagional<T,R>(static_cast<T>(1U))};
@@ -71,6 +72,8 @@ constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> input )
     Matrix<T,R,R> u[2] = {0};
     u[0] = {identity};
 
+    //TODO(mthompkins): Instead of running for a fixed time, continuously check
+    //for an upper triangular matrix
     for( size_t i {1}; i<500; i++ )
     {
         QrMatrix<T, R> aq {qrDecomp(a)};

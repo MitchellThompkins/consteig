@@ -1,15 +1,11 @@
 #include <gtest/gtest.h>
+#include "test_tools.hpp"
+
 #include "qr_decomp.hpp"
 #include "stdint.h"
 #include "gcem.hpp"
 
-#define THRESHOLD 0.0001F
-
-template<typename T>
-static inline constexpr bool compareFloat(T a, T b)
-{
-    return gcem::abs(a - b) < THRESHOLD;
-}
+static constexpr float thresh {0.0001F};
 
 template<typename T, size_t R, size_t C>
 static inline constexpr bool compare(Matrix<T,R,C> a, Matrix<T,R,C> b)
@@ -18,7 +14,7 @@ static inline constexpr bool compare(Matrix<T,R,C> a, Matrix<T,R,C> b)
     {
         for(int j {0}; j<C; j++)
         {
-            if( !compareFloat(a(i,j), b(i,j)) )
+            if( !compareFloat(a(i,j), b(i,j), thresh) )
                 return false;
         }
     }
@@ -49,8 +45,8 @@ TEST(qr_decomp, static_constexpr_even_mat)
     }}};
 
     // Test Static Assertion
-    static_assert(compare(qr._q, qAnswer), "Not constexpr or wrong val");
-    static_assert(compare(qr._r, rAnswer), "Not constexpr or wrong val");
+    static_assert(compare(qr._q, qAnswer), MSG);
+    static_assert(compare(qr._r, rAnswer), MSG);
 
     // Technically these next two checks aren't necessary if the static asserts
     // are passed
@@ -92,8 +88,8 @@ TEST(qr_decomp, static_constexpr_random)
     }}};
 
     // Test Static Assertion
-    static_assert(compare(qr._q, qAnswer), "Not constexpr or wrong val");
-    static_assert(compare(qr._r, rAnswer), "Not constexpr or wrong val");
+    static_assert(compare(qr._q, qAnswer), MSG);
+    static_assert(compare(qr._r, rAnswer), MSG);
 
     // Technically these next two checks aren't necessary if the static asserts
     // are passed
