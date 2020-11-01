@@ -4,7 +4,6 @@
 #include "stddef.h"
 #include "array.hpp"
 #include "gcem.hpp"
-#include <iostream>
 
 template<typename T, size_t R, size_t C>
 class Matrix
@@ -174,6 +173,7 @@ constexpr Matrix<T,S,S> diagional( const T val )
     return result;
 }
 
+// Euclidean normal of a matrix
 template<typename T, size_t R, size_t C>
 constexpr T normE( const Matrix<T,R,C> &mat )
 {
@@ -184,7 +184,57 @@ constexpr T normE( const Matrix<T,R,C> &mat )
             result += (mat(i,j)*mat(i,j));
 
     return gcem::sqrt(result);
+}
 
+template<typename T, size_t R, size_t C>
+constexpr T det( const Matrix<T,R,C> &mat )
+{
+    static_assert(R==C, "Can only find determinant of a square matrix");
+
+    Matrix<T,R-1,C-1> submat{};
+
+    T result {static_cast<T>(0)};
+
+    if(R==1)
+    {
+        result = mat(0,0);
+    }
+    else if(R==2)
+    {
+        result = det(mat);
+    }
+    else
+    {
+        for(size_t i {0}; i<R; i++)
+        {
+            size_t subi {0U};
+            for(size_t j {1}; j<R; j++)
+            {
+                size_t subj {0U};
+                for(size_t k {0}; k<R; k++)
+                {
+                    if(k==i)
+                    {
+                        continue;
+                    }
+                    submat(subi,subj) = mat(j,k);
+                    subj++;
+                }
+                subi++;
+            }
+            //TODO(mthompkins): Figure out how to handle unsigned T for pow
+            T test {gcem::pow<T>(-1,i)};
+            result += (gcem::pow<T>(-1, i) * mat(0,i) * det(submat));
+        }
+    }
+
+    return result;
+}
+
+template<typename T>
+constexpr T det( const Matrix<T,2,2> &mat )
+{
+    return (mat(0,0)*mat(1,1)) - (mat(0,1)*mat(1,0));
 }
 
 #endif // MATRIX_HPP
