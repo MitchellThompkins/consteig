@@ -11,6 +11,17 @@ int main()
     static constexpr Matrix<float, x, x> mat
     {{{ {1.0F, 1.0F, 0.0F}, {1.0F, 0.0F , 1.0F}, {0.0F, 1.0F, 1.0F} }}};
 
+    std::cout << "\nA Matrix:\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            //std::cout << qr._q(i,j) << " ";
+            std::cout << mat(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
+
     //Matrix<float, x, x> mat
     //{{{ {1.0F, 6.0F, 62.0F}, {1.0F, 5.0F , 22.0F}, {-1.0F, 3.0F, 11.0F} }}};
 
@@ -84,6 +95,13 @@ int main()
     {
         std::cout << eigenValueTest(i,0) << "\n";
     }
+    std::cout << "\n";
 
+    std::cout << "\nEigen Value Test:\n";
+    static constexpr Matrix<float,x,x> identityEigen {diagional<float,x>(1.0F)};
+    for(int i {0}; i<x; i++)
+    {
+        std::cout << det(mat - eigenValueTest(i,0)*identityEigen) << "\n";
+    }
 
 }

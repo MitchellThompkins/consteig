@@ -3,7 +3,7 @@
 
 #include "matrix.hpp"
 
-static constexpr float thresh {0.0001F};
+static constexpr float kThresh {0.0001F};
 
 template<typename T, size_t R, size_t C>
 constexpr Matrix<T,R,C> setRowsTest( const Matrix<T,1,C> mat[], const T val )
@@ -225,8 +225,8 @@ TEST(matrix, static_constexpr_norm_euclidean)
     static constexpr float answer2 = 7.9373F;
 
     // ASSER_FLOAT_EQ will fail in this case, as answer2 above was rounded
-    ASSERT_NEAR(n1, answer1, thresh);
-    ASSERT_NEAR(n2, answer2, thresh);
+    ASSERT_NEAR(n1, answer1, kThresh);
+    ASSERT_NEAR(n2, answer2, kThresh);
 }
 
 TEST(matrix, static_constexpr_det)
@@ -250,8 +250,8 @@ TEST(matrix, static_constexpr_det)
     static_assert(n2==answer2, MSG);
 
     // ASSER_FLOAT_EQ will fail in this case, as answer2 above was rounded
-    ASSERT_NEAR(n1, answer1, thresh);
-    ASSERT_NEAR(n2, answer2, thresh);
+    ASSERT_NEAR(n1, answer1, kThresh);
+    ASSERT_NEAR(n2, answer2, kThresh);
 }
 
 
