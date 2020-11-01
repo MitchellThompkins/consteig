@@ -17,7 +17,7 @@ int main()
     mat.setRow(mat1,1);
     mat.setRow(mat2,2);
 
-    static constexpr Matrix<int, x, x> answer
+    constexpr Matrix<int, x, x> answer
     {{{{5, -4, 2}, {-1, 2 , 3}, {-2, 1, 0}}}};
 
     for(int i {0}; i<x; i++)
@@ -38,4 +38,14 @@ int main()
         }
         std::cout << "\n";
     }
+
+    Matrix<float, 2, 2> matTest
+    {{{{1.0F, -7.0F}, {-2.0F, 3.0F}}}};
+
+    static constexpr Matrix<float, x, x> three
+    {{{{5, -4, 2}, {-1, 2 , 3}, {-2, 1, 0}}}};
+
+    static constexpr float n3 {det(three)};
+
+    std::cout << n3 << "\n";
 }
