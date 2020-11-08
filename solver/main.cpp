@@ -98,7 +98,7 @@ int main()
         {  3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}
     }}};
 
-    /*static constexpr*/ UtMatrix<float, x> eigenSolverTest {eigensolver(mat)};
+    /*static constexpr*/ UtMatrix<float, 4> eigenSolverTest {eigensolver(matlab)};
     static constexpr auto eigenValueTest {eigenvalues(matlab)};
 
     std::cout << "\nU Matrix:\n";
