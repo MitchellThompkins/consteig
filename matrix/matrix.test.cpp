@@ -65,6 +65,18 @@ TEST(matrix, equality)
     ASSERT_FALSE(mat1!=mat2);
 }
 
+TEST(matrix, matrix_equals_operator)
+{
+    static constexpr int s {2};
+    static constexpr Matrix<int, s, s> mat1 {{{{0, 1}, {2, 3}}}};
+    static constexpr Matrix<int, s, s> mat2 = mat1;
+
+    // Check that created objects are constexpr
+    static_assert(mat1==mat2, MSG);
+
+    ASSERT_TRUE(mat1==mat2);
+}
+
 TEST(matrix, static_constexpr_addition)
 {
     static constexpr int s {2};

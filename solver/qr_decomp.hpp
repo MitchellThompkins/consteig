@@ -8,7 +8,7 @@ template<typename T, size_t S>
 struct QrMatrix
 {
     Matrix<T,S,S> _q;
-   Matrix<T,S,S> _r;
+    Matrix<T,S,S> _r;
 };
 
 template<typename T, size_t S>
@@ -19,42 +19,33 @@ struct UtMatrix
 };
 
 template<typename T, size_t R, size_t C>
-constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> input )
+constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> x )
 {
     //TODO(mthompkins): Remove this necessity
     static_assert( R==C, "QR decomposition must be a square matrix");
 
-    QrMatrix<T,C> result{};
+    QrMatrix<T,C> result {static_cast<T>(0)};
 
-    Matrix<T,1,C> a[C] {};
-    Matrix<T,1,C> e[C] {};
-
-    // Solve q by gram-schmidt process
+    // Solve q by modified gram-schmidt process
     // (https://www.math.ucla.edu/~yanovsky/Teaching/Math151B/handouts/GramSchmidt.pdf)
+    // https://www.math.uci.edu/~ttrogdon/105A/html/Lecture23.html
 
-    // a[0] = u[0]
-    a[0] = transpose(input.col(0));
-    e[0] = (1/normE(a[0])) * a[0];
-
-    for(size_t i {1}; i<C; i++)
+    for(size_t i {0}; i<C; i++)
     {
-        a[i] = transpose(input.col(i));
-        Matrix<T,1,C> u {a[i]};
+        result._q.setCol(x.col(i), i);
 
-        for(size_t j {1}; j<=i; j++)
-            u = u - ((dot(a[i],e[j-1]))*e[j-1]);
+        for(size_t j {0}; j<i; j++)
+        {
+            result._r(j,i) = (transpose(result._q.col(j)) * x.col(i))(0,0);
+            Matrix<T,C,1> step {result._q.col(i) - (result._r(j,i)*result._q.col(j))};
+            result._q.setCol(step, i);
+        }
+        result._r(i,i) = normE(result._q.col(i));
 
-        e[i] = (1/normE(u)) * u;
+        // This is to handle a divide by zero below
+        if(result._r(i,i) != static_cast<T>(0))
+            result._q.setCol( (static_cast<T>(1)/result._r(i,i)) * result._q.col(i), i  );
     }
-
-    // Create Q Matrix
-    for(size_t i {0}; i<C; i++)
-        result._q.setCol(transpose(e[i]),i);
-
-    // Create R Matrix
-    for(size_t i {0}; i<C; i++)
-        for(size_t j {i}; j<C; j++)
-            result._r(i,j) = dot(a[j],e[i]);
 
     return result;
 }
