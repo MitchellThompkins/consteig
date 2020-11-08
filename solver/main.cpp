@@ -1,4 +1,5 @@
 #include "qr_decomp.hpp"
+#include "solver.hpp"
 #include "gcem.hpp"
 #include <iostream>
 
@@ -30,22 +31,23 @@ int main()
 
     static constexpr int x {3};
 
-    /*static constexpr*/ Matrix<float, x, x> mat
-    {{{ {1.0F, 1.0F, 0.0F}, {1.0F, 0.0F , 1.0F}, {0.0F, 1.0F, 1.0F} }}};
+    ///*static constexpr*/ Matrix<float, x, x> mat
+    //{{{ {1.0F, 1.0F, 0.0F}, {1.0F, 0.0F , 1.0F}, {0.0F, 1.0F, 1.0F} }}};
 
-    //std::cout << "\nA Matrix:\n";
-    //for(int i {0}; i<x; i++)
-    //{
-    //    for(int j {0}; j<x; j++)
-    //    {
-    //        //std::cout << qr._q(i,j) << " ";
-    //        std::cout << mat(i,j) << " ";
-    //    }
-    //    std::cout << "\n";
-    //}
+    Matrix<float, x, x> mat
+    {{{ {1.0F, 6.0F, 62.0F}, {1.0F, 5.0F , 22.0F}, {-1.0F, 3.0F, 11.0F} }}};
 
-    //Matrix<float, x, x> mat
-    //{{{ {1.0F, 6.0F, 62.0F}, {1.0F, 5.0F , 22.0F}, {-1.0F, 3.0F, 11.0F} }}};
+    std::cout << "\nA Matrix:\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            //std::cout << qr._q(i,j) << " ";
+            std::cout << mat(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
+
 
     /*static constexpr*/ QrMatrix<float, x> qr {qrDecomp(mat)};
 
@@ -96,19 +98,19 @@ int main()
         {  3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}
     }}};
 
-    //static constexpr UtMatrix<float, x> eigenSolverTest {eigensolver(mat)};
-    //static constexpr auto eigenValueTest {eigenvalues(matlab)};
+    /*static constexpr*/ UtMatrix<float, x> eigenSolverTest {eigensolver(mat)};
+    static constexpr auto eigenValueTest {eigenvalues(matlab)};
 
-    //std::cout << "\nU Matrix:\n";
-    //for(int i {0}; i<x; i++)
-    //{
-    //    for(int j {0}; j<x; j++)
-    //    {
-    //        //std::cout << qr._q(i,j) << " ";
-    //        std::cout << eigenSolverTest._u(i,j) << " ";
-    //    }
-    //    std::cout << "\n";
-    //}
+    std::cout << "\nU Matrix:\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            //std::cout << qr._q(i,j) << " ";
+            std::cout << eigenSolverTest._u(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
 
     //std::cout << "\n";
     //for(int i {0}; i<x; i++)
@@ -120,41 +122,41 @@ int main()
     //    std::cout << "\n";
     //}
 
-    //std::cout << "\nT Matrix:\n";
-    //for(int i {0}; i<x; i++)
-    //{
-    //    for(int j {0}; j<x; j++)
-    //    {
-    //        std::cout << eigenSolverTest._t(i,j) << " ";
-    //    }
-    //    std::cout << "\n";
-    //}
+    std::cout << "\nT Matrix:\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            std::cout << eigenSolverTest._t(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
 
-    //std::cout << "\n";
-    //for(int i {0}; i<x; i++)
-    //{
-    //    for(int j {0}; j<x; j++)
-    //    {
-    //        std::cout << rAnswer(i,j) << " ";
-    //    }
-    //    std::cout << "\n";
-    //}
+    std::cout << "\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            std::cout << rAnswer(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
 
-    //std::cout << "\nEigen Values:\n";
-    //for(size_t i {0}; i<4; i++)
-    //{
-    //    std::cout << eigenValueTest(i,0) << "\n";
-    //}
-    //std::cout << "\n";
+    std::cout << "\nEigen Values:\n";
+    for(size_t i {0}; i<4; i++)
+    {
+        std::cout << eigenValueTest(i,0) << "\n";
+    }
+    std::cout << "\n";
 
-    //std::cout << "\nEigen Value Test:\n";
-    //static constexpr Matrix<float,4,4> identityEigen {diagional<float,4>(1.0F)};
-    //for(int i {0}; i<4; i++)
-    //{
-    //    std::cout << det(matlab - (eigenValueTest(i,0)*identityEigen)) << "\n";
-    //}
+    std::cout << "\nEigen Value Test:\n";
+    static constexpr Matrix<float,4,4> identityEigen {diagional<float,4>(1.0F)};
+    for(int i {0}; i<4; i++)
+    {
+        std::cout << det(matlab - (eigenValueTest(i,0)*identityEigen)) << "\n";
+    }
 
-    //bool equal = checkEigenValues<float,4,4>(matlab,eigenValueTest);
-    //std::cout << equal << "\n";
+    bool equal = checkEigenValues<float,4,4>(matlab,eigenValueTest);
+    std::cout << equal << "\n";
 
 }
