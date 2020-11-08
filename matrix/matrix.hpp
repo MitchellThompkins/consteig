@@ -57,6 +57,13 @@ public:
         return result;
     }
 
+    constexpr void operator=(const Matrix<T, R, C> &rhs)
+    {
+        for( size_t i{0}; i<R; i++ )
+            for( size_t j{0}; i<C; i++ )
+                _data[i][j] = rhs(i,j);
+    }
+
     constexpr void setRow(const Matrix<T,1,C> &mat, const size_t n)
     {
         for( size_t i {0}; i<C; i++ )
