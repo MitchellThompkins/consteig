@@ -6,7 +6,9 @@
 static constexpr float kThresh {0.0001F};
 
 template<typename T, size_t R, size_t C>
-constexpr Matrix<T,R,C> setRowsTest( const Matrix<T,1,C> mat[], const T val )
+constexpr Matrix<T,R,C> setRowsTest(
+        const Matrix<T,1,C> mat[],
+        const T val )
 {
     Matrix<T,R,C> out {};
     out.setRow(mat[0],val);
@@ -15,8 +17,24 @@ constexpr Matrix<T,R,C> setRowsTest( const Matrix<T,1,C> mat[], const T val )
     return out;
 }
 
+template<typename T, size_t R, size_t C, size_t startIndex, size_t endIndex>
+constexpr Matrix<T,R,C> setSubRowTest(
+        Matrix<T,R,C> original,
+        const Matrix<T,1,endIndex-startIndex+1> mat,
+        const size_t row )
+{
+    Matrix<T,R,C> out {original};
+    Matrix<T,1,3> test {};
+    //out.setRow<startIndex,endIndex>(mat, row);
+    //out.setRow<1,2>(test, row);
+    out.setRow(test, row);
+    return out;
+}
+
 template<typename T, size_t R, size_t C>
-constexpr Matrix<T,R,C> setColsTest( const Matrix<T,R,1> mat[], const T val )
+constexpr Matrix<T,R,C> setColsTest(
+        const Matrix<T,R,1> mat[],
+        const T val )
 {
     Matrix<T,R,C> out {};
     out.setCol(mat[0],val);
@@ -385,6 +403,29 @@ TEST(matrix, static_constexpr_set_col)
 
     // Check that created objects are constexpr
     static_assert(mat==answer, MSG);
+
+    ASSERT_TRUE(mat==answer);
+}
+
+TEST(matrix, static_constexpr_set_sub_row)
+{
+    static constexpr size_t x {3};
+    static constexpr size_t start {1};
+    static constexpr size_t end {2};
+
+    static constexpr Matrix<int, x, x> original
+    {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
+
+    static constexpr Matrix<int, start, end> sub
+    {{{ {99, -283} }}};
+
+    static constexpr Matrix<int, x, x> answer
+    {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 99, -283} }}};
+
+    static constexpr Matrix<int,x,x> mat {setSubRowTest<int,x,x,start,end>(original, sub, 2)};
+
+    // Check that created objects are constexpr
+    //static_assert(mat==answer, MSG);
 
     ASSERT_TRUE(mat==answer);
 }

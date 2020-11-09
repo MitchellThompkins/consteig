@@ -34,7 +34,7 @@ constexpr T sign(const T delta)
 //    Matrix<T,R,R> H {x};
 //    if(R>2)
 //    {
-//        Matrix auto a1 {A.col(1)};
+//        Matrix auto a1 {A.col<2,R-1>(1)};
 //        Matrix<T,R-1,C> e1 {static_cast<T>(0)};
 //        e1(0,0) = static_cast<T>(1);
 //

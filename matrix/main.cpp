@@ -1,6 +1,5 @@
 #include "matrix.hpp"
-#include <iostream>
-
+#include <iostream> 
 int main()
 {
     static constexpr int x {3};
@@ -57,5 +56,45 @@ int main()
     for(int i {0}; i<2; i++)
     {
         std::cout << colExtract(i,0) << " ";
+    }
+
+    static constexpr Matrix<int, 1, 3> rowTest1
+    {{{{99, -7, 8}}}};
+
+    static constexpr Matrix<int, 1, 2> rowTest2
+    {{{{-1, 257}}}};
+
+    std::cout << "\n\nBefore:\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            std::cout << colTest(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
+
+    //colTest.setRow( rowTest1, 0 );
+
+    std::cout << "\n\nAfter 1:\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            std::cout << colTest(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
+
+    colTest.setRow<1,2>( rowTest2, 1 );
+
+    std::cout << "\n\nAfter 2:\n";
+    for(int i {0}; i<x; i++)
+    {
+        for(int j {0}; j<x; j++)
+        {
+            std::cout << colTest(i,j) << " ";
+        }
+        std::cout << "\n";
     }
 }

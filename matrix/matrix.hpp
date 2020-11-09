@@ -104,6 +104,21 @@ public:
         }
     }
 
+    template<size_t startIndex, size_t endIndex>
+    constexpr void setRow(
+            const Matrix<T,1,endIndex-startIndex+1> &mat,
+            const size_t n )
+    {
+        static_assert(C > startIndex, "startIndex cannot be larger than array");
+        static_assert(C > endIndex,   "endIndex cannot be larger than array");
+        static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
+
+        for( size_t i {startIndex}; i<=endIndex; i++ )
+        {
+            _data[n][i] = mat(0,i-startIndex);
+        }
+    }
+
     constexpr void setCol(const Matrix<T,R,1> &mat, const size_t n)
     {
         for( size_t j {0}; j<R; j++ )
@@ -146,6 +161,7 @@ constexpr Matrix<T,R,C> operator-(
     return result;
 }
 
+//Multiply two matrices
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2>
 constexpr Matrix<T,R1,C2> operator*(
         const Matrix<T,R1,C1> &lhs,
@@ -162,6 +178,7 @@ constexpr Matrix<T,R1,C2> operator*(
     return result;
 }
 
+// Multiply by a scalar
 // todo(mthompkins): Figure out how to not make it possible to pass the scalar
 // to either side
 template<typename T, size_t R, size_t C>
