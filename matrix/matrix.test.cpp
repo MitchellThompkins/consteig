@@ -38,13 +38,31 @@ TEST(matrix, static_constexpr)
 
     int m = 0;
     for( size_t i {0}; i<s; i++ )
-    {
-        for( size_t j {0}; j<s; j++ )
+    { for( size_t j {0}; j<s; j++ )
         {
             ASSERT_EQ(m, matrix(i,j));
             m++;
         }
     }
+}
+
+TEST(matrix, checkSize)
+{
+    static constexpr size_t x {2};
+    static constexpr size_t y {3};
+
+    static constexpr Matrix<int, x, y> matrix
+    {{{ {5, -1, -2}, {-4, -2 , 1}}}};
+
+    static constexpr size_t len    {matrix.sizeX()};
+    static constexpr size_t height {matrix.sizeY()};
+
+    // Check sizes
+    static_assert(len == x, MSG);
+    static_assert(height == y, MSG);
+
+    ASSERT_EQ(len, x);
+    ASSERT_EQ(height, y);
 }
 
 TEST(matrix, equality)

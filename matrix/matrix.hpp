@@ -112,6 +112,9 @@ public:
         }
     }
 
+    constexpr size_t sizeX() const { return R; }
+    constexpr size_t sizeY() const { return C; }
+
     Array< Array<T, C>, R> _data{};
 };
 
