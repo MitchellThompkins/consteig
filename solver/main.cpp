@@ -106,21 +106,10 @@ int main()
     {
         for(int j {0}; j<x; j++)
         {
-            //std::cout << qr._q(i,j) << " ";
             std::cout << eigenSolverTest._u(i,j) << " ";
         }
         std::cout << "\n";
     }
-
-    //std::cout << "\n";
-    //for(int i {0}; i<x; i++)
-    //{
-    //    for(int j {0}; j<x; j++)
-    //    {
-    //        std::cout << qAnswer(i,j) << " ";
-    //    }
-    //    std::cout << "\n";
-    //}
 
     std::cout << "\nT Matrix:\n";
     for(int i {0}; i<x; i++)

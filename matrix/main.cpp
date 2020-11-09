@@ -48,4 +48,14 @@ int main()
     static constexpr float n3 {det(three)};
 
     std::cout << n3 << "\n";
+
+    Matrix<int, x, x> colTest
+    {{{{5, -4, 2}, {-1, 2 , 3}, {-2, 1, 0}}}};
+
+    auto colExtract = colTest.col<1,2>(0);
+
+    for(int i {0}; i<2; i++)
+    {
+        std::cout << colExtract(i,0) << " ";
+    }
 }

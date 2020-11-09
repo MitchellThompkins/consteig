@@ -47,12 +47,44 @@ public:
         return result;
     }
 
+    // Get subset of row
+    template<size_t startIndex, size_t endIndex>
+    constexpr Matrix<T,1,endIndex-startIndex+1> row(const size_t n) const
+    {
+        static_assert(C > startIndex, "startIndex cannot be larger than array");
+        static_assert(C > endIndex,   "endIndex cannot be larger than array");
+        static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
+
+        Matrix<T,1,endIndex-startIndex+1> result{};
+
+        for( size_t i {startIndex}; i<=endIndex; i++ )
+            result(0,i-startIndex) = _data[n][i];
+
+        return result;
+    }
+
     constexpr Matrix<T,R,1> col(const size_t n) const
     {
         Matrix<T,R,1> result{};
 
         for( size_t i {0}; i<C; i++ )
             result(i,0) = _data[i][n];
+
+        return result;
+    }
+
+    // Get subset of column
+    template<size_t startIndex, size_t endIndex>
+    constexpr Matrix<T,endIndex-startIndex+1,1> col(const size_t n) const
+    {
+        static_assert(R > startIndex, "startIndex cannot be larger than array");
+        static_assert(R > endIndex,   "endIndex cannot be larger than array");
+        static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
+
+        Matrix<T,endIndex-startIndex+1,1> result{};
+
+        for( size_t i {startIndex}; i<=endIndex; i++ )
+            result(i-startIndex,0) = _data[i][n];
 
         return result;
     }

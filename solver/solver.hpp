@@ -11,16 +11,65 @@ struct UtMatrix
     Matrix<T,S,S> _t;
 };
 
-// https://www.math.kth.se/na/SF2524/matber15/qrmethod.pdf
+template<typename T>
+constexpr T sign(const T delta)
+{
+    T rtn {static_cast<T>(0)};
+
+    if( delta > static_cast<T>(0) )
+        rtn = 1;
+    else if( delta < static_cast<T>(0) )
+        rtn = -1;
+    else
+        rtn = 0;
+
+    return rtn;
+}
+
+//template<typename T, size_t R, size_t C>
+//constexpr T hess (Matrix<T,R,C> x)
+//{
+//    static_assert( R==C, "Hessenberg reduction expects a square matrix");
+//
+//    Matrix<T,R,R> H {x};
+//    if(R>2)
+//    {
+//        Matrix auto a1 {A.col(1)};
+//        Matrix<T,R-1,C> e1 {static_cast<T>(0)};
+//        e1(0,0) = static_cast<T>(1);
+//
+//        Matrix auto v {a1 + sign(a1(0,0))*normE(a1)*e1};
+//        v = v * (1/normE(v));
+//
+//        Matrix<T,R,R> identity {diagional<T,R-1>(static_cast<T>(1))};
+//        Matrix auto q {identity - static_cast<T>(2)*(v*transpose(v))};
+//    }
+//
+//    return x;
+//}
+
+template<typename T>
+constexpr T wilkinsonShift(const T a, const T b, const T c)
+{
+    T delta {(a-c)/2};
+
+    if( delta == static_cast<T>(0) )
+        delta = static_cast<T>(1);
+
+    return c - (sign(delta)*gcem::pow(b,2)/
+        (gcem::abs(delta) + gcem::sqrt(gcem::pow(delta,2)+gcem::pow(delta,2))));
+}
+
+// http://pi.math.cornell.edu/~web6140/TopTenAlgorithms/QRalgorithm.html
 template<typename T, size_t R, size_t C>
-constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> input )
+constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> x )
 {
     //TODO(mthompkins): Remove this necessity
     static_assert( R==C, "Eigenvalue Solver expects a square matrix");
 
     Matrix<T,R,R> identity {diagional<T,R>(static_cast<T>(1U))};
 
-    Matrix<T,R,R> a {input};
+    Matrix<T,R,R> a {x};
     Matrix<T,R,R> u[2] = {0};
     u[0] = {identity};
 
@@ -39,9 +88,9 @@ constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> input )
 }
 
 template<typename T, size_t R, size_t C>
-constexpr Matrix<T, R, 1> eigenvalues( const Matrix<T,R,C> input )
+constexpr Matrix<T, R, 1> eigenvalues( const Matrix<T,R,C> x )
 {
-    UtMatrix<T,R> ut {eigensolver(input)};
+    UtMatrix<T,R> ut {eigensolver(x)};
 
     Matrix<T,R,1> result {};
 
