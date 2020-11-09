@@ -1,5 +1,6 @@
 #include "matrix.hpp"
-#include <iostream> 
+#include <iostream>
+
 int main()
 {
     static constexpr int x {3};

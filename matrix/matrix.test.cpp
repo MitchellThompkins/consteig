@@ -24,10 +24,7 @@ constexpr Matrix<T,R,C> setSubRowTest(
         const size_t row )
 {
     Matrix<T,R,C> out {original};
-    Matrix<T,1,3> test {};
-    //out.setRow<startIndex,endIndex>(mat, row);
-    //out.setRow<1,2>(test, row);
-    out.setRow(test, row);
+    out.template setRow<startIndex,endIndex>(mat, row);
     return out;
 }
 
@@ -40,6 +37,17 @@ constexpr Matrix<T,R,C> setColsTest(
     out.setCol(mat[0],val);
     out.setCol(mat[1],val+1);
     out.setCol(mat[2],val+2);
+    return out;
+}
+
+template<typename T, size_t R, size_t C, size_t startIndex, size_t endIndex>
+constexpr Matrix<T,R,C> setSubColTest(
+        Matrix<T,R,C> original,
+        const Matrix<T,endIndex-startIndex+1, 1> mat,
+        const size_t col )
+{
+    Matrix<T,R,C> out {original};
+    out.template setCol<startIndex,endIndex>(mat, col);
     return out;
 }
 
@@ -416,7 +424,7 @@ TEST(matrix, static_constexpr_set_sub_row)
     static constexpr Matrix<int, x, x> original
     {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
 
-    static constexpr Matrix<int, start, end> sub
+    static constexpr Matrix<int,1,2> sub
     {{{ {99, -283} }}};
 
     static constexpr Matrix<int, x, x> answer
@@ -425,7 +433,30 @@ TEST(matrix, static_constexpr_set_sub_row)
     static constexpr Matrix<int,x,x> mat {setSubRowTest<int,x,x,start,end>(original, sub, 2)};
 
     // Check that created objects are constexpr
-    //static_assert(mat==answer, MSG);
+    static_assert(mat==answer, MSG);
+
+    ASSERT_TRUE(mat==answer);
+}
+
+TEST(matrix, static_constexpr_set_sub_col)
+{
+    static constexpr size_t x {3};
+    static constexpr size_t start {1};
+    static constexpr size_t end {2};
+
+    static constexpr Matrix<int, x, x> original
+    {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
+
+    static constexpr Matrix<int,2,1> sub
+    {{{ {99}, {-283} }}};
+
+    static constexpr Matrix<int, x, x> answer
+    {{{ {5, -1, -2}, {-4, 99 , 1}, {2, -283, 0} }}};
+
+    static constexpr Matrix<int,x,x> mat {setSubColTest<int,x,x,start,end>(original, sub, 1)};
+
+    // Check that created objects are constexpr
+    static_assert(mat==answer, MSG);
 
     ASSERT_TRUE(mat==answer);
 }

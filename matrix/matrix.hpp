@@ -127,6 +127,21 @@ public:
         }
     }
 
+    template<size_t startIndex, size_t endIndex>
+    constexpr void setCol(
+            const Matrix<T,endIndex-startIndex+1,1> &mat,
+            const size_t n )
+    {
+        static_assert(R > startIndex, "startIndex cannot be larger than array");
+        static_assert(R > endIndex,   "endIndex cannot be larger than array");
+        static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
+
+        for( size_t i {startIndex}; i<=endIndex; i++ )
+        {
+            _data[i][n] = mat(i-startIndex,0);
+        }
+    }
+
     constexpr size_t sizeX() const { return R; }
     constexpr size_t sizeY() const { return C; }
 
