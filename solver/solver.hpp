@@ -26,27 +26,27 @@ constexpr T sign(const T delta)
     return rtn;
 }
 
-//template<typename T, size_t R, size_t C>
-//constexpr T hess (Matrix<T,R,C> x)
-//{
-//    static_assert( R==C, "Hessenberg reduction expects a square matrix");
-//
-//    Matrix<T,R,R> H {x};
-//    if(R>2)
-//    {
-//        Matrix auto a1 {A.col<2,R-1>(1)};
-//        Matrix<T,R-1,C> e1 {static_cast<T>(0)};
-//        e1(0,0) = static_cast<T>(1);
-//
-//        Matrix auto v {a1 + sign(a1(0,0))*normE(a1)*e1};
-//        v = v * (1/normE(v));
-//
-//        Matrix<T,R,R> identity {diagional<T,R-1>(static_cast<T>(1))};
-//        Matrix auto q {identity - static_cast<T>(2)*(v*transpose(v))};
-//    }
-//
-//    return x;
-//}
+template<typename T, size_t R, size_t C>
+constexpr T hess (Matrix<T,R,C> a)
+{
+    static_assert( R==C, "Hessenberg reduction expects a square matrix");
+
+    Matrix<T,R,R> H {a};
+    if(R>2)
+    {
+        auto a1 {a.col<2,R-1>(1)};
+        Matrix<T,R-1,C> e1 {static_cast<T>(0)};
+        e1(0,0) = static_cast<T>(1);
+
+        auto v {a1 + sign(a1(0,0))*normE(a1)*e1};
+        v = v * (1/normE(v));
+
+        Matrix<T,R,R> identity {diagional<T,R-1>(static_cast<T>(1))};
+        auto q {identity - static_cast<T>(2)*(v*transpose(v))};
+    }
+
+    return H;
+}
 
 template<typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c)
