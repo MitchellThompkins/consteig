@@ -139,22 +139,6 @@ public:
             (*this)(j,n) = mat(j,0);
     }
 
-    // x1,y1,x2,y2 are indexes
-    //template<size_t x1, size_t y1, size_t x2, size_t y2>
-    //constexpr void setSub(
-    //        const Matrix<T, y2-y1+1, x2-x1+1> &mat )
-    //{
-    //    static_assert(x2>x1, "Second x index must be bigger than the first.");
-    //    static_assert(y2>y1, "Second y index must be bigger than the first.");
-
-    //    for( size_t i {x1}; i<=x2; i++ )
-    //        for( size_t j {y1}; j<=y2; j++ )
-    //            _data[n][i] = mat(0,i-startIndex);
-    //            result(i-x1,j-y1) = _data[i][j];
-
-    //    return result;
-    //}
-
     template<size_t startIndex, size_t endIndex>
     constexpr void setCol(
             const Matrix<T,endIndex-startIndex+1,1> &mat,
@@ -166,6 +150,19 @@ public:
 
         for( size_t i {startIndex}; i<=endIndex; i++ )
             (*this)(i,n) = mat(i-startIndex,0);
+    }
+
+    // x1,y1,x2,y2 are indexes
+    template<size_t x1, size_t y1, size_t x2, size_t y2>
+    constexpr void setSub(
+            const Matrix<T, y2-y1+1, x2-x1+1> &mat )
+    {
+        static_assert(x2>x1, "Second x index must be bigger than the first.");
+        static_assert(y2>y1, "Second y index must be bigger than the first.");
+
+        for( size_t i {x1}; i<=x2; i++ )
+            for( size_t j {y1}; j<=y2; j++ )
+                (*this)(i,j) = mat(i-x1,j-y1);
     }
 
     constexpr size_t sizeX() const { return R; }
