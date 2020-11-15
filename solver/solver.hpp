@@ -11,38 +11,29 @@ struct UtMatrix
     Matrix<T,S,S> _t;
 };
 
-template<typename T>
-constexpr T sign(const T delta)
-{
-    T rtn {static_cast<T>(0)};
-
-    if( delta > static_cast<T>(0) )
-        rtn = 1;
-    else if( delta < static_cast<T>(0) )
-        rtn = -1;
-    else
-        rtn = 0;
-
-    return rtn;
-}
-
 template<typename T, size_t R, size_t C>
-constexpr T hess (Matrix<T,R,C> a)
+constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
 {
     static_assert( R==C, "Hessenberg reduction expects a square matrix");
 
     Matrix<T,R,R> H {a};
     if(R>2)
     {
-        auto a1 {a.col<2,R-1>(1)};
-        Matrix<T,R-1,C> e1 {static_cast<T>(0)};
+        Matrix<T,R-1,1> a1 {a.template col<1,R-1>(0)};
+        Matrix<T,R-1,1> e1 {static_cast<T>(0)};
         e1(0,0) = static_cast<T>(1);
 
-        auto v {a1 + sign(a1(0,0))*normE(a1)*e1};
-        v = v * (1/normE(v));
+        T s = gcem::sgn(a1(0,0));
+        Matrix<T,R-1,1> v { a1 + (s*normE(a1)*e1) };
+        v = (1/normE(v)) * v;
 
-        Matrix<T,R,R> identity {diagional<T,R-1>(static_cast<T>(1))};
-        auto q {identity - static_cast<T>(2)*(v*transpose(v))};
+        Matrix<T,R-1,R-1> identity {diagional<T,R-1>(static_cast<T>(1))};
+        Matrix<T,R-1,R-1> q {identity - static_cast<T>(2)*(v*transpose(v))};
+
+        a.template setCol<1,R-1>(q*a1, 0);
+
+        Matrix<T,1,R-1> aRow {a.template row<1,R-1>(0)};
+        a.template setRow<1,R-1>(aRow*q, 0);
     }
 
     return H;
@@ -56,7 +47,7 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
     if( delta == static_cast<T>(0) )
         delta = static_cast<T>(1);
 
-    return c - (sign(delta)*gcem::pow(b,2)/
+    return c - (gcem::sgn(delta)*gcem::pow(b,2)/
         (gcem::abs(delta) + gcem::sqrt(gcem::pow(delta,2)+gcem::pow(delta,2))));
 }
 
@@ -68,6 +59,8 @@ constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> x )
     static_assert( R==C, "Eigenvalue Solver expects a square matrix");
 
     Matrix<T,R,R> identity {diagional<T,R>(static_cast<T>(1U))};
+
+    Matrix<T,R,R> test {hess<T,R,R>(x)};
 
     Matrix<T,R,R> a {x};
     Matrix<T,R,R> u[2] = {0};
