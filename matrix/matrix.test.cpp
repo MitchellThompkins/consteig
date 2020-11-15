@@ -361,6 +361,24 @@ TEST(matrix, static_constexpr_col)
     ASSERT_TRUE(colExtractLimit==answerLimit);
 }
 
+TEST(matrix, static_constexpr_subMatrix)
+{
+    static constexpr int x {3};
+
+    static constexpr Matrix<float, x, x> mat
+    {{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F , 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+
+    static constexpr Matrix<float, x-1, x-1> subMat {mat.sub<1,1,2,2>()};
+
+    static constexpr Matrix<float, x-1, x-1> answer
+    {{{{2.0F , 3.0F}, {1.0F, 0.0F}}}};
+
+    // Check that created objects are constexpr
+    static_assert(subMat==answer, MSG);
+
+    ASSERT_TRUE(subMat==answer);
+}
+
 TEST(matrix, static_constexpr_set_row)
 {
     static constexpr int x {3};
