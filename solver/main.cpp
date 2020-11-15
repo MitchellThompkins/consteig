@@ -159,4 +159,14 @@ int main()
     auto extract {extractionTest.col<1,3>(0)};
     auto testHess {hess(extractionTest)};
 
+    std::cout << "\n";
+    for(int i {0}; i<4; i++)
+    {
+        for(int j {0}; j<4; j++)
+        {
+            std::cout << testHess(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
+
 }

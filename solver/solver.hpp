@@ -16,9 +16,9 @@ constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
 {
     static_assert( R==C, "Hessenberg reduction expects a square matrix");
 
-    Matrix<T,R,R> H {a};
-    if(R>2)
-    {
+    //Matrix<T,R,R> H {a};
+    //if(R>2)
+    //{
         Matrix<T,R-1,1> a1 {a.template col<1,R-1>(0)};
         Matrix<T,R-1,1> e1 {static_cast<T>(0)};
         e1(0,0) = static_cast<T>(1);
@@ -28,18 +28,31 @@ constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
         v = (1/normE(v)) * v;
 
         Matrix<T,R-1,R-1> identity {diagional<T,R-1>(static_cast<T>(1))};
-        Matrix<T,R-1,R-1> q {identity - static_cast<T>(2)*(v*transpose(v))};
+        Matrix<T,R-1,R-1> q {identity - (static_cast<T>(2)*(v*transpose(v)))};
 
-        a.template setCol<1,R-1>(q*a1, 0);
+        Matrix<T,R-1,1> temp1 {q*a1};
+        a.template setCol<1,R-1>(temp1, 0);
 
         Matrix<T,1,R-1> aRow {a.template row<1,R-1>(0)};
-        a.template setRow<1,R-1>(aRow*q, 0);
+        Matrix<T,1,R-1> temp2 {aRow*q};
+        a.template setRow<1,R-1>(temp2, 0);
 
         Matrix<T,R-1,R-1> subA {a.template sub<1,1,R-1,R-1>()};
-        Matrix<T,R-1,R-1> test {q*subA*transpose(q)};
-    }
+        a.template setSub<1,1,R-1,R-1>(q*subA*transpose(q));
 
-    return H;
+        //H = hess(a.template sub<1,1,R-1,R-1>());
+        subA = a.template sub<1,1,R-1,R-1>();
+        hess(subA);
+        //H.template setSub<1,1,R-1,R-1>(hess(subA));
+    //}
+
+    return a;
+}
+
+template<typename T>
+constexpr Matrix<T,2,2> hess(Matrix<T,2,2> a)
+{
+    return a;
 }
 
 template<typename T>
