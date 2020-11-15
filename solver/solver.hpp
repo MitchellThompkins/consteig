@@ -34,6 +34,9 @@ constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
 
         Matrix<T,1,R-1> aRow {a.template row<1,R-1>(0)};
         a.template setRow<1,R-1>(aRow*q, 0);
+
+        Matrix<T,R-1,R-1> subA {a.template sub<1,1,R-1,R-1>()};
+        Matrix<T,R-1,R-1> test {q*subA*transpose(q)};
     }
 
     return H;

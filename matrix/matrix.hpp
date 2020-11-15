@@ -42,7 +42,7 @@ public:
         Matrix<T,1,C> result{};
 
         for( size_t j {0}; j<C; j++ )
-            result(0,j) = _data[n][j];
+            result(0,j) = (*this)(n,j);
 
         return result;
     }
@@ -58,7 +58,7 @@ public:
         Matrix<T,1,endIndex-startIndex+1> result{};
 
         for( size_t i {startIndex}; i<=endIndex; i++ )
-            result(0,i-startIndex) = _data[n][i];
+            result(0,i-startIndex) = (*this)(n,i);
 
         return result;
     }
@@ -68,7 +68,7 @@ public:
         Matrix<T,R,1> result{};
 
         for( size_t i {0}; i<C; i++ )
-            result(i,0) = _data[i][n];
+            result(i,0) = (*this)(i,n);
 
         return result;
     }
@@ -84,7 +84,7 @@ public:
         Matrix<T,endIndex-startIndex+1,1> result{};
 
         for( size_t i {startIndex}; i<=endIndex; i++ )
-            result(i-startIndex,0) = _data[i][n];
+            result(i-startIndex,0) = (*this)(i,n);
 
         return result;
     }
@@ -100,7 +100,7 @@ public:
 
         for( size_t i {x1}; i<=x2; i++ )
             for( size_t j {y1}; j<=y2; j++ )
-                result(i-x1,j-y1) = _data[i][j];
+                result(i-x1,j-y1) = (*this)(i,j);
 
         return result;
     }
@@ -109,15 +109,13 @@ public:
     {
         for( size_t i{0}; i<R; i++ )
             for( size_t j{0}; i<C; i++ )
-                _data[i][j] = rhs(i,j);
+                (*this)(i,j) = rhs(i,j);
     }
 
     constexpr void setRow(const Matrix<T,1,C> &mat, const size_t n)
     {
         for( size_t i {0}; i<C; i++ )
-        {
-            _data[n][i] = mat(0,i);
-        }
+            (*this)(n,i) = mat(0,i);
     }
 
     template<size_t startIndex, size_t endIndex>
@@ -130,18 +128,32 @@ public:
         static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
 
         for( size_t i {startIndex}; i<=endIndex; i++ )
-        {
-            _data[n][i] = mat(0,i-startIndex);
-        }
+            (*this)(n,i) = mat(0,i-startIndex);
     }
 
-    constexpr void setCol(const Matrix<T,R,1> &mat, const size_t n)
+    constexpr void setCol(
+            const Matrix<T,R,1> &mat,
+            const size_t n)
     {
         for( size_t j {0}; j<R; j++ )
-        {
-            _data[j][n] = mat(j,0);
-        }
+            (*this)(j,n) = mat(j,0);
     }
+
+    // x1,y1,x2,y2 are indexes
+    //template<size_t x1, size_t y1, size_t x2, size_t y2>
+    //constexpr void setSub(
+    //        const Matrix<T, y2-y1+1, x2-x1+1> &mat )
+    //{
+    //    static_assert(x2>x1, "Second x index must be bigger than the first.");
+    //    static_assert(y2>y1, "Second y index must be bigger than the first.");
+
+    //    for( size_t i {x1}; i<=x2; i++ )
+    //        for( size_t j {y1}; j<=y2; j++ )
+    //            _data[n][i] = mat(0,i-startIndex);
+    //            result(i-x1,j-y1) = _data[i][j];
+
+    //    return result;
+    //}
 
     template<size_t startIndex, size_t endIndex>
     constexpr void setCol(
@@ -153,9 +165,7 @@ public:
         static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
 
         for( size_t i {startIndex}; i<=endIndex; i++ )
-        {
-            _data[i][n] = mat(i-startIndex,0);
-        }
+            (*this)(i,n) = mat(i-startIndex,0);
     }
 
     constexpr size_t sizeX() const { return R; }
