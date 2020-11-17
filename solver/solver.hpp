@@ -2,6 +2,7 @@
 #define SOLVER_HPP
 
 #include "stddef.h"
+#include "matrix.hpp"
 #include "qr_decomp.hpp"
 
 template<typename T, size_t S>
@@ -12,39 +13,41 @@ struct UtMatrix
 };
 
 template<typename T, size_t R, size_t C>
+constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
+{
+    static_assert( R==C, "Householder expects a square matrix");
+
+    T alphaSum {0};
+    for(size_t i {1}; i<R; i++)
+        alphaSum += (a(i,0)*a(i,0));
+
+    T alpha { static_cast<T>(-1)
+        * gcem::sgn(a(1,0))
+        * gcem::sqrt(alphaSum) };
+
+    T r { gcem::sqrt(
+            static_cast<T>(0.5)
+            * ((alpha*alpha) - (a(1,0)*alpha)) ) };
+
+    T oneOverTwoR {1/(static_cast<T>(2)*r)};
+
+    Matrix<T,R,1> v {static_cast<T>(0)};
+    v(1,0) = (a(1,0) - alpha) * oneOverTwoR;
+    for(size_t i {2}; i<R; i++)
+        v(i,0) = a(i,0) * oneOverTwoR;
+
+    Matrix<T,R,R> p { eye<T,R>() -
+        (static_cast<T>(2) * v * transpose(v)) };
+
+    return p;
+}
+
+template<typename T, size_t R, size_t C>
 constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
 {
     static_assert( R==C, "Hessenberg reduction expects a square matrix");
 
-    //Matrix<T,R,R> H {a};
-    //if(R>2)
-    //{
-        Matrix<T,R-1,1> a1 {a.template col<1,R-1>(0)};
-        Matrix<T,R-1,1> e1 {static_cast<T>(0)};
-        e1(0,0) = static_cast<T>(1);
-
-        T s = gcem::sgn(a1(0,0));
-        Matrix<T,R-1,1> v { a1 + (s*normE(a1)*e1) };
-        v = (1/normE(v)) * v;
-
-        Matrix<T,R-1,R-1> identity {diagional<T,R-1>(static_cast<T>(1))};
-        Matrix<T,R-1,R-1> q {identity - (static_cast<T>(2)*(v*transpose(v)))};
-
-        Matrix<T,R-1,1> temp1 {q*a1};
-        a.template setCol<1,R-1>(temp1, 0);
-
-        Matrix<T,1,R-1> aRow {a.template row<1,R-1>(0)};
-        Matrix<T,1,R-1> temp2 {aRow*q};
-        a.template setRow<1,R-1>(temp2, 0);
-
-        Matrix<T,R-1,R-1> subA {a.template sub<1,1,R-1,R-1>()};
-        a.template setSub<1,1,R-1,R-1>(q*subA*transpose(q));
-
-        //H = hess(a.template sub<1,1,R-1,R-1>());
-        subA = a.template sub<1,1,R-1,R-1>();
-        hess(subA);
-        //H.template setSub<1,1,R-1,R-1>(hess(subA));
-    //}
+    Matrix<T,R,R> p {house(a)};
 
     return a;
 }

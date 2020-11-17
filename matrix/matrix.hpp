@@ -270,6 +270,12 @@ constexpr Matrix<T,S,S> diagional( const T val )
     return result;
 }
 
+template<typename T, size_t S>
+constexpr Matrix<T,S,S> eye()
+{
+    return diagional<T,S>(static_cast<T>(1));
+}
+
 // Euclidean normal of a matrix
 template<typename T, size_t R, size_t C>
 constexpr T normE( const Matrix<T,R,C> &mat )
