@@ -284,6 +284,18 @@ constexpr T normE( const Matrix<T,R,C> &mat )
 }
 
 template<typename T, size_t R, size_t C>
+constexpr Matrix<T,R,C> sqrt( const Matrix<T,R,C> &mat )
+{
+    T result{};
+
+    for(size_t i {0}; i<R; i++)
+        for(size_t j {0}; j<C; j++)
+            result(i,j) = gcem::sqrt(mat(i,j));
+
+    return result;
+}
+
+template<typename T, size_t R, size_t C>
 constexpr T det( const Matrix<T,R,C> &mat )
 {
     static_assert(R==C, "Can only find determinant of a square matrix");
