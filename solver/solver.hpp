@@ -49,7 +49,7 @@ constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
 }
 
 template<typename T, size_t R, size_t C>
-constexpr Matrix<T,R,R> hess(Matrix<T,R,C> &a)
+constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
 {
     static_assert( R==C, "Hessenberg reduction expects a square matrix");
 
@@ -76,9 +76,10 @@ constexpr Matrix<T,R,R> hess(Matrix<T,R,C> &a)
     Matrix<T,size,size> subA {a.template sub<1,1,end,end>()};
     a.template setSub<1,1,end,end>( q*subA*transpose(q) );
 
-    //H = hess(a.template sub<1,1,end,end>());
     subA = a.template sub<1,1,end,end>();
-    hess(subA);
+    Matrix<T,size,size> H = hess(subA);
+
+    a.template setSub<1,1,end,end>( H );
 
     return a;
 }
