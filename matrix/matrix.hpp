@@ -105,10 +105,11 @@ public:
         return result;
     }
 
+    //todo(mthompkins): Add test for this
     constexpr void operator=(const Matrix<T, R, C> &rhs)
     {
         for( size_t i{0}; i<R; i++ )
-            for( size_t j{0}; i<C; i++ )
+            for( size_t j{0}; j<C; j++ )
                 (*this)(i,j) = rhs(i,j);
     }
 

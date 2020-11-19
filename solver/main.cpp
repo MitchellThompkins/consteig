@@ -98,55 +98,55 @@ int main()
         {  3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}
     }}};
 
-    /*static constexpr*/ UtMatrix<float, 4> eigenSolverTest {eigensolver(matlab)};
-    static constexpr auto eigenValueTest {eigenvalues(matlab)};
+    ///*static constexpr*/ UtMatrix<float, 4> eigenSolverTest {eigensolver(matlab)};
+    //static constexpr auto eigenValueTest {0};//eigenvalues(matlab)};
 
-    std::cout << "\nU Matrix:\n";
-    for(int i {0}; i<x; i++)
-    {
-        for(int j {0}; j<x; j++)
-        {
-            std::cout << eigenSolverTest._u(i,j) << " ";
-        }
-        std::cout << "\n";
-    }
+    //std::cout << "\nU Matrix:\n";
+    //for(int i {0}; i<x; i++)
+    //{
+    //    for(int j {0}; j<x; j++)
+    //    {
+    //        std::cout << eigenSolverTest._u(i,j) << " ";
+    //    }
+    //    std::cout << "\n";
+    //}
 
-    std::cout << "\nT Matrix:\n";
-    for(int i {0}; i<x; i++)
-    {
-        for(int j {0}; j<x; j++)
-        {
-            std::cout << eigenSolverTest._t(i,j) << " ";
-        }
-        std::cout << "\n";
-    }
+    //std::cout << "\nT Matrix:\n";
+    //for(int i {0}; i<x; i++)
+    //{
+    //    for(int j {0}; j<x; j++)
+    //    {
+    //        std::cout << eigenSolverTest._t(i,j) << " ";
+    //    }
+    //    std::cout << "\n";
+    //}
 
-    std::cout << "\n";
-    for(int i {0}; i<x; i++)
-    {
-        for(int j {0}; j<x; j++)
-        {
-            std::cout << rAnswer(i,j) << " ";
-        }
-        std::cout << "\n";
-    }
+    //std::cout << "\n";
+    //for(int i {0}; i<x; i++)
+    //{
+    //    for(int j {0}; j<x; j++)
+    //    {
+    //        std::cout << rAnswer(i,j) << " ";
+    //    }
+    //    std::cout << "\n";
+    //}
 
-    std::cout << "\nEigen Values:\n";
-    for(size_t i {0}; i<4; i++)
-    {
-        std::cout << eigenValueTest(i,0) << "\n";
-    }
-    std::cout << "\n";
+    //std::cout << "\nEigen Values:\n";
+    //for(size_t i {0}; i<4; i++)
+    //{
+    //    std::cout << eigenValueTest(i,0) << "\n";
+    //}
+    //std::cout << "\n";
 
-    std::cout << "\nEigen Value Test:\n";
-    static constexpr Matrix<float,4,4> identityEigen {diagional<float,4>(1.0F)};
-    for(int i {0}; i<4; i++)
-    {
-        std::cout << det(matlab - (eigenValueTest(i,0)*identityEigen)) << "\n";
-    }
+    //std::cout << "\nEigen Value Test:\n";
+    //static constexpr Matrix<float,4,4> identityEigen {diagional<float,4>(1.0F)};
+    //for(int i {0}; i<4; i++)
+    //{
+    //    std::cout << det(matlab - (eigenValueTest(i,0)*identityEigen)) << "\n";
+    //}
 
-    bool equal = checkEigenValues<float,4,4>(matlab,eigenValueTest);
-    std::cout << equal << "\n";
+    //bool equal = checkEigenValues<float,4,4>(matlab,eigenValueTest);
+    //std::cout << equal << "\n";
 
     Matrix<float,4,4> extractionTest
     {{{
@@ -170,3 +170,5 @@ int main()
     }
 
 }
+
+// T = [ -4.4529e-01  4.9063e+00 -8.7871e-01  6.3036e+00; -6.3941e+00  1.3354e+01  1.6668e+00  1.1945e+01; 3.6842e+00 -6.6617e+00 -6.0021e-02 -7.0043e+00; 3.1209e+00 -5.2052e+00 -1.4130e+00 -2.8484e+00; ];
