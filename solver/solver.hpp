@@ -6,10 +6,27 @@
 #include "qr_decomp.hpp"
 
 template<typename T, size_t S>
-struct UtMatrix
+struct UTMatrix
 {
     Matrix<T,S,S> _u;
     Matrix<T,S,S> _t;
+};
+
+template<typename T, size_t S>
+struct PHMatrix
+{
+    Matrix<T,S,S> _p;
+    Matrix<T,S,S> _h;
+
+    constexpr void operator=(const PHMatrix<T, S> &rhs)
+    {
+        for( size_t i{0}; i<S; i++ )
+            for( size_t j{0}; j<S; j++ )
+            {
+                (*this._p)(i,j) = rhs._p(i,j);
+                (*this._h)(i,j) = rhs._h(i,j);
+            }
+    }
 };
 
 template<typename T, size_t R, size_t C>
@@ -49,7 +66,7 @@ constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
 }
 
 template<typename T, size_t R, size_t C>
-constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
+constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {
     static_assert( R==C, "Hessenberg reduction expects a square matrix");
 
@@ -77,17 +94,28 @@ constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
     a.template setSub<1,1,end,end>( q*subA*transpose(q) );
 
     subA = a.template sub<1,1,end,end>();
-    Matrix<T,size,size> H = hess(subA);
+    PHMatrix<T,size> out = hess(subA);
 
-    a.template setSub<1,1,end,end>( H );
+    a.template setSub<1,1,end,end>( out._h );
 
-    return a;
+    //TODO(mthompkins): Combine this into a single line?
+    Matrix<T,R,R> pRtn {eye<T,R>()};
+    pRtn.template setSub<1,1,end,end>(out._p);
+    return
+    {
+        ._p = pRtn,
+        ._h = a
+    };
 }
 
 template<typename T>
-constexpr Matrix<T,2,2> hess(Matrix<T,2,2> a)
+constexpr PHMatrix<T,2> hess(Matrix<T,2,2> a)
 {
-    return a;
+    return
+    {
+        ._p = {0},
+        ._h = a
+    };
 }
 
 template<typename T>
@@ -104,7 +132,7 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
 
 // http://pi.math.cornell.edu/~web6140/TopTenAlgorithms/QRalgorithm.html
 template<typename T, size_t R, size_t C>
-constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> x )
+constexpr UTMatrix<T, R> eigensolver( const Matrix<T,R,C> x )
 {
     //TODO(mthompkins): Remove this necessity
     static_assert( R==C, "Eigenvalue Solver expects a square matrix");
@@ -135,7 +163,7 @@ constexpr UtMatrix<T, R> eigensolver( const Matrix<T,R,C> x )
 template<typename T, size_t R, size_t C>
 constexpr Matrix<T, R, 1> eigenvalues( const Matrix<T,R,C> x )
 {
-    UtMatrix<T,R> ut {eigensolver(x)};
+    UTMatrix<T,R> ut {eigensolver(x)};
 
     Matrix<T,R,1> result {};
 
