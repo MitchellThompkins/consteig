@@ -66,6 +66,10 @@ constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
     return a;
 }
 
+// Fwd decl
+template<typename T, size_t R, size_t C, size_t L>
+constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a);
+
 template<typename T, size_t R, size_t C, size_t L>
 struct hess_impl
 {
@@ -83,10 +87,9 @@ struct hess_impl
         p.template setSub<R-L+1,R-L+1,end,end>(m.template sub<1,1,L-1,L-1>());
 
         Matrix<T,size,size> temp {p*a*p};
-        //Matrix<T,size,size> out = hess<T,R,R,L-1>(temp);
+        Matrix<T,size,size> out = hess<T,R,R,L-1>(temp);
 
-        return a;
-        //return out;
+        return out;
     }
 };
 
@@ -135,16 +138,16 @@ constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
 
 //template<typename T>
 //constexpr PHMatrix<T,2> hess(Matrix<T,2,2> a)
-template <>
-constexpr Matrix<float,4,4>  hess<float,4,4,2>(Matrix<float,4,4> a)
-{
-    return a;
-    //return
-    //{
-    //    ._p = {0},
-    //    ._h = a
-    //};
-}
+//template <>
+//constexpr Matrix<float,4,4>  hess<float,4,4,2>(Matrix<float,4,4> a)
+//{
+//    return a;
+//    //return
+//    //{
+//    //    ._p = {0},
+//    //    ._h = a
+//    //};
+//}
 
 template<typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c)
