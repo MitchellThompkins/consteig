@@ -156,6 +156,12 @@ int main()
         {  3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}
     }}};
 
+    Matrix<float,2,2> housey
+    {{{
+        { 1.3,  4.50  },
+        { -8.40,  14.99 }
+    }}};
+
     std::cout << "\ninput\n";
     for(int i {0}; i<4; i++)
     {
@@ -167,16 +173,16 @@ int main()
     }
 
     auto extract {extractionTest.col<1,3>(0)};
-    auto testHess {hess(extractionTest)};
+    auto testHess {hess<float,4,4,4>(extractionTest)};
 
-    auto testHouse {house(extractionTest)};
+    auto testHouse {house(housey)};
 
     std::cout << "\nH\n";
     for(int i {0}; i<4; i++)
     {
         for(int j {0}; j<4; j++)
         {
-            std::cout << testHess._h(i,j) << " ";
+            std::cout << testHess(i,j) << " ";
         }
         std::cout << "\n";
     }
@@ -186,43 +192,43 @@ int main()
     {
         for(int j {0}; j<4; j++)
         {
-            std::cout << testHess._p(i,j) << " ";
+            std::cout << testHess(i,j) << " ";
         }
         std::cout << "\n";
     }
 
     std::cout << "\nHouse\n";
-    for(int i {0}; i<4; i++)
+    for(int i {0}; i<2; i++)
     {
-        for(int j {0}; j<4; j++)
+        for(int j {0}; j<2; j++)
         {
             std::cout << testHouse(i,j) << " ";
         }
         std::cout << "\n";
     }
 
-    auto iden {testHess._p*transpose(testHess._p)};
-    auto hessCheck {testHess._p * testHess._h * transpose(testHess._p)};
+    //auto iden {testHess._p*transpose(testHess._p)};
+    //auto hessCheck {testHess._p * testHess._h * transpose(testHess._p)};
 
-    std::cout << "\nP*P'\n";
-    for(int i {0}; i<4; i++)
-    {
-        for(int j {0}; j<4; j++)
-        {
-            std::cout << iden(i,j) << " ";
-        }
-        std::cout << "\n";
-    }
+    //std::cout << "\nP*P'\n";
+    //for(int i {0}; i<4; i++)
+    //{
+    //    for(int j {0}; j<4; j++)
+    //    {
+    //        std::cout << iden(i,j) << " ";
+    //    }
+    //    std::cout << "\n";
+    //}
 
-    std::cout << "\nP*H*P'\n";
-    for(int i {0}; i<4; i++)
-    {
-        for(int j {0}; j<4; j++)
-        {
-            std::cout << hessCheck(i,j) << " ";
-        }
-        std::cout << "\n";
-    }
+    //std::cout << "\nP*H*P'\n";
+    //for(int i {0}; i<4; i++)
+    //{
+    //    for(int j {0}; j<4; j++)
+    //    {
+    //        std::cout << hessCheck(i,j) << " ";
+    //    }
+    //    std::cout << "\n";
+    //}
 
 }
 
