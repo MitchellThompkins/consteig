@@ -67,45 +67,72 @@ constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
 }
 
 template<typename T, size_t R, size_t C, size_t L>
-//constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
+struct hess_impl
+{
+    static constexpr Matrix<T,R,R> _(Matrix<T,R,C> a)
+    {
+        static_assert( R==C, "Hessenberg reduction expects a square matrix");
+
+        constexpr size_t size {R};
+        constexpr size_t end {R-1};
+
+        Matrix<T,L,L> subA {a.template sub<R-L,R-L,end,end>()};
+        Matrix<T,L,L> m {house(subA)};
+
+        Matrix<T,size,size> p {eye<T,R>()};
+        p.template setSub<R-L+1,R-L+1,end,end>(m.template sub<1,1,L-1,L-1>());
+
+        Matrix<T,size,size> temp {p*a*p};
+        //Matrix<T,size,size> out = hess<T,R,R,L-1>(temp);
+
+        return a;
+        //return out;
+    }
+};
+
+template<typename T, size_t R, size_t C>
+struct hess_impl<T, R, C, 2>
+{
+    static constexpr Matrix<T,R,R> _(Matrix<T,R,C> a)
+    {
+        return a;
+    }
+};
+
+template<typename T, size_t R, size_t C, size_t L>
 constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
 {
-    static_assert( R==C, "Hessenberg reduction expects a square matrix");
+    return hess_impl<T,R,C,L>::_(a);
+};
+//constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
+//{
+//    static_assert( R==C, "Hessenberg reduction expects a square matrix");
+//
+//    constexpr size_t size {R};
+//    constexpr size_t end {R-1};
+//
+//    Matrix<T,L,L> subA {a.template sub<R-L,R-L,end,end>()};
+//    Matrix<T,L,L> m {house(subA)};
+//
+//    Matrix<T,size,size> p {eye<T,R>()};
+//    p.template setSub<R-L+1,R-L+1,end,end>(m.template sub<1,1,L-1,L-1>());
+//
+//    Matrix<T,size,size> temp {p*a*p};
+//    Matrix<T,size,size> out = hess<T,R,R,L-1>(temp);
+//
+//    return out;
+//
+//    ////TODO(mthompkins): Combine this into a single line?
+//    //Matrix<T,R,R> pRtn {eye<T,R>()};
+//    ////pRtn.template setSub<1,1,end,end>(p);
+//    //pRtn.template setSub<1,1,end,end>(out._p);
+//    //return
+//    //{
+//    //    ._p = pRtn,
+//    //    ._h = a
+//    //};
+//}
 
-    constexpr size_t size {R};
-    constexpr size_t end {R-1};
-
-    Matrix<T,L,L> subA {a.template sub<R-L,R-L,end,end>()};
-    Matrix<T,L,L> m {house(subA)};
-
-    Matrix<T,size,size> p {eye<T,R>()};
-    p.template setSub<R-L+1,R-L+1,end,end>(m.template sub<1,1,L-1,L-1>());
-
-    Matrix<T,size,size> temp {p*a*p};
-    Matrix<T,size,size> out = hess<T,R,R,L-1>(temp);
-
-    return out;
-    //return a;
-
-    //a.template setSub<1,1,end,end>( p*subA*transpose(p) );
-
-    //subA = a.template sub<1,1,end,end>();
-    //PHMatrix<T,size> out = hess(subA);
-
-    //a.template setSub<1,1,end,end>( out._h );
-
-    ////TODO(mthompkins): Combine this into a single line?
-    //Matrix<T,R,R> pRtn {eye<T,R>()};
-    ////pRtn.template setSub<1,1,end,end>(p);
-    //pRtn.template setSub<1,1,end,end>(out._p);
-    //return
-    //{
-    //    ._p = pRtn,
-    //    ._h = a
-    //};
-}
-
-//template<typename T, size_t R, size_t C, size_t L=2>
 //template<typename T>
 //constexpr PHMatrix<T,2> hess(Matrix<T,2,2> a)
 template <>
