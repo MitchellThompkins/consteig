@@ -73,25 +73,27 @@ constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
     constexpr size_t size {R-1};
     constexpr size_t end {R-1};
 
-    Matrix<T,size,1> x {a.template col<1,end>(0)};
-    Matrix<T,size,1> e {static_cast<T>(0)};
-    e(0,0) = static_cast<T>(1);
+    //Matrix<T,size,1> x {a.template col<1,end>(0)};
+    //Matrix<T,size,1> e {static_cast<T>(0)};
+    //e(0,0) = static_cast<T>(1);
 
-    T s = gcem::sgn(x(0,0));
-    Matrix<T,size,1> v { x + (s*normE(x)*e) };
+    //T s = gcem::sgn(x(0,0));
+    //Matrix<T,size,1> v { (s*(normE(x)*e)) + x };
 
-    v = (1/normE(v)) * v;
+    //v = (1/normE(v)) * v;
 
-    Matrix<T,size,size> q {eye<T,end>() - (static_cast<T>(2)*(v*transpose(v)))};
+    //Matrix<T,size,size> p {eye<T,size>() - (static_cast<T>(2)*(v*transpose(v)))};
+    Matrix<T,R,R> h {house(a)};
+    Matrix<T,size,size> p {h.template sub<1,1,end,end>()};
 
     Matrix<T,size,1> aCol {a.template col<1,end>(0)};
-    a.template setCol<1,end>(q*aCol, 0);
+    a.template setCol<1,end>(p*aCol, 0);
 
     Matrix<T,1,size> aRow {a.template row<1,end>(0)};
-    a.template setRow<1,end>(aRow*q, 0);
+    a.template setRow<1,end>(aRow*p, 0);
 
     Matrix<T,size,size> subA {a.template sub<1,1,end,end>()};
-    a.template setSub<1,1,end,end>( q*subA*transpose(q) );
+    a.template setSub<1,1,end,end>( p*subA*transpose(p) );
 
     subA = a.template sub<1,1,end,end>();
     PHMatrix<T,size> out = hess(subA);
@@ -100,6 +102,7 @@ constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 
     //TODO(mthompkins): Combine this into a single line?
     Matrix<T,R,R> pRtn {eye<T,R>()};
+    //pRtn.template setSub<1,1,end,end>(p);
     pRtn.template setSub<1,1,end,end>(out._p);
     return
     {
