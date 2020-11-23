@@ -63,47 +63,93 @@ constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
 template<typename T>
 constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
 {
-    return a;
+    //return a;
+    Matrix<T,2,2> i { eye<T,2>() };
+    i(1,1) = i(1,1)*static_cast<T>(-1);
+    return i;
 }
 
 // Fwd decl
 template<typename T, size_t R, size_t C, size_t L>
-constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a);
+constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a);
 
 template<typename T, size_t R, size_t C, size_t L>
 struct hess_impl
 {
-    static constexpr Matrix<T,R,R> _(Matrix<T,R,C> a)
+    static constexpr PHMatrix<T,R> _(Matrix<T,R,C> a)
     {
         static_assert( R==C, "Hessenberg reduction expects a square matrix");
 
         constexpr size_t size {R};
+        constexpr size_t houseSize {L};
         constexpr size_t end {R-1};
 
-        Matrix<T,L,L> subA {a.template sub<R-L,R-L,end,end>()};
+        Matrix<T,L,L> subA
+        {
+            a.template sub<
+                R-houseSize,
+                R-houseSize,
+                end,
+                end>()
+        };
         Matrix<T,L,L> m {house(subA)};
 
         Matrix<T,size,size> p {eye<T,R>()};
-        p.template setSub<R-L+1,R-L+1,end,end>(m.template sub<1,1,L-1,L-1>());
+        p.template setSub<
+            R-houseSize+1,
+            R-houseSize+1,
+            end,
+            end>(m.template sub<1,1,houseSize-1,houseSize-1>());
 
-        Matrix<T,size,size> temp {p*a*p};
-        Matrix<T,size,size> out = hess<T,R,R,L-1>(temp);
+        PHMatrix<T,R> out = hess<T,R,R,houseSize-1>(p*a*p);
+        Matrix<T,size,size> pRtn {p*out._p};
 
-        return out;
+        //return out;
+        return
+        {
+            ._p = pRtn,
+            ._h = out._h
+        };
     }
 };
 
 template<typename T, size_t R, size_t C>
 struct hess_impl<T, R, C, 2>
 {
-    static constexpr Matrix<T,R,R> _(Matrix<T,R,C> a)
+    static constexpr PHMatrix<T,R> _(Matrix<T,R,C> a)
     {
-        return a;
+        constexpr size_t size {R};
+        constexpr size_t houseSize {2};
+        constexpr size_t end {R-1};
+
+        Matrix<T,houseSize,houseSize> subA
+        {
+            a.template sub<
+                R-houseSize,
+                R-houseSize,
+                end,
+                end>()
+        };
+        Matrix<T,houseSize,houseSize> m {house(subA)};
+
+        Matrix<T,size,size> p {eye<T,R>()};
+        p.template setSub<
+            houseSize,
+            houseSize,
+            end,
+            end>(m);
+
+        return
+        {
+            ._p = p,
+            ._h = a
+        };
     }
 };
 
+// https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
 template<typename T, size_t R, size_t C, size_t L>
-constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
+constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {
     return hess_impl<T,R,C,L>::_(a);
 };
