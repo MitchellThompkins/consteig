@@ -148,7 +148,7 @@ int main()
     //bool equal = checkEigenValues<float,4,4>(matlab,eigenValueTest);
     //std::cout << equal << "\n";
 
-    Matrix<float,4,4> extractionTest
+    static constexpr Matrix<float,4,4> extractionTest
     {{{
         { -4.4529e-01,  4.9063e+00, -8.7871e-01,  6.3036e+00},
         { -6.3941e+00,  1.3354e+01,  1.6668e+00,  1.1945e+01},
@@ -173,7 +173,7 @@ int main()
     }
 
     auto extract {extractionTest.col<1,3>(0)};
-    auto testHess {hess<float,4,4,4>(extractionTest)};
+    static constexpr auto testHess {hess<float,4,4,4>(extractionTest)};
 
     auto testHouse {house(housey)};
 
