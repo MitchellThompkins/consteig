@@ -173,7 +173,7 @@ int main()
     }
 
     auto extract {extractionTest.col<1,3>(0)};
-    static constexpr auto testHess {hess<float,4,4,4>(extractionTest)};
+    static constexpr auto testHess {hess<float,4,4>(extractionTest)};
 
     auto testHouse {house(housey)};
 

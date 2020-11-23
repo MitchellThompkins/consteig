@@ -70,10 +70,10 @@ constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
 }
 
 // Fwd decl
-template<typename T, size_t R, size_t C, size_t L>
+template<typename T, size_t R, size_t C, size_t L=R>
 constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a);
 
-template<typename T, size_t R, size_t C, size_t L>
+template<typename T, size_t R, size_t C, size_t L=R>
 struct hess_impl
 {
     static constexpr PHMatrix<T,R> _(Matrix<T,R,C> a)
@@ -127,7 +127,7 @@ struct hess_impl<T, R, C, 2>
 };
 
 // https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
-template<typename T, size_t R, size_t C, size_t L>
+template<typename T, size_t R, size_t C, size_t L = R>
 constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {
     return hess_impl<T,R,C,L>::_(a);
