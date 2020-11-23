@@ -102,9 +102,9 @@ struct hess_impl
             end>(m.template sub<1,1,houseSize-1,houseSize-1>());
 
         PHMatrix<T,R> out = hess<T,R,R,houseSize-1>(p*a*p);
-        Matrix<T,size,size> pRtn {p*out._p};
 
-        //return out;
+        Matrix<T,size,size> pRtn { (houseSize>3) ? p*out._p : p };
+
         return
         {
             ._p = pRtn,
@@ -118,30 +118,9 @@ struct hess_impl<T, R, C, 2>
 {
     static constexpr PHMatrix<T,R> _(Matrix<T,R,C> a)
     {
-        constexpr size_t size {R};
-        constexpr size_t houseSize {2};
-        constexpr size_t end {R-1};
-
-        Matrix<T,houseSize,houseSize> subA
-        {
-            a.template sub<
-                R-houseSize,
-                R-houseSize,
-                end,
-                end>()
-        };
-        Matrix<T,houseSize,houseSize> m {house(subA)};
-
-        Matrix<T,size,size> p {eye<T,R>()};
-        p.template setSub<
-            houseSize,
-            houseSize,
-            end,
-            end>(m);
-
         return
         {
-            ._p = p,
+            ._p = {0},
             ._h = a
         };
     }
@@ -153,47 +132,6 @@ constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {
     return hess_impl<T,R,C,L>::_(a);
 };
-//constexpr Matrix<T,R,R> hess(Matrix<T,R,C> a)
-//{
-//    static_assert( R==C, "Hessenberg reduction expects a square matrix");
-//
-//    constexpr size_t size {R};
-//    constexpr size_t end {R-1};
-//
-//    Matrix<T,L,L> subA {a.template sub<R-L,R-L,end,end>()};
-//    Matrix<T,L,L> m {house(subA)};
-//
-//    Matrix<T,size,size> p {eye<T,R>()};
-//    p.template setSub<R-L+1,R-L+1,end,end>(m.template sub<1,1,L-1,L-1>());
-//
-//    Matrix<T,size,size> temp {p*a*p};
-//    Matrix<T,size,size> out = hess<T,R,R,L-1>(temp);
-//
-//    return out;
-//
-//    ////TODO(mthompkins): Combine this into a single line?
-//    //Matrix<T,R,R> pRtn {eye<T,R>()};
-//    ////pRtn.template setSub<1,1,end,end>(p);
-//    //pRtn.template setSub<1,1,end,end>(out._p);
-//    //return
-//    //{
-//    //    ._p = pRtn,
-//    //    ._h = a
-//    //};
-//}
-
-//template<typename T>
-//constexpr PHMatrix<T,2> hess(Matrix<T,2,2> a)
-//template <>
-//constexpr Matrix<float,4,4>  hess<float,4,4,2>(Matrix<float,4,4> a)
-//{
-//    return a;
-//    //return
-//    //{
-//    //    ._p = {0},
-//    //    ._h = a
-//    //};
-//}
 
 template<typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c)
