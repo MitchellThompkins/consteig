@@ -12,127 +12,6 @@ struct UTMatrix
     Matrix<T,S,S> _t;
 };
 
-template<typename T, size_t S>
-struct PHMatrix
-{
-    Matrix<T,S,S> _p;
-    Matrix<T,S,S> _h;
-
-    constexpr void operator=(const PHMatrix<T, S> &rhs)
-    {
-        for( size_t i{0}; i<S; i++ )
-            for( size_t j{0}; j<S; j++ )
-            {
-                (*this._p)(i,j) = rhs._p(i,j);
-                (*this._h)(i,j) = rhs._h(i,j);
-            }
-    }
-};
-
-// https://pages.mtu.edu/~struther/Courses/OLD/Other/Sp2012/5627/BlockQR/Work/MA5629%20presentation.pdf
-template<typename T, size_t R, size_t C>
-constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
-{
-    static_assert( R==C, "Householder expects a square matrix");
-
-    T alphaSum {0};
-    for(size_t i {1}; i<R; i++)
-        alphaSum += (a(i,0)*a(i,0));
-
-    T alpha { static_cast<T>(-1)
-        * gcem::sgn(a(1,0))
-        * gcem::sqrt(alphaSum) };
-
-    T r { gcem::sqrt(
-            static_cast<T>(0.5)
-            * ((alpha*alpha) - (a(1,0)*alpha)) ) };
-
-    T oneOverTwoR {1/(static_cast<T>(2)*r)};
-
-    Matrix<T,R,1> v {static_cast<T>(0)};
-    v(1,0) = (a(1,0) - alpha) * oneOverTwoR;
-    for(size_t i {2}; i<R; i++)
-        v(i,0) = a(i,0) * oneOverTwoR;
-
-    Matrix<T,R,R> p { eye<T,R>() -
-        (static_cast<T>(2) * v * transpose(v)) };
-
-    return p;
-}
-
-template<typename T>
-constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
-{
-    //return a;
-    Matrix<T,2,2> i { eye<T,2>() };
-    i(1,1) = i(1,1)*static_cast<T>(-1);
-    return i;
-}
-
-// Fwd decl
-template<typename T, size_t R, size_t C, size_t L=R>
-constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a);
-
-template<typename T, size_t R, size_t C, size_t L=R>
-struct hess_impl
-{
-    static constexpr PHMatrix<T,R> _(Matrix<T,R,C> a)
-    {
-        static_assert( R==C, "Hessenberg reduction expects a square matrix");
-
-        constexpr size_t size {R};
-        constexpr size_t houseSize {L};
-        constexpr size_t end {R-1};
-
-        Matrix<T,L,L> subA
-        {
-            a.template sub<
-                R-houseSize,
-                R-houseSize,
-                end,
-                end>()
-        };
-        Matrix<T,L,L> m {house(subA)};
-
-        Matrix<T,size,size> p {eye<T,R>()};
-        p.template setSub<
-            R-houseSize+1,
-            R-houseSize+1,
-            end,
-            end>(m.template sub<1,1,houseSize-1,houseSize-1>());
-
-        PHMatrix<T,R> out = hess<T,R,R,houseSize-1>(p*a*p);
-
-        Matrix<T,size,size> pRtn { (houseSize>3) ? p*out._p : p };
-
-        return
-        {
-            ._p = pRtn,
-            ._h = out._h
-        };
-    }
-};
-
-template<typename T, size_t R, size_t C>
-struct hess_impl<T, R, C, 2>
-{
-    static constexpr PHMatrix<T,R> _(Matrix<T,R,C> a)
-    {
-        return
-        {
-            ._p = {0},
-            ._h = a
-        };
-    }
-};
-
-// https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
-template<typename T, size_t R, size_t C, size_t L = R>
-constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
-{
-    return hess_impl<T,R,C,L>::_(a);
-};
-
 template<typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c)
 {
@@ -175,6 +54,7 @@ constexpr UTMatrix<T, R> eigensolver( const Matrix<T,R,C> x )
 
 }
 
+// Fwd decl
 template<typename T, size_t R, size_t C>
 constexpr Matrix<T, R, 1> eigenvalues( const Matrix<T,R,C> x )
 {
