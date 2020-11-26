@@ -2,7 +2,7 @@
 #define HESSENBERG_HPP
 
 #include "stddef.h"
-#include "matrix.hpp"
+#include "../matrix.hpp"
 
 /*
  * This warrants an explantation.

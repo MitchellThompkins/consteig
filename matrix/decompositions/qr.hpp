@@ -2,7 +2,7 @@
 #define QR_DECOMP_HPP
 
 #include "stddef.h"
-#include "matrix.hpp"
+#include "../matrix.hpp"
 
 template<typename T, size_t S>
 struct QrMatrix

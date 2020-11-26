@@ -2,7 +2,7 @@
 #define HOUSEHOLDER_HPP
 
 #include "stddef.h"
-#include "matrix.hpp"
+#include "../matrix.hpp"
 
 ///////////// FUNCTION DECLARATIONS /////////////
 template<typename T, size_t R, size_t C>
