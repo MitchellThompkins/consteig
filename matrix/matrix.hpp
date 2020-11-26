@@ -2,8 +2,9 @@
 #define MATRIX_HPP
 
 #include "stddef.h"
-#include "array.hpp"
-#include "gcem.hpp"
+
+#include "../array/array.hpp"
+#include "../dependencies/include/gcem.hpp"
 
 template<typename T, size_t R, size_t C>
 class Matrix
