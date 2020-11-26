@@ -4,7 +4,7 @@
 #include "stddef.h"
 
 #include "../array/array.hpp"
-#include "../dependencies/include/gcem.hpp"
+#include "../dependencies/gcem/include/gcem.hpp"
 
 template<typename T, size_t R, size_t C>
 class Matrix
