@@ -3,6 +3,8 @@
 
 #include "matrix.hpp"
 
+using namespace constmat;
+
 // These helper functions allow us to call templated constexpr functions
 template<typename T, size_t R, size_t C>
 static constexpr Matrix<T,R,C> setRowsTest(

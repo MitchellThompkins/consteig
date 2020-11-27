@@ -2,7 +2,14 @@
 #define HESSENBERG_HPP
 
 #include "stddef.h"
+
+#include "householder.hpp"
+
 #include "../matrix.hpp"
+#include "../operations.hpp"
+
+namespace constmat
+{
 
 /*
  * This warrants an explantation.
@@ -91,5 +98,5 @@ constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {
     return hess_impl<T,R,C,L>::_(a);
 };
-
+}
 #endif

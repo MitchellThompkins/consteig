@@ -2,6 +2,10 @@
 #define OPERATIONS_HPP
 
 #include "matrix.hpp"
+#include "../dependencies/gcem/include/gcem.hpp"
+
+namespace constmat
+{
 
 /*
  * | Operation             | Operator    |
@@ -202,5 +206,5 @@ constexpr T det( const Matrix<T,2,2> &mat )
 {
     return (mat(0,0)*mat(1,1)) - (mat(0,1)*mat(1,0));
 }
-
+}
 #endif

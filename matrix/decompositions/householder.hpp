@@ -2,12 +2,16 @@
 #define HOUSEHOLDER_HPP
 
 #include "stddef.h"
+
 #include "../matrix.hpp"
+#include "../operations.hpp"
+
+namespace constmat
+{
 
 ///////////// FUNCTION DECLARATIONS /////////////
 template<typename T, size_t R, size_t C>
 constexpr Matrix<T,R,R> house(Matrix<T,R,C> a);
-
 
 // https://pages.mtu.edu/~struther/Courses/OLD/Other/Sp2012/5627/BlockQR/Work/MA5629%20presentation.pdf
 ///////////// IMPLEMENTATIONS /////////////
@@ -49,4 +53,5 @@ constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
     return i;
 }
 
+}
 #endif

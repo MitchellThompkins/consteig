@@ -7,8 +7,7 @@ This is a templated constexpr library which will:
 
 # TODO
 
-* Remove dependency on qr decomposition only solving for square matrices
-* Add matrix operation to solve determinant
+* Remove dependency on gcem and any std library implementations
 * Verify numerical stability of MGS implementation
   [Reference](https://www.math.tamu.edu/~yvorobet/MATH304-503/Lect3-07web.pdf)
 * Add more robust test cases

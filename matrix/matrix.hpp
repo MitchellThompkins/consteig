@@ -4,8 +4,9 @@
 #include "stddef.h"
 
 #include "../array/array.hpp"
-#include "../dependencies/gcem/include/gcem.hpp"
 
+namespace constmat
+{
 template<typename T, size_t R, size_t C>
 class Matrix
 {
@@ -172,5 +173,5 @@ public:
 
     Array< Array<T, C>, R> _data{};
 };
-
+}
 #endif // MATRIX_HPP

@@ -2,7 +2,12 @@
 #define QR_DECOMP_HPP
 
 #include "stddef.h"
+
 #include "../matrix.hpp"
+#include "../operations.hpp"
+
+namespace constmat
+{
 
 template<typename T, size_t S>
 struct QrMatrix
@@ -46,4 +51,5 @@ constexpr QrMatrix<T, C> qrDecomp( const Matrix<T,R,C> x )
     return result;
 }
 
+}
 #endif
