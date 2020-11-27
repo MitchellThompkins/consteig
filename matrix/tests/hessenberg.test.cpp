@@ -52,6 +52,12 @@ TEST(hessenberg, hess)
     {0, 0, 0, 0, 0, 0, 0, 0, -0.94249, 0.14928},
     }}};
 
+    // P*H*P' = A where A is the input matrix
+    static constexpr Matrix<float,s,s> hessCheck {test._p * test._h * transpose(test._p)};
+
+    static constexpr Matrix<float,s,s> identity {eye<float,s>()};
+    static constexpr Matrix<float,s,s> identityCheck {test._p*transpose(test._p)};
+
     static constexpr float thresh {3e-4F};
 
     static_assert(compareFloatMat(test._p, pAnswer, thresh), MSG);
@@ -59,4 +65,13 @@ TEST(hessenberg, hess)
 
     static_assert(compareFloatMat(test._h, hAnswer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test._h, hAnswer, thresh));
+
+    static_assert(compareFloatMat(hessCheck, mat, thresh), MSG);
+    ASSERT_TRUE(compareFloatMat(hessCheck, mat, thresh));
+
+    static_assert(compareFloatMat(hessCheck, mat, thresh), MSG);
+    ASSERT_TRUE(compareFloatMat(hessCheck, mat, thresh));
+
+    static_assert(compareFloatMat(identity, identityCheck, thresh), MSG);
+    ASSERT_TRUE(compareFloatMat(identity, identityCheck, thresh));
 }
