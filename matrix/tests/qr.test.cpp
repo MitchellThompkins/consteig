@@ -8,20 +8,6 @@
 static constexpr float kThresh {0.0001F};
 static constexpr float kThreshEigen {0.0009F};
 
-template<typename T, size_t R, size_t C>
-static inline constexpr bool compare(Matrix<T,R,C> a, Matrix<T,R,C> b)
-{
-    for(int i {0}; i<R; i++)
-    {
-        for(int j {0}; j<C; j++)
-        {
-            if( !compareFloat(a(i,j), b(i,j), kThresh) )
-                return false;
-        }
-    }
-    return true;
-}
-
 TEST(qr_decomp, static_constexpr_even_mat)
 {
     static constexpr size_t x {3};

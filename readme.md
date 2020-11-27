@@ -5,6 +5,9 @@ This is a templated constexpr library which will:
 * Compute the QR decomposition of a square matrix
 * **Compute the eigenvalues for a square diagonal matrix**(Not yet)
 
+# Important Notes
+* Does not work with complex numbers
+
 # TODO
 
 * Remove dependency on gcem and any std library implementations

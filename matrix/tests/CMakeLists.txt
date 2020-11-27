@@ -13,8 +13,8 @@ target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/dependencies/g
 target_link_libraries(operations.test matrix array gtest_main)
 create_test(operations.test)
 
-#add_executable(decompositions.test ${CMAKE_CURRENT_SOURCE_DIR}/decompositions.test.cpp)
-#target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/tools/gtest)
-#target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/dependencies/gcem/include)
-#target_link_libraries(decompositions.test matrix array gtest_main)
-#create_test(decompositions.test)
+add_executable(householder.test ${CMAKE_CURRENT_SOURCE_DIR}/householder.test.cpp)
+target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/tools/gtest)
+target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/dependencies/gcem/include)
+target_link_libraries(householder.test matrix array gtest_main)
+create_test(householder.test)
