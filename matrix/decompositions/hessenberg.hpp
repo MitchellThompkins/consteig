@@ -12,7 +12,30 @@ namespace constmat
 {
 
 /*
- * This warrants an explantation.
+ * The implementation here warrants an explantation. The hessenberg reduction
+ * returns two matrices, a P and an H. P is a unitary matrix and H is "nearly"
+ * an upper triangular matrix. Most implementations are iterative, but as
+ * iterative implementations in constexpr functions are difficult or impossible,
+ * that leaves recursion. The hessenberg implementation requires the original
+ * matrix A to be modified at each step, stepping down through the matrix
+ * dimensions. This proves to be a problem for a recursive implementation
+ * because the matrix which gets modified must be continuously decreasing in
+ * its dimension, but if it is required to multiply by A at each step, A _can't_
+ * get smaller. This is why L is passed in as a template parameter, so that the
+ * A continuously sized A matrix can be passed at each recursive step all the
+ * while the sub matrix by which it's multiplied can decrease in size.
+ *
+ * Of course, recursive implementations in templated functions must be provided
+ * an explicit specialization to end the recursion. Unfortunately because we
+ * know that recursion should end with the matrix by which we are going to
+ * multiply is of size 2x2, but b/c A isn't changing in size, it forces us to
+ * require a partially specialized templated function, which isn't possible.
+ * Instead, we use the trick here:
+ * https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
+ *
+ * Partial specialization of structs _is_ allowed, so we exploit that fact and
+ * have a function return a struct, where the struct is nothing more than the
+ * specialized implementation.
  */
 
 ///////////// TYPES /////////////
@@ -92,7 +115,6 @@ struct hess_impl<T, R, C, 2>
     }
 };
 
-// https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
 template<typename T, size_t R, size_t C, size_t L = R>
 constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {

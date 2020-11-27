@@ -55,6 +55,7 @@ TEST(hessenberg, hess)
     // P*H*P' = A where A is the input matrix
     static constexpr Matrix<float,s,s> hessCheck {test._p * test._h * transpose(test._p)};
 
+    // P*P' = Identity matrix
     static constexpr Matrix<float,s,s> identity {eye<float,s>()};
     static constexpr Matrix<float,s,s> identityCheck {test._p*transpose(test._p)};
 
