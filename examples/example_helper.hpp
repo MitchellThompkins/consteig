@@ -1,0 +1,23 @@
+#ifndef EXAMPLER_HELPER_HPP
+#define EXAMPLER_HELPER_HPP
+
+#include <iostream>
+#include <string>
+#include "stddef.h"
+#include "../constmat.hpp"
+
+template<typename T, size_t R, size_t C>
+void printMat( const std::string name, const constmat::Matrix<T,R,C> &mat)
+{
+    std::cout << "\n" << name << "\n";
+    for(int i {0}; i<R; i++)
+    {
+        for(int j {0}; j<C; j++)
+        {
+            std::cout << mat(i,j) << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+#endif
