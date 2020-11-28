@@ -198,6 +198,22 @@ TEST(matrix, static_constexpr_subMatrix)
     ASSERT_TRUE(subMat==answer);
 }
 
+TEST(matrix, static_constexpr_subMatrixSameSize)
+{
+    static constexpr int x {1};
+
+    static constexpr Matrix<float, x, x> mat {{{5.0F}}};
+
+    static constexpr Matrix<float, x, x> subMat {mat.sub<0,0,0,0>()};
+
+    static constexpr Matrix<float, x, x> answer {{{5.0F}}};
+
+    // Check that created objects are constexpr
+    static_assert(subMat==answer, MSG);
+
+    ASSERT_TRUE(subMat==answer);
+}
+
 TEST(matrix, static_constexpr_set_row)
 {
     static constexpr int x {3};

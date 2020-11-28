@@ -95,8 +95,8 @@ public:
     template<size_t x1, size_t y1, size_t x2, size_t y2>
     constexpr Matrix<T, x2-x1+1, y2-y1+1> sub() const
     {
-        static_assert(x2>x1, "Second x index must be bigger than the first.");
-        static_assert(y2>y1, "Second y index must be bigger than the first.");
+        static_assert(x2>=x1, "Second x index must be bigger than the first.");
+        static_assert(y2>=y1, "Second y index must be bigger than the first.");
 
         Matrix<T, x2-x1+1, y2-y1+1> result{};
 
@@ -160,8 +160,8 @@ public:
     constexpr void setSub(
             const Matrix<T, y2-y1+1, x2-x1+1> &mat )
     {
-        static_assert(x2>x1, "Second x index must be bigger than the first.");
-        static_assert(y2>y1, "Second y index must be bigger than the first.");
+        static_assert(x2>=x1, "Second x index must be bigger than the first.");
+        static_assert(y2>=y1, "Second y index must be bigger than the first.");
 
         for( size_t i {x1}; i<=x2; i++ )
             for( size_t j {y1}; j<=y2; j++ )

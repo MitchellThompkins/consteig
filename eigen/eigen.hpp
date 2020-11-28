@@ -29,6 +29,8 @@ constexpr constmat::Matrix<T,S,S> eig( constmat::Matrix<T,S,S> a )
     constmat::PHMatrix<T,S> hessTemp {constmat::hess(a)};
     a = hessTemp._h;
 
+    while( normE(a.template sub<
+
     return a;
 }
 
