@@ -21,9 +21,12 @@ int main()
 
     static constexpr constmat::Matrix<float,s,s> testHouse{house(mat)};
     static constexpr constmat::PHMatrix<float,s> testHess{hess(mat)};
+    static constexpr constmat::QRMatrix<float,s> testQr{qr(mat)};
 
     printMat("Input", mat);
     printMat("House", testHouse);
     printMat("Hess H", testHess._h);
     printMat("Hess P", testHess._p);
+    printMat("QR Q", testQr._q);
+    printMat("QR R", testQr._r);
 }

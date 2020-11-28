@@ -1,20 +1,18 @@
 #include <gtest/gtest.h>
 #include "test_tools.hpp"
 
-#include "solver.hpp"
-#include "stdint.h"
-#include "gcem.hpp"
+#include "../constmat.hpp"
 
 static constexpr float kThreshEigen {0.0009F};
 
 template<typename T, size_t R, size_t C>
 static inline constexpr bool checkEigenValues(
-        const Matrix<T,R,C> a,
-        const Matrix<T,R,1> lambda )
+        const constmat::Matrix<T,R,C> a,
+        const constmat::Matrix<T,R,1> lambda )
 {
     //det(A-lambda*I)
     bool equal {true};
-    auto identity {diagional<T,R>(static_cast<T>(1))};
+    auto identity {constmat::eye<T,R>()};
 
     for(int i {0}; i<R; i++)
     {
@@ -24,11 +22,11 @@ static inline constexpr bool checkEigenValues(
     return equal;
 }
 
-TEST(solver, static_constexpr_eigenValues)
+TEST(solver, constexpr_eigenValues)
 {
     static constexpr size_t x {4};
 
-    static constexpr Matrix<float,x,x> mat
+    static constexpr constmat::Matrix<float,x,x> mat
     {{{
         { -4.4529e-01,  4.9063e+00, -8.7871e-01,  6.3036e+00},
         { -6.3941e+00,  1.3354e+01,  1.6668e+00,  1.1945e+01},

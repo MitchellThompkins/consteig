@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD 14)
 set(CXX_STANDARD_REQUIRED)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+#add_compile_options(-Wall -Wextra -pedantic)# -Werror)
+
+#TODO(mthompkins): Investigate if this is doing what I think it is
+add_compile_options(-nostdlib -nodefaultlibs -lgcc)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tools/cmake)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
@@ -27,5 +32,5 @@ endmacro()
 add_subdirectory(dependencies)
 add_subdirectory(array)
 add_subdirectory(matrix)
+add_subdirectory(eigen)
 add_subdirectory(examples)
-#add_subdirectory(solver)

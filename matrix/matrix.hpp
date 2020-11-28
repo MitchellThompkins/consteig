@@ -173,5 +173,6 @@ public:
 
     Array< Array<T, C>, R> _data{};
 };
+
 }
 #endif // MATRIX_HPP

@@ -120,5 +120,6 @@ constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {
     return hess_impl<T,R,C,L>::_(a);
 };
-}
+
+} //end namespace
 #endif
