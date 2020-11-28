@@ -3,6 +3,7 @@
 
 #include "stddef.h"
 
+#include "decompositions_helper.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"
 
@@ -19,6 +20,7 @@ template<typename T, size_t R, size_t C>
 constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
 {
     static_assert( R==C, "Householder expects a square matrix");
+    static_assert( is_float<T>(), "Householder Reflection expects floating point");
 
     T alphaSum {0};
     for(size_t i {1}; i<R; i++)

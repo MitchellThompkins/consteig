@@ -2,6 +2,9 @@
 
 int main()
 {
+    bool val = constmat::is_float<size_t>();
+    std::cout << val << "\n";
+
     static constexpr int x {10};
 
     static constexpr int s {10};

@@ -29,7 +29,7 @@ constexpr constmat::Matrix<T,S,S> eig( constmat::Matrix<T,S,S> a )
     constmat::PHMatrix<T,S> hessTemp {constmat::hess(a)};
     a = hessTemp._h;
 
-    while( normE(a.template sub<
+    while( normE(a.template sub<0,0,0,0>()) > 1e-10 )
 
     return a;
 }
