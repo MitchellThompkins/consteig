@@ -20,20 +20,20 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
 
 // http://pi.math.cornell.edu/~web6140/TopTenAlgorithms/QRalgorithm.html
 template<typename T, size_t S>
-constexpr Matrix<T,S,S> eig( const Matrix<T,S,S> a )
+constexpr constmat::Matrix<T,S,S> eig( constmat::Matrix<T,S,S> a )
 {
     constexpr size_t size {S};
-    constexpr size_t houseSize {L};
-    constexpr size_t end {R-1};
+    //constexpr size_t houseSize {L};
+    constexpr size_t end {S-1};
 
-    PHMatrix<T,R> hessTemp {hess(a)};
+    constmat::PHMatrix<T,S> hessTemp {constmat::hess(a)};
     a = hessTemp._h;
 
     return a;
 }
 
 template<typename T>
-constexpr Matrix<T,1> eig( const Matrix<T,1,1> a )
+constexpr constmat::Matrix<T,1,1> eig( const constmat::Matrix<T,1,1> a )
 {
     return a;
 }
