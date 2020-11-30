@@ -30,41 +30,35 @@ struct eig_impl
         constexpr size_t size {S};
         constexpr size_t end {S-1};
 
-        T eigs[L] = {0.0F};
+        constmat::PHMatrix<T,L> hessTemp {constmat::hess(a)};
+        a = hessTemp._h;
 
-        constmat::Matrix<T,L,L> subA { a.template sub<0,0,L-1,L-1>() };
-
-        constmat::PHMatrix<T,L> hessTemp {constmat::hess(subA)};
-        subA = hessTemp._h;
-
-        while( normE(subA.template sub<L-1,L-2,L-1,L-2>()) > 1e-10 )
+        while( normE(a.template sub<L-1,L-2,L-1,L-2>()) > 1e-10 )
         {
-            T mu { wilkinsonShift( subA(L-2,L-2), subA(L-1,L-1), subA(L-2,L-1) ) };
+            T mu { wilkinsonShift( a(L-2,L-2), a(L-1,L-1), a(L-2,L-1) ) };
 
             constmat::Matrix<T,L,L> tempEye { (mu*constmat::eye<T,L>()) };
-            constmat::QRMatrix<T,L> tempQr { constmat::qr( subA-tempEye ) };
+            constmat::QRMatrix<T,L> tempQr { constmat::qr( a-tempEye ) };
 
-            subA = (tempQr._r*tempQr._q) + tempEye;
+            a = (tempQr._r*tempQr._q) + tempEye;
         }
 
-        a(L-1,L-1) = subA(0,0);
+        constmat::Matrix<T,S-1,L-1> subA { a.template sub<0,0,S-2,S-2>() };
 
-        //a.template setSub<
-        //    S-L,
-        //    S-L,
-        //    end,
-        //    end>(subA);
+        constmat::Matrix<T,S-1,L-1> out = eig<T,S-1,L-1>(subA);
 
-        a = eig<T,S,L-1>(a);
+        auto i {constmat::eye<T,L>()};
+        i.template setSub<1,1,end,end>(out);
+        i(0,0) = a(L-1,L-1);
 
-        return a;
+        return i;
     }
 };
 
-template<typename T, size_t S>
-struct eig_impl<T,S,1>
+template<typename T>
+struct eig_impl<T,1,1>
 {
-    static constexpr constmat::Matrix<T,S,S> _( constmat::Matrix<T,S,S> a )
+    static constexpr constmat::Matrix<T,1,1> _( constmat::Matrix<T,1,1> a )
     {
         return a;
     }
