@@ -118,7 +118,7 @@ struct hess_impl<T, R, C, 2>
 template<typename T, size_t R, size_t C, size_t L=R>
 constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {
-    static_assert( is_float<T>(), "Hessenberg reduction  expects floating point");
+    static_assert( is_float<T>(), "hess expects floating point");
     return hess_impl<T,R,C,L>::_(a);
 };
 
