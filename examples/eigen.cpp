@@ -15,7 +15,7 @@ static inline constexpr bool checkEigenValues(
     {
         auto b1 {a - (lambda(i,0)*identity)};
         auto a1 {det( a - (lambda(i,0)*identity))};
-        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), 0.001 );
+        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), 0.01 );
     }
 
     return equal;
