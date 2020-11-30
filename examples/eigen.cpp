@@ -15,7 +15,7 @@ static inline constexpr bool checkEigenValues(
     {
         auto b1 {a - (lambda(i,0)*identity)};
         auto a1 {det( a - (lambda(i,0)*identity))};
-        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), 0.01 );
+        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), 0.00001 );
     }
 
     return equal;
@@ -25,7 +25,7 @@ int main()
 {
     static constexpr size_t s {4};
 
-    /*static constexpr*/ constmat::Matrix<float,s,s> mat
+    /*static constexpr*/ constmat::Matrix<double,s,s> mat
     {{{
     {-0.44529, 4.9063, -0.87871, 6.3036},
     {-6.3941, 13.354, 1.6668, 11.945},
@@ -33,14 +33,14 @@ int main()
     {3.1209, -5.2052, -1.413, -2.8484},
     }}};
 
-    /*static constexpr*/ constmat::Matrix<float,s,s> testEig {consteig::eig(mat)};
-    /*static constexpr*/ constmat::Matrix<float,s,1> testEigVals {consteig::eigvals(mat)};
+    /*static constexpr*/ constmat::Matrix<double,s,s> testEig {consteig::eig(mat)};
+    /*static constexpr*/ constmat::Matrix<double,s,1> testEigVals {consteig::eigvals(mat)};
 
     printMat("testEig", testEig);
 
     printMat("testEigVals", testEigVals);
 
-    bool checkEigen = checkEigenValues<float,s,s>(mat, testEigVals);
+    bool checkEigen = checkEigenValues<double,s,s>(mat, testEigVals);
 
     std::cout << checkEigen << "\n";
 }

@@ -4,13 +4,13 @@
 #include "../constmat.hpp"
 #include "../consteig.hpp"
 
-static constexpr float kThreshEigen {0.0009F};
-static constexpr float kThreshTemp {0.01F};
+static constexpr float kThreshEigen {0.00001F};
 
 template<typename T, size_t R, size_t C>
 static inline constexpr bool checkEigenValues(
         const constmat::Matrix<T,R,C> a,
-        const constmat::Matrix<T,R,1> lambda )
+        const constmat::Matrix<T,R,1> lambda,
+        const T thresh)
 {
     //det(A-lambda*I)
     bool equal {true};
@@ -18,7 +18,7 @@ static inline constexpr bool checkEigenValues(
 
     for(int i {0}; i<R; i++)
     {
-        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), kThreshTemp );
+        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), thresh );
     }
 
     return equal;
@@ -28,7 +28,7 @@ TEST(solver, constexpr_eigenValues)
 {
     static constexpr size_t x {4};
 
-    static constexpr constmat::Matrix<float,x,x> mat
+    static constexpr constmat::Matrix<double,x,x> mat
     {{{
         { -4.4529e-01,  4.9063e+00, -8.7871e-01,  6.3036e+00},
         { -6.3941e+00,  1.3354e+01,  1.6668e+00,  1.1945e+01},
@@ -38,7 +38,7 @@ TEST(solver, constexpr_eigenValues)
 
     static constexpr auto eigenValueTest {consteig::eigvals(mat)};
 
-    static constexpr bool checkEigen = checkEigenValues<float,x,x>(mat, eigenValueTest);
+    static constexpr bool checkEigen = checkEigenValues<double,x,x>(mat, eigenValueTest, kThreshEigen);
     static_assert(checkEigen==true, MSG);
     ASSERT_TRUE( checkEigen );
 }

@@ -2,6 +2,7 @@
 #define EXAMPLER_HELPER_HPP
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include "stddef.h"
 #include "../constmat.hpp"
@@ -14,7 +15,7 @@ void printMat( const std::string name, const constmat::Matrix<T,R,C> &mat)
     {
         for(int j {0}; j<C; j++)
         {
-            std::cout << mat(i,j) << " ";
+            std::cout << std::setprecision(10) << mat(i,j) << " ";
         }
         std::cout << "\n";
     }
