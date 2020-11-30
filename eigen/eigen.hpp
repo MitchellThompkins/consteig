@@ -27,23 +27,33 @@ struct eig_impl
 {
     static constexpr constmat::Matrix<T,S,S> _( constmat::Matrix<T,S,S> a )
     {
-        static_assert( constmat::is_float<T>(), "eigs expects floating point");
-
         constexpr size_t size {S};
         constexpr size_t end {S-1};
 
-        constmat::PHMatrix<T,S> hessTemp {constmat::hess(a)};
-        a = hessTemp._h;
+        T eigs[L] = {0.0F};
 
-        while( normE(a.template sub<L-1,L-2,L-1,L-2>()) > 1e-10 )
+        constmat::Matrix<T,L,L> subA { a.template sub<0,0,L-1,L-1>() };
+
+        constmat::PHMatrix<T,L> hessTemp {constmat::hess(subA)};
+        subA = hessTemp._h;
+
+        while( normE(subA.template sub<L-1,L-2,L-1,L-2>()) > 1e-10 )
         {
-            T mu { wilkinsonShift( a(L-2,L-2), a(L-1,L-1), a(L-2,L-1) ) };
+            T mu { wilkinsonShift( subA(L-2,L-2), subA(L-1,L-1), subA(L-2,L-1) ) };
 
-            constmat::Matrix<T,S,S> tempEye { (mu*constmat::eye<T,S>()) };
-            constmat::QRMatrix<T,S> tempQr { constmat::qr( a-tempEye ) };
+            constmat::Matrix<T,L,L> tempEye { (mu*constmat::eye<T,L>()) };
+            constmat::QRMatrix<T,L> tempQr { constmat::qr( subA-tempEye ) };
 
-            a = (tempQr._r*tempQr._q) + tempEye;
+            subA = (tempQr._r*tempQr._q) + tempEye;
         }
+
+        a(L-1,L-1) = subA(0,0);
+
+        //a.template setSub<
+        //    S-L,
+        //    S-L,
+        //    end,
+        //    end>(subA);
 
         a = eig<T,S,L-1>(a);
 
@@ -63,22 +73,22 @@ struct eig_impl<T,S,1>
 template<typename T, size_t S, size_t L=S>
 constexpr constmat::Matrix<T,S,S> eig( constmat::Matrix<T,S,S> a )
 {
-    static_assert( constmat::is_float<T>(), "eig reduction  expects floating point");
+    static_assert( constmat::is_float<T>(), "eig reduction expects floating point");
     return eig_impl<T,S,L>::_(a);
 };
 
-//template<typename T, size_t R, size_t C>
-//constexpr Matrix<T, R, 1> eigvals( const Matrix<T,R,C> x )
-//{
-//    UTMatrix<T,R> ut {eigensolver(x)};
-//
-//    Matrix<T,R,1> result {};
-//
-//    for( size_t i {0}; i<R; i++ )
-//        result(i,0) = ut._u(i,i);
-//
-//    return result;
-//}
+template<typename T, size_t S>
+constexpr constmat::Matrix<T,S,1> eigvals( const constmat::Matrix<T,S,S> a )
+{
+    constmat::Matrix<T,S,S> out {consteig::eig(a)};
+
+    constmat::Matrix<T,S,1> result {};
+
+    for( size_t i {0}; i<S; i++ )
+        result(i,0) = out(i,i);
+
+    return result;
+}
 
 } //end namespace
 

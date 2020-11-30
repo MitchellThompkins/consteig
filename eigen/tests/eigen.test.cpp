@@ -2,6 +2,7 @@
 #include "test_tools.hpp"
 
 #include "../constmat.hpp"
+#include "../consteig.hpp"
 
 static constexpr float kThreshEigen {0.0009F};
 
@@ -34,9 +35,9 @@ TEST(solver, constexpr_eigenValues)
         {  3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}
     }}};
 
-    //static constexpr auto eigenValueTest {eigenvalues(mat)};
+    static constexpr auto eigenValueTest {consteig::eigvals(mat)};
 
-    //static constexpr bool checkEigen = checkEigenValues<float,x,x>(mat,eigenValueTest);
+    static constexpr bool checkEigen = checkEigenValues<float,x,x>(mat, eigenValueTest);
     //static_assert(checkEigen==true, MSG);
-    //ASSERT_TRUE( checkEigen );
+    ASSERT_TRUE( checkEigen );
 }
