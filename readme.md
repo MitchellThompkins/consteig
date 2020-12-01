@@ -22,6 +22,8 @@ Consteig is a templated library and as such a user does not need to compile
 anything separately. Simply `#include “Consteig.hpp”` into your project. The
 cmake files here are only to facilitate testing and development.
 
+You will also need a C++ compiler which supports C++14.
+
 Here are some examples to help get started:
 * [Declaring a matrix]()
 * [Matrix Arithmetic]()
