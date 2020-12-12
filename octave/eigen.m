@@ -1,8 +1,8 @@
-function myeigs=eigen( A )
+function eigvals=eigen( A )
     n = size(A,1);
-    myeigs = zeros(n);
+    eigvals = zeros(n);
     if ( n == 1 )
-        myeigs(1) = A(1,1);
+        eigvals(1) = A(1,1);
     else
         I = eye( n );
         # Reduction to Hessenberg form:
@@ -18,6 +18,6 @@ function myeigs=eigen( A )
             A = R*Q + mu*I;
         endwhile
         # Deflation and recurse:
-        myeigs = [A(n,n) ; eigen( A(1:n-1, 1:n-1) )];
+        eigvals = [A(n,n) ; eigen( A(1:n-1, 1:n-1) )];
     endif
 end

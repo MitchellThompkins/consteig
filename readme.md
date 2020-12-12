@@ -74,7 +74,10 @@ This solves those two problems in a limited capacity.
 * Float vs. double
 
 ## TODO
-* Remove dependency on gcem and any std library implementations
-* Compile with `-wall`
+- [ ] Remove dependency on gcem and any std library implementations
+- [ ] Compile with `-wall`
+- [ ] Compute QR decomop w/ householder reflections
+- [ ] Implement double-shift QR algorithm
+- [ ] Check for symmetric matrices to know _which_ eigenvalue solver impl
 
 ## References
