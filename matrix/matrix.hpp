@@ -197,11 +197,11 @@ public:
         return symmetric;
     }
 
-    constexpr bool isSymmetric( const T thresh ) const
+    template<typename U>
+    constexpr bool isSymmetric( const U thresh ) const
     {
-
-        //static_assert( is_float<thresh>(), "isSymmetric impl expects to compare
-        //        floating point values");
+        static_assert( is_float<U>(), "isSymmetric with arg expects to compare\
+                floating point values");
         static_assert(R==C, "Symmetric matrices should be square.");
 
         bool symmetric {true};
