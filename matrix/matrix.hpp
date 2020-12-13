@@ -4,9 +4,11 @@
 #include "stddef.h"
 
 #include "../array/array.hpp"
+#include "matrix_tools.hpp"
 
 namespace consteig
 {
+
 template<typename T, size_t R, size_t C>
 class Matrix
 {
@@ -186,6 +188,28 @@ public:
                 for( unsigned int j {0}; j<i; j++ )
                 {
                     symmetric &= ((*this)(i,j) == (*this)(j,i));
+                    if(!symmetric)
+                        break;
+                }
+            }
+        }
+
+        return symmetric;
+    }
+
+    constexpr bool isSymmetric( const T thresh ) const
+    {
+        static_assert(R==C, "Symmetric matrices should be square.");
+
+        bool symmetric {true};
+
+        if(sizeX()>1)
+        {
+            for( unsigned int i {1}; i<=sizeX()-1; i++ )
+            {
+                for( unsigned int j {0}; j<i; j++ )
+                {
+                    symmetric &= compareFloats((*this)(i,j), (*this)(j,i), thresh);
                     if(!symmetric)
                         break;
                 }

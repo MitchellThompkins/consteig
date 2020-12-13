@@ -7,24 +7,6 @@ using namespace consteig;
 
 static constexpr float kThreshEigen {0.00001F};
 
-template<typename T, size_t R, size_t C>
-static inline constexpr bool checkEigenValues(
-        const Matrix<T,R,C> a,
-        const Matrix<T,R,1> lambda,
-        const T thresh)
-{
-    //det(A-lambda*I)
-    bool equal {true};
-    auto identity {eye<T,R>()};
-
-    for(int i {0}; i<R; i++)
-    {
-        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), thresh );
-    }
-
-    return equal;
-}
-
 TEST(solver, constexpr_eigenValues)
 {
     static constexpr size_t x {4};

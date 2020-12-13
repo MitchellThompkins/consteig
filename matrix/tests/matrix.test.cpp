@@ -364,7 +364,6 @@ TEST(matrix, static_constexpr_test_square)
 
 TEST(matrix, check_symmetry)
 {
-    static constexpr size_t x {3};
     static constexpr size_t s {5};
 
     static constexpr consteig::Matrix<int, s, s> symmetricIntMat
@@ -381,7 +380,7 @@ TEST(matrix, check_symmetry)
         {-5, -4,   2,   1,  77},
         {-4,  5,   7,   8,  9 },
         { 2,  7,   0, -83,  2 },
-        { 1,  8, -83,   3,  9 },
+        { 1,  8, -83,   3,  9 }, // The 9 here is asymmetric
         { 77, 9,   2,   4,  2 },
     }}};
 

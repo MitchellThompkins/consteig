@@ -6,11 +6,6 @@
 
 #define MSG "Not constexpr or wrong output"
 
-static constexpr bool compareFloat(float a, float b, float thresh)
-{
-    return gcem::abs(a - b) < thresh;
-}
-
 template<size_t R, size_t C>
 static constexpr bool compareFloatMat(
         consteig::Matrix<float,R,C> a,
@@ -21,7 +16,7 @@ static constexpr bool compareFloatMat(
     {
         for(int j {0}; j<C; j++)
         {
-            if( !compareFloat(a(i,j), b(i,j), thresh) )
+            if( !consteig::compareFloats(a(i,j), b(i,j), thresh) )
                 return false;
         }
     }

@@ -6,6 +6,26 @@
 namespace consteig
 {
 
+//TODO(mthompkins): Add tests
+template<typename T, size_t R, size_t C>
+static inline constexpr bool checkEigenValues(
+        const Matrix<T,R,C> a,
+        const Matrix<T,R,1> lambda,
+        const T thresh)
+{
+    //det(A-lambda*I)
+    bool equal {true};
+    auto identity {eye<T,R>()};
+
+    for(int i {0}; i<R; i++)
+    {
+        equal &= compareFloats( det( a - (lambda(i,0)*identity)), static_cast<T>(0), thresh );
+    }
+
+    return equal;
+}
+
+
 template<typename T, size_t S>
 constexpr Matrix<T,S,S> eig( Matrix<T,S,S> a );
 

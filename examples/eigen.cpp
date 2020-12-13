@@ -2,25 +2,6 @@
 #include "../consteig.hpp"
 #include "../tools/gtest/test_tools.hpp"
 
-template<typename T, size_t R, size_t C>
-static inline constexpr bool checkEigenValues(
-        const consteig::Matrix<T,R,C> a,
-        const consteig::Matrix<T,R,1> lambda )
-{
-    //det(A-lambda*I)
-    bool equal {true};
-    auto identity {consteig::eye<T,R>()};
-
-    for(int i {0}; i<R; i++)
-    {
-        auto b1 {a - (lambda(i,0)*identity)};
-        auto a1 {det( a - (lambda(i,0)*identity))};
-        equal &= compareFloat( det( a - (lambda(i,0)*identity)), static_cast<T>(0), 0.00001 );
-    }
-
-    return equal;
-}
-
 int main()
 {
     static constexpr size_t s {4};
@@ -40,7 +21,7 @@ int main()
 
     printMat("testEigVals", testEigVals);
 
-    bool checkEigen = checkEigenValues<double,s,s>(mat, testEigVals);
+    bool checkEigen = consteig::checkEigenValues<double,s,s>(mat, testEigVals, 0.00001);
 
     std::cout << checkEigen << "\n";
 }
