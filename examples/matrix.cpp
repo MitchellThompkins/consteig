@@ -28,16 +28,30 @@ int main()
         { 1,  8, 3, 3}
     }}};
 
-    static constexpr bool checkSymmetry {symmetricMat1.isSymmetric()};
+    static constexpr consteig::Matrix<double, s, s> symmetricMat2
+    {{{
+        {-5, -4,   2,    1},
+        {-4,  5,   7,    8},
+        { 2,  7,   0,    3.32},
+        { 1,  8,   3.32, 3.2}
+    }}};
+
+    static constexpr bool checkSymmetryMat1 {symmetricMat1.isSymmetric()};
+    static constexpr bool checkSymmetryMat2 {symmetricMat2.isSymmetric(0.1)};
 
     printMat("Mat1", mat1);
     printMat("Mat2", mat2);
     printMat("Mat3", mat3);
     printMat("Mat4", mat4);
 
-    if(checkSymmetry)
+    if(checkSymmetryMat1)
         std::cout << "\nsymmetricMat1 is symmetric!\n";
     else
         std::cout << "\nsymmetricMat1 is not symmetric!\n";
+
+    if(checkSymmetryMat2)
+        std::cout << "\nsymmetricMat2 is symmetric!\n";
+    else
+        std::cout << "\nsymmetricMat2 is not symmetric!\n";
 
 }

@@ -199,6 +199,9 @@ public:
 
     constexpr bool isSymmetric( const T thresh ) const
     {
+
+        //static_assert( is_float<thresh>(), "isSymmetric impl expects to compare
+        //        floating point values");
         static_assert(R==C, "Symmetric matrices should be square.");
 
         bool symmetric {true};
