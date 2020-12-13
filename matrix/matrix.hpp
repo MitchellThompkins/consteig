@@ -5,7 +5,7 @@
 
 #include "../array/array.hpp"
 
-namespace constmat
+namespace consteig
 {
 template<typename T, size_t R, size_t C>
 class Matrix

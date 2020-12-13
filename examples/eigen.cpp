@@ -4,12 +4,12 @@
 
 template<typename T, size_t R, size_t C>
 static inline constexpr bool checkEigenValues(
-        const constmat::Matrix<T,R,C> a,
-        const constmat::Matrix<T,R,1> lambda )
+        const consteig::Matrix<T,R,C> a,
+        const consteig::Matrix<T,R,1> lambda )
 {
     //det(A-lambda*I)
     bool equal {true};
-    auto identity {constmat::eye<T,R>()};
+    auto identity {consteig::eye<T,R>()};
 
     for(int i {0}; i<R; i++)
     {
@@ -25,7 +25,7 @@ int main()
 {
     static constexpr size_t s {4};
 
-    /*static constexpr*/ constmat::Matrix<double,s,s> mat
+    /*static constexpr*/ consteig::Matrix<double,s,s> mat
     {{{
     {-0.44529, 4.9063, -0.87871, 6.3036},
     {-6.3941, 13.354, 1.6668, 11.945},
@@ -33,8 +33,8 @@ int main()
     {3.1209, -5.2052, -1.413, -2.8484},
     }}};
 
-    /*static constexpr*/ constmat::Matrix<double,s,s> testEig {consteig::eig(mat)};
-    /*static constexpr*/ constmat::Matrix<double,s,1> testEigVals {consteig::eigvals(mat)};
+    /*static constexpr*/ consteig::Matrix<double,s,s> testEig {consteig::eig(mat)};
+    /*static constexpr*/ consteig::Matrix<double,s,1> testEigVals {consteig::eigvals(mat)};
 
     printMat("testEig", testEig);
 

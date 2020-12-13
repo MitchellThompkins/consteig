@@ -6,7 +6,7 @@
 #include "../matrix.hpp"
 #include "../operations.hpp"
 
-namespace constmat
+namespace consteig
 {
 
 template<typename T, size_t S>

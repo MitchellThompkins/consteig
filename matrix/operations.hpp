@@ -4,7 +4,7 @@
 #include "matrix.hpp"
 #include "../dependencies/gcem/include/gcem.hpp"
 
-namespace constmat
+namespace consteig
 {
 
 /*

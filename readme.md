@@ -2,10 +2,9 @@
 Consteig is a constexpr template library which uses both constexpr functions and
 template meta-programming to calculate the eigenvalues of a square matrix at
 compile time. That is, the eigenvalues can be saved as `static constexpr` values
-and no processor execution time is spent calculating them at run-time.  Constmat
-is also provided alongside Consteig which allows for compile time static matrix
-manipulation. That means users can create matrices and perform a collection of
-[operations]() on them.
+and no processor execution time is spent calculating them at run-time. Consteig
+also allows for compile time static matrix manipulation. That means users can
+create matrices and perform a collection of [operations]() on them.
 
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
