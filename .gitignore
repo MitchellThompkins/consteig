@@ -1,0 +1,8 @@
+# created by Makefile
+build/
+
+# linked by Makefile
+compile_commands.json
+
+# Created by vim
+*.swp
