@@ -384,13 +384,37 @@ TEST(matrix, check_symmetry)
         { 77, 9,   2,   4,  2 },
     }}};
 
-    static constexpr bool checkSymmetry {symmetricIntMat.isSymmetric()};
-    static constexpr bool checkAsymmetry {asymmetricIntMat.isSymmetric()};
+    static constexpr consteig::Matrix<double, s, s> symmetricDoubleMat
+    {{{
+        {-5,   -4,    2,   1,  77.1},
+        {-4,    5,    7,   8,  9.2 },
+        { 2,    7,    0, -83,  2 },
+        { 1,    8,  -83,   3,  4 },
+        { 77.1, 9.2,  2,   4,  2 },
+    }}};
+
+    static constexpr consteig::Matrix<double, s, s> asymmetricDoubleMat
+    {{{
+        {-5,   -4,    2,   1,  77.2}, // The 77.2 here is asymmetric
+        {-4,    5,    7,   8,  9.2 },
+        { 2,    7,    0, -83,  2 },
+        { 1,    8,  -83,   3,  4 },
+        { 77.1, 9.2,  2,   4,  2 },
+    }}};
+
+    static constexpr bool checkSymmetryInt {symmetricIntMat.isSymmetric()};
+    static constexpr bool checkAsymmetryInt {asymmetricIntMat.isSymmetric()};
+    static constexpr bool checkSymmetryDouble {symmetricDoubleMat.isSymmetric()};
+    static constexpr bool checkAsymmetryDouble {asymmetricDoubleMat.isSymmetric()};
 
     // Check that created objects are constexpr
-    static_assert(checkSymmetry==true, MSG);
-    static_assert(checkAsymmetry==false, MSG);
+    static_assert(checkSymmetryInt==true, MSG);
+    static_assert(checkAsymmetryInt==false, MSG);
+    static_assert(checkSymmetryDouble==true, MSG);
+    static_assert(checkAsymmetryDouble==false, MSG);
 
-    ASSERT_TRUE(checkSymmetry);
-    ASSERT_FALSE(checkAsymmetry);
+    ASSERT_TRUE(checkSymmetryInt);
+    ASSERT_FALSE(checkAsymmetryInt);
+    ASSERT_TRUE(checkSymmetryDouble);
+    ASSERT_FALSE(checkAsymmetryDouble);
 }
