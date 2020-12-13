@@ -339,3 +339,25 @@ TEST(matrix, static_constexpr_set_sub_mat_square)
 
     ASSERT_TRUE(mat==answer);
 }
+
+TEST(matrix, static_constexpr_test_square)
+{
+    static constexpr size_t x {3};
+    static constexpr size_t s {2};
+
+    static constexpr Matrix<int, x, x> square
+    {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
+
+    static constexpr Matrix<int, x, s> notSquare
+    {{{ {381 , -39}, {33, 15}, {72, 99} }}};
+
+    static constexpr bool checkSquare {square.isSquare()};
+    static constexpr bool checkNotSquare {notSquare.isSquare()};
+
+    // Check that created objects are constexpr
+    static_assert(checkSquare==true, MSG);
+    static_assert(checkNotSquare==false, MSG);
+
+    ASSERT_TRUE(checkSquare);
+    ASSERT_FALSE(checkNotSquare);
+}

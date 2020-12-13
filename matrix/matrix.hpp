@@ -168,6 +168,28 @@ public:
                 (*this)(i,j) = mat(i-x1,j-y1);
     }
 
+    constexpr bool isSquare() const
+    {
+        return sizeX()==sizeY();
+    }
+
+    //constexpr bool isSymmetric() const
+    //{
+    //    static_assert(isSquare()==true, "Symmetric matrices should be square.");
+    //    bool symmetric {true};
+
+    //    for( unsigned int i {0}; i<=sizeX(); i++ )
+    //    {
+    //        for( unsigned int j {0}; j<=sizeY(); j++ )
+    //        {
+    //            if(symmetric)
+    //                symmetric &= ((*this)(i,j) == (*this)(j,i));
+    //        }
+    //    }
+
+    //    return symmetric;
+    //}
+
     constexpr size_t sizeX() const { return R; }
     constexpr size_t sizeY() const { return C; }
 
