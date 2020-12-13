@@ -1,8 +1,6 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
-#include "stddef.h"
-
 namespace consteig
 {
 

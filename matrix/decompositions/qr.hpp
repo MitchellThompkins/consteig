@@ -1,8 +1,6 @@
 #ifndef QR_DECOMP_HPP
 #define QR_DECOMP_HPP
 
-#include "stddef.h"
-
 #include "../matrix.hpp"
 #include "../operations.hpp"
 

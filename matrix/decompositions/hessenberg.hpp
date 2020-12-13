@@ -1,8 +1,6 @@
 #ifndef HESSENBERG_HPP
 #define HESSENBERG_HPP
 
-#include "stddef.h"
-
 #include "householder.hpp"
 
 #include "../matrix.hpp"

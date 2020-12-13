@@ -1,8 +1,6 @@
 #ifndef HOUSEHOLDER_HPP
 #define HOUSEHOLDER_HPP
 
-#include "stddef.h"
-
 #include "../matrix_tools.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"

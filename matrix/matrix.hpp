@@ -1,8 +1,6 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
-#include "stddef.h"
-
 #include "../array/array.hpp"
 #include "matrix_tools.hpp"
 
