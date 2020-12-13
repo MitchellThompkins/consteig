@@ -173,22 +173,27 @@ public:
         return sizeX()==sizeY();
     }
 
-    //constexpr bool isSymmetric() const
-    //{
-    //    static_assert(isSquare()==true, "Symmetric matrices should be square.");
-    //    bool symmetric {true};
+    constexpr bool isSymmetric() const
+    {
+        static_assert(R==C, "Symmetric matrices should be square.");
 
-    //    for( unsigned int i {0}; i<=sizeX(); i++ )
-    //    {
-    //        for( unsigned int j {0}; j<=sizeY(); j++ )
-    //        {
-    //            if(symmetric)
-    //                symmetric &= ((*this)(i,j) == (*this)(j,i));
-    //        }
-    //    }
+        bool symmetric {true};
 
-    //    return symmetric;
-    //}
+        if(sizeX()>1)
+        {
+            for( unsigned int i {1}; i<=sizeX()-1; i++ )
+            {
+                for( unsigned int j {0}; j<i; j++ )
+                {
+                    symmetric &= ((*this)(i,j) == (*this)(j,i));
+                    if(!symmetric)
+                        break;
+                }
+            }
+        }
+
+        return symmetric;
+    }
 
     constexpr size_t sizeX() const { return R; }
     constexpr size_t sizeY() const { return C; }
