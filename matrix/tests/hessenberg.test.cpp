@@ -3,7 +3,7 @@
 
 #include "decompositions.hpp"
 
-using namespace constmat;
+using namespace consteig;
 
 TEST(hessenberg, hess)
 {

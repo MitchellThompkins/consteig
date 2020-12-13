@@ -2,7 +2,7 @@
 #define TEST_TOOLS_HPP
 
 #include "gcem.hpp"
-#include "../constmat.hpp"
+#include "../consteig.hpp"
 
 #define MSG "Not constexpr or wrong output"
 
@@ -13,8 +13,8 @@ static constexpr bool compareFloat(float a, float b, float thresh)
 
 template<size_t R, size_t C>
 static constexpr bool compareFloatMat(
-        constmat::Matrix<float,R,C> a,
-        constmat::Matrix<float,R,C> b,
+        consteig::Matrix<float,R,C> a,
+        consteig::Matrix<float,R,C> b,
         const float thresh )
 {
     for(int i {0}; i<R; i++)

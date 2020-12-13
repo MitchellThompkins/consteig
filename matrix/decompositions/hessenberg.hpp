@@ -8,7 +8,7 @@
 #include "../matrix.hpp"
 #include "../operations.hpp"
 
-namespace constmat
+namespace consteig
 {
 
 /*

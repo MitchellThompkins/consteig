@@ -3,7 +3,7 @@
 
 #include "decompositions.hpp"
 
-using namespace constmat;
+using namespace consteig;
 
 static constexpr float kThresh {0.0001F};
 

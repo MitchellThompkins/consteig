@@ -1,7 +1,7 @@
 #ifndef DECOMPOSITIONS_HELPER_HPP
 #define DECOMPOSITIONS_HELPER_HPP
 
-namespace constmat
+namespace consteig
 {
 
 // These functions determine if a number is a floating point number

@@ -5,10 +5,10 @@
 #include <iomanip>
 #include <string>
 #include "stddef.h"
-#include "../constmat.hpp"
+#include "../consteig.hpp"
 
 template<typename T, size_t R, size_t C>
-void printMat( const std::string name, const constmat::Matrix<T,R,C> &mat)
+void printMat( const std::string name, const consteig::Matrix<T,R,C> &mat)
 {
     std::cout << "\n" << name << "\n";
     for(int i {0}; i<R; i++)

@@ -3,7 +3,7 @@
 
 #include "matrix.hpp"
 
-using namespace constmat;
+using namespace consteig;
 
 // These helper functions allow us to call templated constexpr functions
 template<typename T, size_t R, size_t C>
