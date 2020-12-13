@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "array.hpp"
 
+using namespace consteig;
+
 TEST(array1d, static)
 {
     static constexpr int s {3};

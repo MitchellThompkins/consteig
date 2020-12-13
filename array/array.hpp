@@ -3,6 +3,9 @@
 
 #include "stddef.h"
 
+namespace consteig
+{
+
 template <typename T, size_t N>
 class Array
 {
@@ -61,5 +64,7 @@ constexpr const T& get(const Array<T, N>& a)
     static_assert(I < N, "I must be less than N");
     return a[I];
 }
+
+} //end namespace
 
 #endif // ARRAY_HPP
