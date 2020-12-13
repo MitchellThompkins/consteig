@@ -3,7 +3,7 @@
 
 #include "stddef.h"
 
-#include "decompositions_helper.hpp"
+#include "../matrix_tools.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"
 

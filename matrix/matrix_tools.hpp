@@ -1,5 +1,7 @@
-#ifndef DECOMPOSITIONS_HELPER_HPP
-#define DECOMPOSITIONS_HELPER_HPP
+#ifndef MATRIX_TOOLS_HPP
+#define MATRIX_TOOLS_HPP
+
+#include "../dependencies/gcem/include/gcem.hpp"
 
 namespace consteig
 {
@@ -40,6 +42,13 @@ template<typename T>
 constexpr bool is_float()
 {
     return is_float_impl<T>::_();
+}
+
+
+template<typename T>
+static constexpr bool compareFloats(T a, T b, T thresh)
+{
+    return gcem::abs(a - b) < thresh;
 }
 
 } // end namespace
