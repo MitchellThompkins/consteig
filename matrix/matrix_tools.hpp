@@ -1,7 +1,7 @@
 #ifndef MATRIX_TOOLS_HPP
 #define MATRIX_TOOLS_HPP
 
-#include "../dependencies/gcem/include/gcem.hpp"
+#include "../math/constmath.hpp"
 
 namespace consteig
 {
@@ -48,7 +48,7 @@ constexpr bool is_float()
 template<typename T>
 static constexpr bool compareFloats(T a, T b, T thresh)
 {
-    return gcem::abs(a - b) < thresh;
+    return consteig::abs(a - b) < thresh;
 }
 
 } // end namespace

@@ -53,5 +53,4 @@ int main()
         std::cout << "\nsymmetricMat2 is symmetric!\n";
     else
         std::cout << "\nsymmetricMat2 is not symmetric!\n";
-
 }

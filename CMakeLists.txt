@@ -31,6 +31,7 @@ endmacro()
 
 add_subdirectory(dependencies)
 add_subdirectory(array)
+add_subdirectory(math)
 add_subdirectory(matrix)
 add_subdirectory(eigen)
 add_subdirectory(examples)

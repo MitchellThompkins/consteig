@@ -1,7 +1,6 @@
 #ifndef TEST_TOOLS_HPP
 #define TEST_TOOLS_HPP
 
-#include "gcem.hpp"
 #include "../consteig.hpp"
 
 #define MSG "Not constexpr or wrong output"
