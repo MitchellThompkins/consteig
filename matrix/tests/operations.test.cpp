@@ -166,7 +166,7 @@ TEST(matrix, static_constexpr_norm_euclidean)
     static constexpr float answer1 = 8.0F;
     static constexpr float answer2 = 7.9373F;
 
-    // ASSER_FLOAT_EQ will fail in this case, as answer2 above was rounded
+    // ASSERT_FLOAT_EQ will fail in this case, as answer2 above was rounded
     ASSERT_NEAR(n1, answer1, kThresh);
     ASSERT_NEAR(n2, answer2, kThresh);
 }
