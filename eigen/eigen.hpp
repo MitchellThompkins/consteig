@@ -38,7 +38,7 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
         delta = static_cast<T>(1);
 
     return (c - ((gcem::sgn(delta)*consteig::pow(b,2))/
-        (consteig::abs(delta) + gcem::sqrt( consteig::pow(delta,2)+consteig::pow(b,2) ))));
+        (consteig::abs(delta) + consteig::sqrt( consteig::pow(delta,2)+consteig::pow(b,2) ))));
 }
 
 // http://pi.math.cornell.edu/~web6140/TopTenAlgorithms/QRalgorithm.html

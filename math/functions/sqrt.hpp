@@ -11,7 +11,8 @@ namespace consteig
 template<typename T>
 constexpr T sqrt(
         const T val,
-        const T limit = 1e-9 )
+        const T limit = 1e-7,
+        const unsigned int countLimit = 511)
 {
 
     // The closed guess will be stored in the root
@@ -22,9 +23,11 @@ constexpr T sqrt(
     {
         T valCopy {val};
 
+        unsigned int count {0};
         //TODO(mthompkins): Add iteration limit
-        while(true)
+        while(true && count < countLimit)
         {
+            count++;
             // Calculate more closed x
             root = 0.5 * (valCopy + (val / valCopy));
 
