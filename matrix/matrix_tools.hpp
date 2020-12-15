@@ -44,13 +44,6 @@ constexpr bool is_float()
     return is_float_impl<T>::_();
 }
 
-
-template<typename T>
-static constexpr bool compareFloats(T a, T b, T thresh)
-{
-    return consteig::abs(a - b) < thresh;
-}
-
 } // end namespace
 
 #endif
