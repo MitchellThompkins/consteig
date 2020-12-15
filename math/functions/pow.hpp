@@ -5,7 +5,9 @@ namespace consteig
 {
 
 template<typename T>
-constexpr T pow(const T x, const unsigned int n)
+constexpr T pow(
+        const T x,
+        const unsigned int n )
 {
     //https://docs.microsoft.com/en-us/cpp/cpp/constexpr-cpp?view=msvc-160
     //TODO(mthompkins): Need to find a better error handling method than just
@@ -13,8 +15,8 @@ constexpr T pow(const T x, const unsigned int n)
     return
         n<0 ? static_cast<T>(0) :
         n == 0 ? 1 :
-        n % 2 == 0 ? pow(x * x, n / 2) :
-        pow(x * x, (n - 1) / 2) * x;
+        n % 2 == 0 ? consteig::pow(x * x, n / 2) :
+        consteig::pow(x * x, (n - 1) / 2) * x;
 }
 
 } //end namespace
