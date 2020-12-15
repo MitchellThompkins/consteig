@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
+#include "test_tools.hpp"
 
 #include "constmath.hpp"
+
+using namespace consteig;
 
 static constexpr double kThresh {0.0001};
 

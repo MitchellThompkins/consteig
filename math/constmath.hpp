@@ -3,6 +3,7 @@
 
 #include "functions/abs.hpp"
 #include "functions/pow.hpp"
+#include "functions/sqrt.hpp"
 #include "functions/utilities.hpp"
 
 #endif
