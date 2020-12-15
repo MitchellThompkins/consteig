@@ -30,10 +30,3 @@ target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/tools/gtest)
 target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/dependencies/gcem/include)
 target_link_libraries(qr.test matrix array gtest_main)
 create_test(qr.test)
-
-add_executable(decomp_helper.test
-    ${CMAKE_CURRENT_SOURCE_DIR}/decompositions_helper.test.cpp)
-target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/tools/gtest)
-target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/dependencies/gcem/include)
-target_link_libraries(decomp_helper.test matrix array gtest_main)
-create_test(decomp_helper.test)
