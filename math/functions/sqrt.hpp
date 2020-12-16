@@ -67,8 +67,11 @@ constexpr T sqrt_int(
 template<typename T>
 constexpr T sqrt(const T x)
 {
-    // TODO(mthompkins): Need to return NaN
-    if(is_float<T>())
+    // TODO(mthompkins): Need to return NaN for negative numbers. This
+    // implementation is really really ugly
+    if(x < static_cast<T>(0))
+        return static_cast<T>(-1);
+    else if(is_float<T>())
         return internal::sqrt_check( x, static_cast<T>(1) );
     else
         return internal::sqrt_int(x);
