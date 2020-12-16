@@ -1,0 +1,8 @@
+#ifndef CONSTEIG_OPTIONS_HPP
+#define CONSTEIG_OPTIONS_HPP
+
+#ifndef CONSTEIG_SQRT_MAX_ITER
+    #define CONSTEIG_SQRT_MAX_ITER 100
+#endif
+
+#endif
