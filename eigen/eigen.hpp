@@ -37,7 +37,7 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
     if( delta == static_cast<T>(0) )
         delta = static_cast<T>(1);
 
-    return (c - ((gcem::sgn(delta)*consteig::pow(b,2))/
+    return (c - ((consteig::sgn(delta)*consteig::pow(b,2))/
         (consteig::abs(delta) + consteig::sqrt( consteig::pow(delta,2)+consteig::pow(b,2) ))));
 }
 
