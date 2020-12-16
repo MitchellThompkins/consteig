@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <limits>
 #include "test_tools.hpp"
 
 #include "constmath.hpp"
@@ -7,26 +6,6 @@
 static constexpr double kThresh {0.00000001};
 
 using namespace consteig;
-
-// https://stackoverflow.com/a/32334103/3527182
-template<typename T>
-constexpr bool nearlyEqual(
-  T a, T b,
-  T epsilon = 128 * FLT_EPSILON, T relth = FLT_MIN)
-  // those defaults are arbitrary and could be removed
-{
-  static_assert(is_float<T>(), "Expects floating point number");
-  assert(std::numeric_limits<T>::epsilon() <= epsilon);
-  assert(epsilon < 1.f);
-
-  if (a == b) return true;
-
-  auto diff = std::abs(a-b);
-  auto norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
-  // or even faster: std::min(std::abs(a + b), std::numeric_limits<float>::max());
-  // keeping this commented out until I update figures below
-  return diff < std::max(relth, epsilon * norm);
-}
 
 TEST(utilities, compare_floats)
 {

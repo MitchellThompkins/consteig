@@ -1,68 +1,77 @@
 #ifndef CONSTMATH_SQRT_HPP
 #define CONSTMATH_SQRT_HPP
 
-#include "utilities.hpp" // For is_float()
+#include "utilities.hpp" // For epsilon
+#include "../../consteig_options.hpp"
 
 namespace consteig
 {
 
-// For floating point types
-// https://www.geeksforgeeks.org/find-root-of-a-number-using-newtons-method/
-template<typename T>
-constexpr T sqrt(
-        const T val,
-        const T limit = 1e-7,
-        const unsigned int countLimit = 511)
+namespace internal
 {
+template<typename T>
+constexpr T sqrt_recur(
+        const T x,
+        const T xn,
+        const int count)
+{
+    return( abs(xn - x/xn) / (T(1) + xn) < epsilon<T>() ? xn :
+            count < CONSTEIG_SQRT_MAX_ITER ? \
+            sqrt_recur(x,T(0.5)*(xn + x/xn), count+1) :
+            xn );
+}
 
+template<typename T>
+constexpr T sqrt_check(
+        const T x,
+        const T m_val)
+{
+    return( // indistinguishable from zero or one
+            epsilon<T>() > abs(x) ? T(0) :
+            epsilon<T>() > abs(T(1)-x) ? x :
+            // else
+            x > T(4) ? sqrt_check(x/T(4),T(2)*m_val) :
+            m_val*sqrt_recur(x,x/T(2),0) );
+}
+
+template<typename T>
+constexpr T sqrt_int(
+        const T x )
+{
     // The closed guess will be stored in the root
     T root {static_cast<T>(0)};
 
-    // For floating point
-    if( is_float<T>() && val > static_cast<T>(0) )
+    // Base cases
+    if (x == 0 || x == 1)
     {
-        T valCopy {val};
-
-        unsigned int count {0};
-        //TODO(mthompkins): Add iteration limit
-        while(true && count < countLimit)
-        {
-            count++;
-            // Calculate more closed x
-            root = 0.5 * (valCopy + (val / valCopy));
-
-            // Check for closeness
-            if (abs(root - valCopy) < limit)
-                break;
-
-            // Update root
-            valCopy = root;
-        }
+        root = x;
     }
-    // For non-floating point
-    else if(val > static_cast<T>(0))
+    else
     {
-        // Base cases
-        if (val == 0 || val == 1)
-            return val;
-
         // Staring from 1, try all numbers until
         // i*i is greater than or equal to val.
         T i = 1, result = 1;
-        while (result <= val)
+        while (result <= x)
         {
             i++;
             result = i * i;
         }
         root = i - 1;
     }
-    // 0 or less than 0
-    else
-    {
-        // Do nothing
-    }
 
     return root;
+}
+
+}
+
+template<typename T>
+constexpr T sqrt(const T x)
+{
+    // TODO(mthompkins): Need to return NaN
+    if(is_float<T>())
+        return internal::sqrt_check( x, static_cast<T>(1) );
+    else
+        return internal::sqrt_int(x);
 }
 
 } //end namespace

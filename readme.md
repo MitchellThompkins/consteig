@@ -87,3 +87,8 @@ This solves those two problems in a limited capacity.
 - [ ] Check for symmetric matrices to know _which_ eigenvalue solver impl
 
 ## References
+
+## Thanks
+Development began by leveraging gcem. However, as it leverages the standard
+library, it was impossible to leverage it. That constexpr math implementations
+are inspried from the gcem implementations.
