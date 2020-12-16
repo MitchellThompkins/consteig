@@ -194,7 +194,7 @@ constexpr T det( const Matrix<T,R,C> &mat )
                 subi++;
             }
             //TODO(mthompkins): Figure out how to handle unsigned T for pow
-            result += (gcem::pow<T>(-1, i) * mat(0,i) * det(submat));
+            result += (consteig::pow<T>(-1, i) * mat(0,i) * det(submat));
         }
     }
 
