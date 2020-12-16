@@ -5,7 +5,7 @@
 
 using namespace consteig;
 
-static constexpr double kThresh {0.0001};
+static constexpr double kThresh {std::numeric_limits<double>::epsilon()};
 
 TEST(power_function, power_test)
 {
