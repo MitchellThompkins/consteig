@@ -52,6 +52,30 @@ static constexpr bool compareFloats(T a, T b, T thresh)
     return consteig::abs(a - b) < thresh;
 }
 
+// Find machine epsilon
+// Implemented from wikipedia
+// https://en.wikipedia.org/wiki/Machine_epsilon#Approximation
+template<typename T>
+constexpr T epsilon()
+{
+    T epsilon {static_cast<T>(0)};
+
+    if(is_float<T>())
+    {
+        epsilon = 1.0;
+        T one = 1.0;
+        T half = 0.5;
+
+        while ((one+half * epsilon) != one)
+        {
+            epsilon = half * epsilon;
+        }
+    }
+
+    return epsilon;
+}
+
+
 } // end namespace
 
 #endif
