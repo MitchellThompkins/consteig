@@ -142,7 +142,7 @@ constexpr T normE( const Matrix<T,R,C> &mat )
         for(size_t j {0}; j<C; j++)
             result += (mat(i,j)*mat(i,j));
 
-    return consteig::sqrt(result);
+    return gcem::sqrt(result);
 }
 
 template<typename T, size_t R, size_t C>
@@ -152,7 +152,7 @@ constexpr Matrix<T,R,C> sqrt( const Matrix<T,R,C> &mat )
 
     for(size_t i {0}; i<R; i++)
         for(size_t j {0}; j<C; j++)
-            result(i,j) = consteig::sqrt(mat(i,j));
+            result(i,j) = gcem::sqrt(mat(i,j));
 
     return result;
 }
