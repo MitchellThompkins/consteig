@@ -24,7 +24,7 @@ constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
         alphaSum += (a(i,0)*a(i,0));
 
     T alpha { static_cast<T>(-1)
-        * gcem::sgn(a(1,0))
+        * consteig::sgn(a(1,0))
         * consteig::sqrt(alphaSum) };
 
     T r { consteig::sqrt(
