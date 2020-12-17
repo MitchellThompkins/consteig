@@ -17,12 +17,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
 
-#include(get_google_test)
-#get_google_test()
-#
-#include(get_gcem)
-#get_gcem()
-
 enable_testing()
 
 macro(create_test target)
