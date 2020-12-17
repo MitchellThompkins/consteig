@@ -85,7 +85,7 @@ This solves those two problems in a limited capacity.
 - [ ] Compile with `-wall`
 - [ ] Compute QR decomop w/ householder reflections
 - [ ] Implement double-shift QR algorithm
-- [ ] Check for symmetric matrices to know _which_ eigenvalue solver impl
+- [ ] Remove dependency on `size_t`
 
 ## References
 
