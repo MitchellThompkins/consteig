@@ -2,6 +2,7 @@
 #define EIGEN_HPP
 
 #include "../consteig.hpp"
+#include "../consteig_options.hpp"
 
 namespace consteig
 {
@@ -19,7 +20,8 @@ static inline constexpr bool checkEigenValues(
 
     for(int i {0}; i<R; i++)
     {
-        equal &= compareFloats( det( a - (lambda(i,0)*identity)), static_cast<T>(0), thresh );
+        equal &= compareFloats( det( a - (lambda(i,0)*identity)),
+                static_cast<T>(0), thresh );
     }
 
     return equal;
@@ -27,7 +29,9 @@ static inline constexpr bool checkEigenValues(
 
 
 template<typename T, size_t S>
-constexpr Matrix<T,S,S> eig( Matrix<T,S,S> a );
+constexpr Matrix<T,S,S> eig(
+        Matrix<T,S,S> a,
+        const T symmetryTolerance=CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE );
 
 template<typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c)
@@ -38,12 +42,13 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
         delta = static_cast<T>(1);
 
     return (c - ((consteig::sgn(delta)*consteig::pow(b,2))/
-        (consteig::abs(delta) + consteig::sqrt( consteig::pow(delta,2)+consteig::pow(b,2) ))));
+        (consteig::abs(delta) +
+         consteig::sqrt( consteig::pow(delta,2)+consteig::pow(b,2) ))));
 }
 
 // http://pi.math.cornell.edu/~web6140/TopTenAlgorithms/QRalgorithm.html
 template<typename T, size_t S>
-struct eig_impl
+struct eig_impl_shited_qr
 {
     static constexpr Matrix<T,S,S> _( Matrix<T,S,S> a )
     {
@@ -76,20 +81,27 @@ struct eig_impl
 };
 
 template<typename T>
-struct eig_impl<T,1>
+struct eig_impl_shited_qr<T,1>
 {
     static constexpr Matrix<T,1,1> _( Matrix<T,1,1> a )
     {
-        static_assert( is_float<T>(), "eig reduction expects floating point");
         return a;
     }
 };
 
 template<typename T, size_t S>
-constexpr Matrix<T,S,S> eig( Matrix<T,S,S> a )
+constexpr Matrix<T,S,S> eig(
+        Matrix<T,S,S> a,
+        const T symmetryTolerance )
 {
     static_assert( is_float<T>(), "eig reduction expects floating point");
-    return eig_impl<T,S>::_(a);
+
+    // The shifted QR will always work for symmetric matrices
+    if(a.isSymmetric(static_cast<T>(symmetryTolerance)))
+        return eig_impl_shited_qr<T,S>::_(a);
+    else
+        //TODO(mthompkins): return eig_impl_double_shited_qr
+        return a;
 };
 
 template<typename T, size_t S>

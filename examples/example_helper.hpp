@@ -4,7 +4,6 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "stddef.h"
 #include "../consteig.hpp"
 
 template<typename T, size_t R, size_t C>
