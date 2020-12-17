@@ -1,6 +1,3 @@
-[submodule "dependencies/gcem"]
-	path = dependencies/gcem
-	url = https://github.com/kthohr/gcem.git
 [submodule "dependencies/googletest"]
 	path = dependencies/googletest
 	url = https://github.com/google/googletest.git
