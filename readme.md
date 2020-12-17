@@ -78,9 +78,10 @@ This solves those two problems in a limited capacity.
 
 ## Notes On Performance
 * Float vs. double
+* Unit testing _does_ leverage components of the standard library, but
+  `consteig` does not.
 
 ## TODO
-- [ ] Remove dependency on gcem and any std library implementations
 - [ ] Compile with `-wall`
 - [ ] Compute QR decomop w/ householder reflections
 - [ ] Implement double-shift QR algorithm
@@ -89,6 +90,7 @@ This solves those two problems in a limited capacity.
 ## References
 
 ## Thanks
-Development began by leveraging gcem. However, as it leverages the standard
-library, it was impossible to leverage it. That constexpr math implementations
-are inspried from the gcem implementations.
+Development began by leveraging [gcem](https://github.com/kthohr/gcem) for all
+ofthe constexpr math. However, as it using the standard library, it's usage was
+temporary. That constexpr math implementations are inspried from the gcem
+implementations.
