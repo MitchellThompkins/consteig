@@ -2,7 +2,6 @@
 #define OPERATIONS_HPP
 
 #include "matrix.hpp"
-#include "../dependencies/gcem/include/gcem.hpp"
 
 namespace consteig
 {
