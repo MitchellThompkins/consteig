@@ -18,16 +18,16 @@ TEST(qr_decomp, static_constexpr_even_mat)
 
     static constexpr Matrix<float, x, x> qAnswer
     {{{
-        {1.0F/gcem::sqrt(2.0F),  1.0F/gcem::sqrt(6.0F), -1.0F/gcem::sqrt(3.0F)},
-        {1.0F/gcem::sqrt(2.0F), -1.0F/gcem::sqrt(6.0F),  1.0F/gcem::sqrt(3.0F)},
-        {0.0F,                   2.0F/gcem::sqrt(6.0F),  1.0F/gcem::sqrt(3.0F)}
+        {1.0F/consteig::sqrt(2.0F),  1.0F/consteig::sqrt(6.0F), -1.0F/consteig::sqrt(3.0F)},
+        {1.0F/consteig::sqrt(2.0F), -1.0F/consteig::sqrt(6.0F),  1.0F/consteig::sqrt(3.0F)},
+        {0.0F,                       2.0F/consteig::sqrt(6.0F),  1.0F/consteig::sqrt(3.0F)}
     }}};
 
     static constexpr Matrix<float, x, x> rAnswer
     {{{
-        {2.0F/gcem::sqrt(2.0F),  1.0F/gcem::sqrt(2.0F),  1.0F/gcem::sqrt(2.0F)},
-        {0.0F,                   3.0F/gcem::sqrt(6.0F),  1.0F/gcem::sqrt(6.0F)},
-        {0.0F,                   0.0F,                   2.0F/gcem::sqrt(3.0F)}
+        {2.0F/consteig::sqrt(2.0F), 1.0F/consteig::sqrt(2.0F), 1.0F/consteig::sqrt(2.0F)},
+        {0.0F,                      3.0F/consteig::sqrt(6.0F), 1.0F/consteig::sqrt(6.0F)},
+        {0.0F,                      0.0F,                      2.0F/consteig::sqrt(3.0F)}
     }}};
 
     // Test Static Assertion
