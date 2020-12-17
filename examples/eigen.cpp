@@ -1,6 +1,6 @@
 #include "example_helper.hpp"
+#include "test_tools.hpp"
 #include "../consteig.hpp"
-#include "../tools/gtest/test_tools.hpp"
 
 int main()
 {

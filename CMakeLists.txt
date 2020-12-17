@@ -23,7 +23,7 @@ macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
 
-add_subdirectory(dependencies)
+add_subdirectory(test_dependencies)
 add_subdirectory(array)
 add_subdirectory(math)
 add_subdirectory(matrix)
