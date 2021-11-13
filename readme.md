@@ -86,11 +86,12 @@ This solves those two problems in a limited capacity.
 - [ ] Compute QR decomop w/ householder reflections
 - [ ] Implement double-shift QR algorithm
 - [ ] Remove dependency on `size_t`
+- [ ] Package build and test environment into a container
 
 ## References
 
 ## Thanks
 Development began by leveraging [gcem](https://github.com/kthohr/gcem) for all
 ofthe constexpr math. However, as it using the standard library, it's usage was
-temporary. That constexpr math implementations are inspried from the gcem
+temporary. That constexpr math implementations are inspired from the gcem
 implementations.
