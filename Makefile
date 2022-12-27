@@ -1,6 +1,9 @@
 # get the normalized current directory
 THIS_DIR := $(shell pwd)
 
+UID=$(shell id -u)
+GID=$(shell id -g)
+
 # Default to a Debug build. If you want to enable debugging flags, run
 # "make BUILD_TYPE=Release"
 BUILD_TYPE ?= Debug
@@ -109,47 +112,10 @@ cmd: $(BUILD_PREFIX)/$(BUILD_FILE)
 	cd $(BUILD_PREFIX); \
 	${a};
 
-DOCKER_IMAGE_NAME ?= c-and-cpp-env
+.PHONY: container-build
+container-build:
+	docker build --tag dev_image .
 
-.PHONY: docker-build
-docker-build:
-	docker build --tag $(DOCKER_IMAGE_NAME) .
-
-
-UID=$(shell id -u)
-GID=$(shell id -g)
-
-.PHONY: docker-run
-docker-run:
-	docker run \
-	--user ${UID}:${GID} \
-	--name $(DOCKER_IMAGE_NAME) \
-	--volume ${PWD}:${PWD} \
-	--workdir=${PWD} \
-	--tty \
-	--interactive \
-	--detach \
-	--rm \
-	--volume="/etc/group:/etc/group:ro" \
-	--volume="/etc/passwd:/etc/passwd:ro" \
-	--volume="/etc/shadow:/etc/shadow:ro" \
-	--env="DISPLAY" \
-	--net=host \
-	$(DOCKER_IMAGE_NAME) \
-	useradd -m -u ${UID} -g ${GID} ${USER}
-
-
-.PHONY: docker-setup
-docker-setup: docker-build docker-run
-
-.PHONY: docker-attach
-docker-attach:
-	docker attach $(DOCKER_IMAGE_NAME)
-
-.PHONY: docker-stop
-docker-stop:
-	docker stop $(DOCKER_IMAGE_NAME)
-
-.PHONY: docker-exec
-docker-exec:
-	docker exec $(DOCKER_IMAGE_NAME) /bin/sh -c "${a}"
+.PHONY: container-start
+container-start:
+	docker-compose -f docker-compose.yml run --rm dev_env 'sh -x'
