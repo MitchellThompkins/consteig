@@ -1,0 +1,15 @@
+name: build_and_test
+
+on:
+  push:
+    branches: [ mthompkins/add_docker ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+    build:
+        name: Build tests
+        runs-on: ubuntu-latest
+        container: ghcr.io/mitchellthompkins/consteig_dev_image:latest
+        steps:
+        - run: make build
