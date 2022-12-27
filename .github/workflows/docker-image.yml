@@ -15,4 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag dev_image:$(date +%s)
+      run: |
+       docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
+       docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
+       docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
