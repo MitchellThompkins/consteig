@@ -7,16 +7,18 @@ on:
     branches: [ develop ]
 
 jobs:
-  build:
+    build_and_publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Build and publish the Docker image
-    with:
-    registry: ghcr.io
-    username: ${{ github.actor }}
-    password: ${{ secrets.GITHUB_TOKEN }}
-    run: |
+      - uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and publish docker image
+        run: |
             docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
             docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
             docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
