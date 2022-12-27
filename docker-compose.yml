@@ -2,7 +2,7 @@ version: '3'
 
 services:
     dev_env:
-        image: dev_image:latest
+        image: consteig_dev_image:latest
         environment:
             - USER=${USER}
             - Display=${DISPLAY}
