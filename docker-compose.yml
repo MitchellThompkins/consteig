@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+    dev_env:
+        image: dev_image:latest
+        environment:
+            - USER=${USER}
+            - Display=${DISPLAY}
+            - UID=${UID:? Error -> need UID.}
+            - GID=${GID:? Error -> need GID.}
+        volumes:
+            - "${PWD}:${PWD}"
+        network_mode: host
+        tty: True
+        working_dir: ${PWD}
+        entrypoint: ${PWD}/docker-entrypoint.sh
+        command: /bin/bash
