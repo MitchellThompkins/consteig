@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker_Image_CI
 
 on:
   push:
@@ -7,15 +7,16 @@ on:
     branches: [ develop ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: |
-       docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
-       docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
-       docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
+    - name: Build and publish the Docker image
+    with:
+    registry: ghcr.io
+    username: ${{ github.actor }}
+    password: ${{ secrets.GITHUB_TOKEN }}
+    run: |
+            docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
+            docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
+            docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
