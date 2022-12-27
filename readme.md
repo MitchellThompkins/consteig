@@ -81,12 +81,37 @@ This solves those two problems in a limited capacity.
 * Unit testing _does_ leverage components of the standard library, but
   `consteig` does not.
 
+## Building
+Build dependencies rely on:
+* gcc
+* g++
+* cmake
+* make
+
+These are all packaged into an alpine docker container. You must have the
+following dependiences installed to use them:
+* docker
+* docker-compose
+
+Once those are installed, the container built and entered with:
+```
+make container-build
+export UID=$(id -u)
+export GID=$(id -g)
+make container-start
+```
+
+Then:
+```
+make build
+make test
+```
+
 ## TODO
 - [ ] Compile with `-wall`
 - [ ] Compute QR decomop w/ householder reflections
 - [ ] Implement double-shift QR algorithm
 - [ ] Remove dependency on `size_t`
-- [ ] Package build and test environment into a container
 
 ## References
 

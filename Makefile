@@ -36,8 +36,8 @@ else
    $(shell rm $(BUILD_PREFIX)/$(BUILD_FILE))
 endif
 
-.PHONY: all
-all: $(BUILD_PREFIX)/$(BUILD_FILE)
+.PHONY: build
+build: $(BUILD_PREFIX)/$(BUILD_FILE)
 	@set -o xtrace; \
 	export CTEST_OUTPUT_ON_FAILURE=1; \
 	cmake --build $(BUILD_PREFIX) --target all -- $(JOB_FLAG) ${a}; \
