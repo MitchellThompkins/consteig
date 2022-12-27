@@ -1,0 +1,3 @@
+INCLUDE+ Dockerfile.base
+
+ENTRYPOINT ["/entrypoint_ci.sh"]
