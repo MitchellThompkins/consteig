@@ -20,9 +20,9 @@ jobs:
                   context: .
             - name: Build and publish docker image
               run: |
-                  docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                  docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                  docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
+                    docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
+                    docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
+                    docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
 
     build_and_test:
         needs: build_and_publish_container
@@ -35,5 +35,5 @@ jobs:
                     export MY_UID=1000
                     export MY_GID=1000
                     git submodule update --init --recursive
-                    docker-compose -f docker-compose.yml run --rm dev_env 'make build'
-                    docker-compose -f docker-compose.yml run --rm dev_env 'make test'
+                    make container-make-build
+                    make container-make-test
