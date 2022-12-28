@@ -30,5 +30,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
         - run: |
+                ls ${{ github.workspace }}
+                cd ${{ github.workspace }}
                 docker-compose -f docker-compose.yml run --rm dev_env 'make build'
                 docker-compose -f docker-compose.yml run --rm dev_env 'make test'
