@@ -119,3 +119,7 @@ container-build:
 .PHONY: container-start
 container-start:
 	docker-compose -f docker-compose.yml run --rm dev_env 'sh -x'
+
+.PHONY: container-start-local-build
+container-start-local-build:
+	docker-compose -f docker-compose.yml run --rm dev_env_local_build 'sh -x'
