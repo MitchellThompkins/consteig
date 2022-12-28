@@ -26,4 +26,20 @@ int main()
     bool checkEigen = consteig::checkEigenValues<double,s,s>(mat, testEigVals, 0.00001);
 
     std::cout << checkEigen << "\n";
+
+    static constexpr size_t pop_size {2};
+
+    // example from
+    // https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764
+    static constexpr consteig::Matrix<double,pop_size,pop_size> pop_mat
+    {{{
+        { 0.95, 0.05},
+        { 0.20, 0.80},
+    }}};
+
+    static constexpr consteig::Matrix<double,pop_size,1> pop_eig_vals {consteig::eigvals(pop_mat)};
+
+    printMat("pop_mat", pop_mat);
+    printMat("pop_eig_vals", pop_eig_vals);
+
 }
