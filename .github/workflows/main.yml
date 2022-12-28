@@ -20,22 +20,15 @@ jobs:
                 context: .
           - name: Build and publish docker image
             run: |
-                docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
-                docker run ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
-                docker push ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
+                docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
+                docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
+                docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
 
     build:
         needs: build_and_publish_container
         name: Build tests
         runs-on: ubuntu-latest
-        container:
-            image: ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
-            options: -v ${{ github.workspace }}:/work
-            #volumes:
-            #    - ${{ github.workspace }}:/workspace
         steps:
-        #- run: docker run --rm -it -v $(pwd):$(pwd) -w $(pwd) consteig_local_dev_image make build
         - run: |
-                ls -al
-                cat readme.md
-                make build
+                docker-compose -f docker-compose.yml run --rm dev_env 'make build'
+                docker-compose -f docker-compose.yml run --rm dev_env 'make test'
