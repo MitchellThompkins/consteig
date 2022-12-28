@@ -29,8 +29,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Build tests
+              with:
+                  path: ${{ github.workspace }}
+                  run: |
+                        cat readme.md
+                        docker-compose -f docker-compose.yml run --rm dev_env 'make build'
+                        docker-compose -f docker-compose.yml run --rm dev_env 'make test'
               #working-directory: ${{ github.workspace }}
-              run: |
-                    cat ${{ github.workspace }}/readme.md
-                    docker-compose -f docker-compose.yml run --rm dev_env 'make build'
-                    docker-compose -f docker-compose.yml run --rm dev_env 'make test'
