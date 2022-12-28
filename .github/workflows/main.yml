@@ -35,5 +35,5 @@ jobs:
                     export MY_UID=1000
                     export MY_GID=1000
                     git submodule update --init --recursive
-                    make container-make-build
-                    make container-make-test
+                    make container.make.build
+                    make container.make.test

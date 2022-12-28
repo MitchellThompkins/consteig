@@ -112,17 +112,17 @@ cmd: $(BUILD_PREFIX)/$(BUILD_FILE)
 	cd $(BUILD_PREFIX); \
 	${a};
 
-.PHONY: container-build
-container-build:
+.PHONY: container.build
+container.build:
 	docker build --file Dockerfile --tag consteig_dev_image .
 
-.PHONY: container-pull
-container-pull:
+.PHONY: container.pull
+container.pull:
 	docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
 
-.PHONY: container-start
-container-start:
+.PHONY: container.start
+container.start:
 	docker-compose -f docker-compose.yml run --rm dev_env 'sh -x'
 
-container-make-%:
+container.make.%:
 	docker-compose -f docker-compose.yml run --rm dev_env 'make $*'
