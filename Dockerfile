@@ -9,4 +9,5 @@ RUN apk --no-cache add\
     g++=10.3.1_git20210424-r2\
     libc-dev\
     linux-headers=5.10.41-r0\
+    git\
     python3
