@@ -33,6 +33,6 @@ jobs:
             volumes:
                 - ${{ github.workspace }}:/workspace
         steps:
-            run: docker run --rm -it -v $(pwd):$(pwd) -w $(pwd) consteig_local_dev_image make build
+        - run: docker run --rm -it -v $(pwd):$(pwd) -w $(pwd) consteig_local_dev_image make build
         #- run: cat readme.md
         #- run: make build
