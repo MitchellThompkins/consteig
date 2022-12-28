@@ -24,7 +24,7 @@ jobs:
                   docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
                   docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
 
-    build:
+    build_and_test:
         needs: build_and_publish_container
         runs-on: ubuntu-latest
         steps:
@@ -32,9 +32,7 @@ jobs:
               uses: actions/checkout@v2
             - name: Build tests
               run: |
-                    cat readme.md
+                    export UID=$(id -u)
+                    export GID=$(id -g)
                     docker-compose -f docker-compose.yml run --rm dev_env 'make build'
                     docker-compose -f docker-compose.yml run --rm dev_env 'make test'
-              #with:
-              #    path: ${{ github.workspace }}
-              #working-directory: ${{ github.workspace }}
