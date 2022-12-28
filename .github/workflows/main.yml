@@ -28,6 +28,8 @@ jobs:
         needs: build_and_publish_container
         runs-on: ubuntu-latest
         steps:
+            - name: Checkout
+              uses: actions/checkout@v2
             - name: Build tests
               with:
                   path: ${{ github.workspace }}
