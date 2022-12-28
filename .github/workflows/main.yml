@@ -34,5 +34,6 @@ jobs:
               run: |
                     export MY_UID=1000
                     export MY_GID=1000
+                    git submodule update --recursive
                     docker-compose -f docker-compose.yml run --rm dev_env 'make build'
                     docker-compose -f docker-compose.yml run --rm dev_env 'make test'
