@@ -1,3 +1,7 @@
+![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
+
+**THIS IS A WORK IN PROGRESS**
+
 ## What Is This
 Consteig is a constexpr template library which uses both constexpr functions and
 template meta-programming to calculate the eigenvalues of a square matrix at
