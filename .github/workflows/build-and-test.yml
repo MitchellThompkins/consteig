@@ -10,6 +10,6 @@ jobs:
     build:
         name: Build tests
         runs-on: ubuntu-latest
-        container: ghcr.io/mitchellthompkins/consteig_dev_image:latest
+        container: ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
         steps:
         - run: make build
