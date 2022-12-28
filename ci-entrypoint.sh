@@ -8,4 +8,6 @@ set -e
 
 #chown -R ${USER}.${USER} /home/${USER}
 
-su ${USER} -c "/bin/bash"
+echo Your container args are: "$@"
+#su ${USER} -c "/bin/sh"
+su ${USER} -c "/bin/sh $@"
