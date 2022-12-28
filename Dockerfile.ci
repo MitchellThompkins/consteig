@@ -1,7 +1,8 @@
-FROM consteig_local_dev_image
+#FROM consteig_local_dev_image
 
 #COPY ci-entrypoint.sh /ci-entrypoint.sh
+#COPY . /
 
 #ENTRYPOINT ["/ci-entrypoint.sh"]
 #ENTRYPOINT ["/bin/sh -c"]
-CMD ["/bin/sh"]
+#CMD ["/bin/sh"]
