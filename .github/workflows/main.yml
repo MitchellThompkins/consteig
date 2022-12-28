@@ -2,9 +2,9 @@ name: docker_image_ci
 
 on:
   push:
-    branches: [ mthompkins/add_docker ]
   pull_request:
-    branches: [ develop ]
+    branches:
+        - develop
 
 jobs:
     build_and_publish_container:
