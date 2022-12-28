@@ -11,7 +11,7 @@ TEST(absolute_value, abs)
 {
     static_assert(consteig::compareFloats(consteig::abs(0.0), 0.0, kThresh), MSG);
 
-    ASSERT_FLOAT_EQ(consteig::abs(0.0), 0.1);
+    ASSERT_FLOAT_EQ(consteig::abs(0.0), 0.0);
     ASSERT_FLOAT_EQ(consteig::abs(-0.0),-0.0);
 
     ASSERT_FLOAT_EQ(consteig::abs(1.0), 1.0);
