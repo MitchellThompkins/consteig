@@ -1,8 +1,0 @@
-name: build_and_test
-
-on:
-  push:
-    branches: [ mthompkins/add_docker ]
-  pull_request:
-    branches: [ develop ]
-
