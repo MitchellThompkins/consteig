@@ -24,14 +24,14 @@ jobs:
                   docker run ghcr.io/mitchellthompkins/consteig_dev_image:latest
                   docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
 
-#    build:
-#        needs: build_and_publish_container
-#        runs-on: ubuntu-latest
-#        steps:
-#            - name: Build tests
-#              with:
-#                path: ${{ github.workspace }}
-#              run: |
-#                    ls ${PWD}
-#                    docker-compose -f docker-compose.yml run --rm dev_env 'make build'
-#                    docker-compose -f docker-compose.yml run --rm dev_env 'make test'
+    build:
+        needs: build_and_publish_container
+        runs-on: ubuntu-latest
+        steps:
+            - name: Build tests
+              with:
+                  path: ${{ github.workspace }}
+              run: |
+                    ls ${PWD}
+                    docker-compose -f docker-compose.yml run --rm dev_env 'make build'
+                    docker-compose -f docker-compose.yml run --rm dev_env 'make test'
