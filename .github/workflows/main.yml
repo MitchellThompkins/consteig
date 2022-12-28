@@ -32,7 +32,6 @@ jobs:
               uses: actions/checkout@v2
             - name: Build tests
               run: |
-                    export UID=$(id -u)
                     export GID=$(id -g)
                     docker-compose -f docker-compose.yml run --rm dev_env 'make build'
                     docker-compose -f docker-compose.yml run --rm dev_env 'make test'
