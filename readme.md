@@ -1,3 +1,7 @@
+![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
+
+:exclamation:**THIS IS A WORK IN PROGRESS**:exclamation:
+
 ## What Is This
 Consteig is a constexpr template library which uses both constexpr functions and
 template meta-programming to calculate the eigenvalues of a square matrix at
@@ -81,12 +85,37 @@ This solves those two problems in a limited capacity.
 * Unit testing _does_ leverage components of the standard library, but
   `consteig` does not.
 
+## Building
+Build dependencies rely on:
+* gcc
+* g++
+* cmake
+* make
+
+These are all packaged into an alpine docker container. You must have the
+following dependiences installed to use them:
+* docker
+* docker-compose
+
+Once those are installed, the container built and entered with:
+```
+make container-pull
+export UID=$(id -u)
+export GID=$(id -g)
+make container-start
+```
+
+Then:
+```
+make build
+make test
+```
+
 ## TODO
 - [ ] Compile with `-wall`
 - [ ] Compute QR decomop w/ householder reflections
 - [ ] Implement double-shift QR algorithm
 - [ ] Remove dependency on `size_t`
-- [ ] Package build and test environment into a container
 
 ## References
 
