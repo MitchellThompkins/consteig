@@ -31,10 +31,10 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
             - name: Build tests
-              with:
-                  path: ${{ github.workspace }}
-                  run: |
-                        cat readme.md
-                        docker-compose -f docker-compose.yml run --rm dev_env 'make build'
-                        docker-compose -f docker-compose.yml run --rm dev_env 'make test'
+              run: |
+                    cat readme.md
+                    docker-compose -f docker-compose.yml run --rm dev_env 'make build'
+                    docker-compose -f docker-compose.yml run --rm dev_env 'make test'
+              #with:
+              #    path: ${{ github.workspace }}
               #working-directory: ${{ github.workspace }}
