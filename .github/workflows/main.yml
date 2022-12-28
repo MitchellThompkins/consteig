@@ -28,10 +28,10 @@ jobs:
         needs: build_and_publish_container
         name: Build tests
         runs-on: ubuntu-latest
-        with:
-            path: ${{ github.workspace }}
         steps:
         - run: |
                 ls ${PWD}
                 docker-compose -f docker-compose.yml run --rm dev_env 'make build'
                 docker-compose -f docker-compose.yml run --rm dev_env 'make test'
+          with:
+            path: ${{ github.workspace }}
