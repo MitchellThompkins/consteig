@@ -17,6 +17,9 @@ dependences several constexpr functions are implemented as well.
   perform a collection of [operations]() on them.
 * Perform a very narrow selection of math functions at compile time
 
+An example helps best. Let's say that we take the example from [Using
+Eigenvectors to Find Steady State Population Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)...TODO
+
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
 library targeted at embedded systems in which the digital filter coefficients
