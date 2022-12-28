@@ -1,3 +1,3 @@
 FROM consteig_local_dev_image
 
-ENTRYPOINT ["./entrypoint_ci.sh"]
+ENTRYPOINT ["ci-entrypoint.sh"]
