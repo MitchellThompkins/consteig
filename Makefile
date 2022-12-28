@@ -118,4 +118,4 @@ container-build:
 
 .PHONY: container-start
 container-start:
-	docker-compose -f docker-compose.yml run --rm consteig_local_dev_image 'sh -x'
+	docker-compose -f docker-compose.yml run --rm dev_env 'sh -x'
