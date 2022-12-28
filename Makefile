@@ -114,7 +114,7 @@ cmd: $(BUILD_PREFIX)/$(BUILD_FILE)
 
 .PHONY: container-build
 container-build:
-	docker build --file Dockerfile.base --tag consteig_local_dev_image .
+	docker build --file Dockerfile --tag consteig_local_dev_image .
 
 .PHONY: container-start
 container-start:

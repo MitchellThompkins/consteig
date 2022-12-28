@@ -20,8 +20,7 @@ jobs:
                 context: .
           - name: Build and publish docker image
             run: |
-                docker build . --file Dockerfile.base --tag consteig_local_dev_image:latest
-                docker build . --file Dockerfile.ci --tag ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
+                docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
                 docker run ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
                 docker push ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
 
@@ -31,5 +30,5 @@ jobs:
         runs-on: ubuntu-latest
         container: ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
         steps:
-        - run: cat /github/workspace/readme.md
+        - run: cat readme.md
         #- run: make build
