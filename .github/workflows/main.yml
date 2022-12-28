@@ -29,8 +29,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Build tests
-              with:
-                  path: ${{ github.workspace }}
               run: |
                     ls ${PWD}
                     docker-compose -f docker-compose.yml run --rm dev_env 'make build'
