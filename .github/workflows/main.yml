@@ -28,9 +28,10 @@ jobs:
         needs: build_and_publish_container
         name: Build tests
         runs-on: ubuntu-latest
-        container: ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
-        volumes:
-            - ${{ github.workspace }}:/workspace
+        container:
+            image: ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
+            volumes:
+                - ${{ github.workspace }}:/workspace
         steps:
         - run: cat readme.md
         #- run: make build
