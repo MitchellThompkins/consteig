@@ -95,7 +95,7 @@ following dependiences installed to use them:
 
 Once those are installed, the container built and entered with:
 ```
-make container-build
+make container-pull
 export UID=$(id -u)
 export GID=$(id -g)
 make container-start
