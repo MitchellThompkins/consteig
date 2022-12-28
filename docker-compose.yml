@@ -6,8 +6,8 @@ services:
         environment:
             - USER=${USER}
             - Display=${DISPLAY}
-            - UID=${UID:? Error -> need UID.}
-            - GID=${GID:? Error -> need GID.}
+            - MY_UID=${MY_UID:? Error -> need UID.}
+            - MY_GID=${MY_GID:? Error -> need GID.}
         volumes:
             - "${PWD}:${PWD}"
         network_mode: host
