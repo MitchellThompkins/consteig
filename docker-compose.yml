@@ -13,5 +13,5 @@ services:
         network_mode: host
         tty: True
         working_dir: ${PWD}
-        entrypoint: ${PWD}/docker-entrypoint.sh
+        entrypoint: ${PWD}/local-entrypoint.sh
         command: /bin/bash
