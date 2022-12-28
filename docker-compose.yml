@@ -13,7 +13,7 @@ services:
         network_mode: host
         tty: True
         working_dir: ${PWD}
-        entrypoint: ${PWD}/local-entrypoint.sh
+        entrypoint: ${PWD}/entrypoint.sh
         command: /bin/bash
 
     dev_env_local_build:
@@ -28,5 +28,5 @@ services:
         network_mode: host
         tty: True
         working_dir: ${PWD}
-        entrypoint: ${PWD}/local-entrypoint.sh
+        entrypoint: ${PWD}/entrypoint.sh
         command: /bin/bash
