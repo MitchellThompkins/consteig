@@ -30,7 +30,7 @@ jobs:
         runs-on: ubuntu-latest
         container:
             image: ghcr.io/mitchellthompkins/consteig_ci_dev_image:latest
-            options: -v $GITHUB_WORKSPACE:/work
+            options: -v ${{ github.workspace }}:/work
             #volumes:
             #    - ${{ github.workspace }}:/workspace
         steps:
