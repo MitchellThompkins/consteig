@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
+#include <vector>
+#include <algorithm>
 #include "test_tools.hpp"
 
 #include "../consteig.hpp"
@@ -7,6 +9,17 @@
 using namespace consteig;
 
 static constexpr float kThreshEigen {0.00001F};
+
+template<typename T, size_t R, size_t C>
+Eigen::Matrix<T, R, C> toEigen(const consteig::Matrix<T, R, C>& mat) {
+    Eigen::Matrix<T, R, C> res;
+    for(size_t i = 0; i < R; ++i) {
+        for(size_t j = 0; j < C; ++j) {
+            res(i, j) = mat(i, j);
+        }
+    }
+    return res;
+}
 
 TEST(consteig_eigen, constexpr_eigenValues)
 {
@@ -41,10 +54,25 @@ TEST(consteig_eigen, symmetric_matrix)
         { 77.1, 9.2,  2,   4,  2 },
     }}};
 
+    // Calculate using consteig
     static constexpr auto eigenValueTest {eigvals(mat)};
+
+    // Calculate using Eigen (Reference)
+    auto eigenMat = toEigen(mat);
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, s, s>> es(eigenMat);
+    auto eigenValsRef = es.eigenvalues(); // Returns sorted vector
+
+    // Copy consteig results to std::vector for sorting
+    std::vector<double> myVals;
+    for(size_t i=0; i<s; ++i) myVals.push_back(eigenValueTest(i,0));
+    std::sort(myVals.begin(), myVals.end());
+
+    // Compare
+    for(size_t i=0; i<s; ++i) {
+        EXPECT_NEAR(myVals[i], eigenValsRef[i], 1e-4) << "Mismatch at index " << i;
+    }
 
     static constexpr bool checkEigen = checkEigenValues<double,s,s>(mat, eigenValueTest, kThreshEigen);
     static_assert(checkEigen==true, MSG);
     ASSERT_TRUE( checkEigen );
-
 }
