@@ -99,10 +99,10 @@ following dependiences installed to use them:
 
 Once those are installed, the container built and entered with:
 ```
-make container-pull
-export UID=$(id -u)
-export GID=$(id -g)
-make container-start
+make container.pull
+export MY_UID=$(id -u)
+export MY_GID=$(id -g)
+make container.start
 ```
 
 Then:
