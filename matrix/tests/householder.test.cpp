@@ -8,12 +8,12 @@ using namespace consteig;
 TEST(householder, eigen_comparison)
 {
     static constexpr size_t s {4};
-    Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
+    static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
     
-    // Consteig Householder
-    Matrix<double, s, s> houseMat = house(mat);
+    // Consteig Householder (Calculate at compile time)
+    static constexpr Matrix<double, s, s> houseMat = house(mat);
     
-    // Check properties using Eigen
+    // Check properties using Eigen (Runtime)
     Eigen::MatrixXd eigHouse = toEigen(houseMat);
     Eigen::MatrixXd eigMat = toEigen(mat);
     
@@ -29,7 +29,6 @@ TEST(householder, eigen_comparison)
     }
     
     // 3. Does it leave row 0 affected?
-    // Wait, the householder matrix P has P(0,0)=1 and P(0,i)=0, so P*A should leave 0-th row of A roughly same in 0-th col?
     // Actually P = diag(1, P') where P' acts on subvector.
     // So (P*A).row(0) == A.row(0) if P is block diag(1, ...).
     // Let's check P structure.

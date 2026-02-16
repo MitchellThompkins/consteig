@@ -10,12 +10,12 @@ static constexpr float kThresh {0.0001F};
 TEST(qr_decomp, eigen_comparison)
 {
     static constexpr size_t s {4};
-    Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
+    static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
     
-    // Consteig QR
-    QRMatrix<double, s> qrRes = qr(mat);
+    // Consteig QR (Calculate at compile time)
+    static constexpr QRMatrix<double, s> qrRes = qr(mat);
     
-    // Eigen QR
+    // Eigen QR (Calculate at runtime for comparison)
     Eigen::MatrixXd eigMat = toEigen(mat);
     Eigen::HouseholderQR<Eigen::MatrixXd> qrEig(eigMat);
     Eigen::MatrixXd qEig = qrEig.householderQ();

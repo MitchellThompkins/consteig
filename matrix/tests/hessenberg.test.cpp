@@ -8,12 +8,12 @@ using namespace consteig;
 TEST(hessenberg, eigen_comparison)
 {
     static constexpr size_t s {4};
-    Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
+    static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
     
-    // Consteig Hessenberg
-    PHMatrix<double, s> hessRes = hess(mat);
+    // Consteig Hessenberg (Calculate at compile time)
+    static constexpr PHMatrix<double, s> hessRes = hess(mat);
     
-    // Eigen Hessenberg
+    // Eigen Hessenberg (Runtime)
     Eigen::MatrixXd eigMat = toEigen(mat);
     Eigen::HessenbergDecomposition<Eigen::MatrixXd> hessEig(eigMat);
     Eigen::MatrixXd hEig = hessEig.matrixH();
@@ -30,14 +30,9 @@ TEST(hessenberg, eigen_comparison)
     Eigen::VectorXcd eigValsH = hConstEig.eigenvalues();
     Eigen::VectorXcd eigValsA = eigMat.eigenvalues();
     
-    // Sort complex eigenvalues for comparison is tricky, but let's try simple sort by magnitude or real part
-    // Or just check if norms are preserved
-    // Actually, let's just compare the Hessenberg matrix elements absolute values, usually they match for simple cases
-    // if using standard Householder reduction.
-    
+    // Compare H elements roughly (signs might differ)
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
-           // This might fail if signs are different, so check abs
            EXPECT_NEAR(std::abs(hessRes._h(i,j)), std::abs(hEig(i,j)), 1e-4);
         }
     }
