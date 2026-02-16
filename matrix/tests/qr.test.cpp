@@ -1,11 +1,37 @@
 #include <gtest/gtest.h>
-#include "test_tools.hpp"
+#include "eigen_test_tools.hpp"
 
 #include "decompositions.hpp"
 
 using namespace consteig;
 
 static constexpr float kThresh {0.0001F};
+
+TEST(qr_decomp, eigen_comparison)
+{
+    static constexpr size_t s {4};
+    Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
+    
+    // Consteig QR
+    QRMatrix<double, s> qrRes = qr(mat);
+    
+    // Eigen QR
+    Eigen::MatrixXd eigMat = toEigen(mat);
+    Eigen::HouseholderQR<Eigen::MatrixXd> qrEig(eigMat);
+    Eigen::MatrixXd qEig = qrEig.householderQ();
+    Eigen::MatrixXd rEig = qrEig.matrixQR().triangularView<Eigen::Upper>();
+    
+    // Check Q*R reconstruction for consteig
+    Matrix<double, s, s> recon = qrRes._q * qrRes._r;
+    for(size_t i=0; i<s; ++i)
+        for(size_t j=0; j<s; ++j)
+            EXPECT_NEAR(recon(i,j), mat(i,j), kThresh);
+            
+    // Compare R diagonal absolute values (since signs can flip)
+    for(size_t i=0; i<s; ++i) {
+        EXPECT_NEAR(std::abs(qrRes._r(i,i)), std::abs(rEig(i,i)), kThresh);
+    }
+}
 
 TEST(qr_decomp, static_constexpr_even_mat)
 {
