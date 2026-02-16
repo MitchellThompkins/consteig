@@ -13,8 +13,7 @@ constexpr T pow(
     //TODO(mthompkins): Need to find a better error handling method than just
     //returning 0 for negavie numbers. Should really handle negative numbers
     return
-        n<0 ? static_cast<T>(0) :
-        n == 0 ? 1 :
+        n == 0 ? static_cast<T>(1) :
         n % 2 == 0 ? consteig::pow(x * x, n / 2) :
         consteig::pow(x * x, (n - 1) / 2) * x;
 }
