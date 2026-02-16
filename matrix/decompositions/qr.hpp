@@ -18,7 +18,6 @@ struct QRMatrix
 };
 
 // Modified Gram-Schmidt QR Decomposition
-// Reverted to Gram-Schmidt due to constexpr limitations with Householder implementation
 template<typename T, size_t R, size_t C>
 constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
 {
@@ -27,15 +26,18 @@ constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
     Matrix<T,R,R> q{}; 
     Matrix<T,R,R> r{};
     
+    // Copy a to v (working matrix)
     Matrix<T,R,R> v = a;
 
     for(size_t i = 0; i < R; ++i)
     {
+        // r(i,i) = norm(v_i)
         T n = normE(v.col(i));
         r(i,i) = n;
 
-        if(consteig::abs(n) > static_cast<T>(1e-16))
+        if(consteig::abs(n) > static_cast<T>(1e-15))
         {
+            // q_i = v_i / r(i,i)
             T inv_n = static_cast<T>(1) / n;
             Matrix<T,R,1> q_col = inv_n * v.col(i);
             q.setCol(q_col, i);
@@ -43,9 +45,11 @@ constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
 
         for(size_t j = i + 1; j < R; ++j)
         {
+            // r(i,j) = q_i . v_j
             T d = dot(transpose(q.col(i)), transpose(v.col(j)));
             r(i,j) = d;
             
+            // v_j = v_j - r(i,j) * q_i
             Matrix<T,R,1> v_col_new = v.col(j) - (d * q.col(i));
             v.setCol(v_col_new, j);
         }
