@@ -10,7 +10,7 @@
 namespace consteig
 {
 
-template<typename T, size_t S>
+template<typename T, Size S>
 struct QRMatrix
 {
     Matrix<T,S,S> _q;
@@ -18,7 +18,7 @@ struct QRMatrix
 };
 
 // Modified Gram-Schmidt QR Decomposition
-template<typename T, size_t R, size_t C>
+template<typename T, Size R, Size C>
 constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
 {
     static_assert( R==C, "QR decomposition must be a square matrix");
@@ -29,7 +29,7 @@ constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
     // Copy a to v (working matrix)
     Matrix<T,R,R> v = a;
 
-    for(size_t i = 0; i < R; ++i)
+    for(Size i = 0; i < R; ++i)
     {
         // r(i,i) = norm(v_i)
         T n = normE(v.col(i));
@@ -43,7 +43,7 @@ constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
             q.setCol(q_col, i);
         }
 
-        for(size_t j = i + 1; j < R; ++j)
+        for(Size j = i + 1; j < R; ++j)
         {
             // r(i,j) = q_i . v_j
             T d = dot(transpose(q.col(i)), transpose(v.col(j)));

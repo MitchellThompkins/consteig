@@ -11,19 +11,19 @@ namespace consteig
 {
 
 ///////////// FUNCTION DECLARATIONS /////////////
-template<typename T, size_t R, size_t C>
+template<typename T, Size R, Size C>
 constexpr Matrix<T,R,R> house(Matrix<T,R,C> a);
 
 // https://pages.mtu.edu/~struther/Courses/OLD/Other/Sp2012/5627/BlockQR/Work/MA5629%20presentation.pdf
 ///////////// IMPLEMENTATIONS /////////////
-template<typename T, size_t R, size_t C>
+template<typename T, Size R, Size C>
 constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
 {
     static_assert( R==C, "Householder expects a square matrix");
     static_assert( is_float<T>(), "Householder Reflection expects floating point");
 
     T alphaSum {0};
-    for(size_t i {1}; i<R; i++)
+    for(Size i {1}; i<R; i++)
         alphaSum += (a(i,0)*a(i,0));
 
     if (consteig::abs(alphaSum) < consteig::epsilon<T>()) {
@@ -44,10 +44,10 @@ constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
     T oneOverTwoR {1/(static_cast<T>(2)*r)};
 
     Matrix<T,R,1> v {}; // Zero init
-    for(size_t i=0; i<R; ++i) v(i,0) = 0;
+    for(Size i=0; i<R; ++i) v(i,0) = 0;
 
     v(1,0) = (a(1,0) - alpha) * oneOverTwoR;
-    for(size_t i {2}; i<R; i++)
+    for(Size i {2}; i<R; i++)
         v(i,0) = a(i,0) * oneOverTwoR;
 
     Matrix<T,R,R> p = eye<T,R>() - (static_cast<T>(2) * v * transpose(v));

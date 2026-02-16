@@ -7,7 +7,7 @@ using namespace consteig;
 
 TEST(hessenberg, eigen_comparison)
 {
-    static constexpr size_t s {4};
+    static constexpr Size s {4};
     static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
     
     // Consteig Hessenberg (Calculate at compile time)
@@ -19,8 +19,8 @@ TEST(hessenberg, eigen_comparison)
     Eigen::MatrixXd hEig = hessEig.matrixH();
     
     // Check if H is Upper Hessenberg
-    for(size_t i = 2; i < s; ++i) {
-        for(size_t j = 0; j < i - 1; ++j) {
+    for(Size i = 2; i < s; ++i) {
+        for(Size j = 0; j < i - 1; ++j) {
             EXPECT_NEAR(hessRes._h(i,j), 0.0, 1e-4);
         }
     }
@@ -31,8 +31,8 @@ TEST(hessenberg, eigen_comparison)
     Eigen::VectorXcd eigValsA = eigMat.eigenvalues();
     
     // Compare H elements roughly (signs might differ)
-    for(size_t i=0; i<s; ++i) {
-        for(size_t j=0; j<s; ++j) {
+    for(Size i=0; i<s; ++i) {
+        for(Size j=0; j<s; ++j) {
            EXPECT_NEAR(std::abs(hessRes._h(i,j)), std::abs(hEig(i,j)), 1e-4);
         }
     }

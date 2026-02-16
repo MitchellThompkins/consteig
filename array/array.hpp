@@ -1,19 +1,21 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
+#include "../consteig_types.hpp"
+
 namespace consteig
 {
 
-template <typename T, size_t N>
+template <typename T, Size N>
 class Array
 {
 public:
 
-    constexpr T& operator[](const size_t i)
+    constexpr T& operator[](const Size i)
     {
         return _data[i];
     }
-    constexpr const T& operator[](const size_t i) const
+    constexpr const T& operator[](const Size i) const
     {
         return _data[i];
     }
@@ -23,7 +25,7 @@ public:
         return &_data[0];
     }
 
-    static size_t constexpr size()
+    static Size constexpr size()
     {
         return N;
     }
@@ -49,14 +51,14 @@ public:
     T _data[N];
 };
 
-template <size_t I, typename T, size_t N>
+template <Size I, typename T, Size N>
 constexpr T& get(Array<T, N>& a)
 {
     static_assert(I < N, "I must be less than N");
     return a[I];
 }
 
-template <size_t I, typename T, size_t N>
+template <Size I, typename T, Size N>
 constexpr const T& get(const Array<T, N>& a)
 {
     static_assert(I < N, "I must be less than N");

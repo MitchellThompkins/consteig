@@ -44,7 +44,7 @@ TEST(utilities, value_type_check)
     static constexpr double y {45.6};
     static constexpr long double z {-12.3};
 
-    static constexpr size_t a {9};
+    static constexpr Size a {9};
     static constexpr int b {45};
     static constexpr long int c {-12};
     static constexpr long long int d {-12};
@@ -74,7 +74,7 @@ TEST(utilities, template_type_check)
     static_assert(is_float<double>(), MSG);
     static_assert(is_float<long double>(), MSG);
 
-    static_assert(!is_float<size_t>(), MSG);
+    static_assert(!is_float<Size>(), MSG);
     static_assert(!is_float<int>(), MSG);
     static_assert(!is_float<long int>(), MSG);
     static_assert(!is_float<long long int>(), MSG);
@@ -83,7 +83,7 @@ TEST(utilities, template_type_check)
     ASSERT_TRUE(is_float<double>());
     ASSERT_TRUE(is_float<long double>());
 
-    ASSERT_FALSE(is_float<size_t>());
+    ASSERT_FALSE(is_float<Size>());
     ASSERT_FALSE(is_float<int>());
     ASSERT_FALSE(is_float<long int>());
     ASSERT_FALSE(is_float<long long int>());

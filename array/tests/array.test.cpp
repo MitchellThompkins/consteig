@@ -23,7 +23,7 @@ TEST(array1d, static)
     }
 
     j = 0;
-    for( size_t i {0}; i<s; i++ )
+    for( Size i {0}; i<s; i++ )
     {
         ASSERT_EQ(j,array[i]);
         j++;
@@ -57,9 +57,9 @@ TEST(array2d, static)
     }
 
     m = 0;
-    for( size_t i {0}; i<s; i++ )
+    for( Size i {0}; i<s; i++ )
     {
-        for( size_t j {0}; j<s; j++ )
+        for( Size j {0}; j<s; j++ )
         {
             ASSERT_EQ(m,array[i][j]);
             m++;

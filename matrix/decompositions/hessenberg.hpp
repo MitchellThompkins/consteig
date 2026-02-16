@@ -10,7 +10,7 @@ namespace consteig
 {
 
 ///////////// TYPES /////////////
-template<typename T, size_t S>
+template<typename T, Size S>
 struct PHMatrix
 {
     Matrix<T,S,S> _p;
@@ -18,8 +18,8 @@ struct PHMatrix
 
     constexpr void operator=(const PHMatrix<T, S> &rhs)
     {
-        for( size_t i{0}; i<S; i++ )
-            for( size_t j{0}; j<S; j++ )
+        for( Size i{0}; i<S; i++ )
+            for( Size j{0}; j<S; j++ )
             {
                 (*this._p)(i,j) = rhs._p(i,j);
                 (*this._h)(i,j) = rhs._h(i,j);
@@ -28,13 +28,13 @@ struct PHMatrix
 };
 
 ///////////// FUNCTION DECLARATIONS /////////////
-template<typename T, size_t R, size_t C, size_t L=R>
+template<typename T, Size R, Size C, Size L=R>
 constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a);
 
 
 ///////////// IMPLEMENTATIONS /////////////
 
-template<typename T, size_t R, size_t C, size_t L>
+template<typename T, Size R, Size C, Size L>
 constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
 {
     static_assert( is_float<T>(), "hess expects floating point");
@@ -56,9 +56,9 @@ constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
         result._h = a;
         return result;
     } else {
-        constexpr size_t size {R};
-        constexpr size_t houseSize {L};
-        constexpr size_t end {R-1};
+        constexpr Size size {R};
+        constexpr Size houseSize {L};
+        constexpr Size end {R-1};
 
         Matrix<T,L,L> subA
         {

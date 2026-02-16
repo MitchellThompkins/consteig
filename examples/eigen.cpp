@@ -3,7 +3,7 @@
 
 int main()
 {
-    static constexpr size_t s {4};
+    static constexpr consteig::Size s {4};
 
     static constexpr consteig::Matrix<double,s,s> mat
     {{{
@@ -19,7 +19,7 @@ int main()
     printMat("testEig (Schur Form)", testEig);
 
     std::cout << "testEigVals:\n";
-    for(size_t i=0; i<s; ++i) {
+    for(consteig::Size i=0; i<s; ++i) {
         std::cout << "(" << testEigVals(i,0).real << ", " << testEigVals(i,0).imag << "i)\n";
     }
 
