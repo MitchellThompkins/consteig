@@ -1,25 +1,13 @@
 #include <gtest/gtest.h>
-#include <Eigen/Dense>
 #include <vector>
 #include <algorithm>
-#include "test_tools.hpp"
+#include "eigen_test_tools.hpp"
 
 #include "../consteig.hpp"
 
 using namespace consteig;
 
 static constexpr float kThreshEigen {0.00001F};
-
-template<typename T, size_t R, size_t C>
-Eigen::Matrix<T, R, C> toEigen(const consteig::Matrix<T, R, C>& mat) {
-    Eigen::Matrix<T, R, C> res;
-    for(size_t i = 0; i < R; ++i) {
-        for(size_t j = 0; j < C; ++j) {
-            res(i, j) = mat(i, j);
-        }
-    }
-    return res;
-}
 
 TEST(consteig_eigen, constexpr_eigenValues)
 {
