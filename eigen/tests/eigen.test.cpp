@@ -10,24 +10,24 @@ using namespace consteig;
 static constexpr float kThreshEigen {0.00001F};
 
 // Helper for complex sum
-template<typename T, size_t S>
+template<typename T, Size S>
 constexpr Complex<T> sum(const Matrix<Complex<T>, S, 1>& vec) {
     Complex<T> s{};
-    for(size_t i=0; i<S; ++i) s = s + vec(i,0);
+    for(Size i=0; i<S; ++i) s = s + vec(i,0);
     return s;
 }
 
 // Helper for complex product
-template<typename T, size_t S>
+template<typename T, Size S>
 constexpr Complex<T> prod(const Matrix<Complex<T>, S, 1>& vec) {
     Complex<T> p{1, 0};
-    for(size_t i=0; i<S; ++i) p = p * vec(i,0);
+    for(Size i=0; i<S; ++i) p = p * vec(i,0);
     return p;
 }
 
 TEST(consteig_eigen, constexpr_eigenValues)
 {
-    static constexpr size_t s {4};
+    static constexpr Size s {4};
 
     static constexpr Matrix<double,s,s> mat
     {{{
@@ -51,7 +51,7 @@ TEST(consteig_eigen, constexpr_eigenValues)
 
 TEST(consteig_eigen, symmetric_matrix)
 {
-    static constexpr size_t s {5};
+    static constexpr Size s {5};
 
     static constexpr consteig::Matrix<double, s, s> mat
     {{{
@@ -77,21 +77,21 @@ TEST(consteig_eigen, symmetric_matrix)
 
     // Copy consteig results to std::vector for sorting (extract real part since symmetric)
     std::vector<double> myVals;
-    for(size_t i=0; i<s; ++i) {
+    for(Size i=0; i<s; ++i) {
         EXPECT_NEAR(eigenValueTest(i,0).imag, 0.0, 1e-9); // Symmetric -> real eigenvalues
         myVals.push_back(eigenValueTest(i,0).real);
     }
     std::sort(myVals.begin(), myVals.end());
 
     // Compare
-    for(size_t i=0; i<s; ++i) {
+    for(Size i=0; i<s; ++i) {
         EXPECT_NEAR(myVals[i], eigenValsRef[i], 1e-4) << "Mismatch at index " << i;
     }
 }
 
 TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
 {
-    static constexpr size_t s {2};
+    static constexpr Size s {2};
     // Matrix with complex eigenvalues: [0, 1; -1, 0] -> +/- i
     static constexpr Matrix<double, s, s> mat
     {{{
@@ -114,7 +114,7 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
     bool found_i = false;
     bool found_neg_i = false;
     
-    for(size_t i=0; i<s; ++i) {
+    for(Size i=0; i<s; ++i) {
         Complex<double> val = eigenValueTest(i,0);
         EXPECT_NEAR(val.real, 0.0, 1e-5);
         if (std::abs(val.imag - 1.0) < 1e-5) found_i = true;
@@ -126,7 +126,7 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
 
 TEST(consteig_eigen, non_symmetric_general)
 {
-    static constexpr size_t s {3};
+    static constexpr Size s {3};
     static constexpr Matrix<double, s, s> mat
     {{{
         {1.0, 2.0, 3.0},
@@ -142,7 +142,7 @@ TEST(consteig_eigen, non_symmetric_general)
     static_assert(consteig::abs(sumEigs.real - tr) < 1e-9, "Trace mismatch");
 
     std::vector<Complex<double>> vals;
-    for(size_t i=0; i<s; ++i) vals.push_back(eigenValueTest(i,0));
+    for(Size i=0; i<s; ++i) vals.push_back(eigenValueTest(i,0));
     
     bool found_1 = false;
     bool found_c1 = false;

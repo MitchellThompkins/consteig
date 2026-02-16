@@ -8,15 +8,15 @@ using namespace consteig;
 // Runtime verification of the algorithm against Eigen on random matrices
 // This ensures algorithmic correctness beyond the static constexpr cases.
 
-template<size_t S>
+template<Size S>
 void verify_symmetric_random() {
     // Generate random symmetric matrix
     std::mt19937 gen(42); // Fixed seed
     std::uniform_real_distribution<double> dist(-10.0, 10.0);
     
     Matrix<double, S, S> mat;
-    for(size_t i=0; i<S; ++i) {
-        for(size_t j=i; j<S; ++j) {
+    for(Size i=0; i<S; ++i) {
+        for(Size j=i; j<S; ++j) {
             double val = dist(gen);
             mat(i,j) = val;
             mat(j,i) = val;
@@ -32,23 +32,23 @@ void verify_symmetric_random() {
     Eigen::VectorXd ref = es.eigenvalues();
     
     std::vector<double> calc;
-    for(size_t i=0; i<S; ++i) calc.push_back(res(i,0).real);
+    for(Size i=0; i<S; ++i) calc.push_back(res(i,0).real);
     std::sort(calc.begin(), calc.end());
     
-    for(size_t i=0; i<S; ++i) {
+    for(Size i=0; i<S; ++i) {
         EXPECT_NEAR(calc[i], ref(i), 1e-3) << "Symmetric mismatch at index " << i;
     }
 }
 
-template<size_t S>
+template<Size S>
 void verify_nonsymmetric_random() {
     // Generate random matrix
     std::mt19937 gen(123);
     std::uniform_real_distribution<double> dist(-5.0, 5.0);
     
     Matrix<double, S, S> mat;
-    for(size_t i=0; i<S; ++i) {
-        for(size_t j=0; j<S; ++j) {
+    for(Size i=0; i<S; ++i) {
+        for(Size j=0; j<S; ++j) {
             mat(i,j) = dist(gen);
         }
     }
@@ -65,14 +65,14 @@ void verify_nonsymmetric_random() {
     // We'll match each result to the closest reference.
     std::vector<bool> matched(S, false);
     
-    for(size_t i=0; i<S; ++i) {
+    for(Size i=0; i<S; ++i) {
         double real = res(i,0).real;
         double imag = res(i,0).imag;
         
         bool found = false;
         double min_dist = 1e9;
         
-        for(size_t j=0; j<S; ++j) {
+        for(Size j=0; j<S; ++j) {
             if (matched[j]) continue;
             
             double d_real = real - ref(j).real();

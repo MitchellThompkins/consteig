@@ -7,7 +7,7 @@ using namespace consteig;
 
 TEST(householder, eigen_comparison)
 {
-    static constexpr size_t s {4};
+    static constexpr Size s {4};
     static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
     
     // Consteig Householder (Calculate at compile time)
@@ -24,7 +24,7 @@ TEST(householder, eigen_comparison)
     // house() is designed for Hessenberg reduction, preserving row 0 and creating zeros in col 0 below row 1.
     Eigen::MatrixXd result = eigHouse * eigMat;
     
-    for(size_t i = 2; i < s; ++i) {
+    for(Size i = 2; i < s; ++i) {
         EXPECT_NEAR(result(i, 0), 0.0, 1e-4);
     }
     
@@ -33,7 +33,7 @@ TEST(householder, eigen_comparison)
     // So (P*A).row(0) == A.row(0) if P is block diag(1, ...).
     // Let's check P structure.
     EXPECT_NEAR(houseMat(0,0), 1.0, 1e-9);
-    for(size_t i=1; i<s; ++i) {
+    for(Size i=1; i<s; ++i) {
         EXPECT_NEAR(houseMat(0,i), 0.0, 1e-9);
         EXPECT_NEAR(houseMat(i,0), 0.0, 1e-9);
     }

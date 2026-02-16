@@ -1,15 +1,19 @@
 #ifndef EIGEN_HPP
 #define EIGEN_HPP
 
-#include "../consteig.hpp"
+#include "../consteig_types.hpp"
 #include "../consteig_options.hpp"
+#include "../math/complex.hpp"
+#include "../matrix/matrix.hpp"
+#include "../matrix/operations.hpp"
+#include "../matrix/decompositions/hessenberg.hpp"
 #include "../matrix/decompositions/qr.hpp"
 
 namespace consteig
 {
 
 // Forward declaration
-template<typename T, size_t S>
+template<typename T, Size S>
 constexpr Matrix<T,S,S> eig(
         Matrix<T,S,S> a,
         const T symmetryTolerance=CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE );
@@ -24,17 +28,17 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
          consteig::sqrt( consteig::pow(delta,2)+consteig::pow(b,2) ))));
 }
 
-template<typename T, size_t S>
+template<typename T, Size S>
 constexpr Matrix<T,S,S> eig_shifted_qr( Matrix<T,S,S> a )
 {
     if constexpr (S <= 1) {
         return a;
     } else {
-        constexpr size_t size {S};
+        constexpr Size size {S};
         PHMatrix<T,S> hessTemp {hess(a)};
         a = hessTemp._h;
 
-        size_t iter = 0;
+        Size iter = 0;
         while( iter < 100 && S > 1 && consteig::abs(a(S-1, S-2)) > 1e-10) 
         {
             T mu { wilkinsonShift( a(S-2,S-2), a(S-1,S-1), a(S-2,S-1) ) };
@@ -53,7 +57,7 @@ constexpr Matrix<T,S,S> eig_shifted_qr( Matrix<T,S,S> a )
     }
 }
 
-template<typename T, size_t S>
+template<typename T, Size S>
 constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
 {
     if constexpr (S <= 2) {
@@ -62,8 +66,8 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
         PHMatrix<T,S> hessTemp {hess(a)};
         a = hessTemp._h;
         
-        size_t n = S;
-        size_t iter = 0;
+        Size n = S;
+        Size iter = 0;
         
         while(iter < 100 * S) {
             T sub1 = consteig::abs(a(n-1, n-2));
@@ -71,7 +75,7 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
                 Matrix<T, S-1, S-1> subA = a.template sub<0,0,S-2,S-2>();
                 Matrix<T, S-1, S-1> res = eig<T, S-1>(subA);
                 Matrix<T, S, S> out = eye<T,S>();
-                for(size_t i=0; i<S; ++i) for(size_t j=0; j<S; ++j) out(i,j) = (i==j?1:0);
+                for(Size i=0; i<S; ++i) for(Size j=0; j<S; ++j) out(i,j) = (i==j?1:0);
                 out.template setSub<0,0,S-2,S-2>(res);
                 out(S-1, S-1) = a(S-1, S-1);
                 return out;
@@ -82,7 +86,7 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
                 Matrix<T, S-2, S-2> subA = a.template sub<0,0,S-3,S-3>();
                 Matrix<T, S-2, S-2> res = eig<T, S-2>(subA);
                 Matrix<T, S, S> out = eye<T,S>();
-                for(size_t i=0; i<S; ++i) for(size_t j=0; j<S; ++j) out(i,j) = (i==j?1:0);
+                for(Size i=0; i<S; ++i) for(Size j=0; j<S; ++j) out(i,j) = (i==j?1:0);
                 out.template setSub<0,0,S-3,S-3>(res);
                 out.template setSub<S-2,S-2,S-1,S-1>(a.template sub<S-2,S-2,S-1,S-1>());
                 return out;
@@ -95,7 +99,7 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
             T y = a(1,0) * (a(0,0) + a(1,1) - s);
             T z = a(1,0) * a(2,1); 
             
-            for(size_t k = 0; k < n - 2; ++k) {
+            for(Size k = 0; k < n - 2; ++k) {
                 T v0{0}, v1{0}, v2{0};
                 if (k == 0) { v0 = x; v1 = y; v2 = z; }
                 else { 
@@ -111,12 +115,12 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
                     T invV0 = 1.0/rv0;
                     T p1 = v1 * invV0; T p2 = v2 * invV0;
                     
-                    for(size_t j = k; j < S; ++j) {
+                    for(Size j = k; j < S; ++j) {
                         T s_dot = a(k,j) + p1 * a(k+1,j) + p2 * a(k+2,j);
                         T tau = beta * s_dot;
                         a(k,j) -= tau; a(k+1,j) -= tau * p1; a(k+2,j) -= tau * p2;
                     }
-                    for(size_t i = 0; i < S; ++i) {
+                    for(Size i = 0; i < S; ++i) {
                         T s_dot = a(i,k) + p1 * a(i,k+1) + p2 * a(i,k+2);
                         T tau = beta * s_dot;
                         a(i,k) -= tau; a(i,k+1) -= tau * p1; a(i,k+2) -= tau * p2;
@@ -129,7 +133,7 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
     }
 }
 
-template<typename T, size_t S>
+template<typename T, Size S>
 constexpr Matrix<T,S,S> eig(
         Matrix<T,S,S> a,
         const T symmetryTolerance )
@@ -141,12 +145,12 @@ constexpr Matrix<T,S,S> eig(
         return eig_double_shifted_qr<T,S>(a);
 };
 
-template<typename T, size_t S>
+template<typename T, Size S>
 constexpr Matrix<Complex<T>,S,1> eigvals( const Matrix<T,S,S> a )
 {
     Matrix<T,S,S> out = eig(a);
     Matrix<Complex<T>,S,1> result{};
-    for(size_t i=0; i<S; ++i) {
+    for(Size i=0; i<S; ++i) {
         if (i < S - 1 && consteig::abs(out(i+1, i)) > 1e-6) {
             T a00 = out(i,i); T a01 = out(i,i+1); T a10 = out(i+1,i); T a11 = out(i+1,i+1);
             T tr = a00 + a11; T d = a00*a11 - a01*a10;
@@ -166,7 +170,7 @@ constexpr Matrix<Complex<T>,S,1> eigvals( const Matrix<T,S,S> a )
     return result;
 }
 
-template<typename T, size_t R, size_t C>
+template<typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(
         const Matrix<T,R,C> a,
         const Matrix<Complex<T>,R,1> lambda,

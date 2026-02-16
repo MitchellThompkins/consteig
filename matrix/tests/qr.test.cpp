@@ -9,7 +9,7 @@ static constexpr float kThresh {0.0001F};
 
 TEST(qr_decomp, eigen_comparison)
 {
-    static constexpr size_t s {4};
+    static constexpr Size s {4};
     static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
     
     // Consteig QR (Calculate at compile time)
@@ -23,19 +23,19 @@ TEST(qr_decomp, eigen_comparison)
     
     // Check Q*R reconstruction for consteig
     Matrix<double, s, s> recon = qrRes._q * qrRes._r;
-    for(size_t i=0; i<s; ++i)
-        for(size_t j=0; j<s; ++j)
+    for(Size i=0; i<s; ++i)
+        for(Size j=0; j<s; ++j)
             EXPECT_NEAR(recon(i,j), mat(i,j), kThresh);
             
     // Compare R diagonal absolute values (since signs can flip)
-    for(size_t i=0; i<s; ++i) {
+    for(Size i=0; i<s; ++i) {
         EXPECT_NEAR(std::abs(qrRes._r(i,i)), std::abs(rEig(i,i)), kThresh);
     }
 }
 
 TEST(qr_decomp, static_constexpr_even_mat)
 {
-    static constexpr size_t x {3};
+    static constexpr Size x {3};
 
     static constexpr Matrix<float, x, x> mat
     {{{ {1.0F, 1.0F, 0.0F}, {1.0F, 0.0F , 1.0F}, {0.0F, 1.0F, 1.0F} }}};

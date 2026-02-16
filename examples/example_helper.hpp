@@ -6,7 +6,7 @@
 #include <string>
 #include "../consteig.hpp"
 
-template<typename T, size_t R, size_t C>
+template<typename T, consteig::Size R, consteig::Size C>
 void printMat( const std::string name, const consteig::Matrix<T,R,C> &mat)
 {
     std::cout << "\n" << name << "\n";
@@ -20,7 +20,7 @@ void printMat( const std::string name, const consteig::Matrix<T,R,C> &mat)
     }
 }
 
-template<typename T, size_t R, size_t C>
+template<typename T, consteig::Size R, consteig::Size C>
 void printMat( const std::string name, const consteig::Matrix<consteig::Complex<T>,R,C> &mat)
 {
     std::cout << "\n" << name << "\n";
