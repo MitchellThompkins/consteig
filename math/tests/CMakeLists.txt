@@ -25,3 +25,8 @@ add_executable(utilities.test ${CMAKE_CURRENT_SOURCE_DIR}/utilities.test.cpp)
 target_include_directories(math INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
 target_link_libraries(utilities.test math gtest_main)
 create_test(utilities.test)
+
+add_executable(complex.test ${CMAKE_CURRENT_SOURCE_DIR}/complex.test.cpp)
+target_include_directories(math INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(complex.test math gtest_main)
+create_test(complex.test)
