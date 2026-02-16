@@ -60,20 +60,9 @@ TEST(qr_decomp, static_constexpr_even_mat)
     static_assert(compareFloatMat(test._q, qAnswer, kThresh), MSG);
     static_assert(compareFloatMat(test._r, rAnswer, kThresh), MSG);
 
-    // Technically these next two checks aren't necessary if the static asserts
-    // are passed
-    for(int i {0}; i<x; i++)
-    {
-        for(int j {0}; j<x; j++)
-        {
-            ASSERT_NEAR(test._q(i,j), qAnswer(i,j), .0001F);
-        }
-    }
-
-    for(int i {0}; i<x; i++)
-        for(int j {0}; j<x; j++)
-            ASSERT_NEAR(test._r(i,j), rAnswer(i,j), .0001F);
-
+    // Runtime checks
+    ASSERT_TRUE(compareFloatMat(test._q, qAnswer, kThresh));
+    ASSERT_TRUE(compareFloatMat(test._r, rAnswer, kThresh));
 }
 
 TEST(qr_decomp, static_constexpr_random)
@@ -97,41 +86,13 @@ TEST(qr_decomp, static_constexpr_random)
 
     static constexpr Matrix<float, s, s> qrCheck {test._q*test._r};
 
-    static constexpr Matrix<float, s, s> qAnswer
-    {{{
-    {-0.64889, -0.10463, -0.05114, -0.42058, -0.29853, -0.11557, -0.004846, 0.45357, -0.14972, -0.2405},
-    {-0.13785, -0.12305, 0.088758, 0.2546, -0.44879, -0.34022, 0.12505, -0.56567, -0.4825, -0.087038},
-    {0.33006, 0.19134, -0.085165, 0.29382, 0.14756, -0.1572, -0.1576, 0.37036, -0.39117, -0.63195},
-    {0.11013, 0.48181, 0.30571, -0.40604, 0.12758, 0.17171, 0.16467, 0.017903, -0.58284, 0.29069},
-    {0.52677, -0.50692, 0.42152, -0.24136, -0.26171, -0.25898, 0.023186, 0.28436, 0.0073938, 0.11222},
-    {0.19256, -0.14709, -0.38372, -0.56955, 0.30617, -0.21765, 0.31499, -0.34626, 0.027123, -0.32969},
-    {0.15071, -0.18312, -0.13771, -0.26464, -0.2321, 0.52631, -0.64319, -0.24602, -0.16852, -0.14581},
-    {0.17649, 0.48596, 0.1972, -0.11945, -0.52866, 0.14388, 0.22751, -0.091654, 0.42311, -0.37439},
-    {0.043148, 0.38913, -0.095644, -0.19092, -0.047927, -0.63436, -0.56648, -0.070248, 0.15916, 0.21267},
-    {0.26186, 0.073804, -0.70489, 0.060881, -0.41657, 0.046127, 0.21512, 0.24938, -0.13606, 0.35039},
-    }}};
-
-    static constexpr Matrix<float, s, s> rAnswer
-    {{{
-    {3.0997, 0.22117, 0.78826, -1.116, -0.69328, -2.8678, -0.28116, 0.17412, -1.5903, -0.51622},
-    {0, 3.6107, -0.71586, -0.79456, 0.078267, -0.57793, 0.91535, -0.79714, -0.14183, -0.72842},
-    {0, 0, -2.9439, 0.2231, 0.71981, 0.68974, 0.43667, -0.30568, 0.44025, 0.056035},
-    {0, 0, 0, -3.5543, 0.45439, -2.1888, 0.58292, 0.68926, 0.71674, 1.9916},
-    {0, 0, 0, 0, 2.4696, 0.6157, 1.2212, -0.050486, 0.21412, -0.6017},
-    {0, 0, 0, 0, 0, 1.7063, 0.4797, 0.6734, -1.4393, 1.2515},
-    {0, 0, 0, 0, 0, 0, -1.4147, 0.96402, -1.1688, 2.0486},
-    {0, 0, 0, 0, 0, 0, 0, 0.87923, -0.91627, 1.4616},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0.9499, -0.50995},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, -1.1147},
-    }}};
-
-    //TODO(mthompkins): Readdress this
-    //static_assert(compareFloatMat(test._q, qAnswer, kThresh), MSG);
-    //ASSERT_TRUE(compareFloatMat(test._q, qAnswer, kThresh));
-
-    //static_assert(compareFloatMat(test._r, rAnswer, kThresh), MSG);
-    //ASSERT_TRUE(compareFloatMat(test._r, rAnswer, kThresh));
-
+    // Verify properties instead of exact match with specific Q/R
     static_assert(compareFloatMat(qrCheck, mat, kThresh), MSG);
     ASSERT_TRUE(compareFloatMat(qrCheck, mat, kThresh));
+    
+    // Check Q unitary
+    static constexpr Matrix<float, s, s> qUnitary {test._q * transpose(test._q)};
+    static constexpr Matrix<float, s, s> identity {eye<float, s>()};
+    static_assert(compareFloatMat(qUnitary, identity, kThresh), MSG);
+    ASSERT_TRUE(compareFloatMat(qUnitary, identity, kThresh));
 }
