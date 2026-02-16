@@ -11,11 +11,12 @@ also allows for compile time static matrix manipulation. To remove any external
 dependences several constexpr functions are implemented as well.
 
 ## What Does This Do
-* Compute eigenvalues at compile-time
+* Compute real and complex eigenvalues at compile-time for both symmetric and non-symmetric matrices.
 * Declare, manipulate, perform matrix operations, and a handful of matrix
   decompositions at compile time. That means users can create matrices and
   perform a collection of [operations]() on them.
-* Perform a very narrow selection of math functions at compile time
+* Perform a selection of math functions (including complex arithmetic) at compile time.
+* Strictly freestanding: The core library has zero dependencies on the standard library.
 
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
@@ -29,10 +30,10 @@ on a compile time eigenvalue finder.
 
 ## How To Use Consteig
 Consteig is a templated library and as such a user does not need to compile
-anything separately. Simply `#include “Consteig.hpp”` into your project. The
+anything separately. Simply `#include “consteig.hpp”` into your project. The
 cmake files here are only to facilitate testing and development.
 
-You will also need a C++ compiler which supports C++14.
+You will also need a C++ compiler which supports **C++17**.
 
 Here are some examples to help get started:
 * [Declaring a matrix]()
@@ -42,10 +43,7 @@ Here are some examples to help get started:
 ## How Is This Different
 There are powerful open source C++ eigenvalues solvers already in existence
 which are more robust, better optimized, and better tested. The caveat is that
-they cannot currently calculate Eigenvalues at compile time. There’s been talk
-of [adding constexpr functionality to
-Eigen](https://gitlab.com/libeigen/eigen/-/issues/820) but as of yet that hasn’t
-happened.
+they cannot currently calculate Eigenvalues at compile time.
 
 Another key component to most eigenvalues solvers is the reliance on the
 standard library. This is for good reason as the standard library, in particular
@@ -56,15 +54,20 @@ library isn’t available.
 This solves those two problems in a limited capacity.
 
 ## When To Use Consteig
-* Eigenvalues need to be known at compile time
-* Eigenvalues need to be known and the standard library is unavailable
-* You need to manipulate static matrices at compile time
+* Eigenvalues (real or complex) need to be known at compile time.
+* Eigenvalues need to be known and the standard library is unavailable.
+* You need to manipulate static matrices at compile time.
 
 ## When Not To Use Consteig
-* Eigen Values do not need to be known at compile time
+* Eigen Values do not need to be known at compile time.
 * Eigen Values can be solved at runtime and the compiler can leverage standard
-  library functionality
-* Matrices do not need to be manipulated at compile time
+  library functionality.
+* Matrices do not need to be manipulated at compile time.
+
+## Verification
+The library is rigorously verified through two primary methods:
+1. **Eigen Library Comparison**: Unit tests link against the [Eigen](https://eigen.tuxfamily.org/) library to compare compile-time results against a high-performance reference implementation.
+2. **Octave Test Generation**: An Octave script (`octave/generate_test_cases.m`) is provided to generate fresh matrix test data and expected results, which are automatically verified using `static_assert` at compile time.
 
 ## What Can Improve
 * Declaring matrices can be initializer bracket hell. Refer to [this example]()
@@ -72,32 +75,22 @@ This solves those two problems in a limited capacity.
 * The algorithms implemented here do not necessarily take advantage of a
   collection of optimization techniques for solving matrices nor has there been
   a concerted effort to optimize the implementations themselves. As such, for
-  extremely large matrices compilation may be slow. Compilation has been tested
-  on [these]() machines for matrices up to size NxN.
+  extremely large matrices compilation may be slow. 
 * Currently the matrix [decompositions]() require square matrices.
-* No complex number support is natively supported. That said, matrices can be
-  declared as any type and any operation can be performed on a matrix of any
-  type. Matrix decomposition however only operate on matrices of floating point
-  types.
+* Support for non-square QR decomposition and optimized determinant/inverse calculations.
 
 ## Notes On Performance
-* Float vs. double
-* Unit testing _does_ leverage components of the standard library, but
-  `consteig` does not.
+* Unit testing _does_ leverage components of the standard library and Eigen, but
+  the `consteig` library core does not.
 
 ## Building
 Build dependencies rely on:
-* gcc
-* g++
-* cmake
+* gcc/g++ (C++17 support)
+* cmake (>= 3.11)
 * make
+* Octave (optional, for test generation)
 
-These are all packaged into an alpine docker container. You must have the
-following dependiences installed to use them:
-* docker
-* docker-compose
-
-Once those are installed, the container built and entered with:
+These are all packaged into an alpine docker container. 
 ```
 make container.pull
 export MY_UID=$(id -u)
@@ -113,8 +106,10 @@ make test
 
 ## TODO
 - [ ] Compile with `-wall`
-- [ ] Compute QR decomop w/ householder reflections
-- [ ] Implement double-shift QR algorithm
+- [x] Implement complex number support
+- [x] Implement double-shift QR algorithm for non-symmetric matrices
+- [ ] Optimize QR decomposition using scaled Householder reflections (currently uses Gram-Schmidt for constexpr stability)
+- [ ] Refactor remaining `_impl` structs to use `if constexpr`
 - [ ] Remove dependency on `size_t`
 
 ## References
