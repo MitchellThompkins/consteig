@@ -9,6 +9,22 @@ using namespace consteig;
 
 static constexpr float kThreshEigen {0.00001F};
 
+// Helper for complex sum
+template<typename T, size_t S>
+constexpr Complex<T> sum(const Matrix<Complex<T>, S, 1>& vec) {
+    Complex<T> s{};
+    for(size_t i=0; i<S; ++i) s = s + vec(i,0);
+    return s;
+}
+
+// Helper for complex product
+template<typename T, size_t S>
+constexpr Complex<T> prod(const Matrix<Complex<T>, S, 1>& vec) {
+    Complex<T> p{1, 0};
+    for(size_t i=0; i<S; ++i) p = p * vec(i,0);
+    return p;
+}
+
 TEST(consteig_eigen, constexpr_eigenValues)
 {
     static constexpr size_t s {4};
@@ -23,10 +39,14 @@ TEST(consteig_eigen, constexpr_eigenValues)
 
     static constexpr auto eigenValueTest {eigvals(mat)};
 
-    static constexpr bool checkEigen = checkEigenValues<double,s,s>(mat, eigenValueTest, kThreshEigen);
-    //TODO(mthompkins): Comment this back in
-    //static_assert(checkEigen==true, MSG);
-    //ASSERT_TRUE( checkEigen );
+    // Compile-time verification: Sum of eigenvalues = Trace(A)
+    static constexpr double tr = trace(mat);
+    static constexpr auto sumEigs = sum(eigenValueTest);
+    static_assert(consteig::abs(sumEigs.real - tr) < 1e-3, "Trace mismatch");
+    static_assert(consteig::abs(sumEigs.imag) < 1e-3, "Trace imag mismatch");
+
+    // Runtime verification
+    ASSERT_NEAR(sumEigs.real, tr, 1e-3);
 }
 
 TEST(consteig_eigen, symmetric_matrix)
@@ -45,6 +65,11 @@ TEST(consteig_eigen, symmetric_matrix)
     // Calculate using consteig (returns Complex<double>)
     static constexpr auto eigenValueTest {eigvals(mat)};
 
+    // Compile-time verification: Sum of eigenvalues = Trace(A)
+    static constexpr double tr = trace(mat);
+    static constexpr auto sumEigs = sum(eigenValueTest);
+    static_assert(consteig::abs(sumEigs.real - tr) < 1e-3, "Trace mismatch");
+
     // Calculate using Eigen (Reference)
     auto eigenMat = toEigen(mat);
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, s, s>> es(eigenMat);
@@ -62,10 +87,6 @@ TEST(consteig_eigen, symmetric_matrix)
     for(size_t i=0; i<s; ++i) {
         EXPECT_NEAR(myVals[i], eigenValsRef[i], 1e-4) << "Mismatch at index " << i;
     }
-
-    // static constexpr bool checkEigen = checkEigenValues<double,s,s>(mat, eigenValueTest, kThreshEigen);
-    // static_assert(checkEigen==true, MSG);
-    // ASSERT_TRUE( checkEigen );
 }
 
 TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
@@ -80,6 +101,15 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
 
     static constexpr auto eigenValueTest {eigvals(mat)};
     
+    // Compile-time check
+    static constexpr auto sumEigs = sum(eigenValueTest);
+    static constexpr double tr = trace(mat); // 0
+    static_assert(consteig::abs(sumEigs.real - tr) < 1e-9, "Trace mismatch");
+    
+    static constexpr auto prodEigs = prod(eigenValueTest); // i * -i = 1
+    static constexpr double d = det(mat); // 0 - (-1) = 1
+    static_assert(consteig::abs(prodEigs.real - d) < 1e-9, "Det mismatch");
+
     // Check results
     bool found_i = false;
     bool found_neg_i = false;
@@ -100,25 +130,20 @@ TEST(consteig_eigen, non_symmetric_general)
     static constexpr Matrix<double, s, s> mat
     {{{
         {1.0, 2.0, 3.0},
-        {0.0, 1.0, 5.0}, // Upper triangular part
-        {0.0, -2.0, 1.0} // Block [1, 5; -2, 1] at bottom right? No.
-        // Let's use a known matrix or random non-symmetric.
-        // Actually the matrix above:
-        // {1, 2, 3}
-        // {0, 1, 5}
-        // {0, -2, 1}
-        // Eigenvalues: 1 (from top left), and eigenvalues of [1, 5; -2, 1].
-        // [1, 5; -2, 1] -> (1-L)(1-L) - (-10) = 0 -> (1-L)^2 + 10 = 0 -> (1-L)^2 = -10 -> 1-L = +/- i sqrt(10) -> L = 1 +/- i sqrt(10).
+        {0.0, 1.0, 5.0}, 
+        {0.0, -2.0, 1.0} 
     }}};
-    
-    // 1 +/- i * 3.162
     
     static constexpr auto eigenValueTest {eigvals(mat)};
     
+    // Compile-time check
+    static constexpr auto sumEigs = sum(eigenValueTest); // 1 + (1+3.16i) + (1-3.16i) = 3
+    static constexpr double tr = trace(mat); // 1+1+1 = 3
+    static_assert(consteig::abs(sumEigs.real - tr) < 1e-9, "Trace mismatch");
+
     std::vector<Complex<double>> vals;
     for(size_t i=0; i<s; ++i) vals.push_back(eigenValueTest(i,0));
     
-    // Sort logic for complex is tricky, just search
     bool found_1 = false;
     bool found_c1 = false;
     bool found_c2 = false;

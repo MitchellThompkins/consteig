@@ -206,5 +206,15 @@ constexpr T det( const Matrix<T,2,2> &mat )
     return (mat(0,0)*mat(1,1)) - (mat(0,1)*mat(1,0));
 }
 
+template<typename T, size_t R, size_t C>
+constexpr T trace( const Matrix<T,R,C> &mat )
+{
+    static_assert(R==C, "Trace expects a square matrix");
+    T result {static_cast<T>(0)};
+    for(size_t i{0}; i<R; ++i)
+        result += mat(i,i);
+    return result;
+}
+
 }
 #endif
