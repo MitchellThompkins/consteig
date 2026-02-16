@@ -107,7 +107,6 @@ make test
 ## TODO
 - [ ] Compile with `-wall`
 - [ ] Optimize QR decomposition using scaled Householder reflections (currently uses Gram-Schmidt for constexpr stability)
-- [x] Remove dependency on `size_t`
 
 ## References
 
