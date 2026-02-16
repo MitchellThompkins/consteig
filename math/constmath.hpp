@@ -6,5 +6,6 @@
 #include "functions/sgn.hpp"
 #include "functions/sqrt.hpp"
 #include "functions/utilities.hpp"
+#include "complex.hpp"
 
 #endif
