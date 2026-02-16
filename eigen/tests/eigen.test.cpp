@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <Eigen/Dense>
 #include "test_tools.hpp"
 
 #include "../consteig.hpp"
@@ -7,7 +8,7 @@ using namespace consteig;
 
 static constexpr float kThreshEigen {0.00001F};
 
-TEST(solver, constexpr_eigenValues)
+TEST(consteig_eigen, constexpr_eigenValues)
 {
     static constexpr size_t s {4};
 
@@ -27,7 +28,7 @@ TEST(solver, constexpr_eigenValues)
     //ASSERT_TRUE( checkEigen );
 }
 
-TEST(solver, symmetric_matrix)
+TEST(consteig_eigen, symmetric_matrix)
 {
     static constexpr size_t s {5};
 
