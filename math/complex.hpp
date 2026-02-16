@@ -50,6 +50,30 @@ struct Complex
 };
 
 template<typename T>
+constexpr Complex<T> operator+(const T& scalar, const Complex<T>& c)
+{
+    return {scalar + c.real, c.imag};
+}
+
+template<typename T>
+constexpr Complex<T> operator+(const Complex<T>& c, const T& scalar)
+{
+    return {c.real + scalar, c.imag};
+}
+
+template<typename T>
+constexpr Complex<T> operator-(const T& scalar, const Complex<T>& c)
+{
+    return {scalar - c.real, -c.imag};
+}
+
+template<typename T>
+constexpr Complex<T> operator-(const Complex<T>& c, const T& scalar)
+{
+    return {c.real - scalar, c.imag};
+}
+
+template<typename T>
 constexpr Complex<T> operator*(const T& scalar, const Complex<T>& c)
 {
     return {scalar * c.real, scalar * c.imag};
