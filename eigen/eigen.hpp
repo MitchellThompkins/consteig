@@ -25,10 +25,11 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
 }
 
 template<typename T, size_t S>
-struct eig_impl_shifted_qr
+constexpr Matrix<T,S,S> eig_shifted_qr( Matrix<T,S,S> a )
 {
-    static constexpr Matrix<T,S,S> _( Matrix<T,S,S> a )
-    {
+    if constexpr (S <= 1) {
+        return a;
+    } else {
         constexpr size_t size {S};
         PHMatrix<T,S> hessTemp {hess(a)};
         a = hessTemp._h;
@@ -43,34 +44,28 @@ struct eig_impl_shifted_qr
             iter++;
         }
 
-        if (S > 1) {
-            Matrix<T,S-1,S-1> subA = a.template sub<0,0,S-2,S-2>();
-            Matrix<T,S-1,S-1> out = eig<T,S-1>(subA);
-            Matrix<T, S, S> i = eye<T,S>();
-            i.template setSub<0,0,S-2,S-2>(out);
-            i(S-1,S-1) = a(S-1,S-1);
-            return i;
-        }
-        return a;
+        Matrix<T,S-1,S-1> subA = a.template sub<0,0,S-2,S-2>();
+        Matrix<T,S-1,S-1> out = eig<T,S-1>(subA);
+        Matrix<T, S, S> i = eye<T,S>();
+        i.template setSub<0,0,S-2,S-2>(out);
+        i(S-1,S-1) = a(S-1,S-1);
+        return i;
     }
-};
-
-template<typename T> struct eig_impl_shifted_qr<T,1> {
-    static constexpr Matrix<T,1,1> _( Matrix<T,1,1> a ) { return a; }
-};
+}
 
 template<typename T, size_t S>
-struct eig_impl_double_shifted_qr
+constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
 {
-    static constexpr Matrix<T,S,S> _( Matrix<T,S,S> a )
-    {
+    if constexpr (S <= 2) {
+        return a;
+    } else {
         PHMatrix<T,S> hessTemp {hess(a)};
         a = hessTemp._h;
         
         size_t n = S;
         size_t iter = 0;
         
-        while(iter < 100 * S && n > 2) {
+        while(iter < 100 * S) {
             T sub1 = consteig::abs(a(n-1, n-2));
             if(sub1 < consteig::epsilon<T>() * (consteig::abs(a(n-1,n-1)) + consteig::abs(a(n-2,n-2)))) {
                 Matrix<T, S-1, S-1> subA = a.template sub<0,0,S-2,S-2>();
@@ -98,7 +93,7 @@ struct eig_impl_double_shifted_qr
             
             T x = a(0,0)*a(0,0) + a(0,1)*a(1,0) - s*a(0,0) + t;
             T y = a(1,0) * (a(0,0) + a(1,1) - s);
-            T z = a(1,0) * a(2,1); // Hessenberg guarantees a(2,1) exists if S>2
+            T z = a(1,0) * a(2,1); 
             
             for(size_t k = 0; k < n - 2; ++k) {
                 T v0{0}, v1{0}, v2{0};
@@ -132,24 +127,18 @@ struct eig_impl_double_shifted_qr
         }
         return a;
     }
-};
-
-template<typename T> struct eig_impl_double_shifted_qr<T, 2> {
-    static constexpr Matrix<T,2,2> _( Matrix<T,2,2> a ) { return a; }
-};
-template<typename T> struct eig_impl_double_shifted_qr<T, 1> {
-    static constexpr Matrix<T,1,1> _( Matrix<T,1,1> a ) { return a; }
-};
+}
 
 template<typename T, size_t S>
 constexpr Matrix<T,S,S> eig(
         Matrix<T,S,S> a,
         const T symmetryTolerance )
 {
+    static_assert( is_float<T>(), "eig reduction expects floating point");
     if(a.isSymmetric(static_cast<T>(symmetryTolerance)))
-        return eig_impl_shifted_qr<T,S>::_(a);
+        return eig_shifted_qr<T,S>(a);
     else
-        return eig_impl_double_shifted_qr<T,S>::_(a);
+        return eig_double_shifted_qr<T,S>(a);
 };
 
 template<typename T, size_t S>
@@ -187,4 +176,5 @@ static inline constexpr bool checkEigenValues(
 }
 
 } //end namespace
+
 #endif
