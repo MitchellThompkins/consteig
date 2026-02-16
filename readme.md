@@ -106,10 +106,7 @@ make test
 
 ## TODO
 - [ ] Compile with `-wall`
-- [x] Implement complex number support
-- [x] Implement double-shift QR algorithm for non-symmetric matrices
 - [ ] Optimize QR decomposition using scaled Householder reflections (currently uses Gram-Schmidt for constexpr stability)
-- [ ] Refactor remaining `_impl` structs to use `if constexpr`
 - [ ] Remove dependency on `size_t`
 
 ## References
