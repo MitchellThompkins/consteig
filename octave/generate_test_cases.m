@@ -10,7 +10,7 @@ fprintf(fid, '#include "../consteig.hpp"\n\n');
 fprintf(fid, 'namespace consteig {\n\n');
 
 % 1. Symmetric Matrix (Real Eigenvalues)
-NUM_CASES = 10;
+NUM_CASES = 50;
 S = 5;
 
 fprintf(fid, '// Symmetric Matrix Test Cases\n');

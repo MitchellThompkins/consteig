@@ -11,7 +11,20 @@ target_include_directories(eigen_comparison.test INTERFACE ${PROJECT_SOURCE_DIR}
 target_link_libraries(eigen_comparison.test matrix array gtest_main Eigen3::Eigen consteig_eigen)
 create_test(eigen_comparison.test)
 
-add_executable(generated_data.test ${CMAKE_CURRENT_SOURCE_DIR}/generated.test.cpp)
-target_include_directories(generated_data.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(generated_data.test matrix array gtest_main consteig_eigen)
-create_test(generated_data.test)
+# Individual Non-Symmetric Tests
+foreach(i RANGE 0 49)
+    set(target_name "generated_nonsym_${i}")
+    add_executable(${target_name}.test ${CMAKE_CURRENT_SOURCE_DIR}/${target_name}.test.cpp)
+    target_include_directories(${target_name}.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
+    target_link_libraries(${target_name}.test matrix array gtest_main consteig_eigen)
+    create_test(${target_name}.test)
+endforeach()
+
+# Individual Symmetric Tests
+foreach(i RANGE 0 49)
+    set(target_name "generated_sym_${i}")
+    add_executable(${target_name}.test ${CMAKE_CURRENT_SOURCE_DIR}/${target_name}.test.cpp)
+    target_include_directories(${target_name}.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
+    target_link_libraries(${target_name}.test matrix array gtest_main consteig_eigen)
+    create_test(${target_name}.test)
+endforeach()
