@@ -33,36 +33,50 @@ constexpr bool verify_eigenvalues(const Matrix<Complex<T>, S, 1>& computed, cons
     return true;
 }
 
-TEST(generated_tests, symmetric_constexpr)
-{
-    static constexpr auto eigs = eigvals(mat_sym);
-    static constexpr double tr = trace(mat_sym);
-    static constexpr auto s = sum_eigs(eigs);
-    
-    // Check Trace
-    static_assert(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE), "Compile-time trace mismatch");
-    static_assert(consteig::abs(s.imag) < 1e-9, "Compile-time imag mismatch");
-
-    // Check Eigenvalues
-    static_assert(verify_eigenvalues(eigs, eigs_sym), "Compile-time eigenvalues mismatch (symmetric)");
-    
-    SUCCEED();
+#define TEST_SYMMETRIC(INDEX) \
+TEST(generated_tests, symmetric_constexpr_##INDEX) \
+{ \
+    static constexpr auto eigs = eigvals(mat_sym_##INDEX); \
+    static constexpr double tr = trace(mat_sym_##INDEX); \
+    static constexpr auto s = sum_eigs(eigs); \
+    static_assert(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE), "Trace mismatch"); \
+    static_assert(consteig::abs(s.imag) < 1e-9, "Trace imag mismatch"); \
+    static_assert(verify_eigenvalues(eigs, eigs_sym_##INDEX), "Eigenvalue mismatch"); \
+    SUCCEED(); \
 }
 
-TEST(generated_tests, nonsymmetric_constexpr)
-{
-    static constexpr auto eigs = eigvals(mat_nonsym);
-    static constexpr double tr = trace(mat_nonsym);
-    static constexpr auto s = sum_eigs(eigs);
-    
-    // Check Trace
-    static_assert(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE), "Compile-time trace mismatch");
-
-    // Check Eigenvalues
-    static_assert(verify_eigenvalues(eigs, eigs_nonsym), "Compile-time eigenvalues mismatch (non-symmetric)");
-
-    SUCCEED();
+#define TEST_NONSYMMETRIC(INDEX) \
+TEST(generated_tests, nonsymmetric_constexpr_##INDEX) \
+{ \
+    static constexpr auto eigs = eigvals(mat_nonsym_##INDEX); \
+    static constexpr double tr = trace(mat_nonsym_##INDEX); \
+    static constexpr auto s = sum_eigs(eigs); \
+    static_assert(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE), "Trace mismatch"); \
+    static_assert(verify_eigenvalues(eigs, eigs_nonsym_##INDEX), "Eigenvalue mismatch"); \
+    SUCCEED(); \
 }
+
+TEST_SYMMETRIC(0)
+TEST_SYMMETRIC(1)
+TEST_SYMMETRIC(2)
+TEST_SYMMETRIC(3)
+TEST_SYMMETRIC(4)
+TEST_SYMMETRIC(5)
+TEST_SYMMETRIC(6)
+TEST_SYMMETRIC(7)
+TEST_SYMMETRIC(8)
+TEST_SYMMETRIC(9)
+
+TEST_NONSYMMETRIC(0)
+TEST_NONSYMMETRIC(1)
+TEST_NONSYMMETRIC(2)
+TEST_NONSYMMETRIC(3)
+TEST_NONSYMMETRIC(4)
+TEST_NONSYMMETRIC(5)
+TEST_NONSYMMETRIC(6)
+TEST_NONSYMMETRIC(7)
+TEST_NONSYMMETRIC(8)
+TEST_NONSYMMETRIC(9)
 
 TEST(generated_tests, qr_constexpr)
 {
