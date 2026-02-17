@@ -35,6 +35,18 @@ for i = 1:rows
 end
 fprintf(fid, '}}};\n\n');
 
+fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> eigs_sym\n', rows);
+fprintf(fid, '{{{\n');
+for i = 1:rows
+    fprintf(fid, '    { { {%.16e, %.16e} } }', real(e_sym(i)), imag(e_sym(i)));
+    if i < rows
+        fprintf(fid, ',\n');
+    else
+        fprintf(fid, '\n');
+    endif
+end
+fprintf(fid, '}}};\n\n');
+
 % 2. Non-Symmetric Matrix (Complex Eigenvalues)
 S = 5;
 A_nonsym = rand(S);
@@ -56,6 +68,18 @@ for i = 1:rows
         fprintf(fid, '},\n');
     else
         fprintf(fid, '}\n');
+    endif
+end
+fprintf(fid, '}}};\n\n');
+
+fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> eigs_nonsym\n', rows);
+fprintf(fid, '{{{\n');
+for i = 1:rows
+    fprintf(fid, '    { { {%.16e, %.16e} } }', real(e_nonsym(i)), imag(e_nonsym(i)));
+    if i < rows
+        fprintf(fid, ',\n');
+    else
+        fprintf(fid, '\n');
     endif
 end
 fprintf(fid, '}}};\n\n');
