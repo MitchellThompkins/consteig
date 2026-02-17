@@ -16,7 +16,7 @@ constexpr T sqrt_recur(
         const int count)
 {
     return( abs(xn - x/xn) / (T(1) + xn) < epsilon<T>() ? xn :
-            count < CONSTEIG_SQRT_MAX_ITER ? \
+            count < CONSTEIG_MAX_ITER ? \
             sqrt_recur(x,T(0.5)*(xn + x/xn), count+1) :
             xn );
 }

@@ -13,7 +13,7 @@ constexpr Complex<T> sum_eigs(const Matrix<Complex<T>, S, 1>& vec) {
 }
 
 template<typename T, Size S>
-constexpr bool verify_eigenvalues(const Matrix<Complex<T>, S, 1>& computed, const Matrix<Complex<T>, S, 1>& expected, T tol = 1e-3) {
+constexpr bool verify_eigenvalues(const Matrix<Complex<T>, S, 1>& computed, const Matrix<Complex<T>, S, 1>& expected, T tol = static_cast<T>(CONSTEIG_TEST_TOLERANCE)) {
     bool matched[S] = {};
     for(Size i=0; i<S; ++i) matched[i] = false;
     
@@ -40,7 +40,7 @@ TEST(generated_tests, symmetric_constexpr)
     static constexpr auto s = sum_eigs(eigs);
     
     // Check Trace
-    static_assert(consteig::abs(s.real - tr) < 1e-4, "Compile-time trace mismatch");
+    static_assert(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE), "Compile-time trace mismatch");
     static_assert(consteig::abs(s.imag) < 1e-9, "Compile-time imag mismatch");
 
     // Check Eigenvalues
@@ -56,7 +56,7 @@ TEST(generated_tests, nonsymmetric_constexpr)
     static constexpr auto s = sum_eigs(eigs);
     
     // Check Trace
-    static_assert(consteig::abs(s.real - tr) < 1e-4, "Compile-time trace mismatch");
+    static_assert(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE), "Compile-time trace mismatch");
 
     // Check Eigenvalues
     static_assert(verify_eigenvalues(eigs, eigs_nonsym), "Compile-time eigenvalues mismatch (non-symmetric)");
@@ -70,16 +70,16 @@ TEST(generated_tests, qr_constexpr)
     static constexpr Matrix<double, 4, 4> recon = res._q * res._r;
     
     // Verify A = Q*R property
-    static_assert(compareFloatMat(recon, mat_qr, 1e-4), "QR Reconstruction failed (constexpr)");
+    static_assert(compareFloatMat(recon, mat_qr, static_cast<double>(CONSTEIG_TEST_TOLERANCE)), "QR Reconstruction failed (constexpr)");
 
     // Verify Q is unitary
     static constexpr Matrix<double, 4, 4> qUnitary = transpose(res._q) * res._q;
     static constexpr Matrix<double, 4, 4> identity = eye<double, 4>();
-    static_assert(compareFloatMat(qUnitary, identity, 1e-4), "Q not unitary (constexpr)");
+    static_assert(compareFloatMat(qUnitary, identity, static_cast<double>(CONSTEIG_TEST_TOLERANCE)), "Q not unitary (constexpr)");
 
     for(Size i=0; i<4; ++i) {
         for(Size j=0; j<4; ++j) {
-            ASSERT_NEAR(recon(i,j), mat_qr(i,j), 1e-4);
+            ASSERT_NEAR(recon(i,j), mat_qr(i,j), static_cast<double>(CONSTEIG_TEST_TOLERANCE));
         }
     }
 }

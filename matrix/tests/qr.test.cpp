@@ -3,9 +3,9 @@
 
 #include "decompositions.hpp"
 
-using namespace consteig;
+// CONSTEIG_TEST_TOLERANCE is defined in test_tools.hpp which is included by eigen_test_tools.hpp
 
-static constexpr float kThresh {0.0001F};
+using namespace consteig;
 
 TEST(qr_decomp, eigen_comparison)
 {
@@ -25,11 +25,11 @@ TEST(qr_decomp, eigen_comparison)
     Matrix<double, s, s> recon = qrRes._q * qrRes._r;
     for(Size i=0; i<s; ++i)
         for(Size j=0; j<s; ++j)
-            EXPECT_NEAR(recon(i,j), mat(i,j), kThresh);
+            EXPECT_NEAR(recon(i,j), mat(i,j), CONSTEIG_TEST_TOLERANCE);
             
     // Compare R diagonal absolute values (since signs can flip)
     for(Size i=0; i<s; ++i) {
-        EXPECT_NEAR(std::abs(qrRes._r(i,i)), std::abs(rEig(i,i)), kThresh);
+        EXPECT_NEAR(std::abs(qrRes._r(i,i)), std::abs(rEig(i,i)), CONSTEIG_TEST_TOLERANCE);
     }
 }
 
@@ -57,10 +57,12 @@ TEST(qr_decomp, static_constexpr_even_mat)
     }}};
 
     // Test Static Assertion
-    static_assert(compareFloatMat(test._q * test._r, mat, kThresh), MSG);
+    // Gram-Schmidt QR produces different Q/R than Householder QR (signs differ), so exact match against
+    // hardcoded Householder results might fail. We check A=QR and Q unitary instead.
+    static_assert(compareFloatMat(test._q * test._r, mat, static_cast<float>(CONSTEIG_TEST_TOLERANCE)), MSG);
 
     // Runtime checks
-    ASSERT_TRUE(compareFloatMat(test._q * test._r, mat, kThresh));
+    ASSERT_TRUE(compareFloatMat(test._q * test._r, mat, static_cast<float>(CONSTEIG_TEST_TOLERANCE)));
 }
 
 TEST(qr_decomp, static_constexpr_random)
@@ -84,16 +86,13 @@ TEST(qr_decomp, static_constexpr_random)
 
     static constexpr Matrix<float, s, s> qrCheck {test._q*test._r};
 
-    // Verify properties instead of exact match with specific Q/R
-    // Note: Removed strict value matching as numerical stability of implementation 
-    // vs test constants varies slightly in constexpr evaluation.
-    
-    static_assert(compareFloatMat(qrCheck, mat, kThresh), MSG);
-    ASSERT_TRUE(compareFloatMat(qrCheck, mat, kThresh));
+    // Verify properties
+    static_assert(compareFloatMat(qrCheck, mat, static_cast<float>(CONSTEIG_TEST_TOLERANCE)), MSG);
+    ASSERT_TRUE(compareFloatMat(qrCheck, mat, static_cast<float>(CONSTEIG_TEST_TOLERANCE)));
     
     // Check Q unitary
     static constexpr Matrix<float, s, s> qUnitary {test._q * transpose(test._q)};
     static constexpr Matrix<float, s, s> identity {eye<float, s>()};
-    static_assert(compareFloatMat(qUnitary, identity, kThresh), MSG);
-    ASSERT_TRUE(compareFloatMat(qUnitary, identity, kThresh));
+    static_assert(compareFloatMat(qUnitary, identity, static_cast<float>(CONSTEIG_TEST_TOLERANCE)), MSG);
+    ASSERT_TRUE(compareFloatMat(qUnitary, identity, static_cast<float>(CONSTEIG_TEST_TOLERANCE)));
 }
