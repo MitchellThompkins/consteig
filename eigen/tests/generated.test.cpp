@@ -59,8 +59,9 @@ TEST(generated_tests, nonsymmetric_constexpr)
     static_assert(consteig::abs(s.real - tr) < 1e-4, "Compile-time trace mismatch");
 
     // Check Eigenvalues
-    // TODO: 5x5 Non-symmetric case is still failing to converge correctly for some random matrices.
-    // The bulge-chasing fix improved stability but more work is needed on shifts/balancing.
+    // TODO: 5x5 Non-symmetric case is failing to converge for some random matrices.
+    // Attempted fixes (bulge chasing bounds, exceptional shifts) were unstable on 3x3 cases and reverted.
+    // Further investigation into robust shift strategies and balancing is needed.
     // static_assert(verify_eigenvalues(eigs, eigs_nonsym), "Compile-time eigenvalues mismatch (non-symmetric)");
     
     SUCCEED();
