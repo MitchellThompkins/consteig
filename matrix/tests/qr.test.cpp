@@ -3,8 +3,6 @@
 
 #include "decompositions.hpp"
 
-// CONSTEIG_TEST_TOLERANCE is defined in test_tools.hpp which is included by eigen_test_tools.hpp
-
 using namespace consteig;
 
 TEST(qr_decomp, eigen_comparison)
