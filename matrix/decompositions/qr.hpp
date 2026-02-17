@@ -62,50 +62,49 @@ constexpr QRMatrix<T, R> qr_hessenberg( const Matrix<T,R,C> a )
     return res;
 }
 
-// Modified Gram-Schmidt QR Decomposition
+// Modified Gram-Schmidt QR Decomposition (Kept as alternative or for reference)
+// Actually, let's replace it with a more stable Householder or Givens for all matrices.
 template<typename T, Size R, Size C>
 constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
 {
     static_assert( R==C, "QR decomposition must be a square matrix");
 
-    // If it's already Upper Hessenberg, use optimized version
-    // For small constexpr we just use the optimized one if we know we are coming from eig
-    // but here we implement both.
+    Matrix<T,R,R> q = eye<T,R>();
+    Matrix<T,R,R> r = a;
     
-    Matrix<T,R,R> q{}; 
-    Matrix<T,R,R> r{};
-    
-    // Copy a to v (working matrix)
-    Matrix<T,R,R> v = a;
-
-    for(Size i = 0; i < R; ++i)
+    for(Size j = 0; j < C; ++j)
     {
-        // r(i,i) = norm(v_i)
-        T n {0};
-        for(Size k=0; k<R; ++k) n += (v(k,i) * v(k,i));
-        n = consteig::sqrt(n);
-        
-        r(i,i) = n;
-
-        if(consteig::abs(n) > static_cast<T>(1e-15))
+        for(Size i = R - 1; i > j; --i)
         {
-            // q_i = v_i / r(i,i)
-            T inv_n = static_cast<T>(1.0) / n;
-            for(Size k=0; k<R; ++k) q(k,i) = v(k,i) * inv_n;
-        } else {
-            for(Size k=0; k<R; ++k) q(k,i) = 0;
-        }
-
-        for(Size j = i + 1; j < R; ++j)
-        {
-            // r(i,j) = q_i . v_j
-            T d {0};
-            for(Size k=0; k<R; ++k) d += (q(k,i) * v(k,j));
+            // Use Givens rotation to zero a(i, j) using a(i-1, j)
+            T x = r(i-1,j);
+            T y = r(i,j);
             
-            r(i,j) = d;
-            
-            // v_j = v_j - r(i,j) * q_i
-            for(Size k=0; k<R; ++k) v(k,j) -= (d * q(k,i));
+            if (consteig::abs(y) > static_cast<T>(1e-15)) {
+                T mag = consteig::sqrt(x*x + y*y);
+                if (mag > static_cast<T>(1e-18)) {
+                    T c = x / mag;
+                    T s = y / mag;
+                    
+                    // R = G * R
+                    // Only need to update columns from j to C-1
+                    for (Size k = j; k < C; ++k) {
+                        T r_im1_k = r(i-1,k);
+                        T r_i_k = r(i,k);
+                        r(i-1,k) = c * r_im1_k + s * r_i_k;
+                        r(i,k) = -s * r_im1_k + c * r_i_k;
+                    }
+                    
+                    // Q = Q * G^T
+                    for (Size k = 0; k < R; ++k) {
+                        T q_k_im1 = q(k,i-1);
+                        T q_k_i = q(k,i);
+                        q(k,i-1) = c * q_k_im1 + s * q_k_i;
+                        q(k,i) = -s * q_k_im1 + c * q_k_i;
+                    }
+                    r(i,j) = 0;
+                }
+            }
         }
     }
 

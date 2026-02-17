@@ -35,38 +35,38 @@ TEST(qr_decomp, static_constexpr_even_mat)
 {
     static constexpr Size x {3};
 
-    static constexpr Matrix<float, x, x> mat
-    {{{ {1.0F, 1.0F, 0.0F}, {1.0F, 0.0F , 1.0F}, {0.0F, 1.0F, 1.0F} }}};
+    static constexpr Matrix<double, x, x> mat
+    {{{ {1.0, 1.0, 0.0}, {1.0, 0.0 , 1.0}, {0.0, 1.0, 1.0} }}};
 
-    static constexpr QRMatrix<float, x> test {qr(mat)};
+    static constexpr QRMatrix<double, x> test {qr(mat)};
 
-    static constexpr Matrix<float, x, x> qAnswer
+    static constexpr Matrix<double, x, x> qAnswer
     {{{
-        {1.0F/consteig::sqrt(2.0F),  1.0F/consteig::sqrt(6.0F), -1.0F/consteig::sqrt(3.0F)},
-        {1.0F/consteig::sqrt(2.0F), -1.0F/consteig::sqrt(6.0F),  1.0F/consteig::sqrt(3.0F)},
-        {0.0F,                       2.0F/consteig::sqrt(6.0F),  1.0F/consteig::sqrt(3.0F)}
+        {1.0/consteig::sqrt(2.0),  1.0/consteig::sqrt(6.0), -1.0/consteig::sqrt(3.0)},
+        {1.0/consteig::sqrt(2.0), -1.0/consteig::sqrt(6.0),  1.0/consteig::sqrt(3.0)},
+        {0.0,                       2.0/consteig::sqrt(6.0),  1.0/consteig::sqrt(3.0)}
     }}};
 
-    static constexpr Matrix<float, x, x> rAnswer
+    static constexpr Matrix<double, x, x> rAnswer
     {{{
-        {2.0F/consteig::sqrt(2.0F), 1.0F/consteig::sqrt(2.0F), 1.0F/consteig::sqrt(2.0F)},
-        {0.0F,                      3.0F/consteig::sqrt(6.0F), 1.0F/consteig::sqrt(6.0F)},
-        {0.0F,                      0.0F,                      2.0F/consteig::sqrt(3.0F)}
+        {2.0/consteig::sqrt(2.0), 1.0/consteig::sqrt(2.0), 1.0/consteig::sqrt(2.0)},
+        {0.0,                      3.0/consteig::sqrt(6.0), 1.0/consteig::sqrt(6.0)},
+        {0.0,                      0.0,                      2.0/consteig::sqrt(3.0)}
     }}};
 
     // Test Static Assertion
     // Gram-Schmidt QR produces different Q/R than Householder QR (signs differ), so exact match against
     // hardcoded Householder results might fail. We check A=QR and Q unitary instead.
-    static_assert(compareFloatMat(test._q * test._r, mat, static_cast<float>(CONSTEIG_TEST_TOLERANCE)), MSG);
+    static_assert(compareFloatMat(test._q * test._r, mat, static_cast<double>(CONSTEIG_TEST_TOLERANCE)), MSG);
 
     // Runtime checks
-    ASSERT_TRUE(compareFloatMat(test._q * test._r, mat, static_cast<float>(CONSTEIG_TEST_TOLERANCE)));
+    ASSERT_TRUE(compareFloatMat(test._q * test._r, mat, static_cast<double>(CONSTEIG_TEST_TOLERANCE)));
 }
 
 TEST(qr_decomp, static_constexpr_random)
 {
     static constexpr int s {10};
-    static constexpr Matrix<float,s,s> mat
+    static constexpr Matrix<double,s,s> mat
     {{{
     {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398, 0.027539, 0.2731, 0.60314},
     {-0.42729, -0.47479, -0.28187, -0.6335, -0.84281, -0.88644, -0.77489, -0.36081, 0.76563, 0.28955},
@@ -82,15 +82,15 @@ TEST(qr_decomp, static_constexpr_random)
 
     static constexpr auto test {qr(mat)};
 
-    static constexpr Matrix<float, s, s> qrCheck {test._q*test._r};
+    static constexpr Matrix<double, s, s> qrCheck {test._q*test._r};
 
     // Verify properties
-    static_assert(compareFloatMat(qrCheck, mat, static_cast<float>(CONSTEIG_TEST_TOLERANCE)), MSG);
-    ASSERT_TRUE(compareFloatMat(qrCheck, mat, static_cast<float>(CONSTEIG_TEST_TOLERANCE)));
+    static_assert(compareFloatMat(qrCheck, mat, static_cast<double>(CONSTEIG_TEST_TOLERANCE)), MSG);
+    ASSERT_TRUE(compareFloatMat(qrCheck, mat, static_cast<double>(CONSTEIG_TEST_TOLERANCE)));
     
     // Check Q unitary
-    static constexpr Matrix<float, s, s> qUnitary {test._q * transpose(test._q)};
-    static constexpr Matrix<float, s, s> identity {eye<float, s>()};
-    static_assert(compareFloatMat(qUnitary, identity, static_cast<float>(CONSTEIG_TEST_TOLERANCE)), MSG);
-    ASSERT_TRUE(compareFloatMat(qUnitary, identity, static_cast<float>(CONSTEIG_TEST_TOLERANCE)));
+    static constexpr Matrix<double, s, s> qUnitary {test._q * transpose(test._q)};
+    static constexpr Matrix<double, s, s> identity {eye<double, s>()};
+    static_assert(compareFloatMat(qUnitary, identity, static_cast<double>(CONSTEIG_TEST_TOLERANCE)), MSG);
+    ASSERT_TRUE(compareFloatMat(qUnitary, identity, static_cast<double>(CONSTEIG_TEST_TOLERANCE)));
 }
