@@ -99,7 +99,7 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
             T y = a(1,0) * (a(0,0) + a(1,1) - s);
             T z = a(1,0) * a(2,1); 
             
-            for(Size k = 0; k < n - 2; ++k) {
+            for(Size k = 0; k < n - 1; ++k) {
                 T v0{0}, v1{0}, v2{0};
                 if (k == 0) { v0 = x; v1 = y; v2 = z; }
                 else { 
@@ -116,14 +116,18 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
                     T p1 = v1 * invV0; T p2 = v2 * invV0;
                     
                     for(Size j = k; j < S; ++j) {
-                        T s_dot = a(k,j) + p1 * a(k+1,j) + p2 * a(k+2,j);
+                        T s_dot = a(k,j) + p1 * a(k+1,j);
+                        if (k + 2 < S) s_dot += p2 * a(k+2,j);
                         T tau = beta * s_dot;
-                        a(k,j) -= tau; a(k+1,j) -= tau * p1; a(k+2,j) -= tau * p2;
+                        a(k,j) -= tau; a(k+1,j) -= tau * p1;
+                        if (k + 2 < S) a(k+2,j) -= tau * p2;
                     }
                     for(Size i = 0; i < S; ++i) {
-                        T s_dot = a(i,k) + p1 * a(i,k+1) + p2 * a(i,k+2);
+                        T s_dot = a(i,k) + p1 * a(i,k+1);
+                        if (k + 2 < S) s_dot += p2 * a(i,k+2);
                         T tau = beta * s_dot;
-                        a(i,k) -= tau; a(i,k+1) -= tau * p1; a(i,k+2) -= tau * p2;
+                        a(i,k) -= tau; a(i,k+1) -= tau * p1;
+                        if (k + 2 < S) a(i,k+2) -= tau * p2;
                     }
                 }
             }
