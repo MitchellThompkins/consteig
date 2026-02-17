@@ -2,7 +2,7 @@
 
 int main()
 {
-    bool val = consteig::is_float<size_t>();
+    bool val = consteig::is_float<consteig::Size>();
     std::cout << val << "\n";
 
     static constexpr int x {10};

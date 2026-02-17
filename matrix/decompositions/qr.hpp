@@ -3,54 +3,62 @@
 
 #include "../matrix.hpp"
 #include "../operations.hpp"
+#include "../../math/functions/abs.hpp"
+#include "../../math/functions/sqrt.hpp"
+#include "../../math/functions/utilities.hpp"
 
 namespace consteig
 {
 
-template<typename T, size_t S>
+template<typename T, Size S>
 struct QRMatrix
 {
     Matrix<T,S,S> _q;
     Matrix<T,S,S> _r;
 };
 
-template<typename T, size_t R, size_t C>
-constexpr QRMatrix<T, C> qr( const Matrix<T,R,C> a )
+// Modified Gram-Schmidt QR Decomposition
+template<typename T, Size R, Size C>
+constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
 {
-    //TODO(mthompkins): Remove this necessity
     static_assert( R==C, "QR decomposition must be a square matrix");
 
-    QRMatrix<T,R> result {static_cast<T>(0)};
-    Matrix<T,R,R> &q {result._q};
-    Matrix<T,R,R> &r {result._r};
-
-    // Solve Q & R by modified gram-schmidt process
-    // https://www.math.ucla.edu/~yanovsky/Teaching/Math151B/handouts/GramSchmidt.pdf
-    // https://www.math.ucla.edu/~yanovsky/Teaching/Math151B/handouts/gsqr.m
-    // https://www.math.uci.edu/~ttrogdon/105A/html/Lecture23.html
+    Matrix<T,R,R> q{}; 
+    Matrix<T,R,R> r{};
     
-    Matrix<T,R,R> v {a};
+    // Copy a to v (working matrix)
+    Matrix<T,R,R> v = a;
 
-    for(size_t i {0}; i<R; i++)
+    for(Size i = 0; i < R; ++i)
     {
-        r(i,i) = normE(v.col(i));
+        // r(i,i) = norm(v_i)
+        T n = normE(v.col(i));
+        r(i,i) = n;
 
-        //TODO(mthompkins): Ensure that this is the right thing to be doing....
-        if( r(i,i) != static_cast<T>(0))
+        if(consteig::abs(n) > static_cast<T>(1e-15))
         {
-            Matrix<T,R,1> setQCol { (1/r(i,i)) * v.col(i)};
-            q.setCol(setQCol, i);
+            // q_i = v_i / r(i,i)
+            T inv_n = static_cast<T>(1) / n;
+            Matrix<T,R,1> q_col = inv_n * v.col(i);
+            q.setCol(q_col, i);
         }
 
-        for(size_t j {i+1}; j<R; j++)
+        for(Size j = i + 1; j < R; ++j)
         {
-            r(i,j) = dot( transpose(q.col(i)), transpose(v.col(j)) );
-            Matrix<T,R,1> setVCol { v.col(j) - (r(i,j)*q.col(i)) };
-            v.setCol(setVCol, j);
+            // r(i,j) = q_i . v_j
+            T d = dot(transpose(q.col(i)), transpose(v.col(j)));
+            r(i,j) = d;
+            
+            // v_j = v_j - r(i,j) * q_i
+            Matrix<T,R,1> v_col_new = v.col(j) - (d * q.col(i));
+            v.setCol(v_col_new, j);
         }
     }
 
-    return result;
+    QRMatrix<T, R> res;
+    res._q = q;
+    res._r = r;
+    return res;
 }
 
 } //end namespace
