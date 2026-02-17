@@ -16,6 +16,8 @@ dependences several constexpr functions are implemented as well.
 * Perform a selection of math functions (including complex arithmetic) at compile time.
 * Strictly freestanding: The core library has zero dependencies on the standard library.
 
+It's important to note that `consteig` currently focuses exclusively on computing **eigenvalues**. For many applications, such as determining the stability of digital filters (as described in "Why Does This Exist"), the eigenvalues themselves are the desired result, and the eigenvectors are not required. Therefore, this library does not currently provide functionality for eigenvector computation.
+
 An example helps best. Let's say that we take the example from [Using Eigenvectors to Find Steady State Population Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764) and apply it using `consteig`.
 
 Our `population.cpp` example demonstrates finding the eigenvalues of the population transition matrix:
