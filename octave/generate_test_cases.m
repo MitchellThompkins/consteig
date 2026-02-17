@@ -14,15 +14,18 @@ NUM_CASES = 10;
 S = 5;
 
 fprintf(fid, '// Symmetric Matrix Test Cases\n');
+fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_sym[%d] = {\n', S, S, NUM_CASES);
 for n = 1:NUM_CASES
     A_sym = rand(S);
     A_sym = A_sym + A_sym'; % Make symmetric
     e_sym = eig(A_sym);
+    
+    % Store eigen values for later
+    e_sym_all(:, n) = e_sym;
 
-    fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_sym_%d\n', S, S, n-1);
-    fprintf(fid, '{{{\n');
+    fprintf(fid, '    {{{\n');
     for i = 1:S
-        fprintf(fid, '    {');
+        fprintf(fid, '        {');
         for j = 1:S
             if j > 1
                 fprintf(fid, ', ');
@@ -35,32 +38,48 @@ for n = 1:NUM_CASES
             fprintf(fid, '}\n');
         endif
     end
-    fprintf(fid, '}}};\n\n');
+    if n < NUM_CASES
+        fprintf(fid, '    }}},\n');
+    else
+        fprintf(fid, '    }}}\n');
+    endif
+end
+fprintf(fid, '};\n\n');
 
-    fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> eigs_sym_%d\n', S, n-1);
-    fprintf(fid, '{{{\n');
+fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> eigs_sym[%d] = {\n', S, NUM_CASES);
+for n = 1:NUM_CASES
+    e_sym = e_sym_all(:, n);
+    fprintf(fid, '    {{{\n');
     for i = 1:S
-        fprintf(fid, '    { { {%.16e, %.16e} } }', real(e_sym(i)), imag(e_sym(i)));
+        fprintf(fid, '        { { {%.16e, %.16e} } }', real(e_sym(i)), imag(e_sym(i)));
         if i < S
             fprintf(fid, ',\n');
         else
             fprintf(fid, '\n');
         endif
     end
-    fprintf(fid, '}}};\n\n');
+    if n < NUM_CASES
+        fprintf(fid, '    }}},\n');
+    else
+        fprintf(fid, '    }}}\n');
+    endif
 end
+fprintf(fid, '};\n\n');
 
 % 2. Non-Symmetric Matrix (Complex Eigenvalues)
 S = 5;
 fprintf(fid, '// Non-Symmetric Matrix Test Cases\n');
+fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_nonsym[%d] = {\n', S, S, NUM_CASES);
 for n = 1:NUM_CASES
     A_nonsym = rand(S);
     e_nonsym = eig(A_nonsym);
+    
+    % Store for later
+    e_nonsym_all(:, n) = e_nonsym;
 
-    fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_nonsym_%d\n', S, S, n-1);
-    fprintf(fid, '{{{\n');
+    fprintf(fid, '    {{{\n');
     for i = 1:S
-        fprintf(fid, '    {');
+        fprintf(fid, '        {');
         for j = 1:S
             if j > 1
                 fprintf(fid, ', ');
@@ -73,20 +92,33 @@ for n = 1:NUM_CASES
             fprintf(fid, '}\n');
         endif
     end
-    fprintf(fid, '}}};\n\n');
+    if n < NUM_CASES
+        fprintf(fid, '    }}},\n');
+    else
+        fprintf(fid, '    }}}\n');
+    endif
+end
+fprintf(fid, '};\n\n');
 
-    fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> eigs_nonsym_%d\n', S, n-1);
-    fprintf(fid, '{{{\n');
+fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> eigs_nonsym[%d] = {\n', S, NUM_CASES);
+for n = 1:NUM_CASES
+    e_nonsym = e_nonsym_all(:, n);
+    fprintf(fid, '    {{{\n');
     for i = 1:S
-        fprintf(fid, '    { { {%.16e, %.16e} } }', real(e_nonsym(i)), imag(e_nonsym(i)));
+        fprintf(fid, '        { { {%.16e, %.16e} } }', real(e_nonsym(i)), imag(e_nonsym(i)));
         if i < S
             fprintf(fid, ',\n');
         else
             fprintf(fid, '\n');
         endif
     end
-    fprintf(fid, '}}};\n\n');
+    if n < NUM_CASES
+        fprintf(fid, '    }}},\n');
+    else
+        fprintf(fid, '    }}}\n');
+    endif
 end
+fprintf(fid, '};\n\n');
 
 % 3. QR Decomposition Test Case
 S = 4;
