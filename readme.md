@@ -88,7 +88,7 @@ This solves those two problems in a limited capacity.
 * Matrices do not need to be manipulated at compile time.
 
 ## Verification
-The library is rigorously verified through two primary methods:
+The library is verified through two primary methods:
 1. **Eigen Library Comparison**: Unit tests link against the [Eigen](https://eigen.tuxfamily.org/) library to compare compile-time results against a high-performance reference implementation.
 2. **Octave Test Generation**: An Octave script (`octave/generate_test_cases.m`) is provided to generate fresh matrix test data and expected results, which are automatically verified using `static_assert` at compile time.
 
@@ -98,7 +98,7 @@ The library is rigorously verified through two primary methods:
 * The algorithms implemented here do not necessarily take advantage of a
   collection of optimization techniques for solving matrices nor has there been
   a concerted effort to optimize the implementations themselves. As such, for
-  extremely large matrices compilation may be slow. 
+  large matrices compilation may be slow.
 * Currently the matrix [decompositions](examples/decomp.cpp) require square matrices.
 * Support for non-square QR decomposition and optimized determinant/inverse calculations.
 
@@ -135,6 +135,6 @@ make test
 
 ## Thanks
 Development began by leveraging [gcem](https://github.com/kthohr/gcem) for all
-ofthe constexpr math. However, as it using the standard library, it's usage was
-temporary. That constexpr math implementations are inspired from the gcem
-implementations.
+of the constexpr math. However, as it depends on the standard library, it's
+usage was temporary. That constexpr math implementations are inspired from the
+gcem implementations.
