@@ -12,7 +12,7 @@ dependences several constexpr functions are implemented as well.
 * Compute real and complex eigenvalues at compile-time for both symmetric and non-symmetric matrices.
 * Declare, manipulate, perform matrix operations, and a handful of matrix
   decompositions at compile time. That means users can create matrices and
-  perform a collection of [operations]() on them.
+  perform a collection of [operations](matrix/operations.hpp) on them.
 * Perform a selection of math functions (including complex arithmetic) at compile time.
 * Strictly freestanding: The core library has zero dependencies on the standard library.
 
@@ -34,9 +34,9 @@ cmake files here are only to facilitate testing and development.
 You will also need a C++ compiler which supports **C++17**.
 
 Here are some examples to help get started:
-* [Declaring a matrix]()
-* [Matrix Arithmetic]()
-* [Finding eigenvalues]()
+* [Declaring a matrix](examples/matrix.cpp)
+* [Matrix Arithmetic](examples/matrix.cpp)
+* [Finding eigenvalues](examples/eigen.cpp)
 
 ## How Is This Different
 There are powerful open source C++ eigenvalues solvers already in existence
@@ -68,13 +68,13 @@ The library is rigorously verified through two primary methods:
 2. **Octave Test Generation**: An Octave script (`octave/generate_test_cases.m`) is provided to generate fresh matrix test data and expected results, which are automatically verified using `static_assert` at compile time.
 
 ## What Can Improve
-* Declaring matrices can be initializer bracket hell. Refer to [this example]()
+* Declaring matrices can be initializer bracket hell. Refer to [this example](examples/matrix.cpp)
   for help.
 * The algorithms implemented here do not necessarily take advantage of a
   collection of optimization techniques for solving matrices nor has there been
   a concerted effort to optimize the implementations themselves. As such, for
   extremely large matrices compilation may be slow. 
-* Currently the matrix [decompositions]() require square matrices.
+* Currently the matrix [decompositions](examples/decomp.cpp) require square matrices.
 * Support for non-square QR decomposition and optimized determinant/inverse calculations.
 
 ## Notes On Performance

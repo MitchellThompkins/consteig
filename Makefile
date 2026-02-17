@@ -60,6 +60,9 @@ h:
 	@echo 'test'
 	@echo '    runs unit tests with gtest'
 	@echo
+	@echo 'examples'
+	@echo '    builds all example executables'
+	@echo
 	@echo 'OPTIONS:'
 	@echo
 	@echo 'BUILD_TYPE=<Debug|Release>'
@@ -81,6 +84,9 @@ format:
 .PHONY: remove
 remove:
 	rm -rf build/
+
+.PHONY: examples
+examples: matrix.main decomp.main eigen.main
 
 $(BUILD_PREFIX)/$(BUILD_FILE):
 	# create the temporary build directory if needed
