@@ -144,6 +144,36 @@ constexpr T normE( const Matrix<T,R,C> &mat )
     return consteig::sqrt(result);
 }
 
+// 1-norm of a matrix (max column sum)
+template<typename T, Size R, Size C>
+constexpr T norm1( const Matrix<T,R,C> &mat )
+{
+    T max_sum {static_cast<T>(0)};
+    for(Size j{0}; j<C; ++j) {
+        T col_sum {static_cast<T>(0)};
+        for(Size i{0}; i<R; ++i) {
+            col_sum += consteig::abs(mat(i,j));
+        }
+        if(col_sum > max_sum) max_sum = col_sum;
+    }
+    return max_sum;
+}
+
+// Infinity-norm of a matrix (max row sum)
+template<typename T, Size R, Size C>
+constexpr T normInf( const Matrix<T,R,C> &mat )
+{
+    T max_sum {static_cast<T>(0)};
+    for(Size i{0}; i<R; ++i) {
+        T row_sum {static_cast<T>(0)};
+        for(Size j{0}; j<C; ++j) {
+            row_sum += consteig::abs(mat(i,j));
+        }
+        if(row_sum > max_sum) max_sum = row_sum;
+    }
+    return max_sum;
+}
+
 template<typename T, Size R, Size C>
 constexpr Matrix<T,R,C> sqrt( const Matrix<T,R,C> &mat )
 {

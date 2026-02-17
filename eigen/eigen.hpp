@@ -18,6 +18,52 @@ constexpr Matrix<T,S,S> eig(
         Matrix<T,S,S> a,
         const T symmetryTolerance=CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE );
 
+template<typename T, Size S>
+constexpr Matrix<T,S,S> balance(Matrix<T,S,S> a)
+{
+    bool converged = false;
+    T factor = static_cast<T>(2); // Typically base 2 for floating point
+    
+    for(Size iter=0; iter<10 && !converged; ++iter) {
+        converged = true;
+        for(Size i=0; i<S; ++i) {
+            T row_norm = 0;
+            T col_norm = 0;
+            for(Size j=0; j<S; ++j) {
+                if(i != j) {
+                    row_norm += consteig::abs(a(i,j));
+                    col_norm += consteig::abs(a(j,i));
+                }
+            }
+            
+            if(row_norm > 0 && col_norm > 0) {
+                T f = 1;
+                T s = row_norm + col_norm;
+                while(row_norm < col_norm / factor) {
+                    f *= factor;
+                    row_norm *= factor;
+                    col_norm /= factor;
+                }
+                while(row_norm > col_norm * factor) {
+                    f /= factor;
+                    row_norm /= factor;
+                    col_norm *= factor;
+                }
+                
+                if((row_norm + col_norm) < 0.95 * s) {
+                    converged = false;
+                    // Apply similarity transformation DAD^-1
+                    // D = diag(..., f, ...)
+                    // A_new = DAD^-1 means row i * f, col i / f
+                    for(Size j=0; j<S; ++j) a(i,j) *= f;
+                    for(Size j=0; j<S; ++j) a(j,i) /= f;
+                }
+            }
+        }
+    }
+    return a;
+}
+
 template<typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c)
 {
@@ -39,7 +85,7 @@ constexpr Matrix<T,S,S> eig_shifted_qr( Matrix<T,S,S> a )
         a = hessTemp._h;
 
         Size iter = 0;
-        while( iter < 100 && S > 1 && consteig::abs(a(S-1, S-2)) > 1e-10) 
+        while( iter < 1000 && S > 1 && consteig::abs(a(S-1, S-2)) > 1e-10) 
         {
             T mu { wilkinsonShift( a(S-2,S-2), a(S-1,S-1), a(S-2,S-1) ) };
             Matrix<T,S,S> tempEye { (mu*eye<T,S>()) };
@@ -60,74 +106,38 @@ constexpr Matrix<T,S,S> eig_shifted_qr( Matrix<T,S,S> a )
 template<typename T, Size S>
 constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
 {
-    if constexpr (S <= 2) {
+    if constexpr (S <= 1) {
         return a;
     } else {
+        a = balance(a);
         PHMatrix<T,S> hessTemp {hess(a)};
         a = hessTemp._h;
         
+        T eps = consteig::epsilon<T>() * (norm1(a) + normInf(a));
+        if (eps == 0) eps = consteig::epsilon<T>();
+
         Size n = S;
-        Size iter = 0;
+        Size total_iter = 0;
+        const Size max_total_iter = 100 * S;
         
-        while(iter < 100 * S) {
-            T sub1 = consteig::abs(a(n-1, n-2));
-            if(sub1 < consteig::epsilon<T>() * (consteig::abs(a(n-1,n-1)) + consteig::abs(a(n-2,n-2)))) {
-                Matrix<T, S-1, S-1> subA = a.template sub<0,0,S-2,S-2>();
-                Matrix<T, S-1, S-1> res = eig<T, S-1>(subA);
-                Matrix<T, S, S> out = eye<T,S>();
-                for(Size i=0; i<S; ++i) for(Size j=0; j<S; ++j) out(i,j) = (i==j?1:0);
-                out.template setSub<0,0,S-2,S-2>(res);
-                out(S-1, S-1) = a(S-1, S-1);
-                return out;
+        while(n > 1 && total_iter < max_total_iter) {
+            // Deflation test
+            if(consteig::abs(a(n-1, n-2)) <= eps * (consteig::abs(a(n-1,n-1)) + consteig::abs(a(n-2,n-2)))) {
+                a(n-1, n-2) = 0;
+                n--;
+                continue;
             }
+
+            // Wilkinson shift from bottom 2x2
+            T mu = wilkinsonShift(a(n-2, n-2), a(n-1, n-2), a(n-1, n-1));
             
-            T sub2 = consteig::abs(a(n-2, n-3));
-            if(sub2 < consteig::epsilon<T>() * (consteig::abs(a(n-2,n-2)) + consteig::abs(a(n-3,n-3)))) {
-                Matrix<T, S-2, S-2> subA = a.template sub<0,0,S-3,S-3>();
-                Matrix<T, S-2, S-2> res = eig<T, S-2>(subA);
-                Matrix<T, S, S> out = eye<T,S>();
-                for(Size i=0; i<S; ++i) for(Size j=0; j<S; ++j) out(i,j) = (i==j?1:0);
-                out.template setSub<0,0,S-3,S-3>(res);
-                out.template setSub<S-2,S-2,S-1,S-1>(a.template sub<S-2,S-2,S-1,S-1>());
-                return out;
-            }
+            Matrix<T,S,S> eyeS = eye<T,S>();
+            Matrix<T,S,S> shifted = a - (mu * eyeS);
             
-            T s = a(n-2, n-2) + a(n-1, n-1);
-            T t = a(n-2, n-2)*a(n-1, n-1) - a(n-2, n-1)*a(n-1, n-2);
-            
-            T x = a(0,0)*a(0,0) + a(0,1)*a(1,0) - s*a(0,0) + t;
-            T y = a(1,0) * (a(0,0) + a(1,1) - s);
-            T z = a(1,0) * a(2,1); 
-            
-            for(Size k = 0; k < n - 2; ++k) {
-                T v0{0}, v1{0}, v2{0};
-                if (k == 0) { v0 = x; v1 = y; v2 = z; }
-                else { 
-                    v0 = a(k, k-1); v1 = a(k+1, k-1); 
-                    v2 = (k + 2 < n) ? a(k+2, k-1) : static_cast<T>(0);
-                }
-                
-                T sigma = v1*v1 + v2*v2;
-                if(consteig::abs(sigma) > static_cast<T>(1e-18)) {
-                    T mu = consteig::sqrt(v0*v0 + sigma);
-                    T rv0 = (v0 <= 0) ? (v0 - mu) : (-sigma / (v0 + mu));
-                    T beta = (2 * rv0 * rv0) / (sigma + rv0*rv0);
-                    T invV0 = 1.0/rv0;
-                    T p1 = v1 * invV0; T p2 = v2 * invV0;
-                    
-                    for(Size j = k; j < S; ++j) {
-                        T s_dot = a(k,j) + p1 * a(k+1,j) + p2 * a(k+2,j);
-                        T tau = beta * s_dot;
-                        a(k,j) -= tau; a(k+1,j) -= tau * p1; a(k+2,j) -= tau * p2;
-                    }
-                    for(Size i = 0; i < S; ++i) {
-                        T s_dot = a(i,k) + p1 * a(i,k+1) + p2 * a(i,k+2);
-                        T tau = beta * s_dot;
-                        a(i,k) -= tau; a(i,k+1) -= tau * p1; a(i,k+2) -= tau * p2;
-                    }
-                }
-            }
-            iter++;
+            QRMatrix<T, S> qrm = qr_hessenberg(shifted);
+            a = (qrm._r * qrm._q) + (mu * eyeS);
+
+            total_iter++;
         }
         return a;
     }
