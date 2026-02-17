@@ -92,6 +92,12 @@ The library is verified through two primary methods:
 1. **Eigen Library Comparison**: Unit tests link against the [Eigen](https://eigen.tuxfamily.org/) library to compare compile-time results against a high-performance reference implementation.
 2. **Octave Test Generation**: An Octave script (`octave/generate_test_cases.m`) is provided to generate fresh matrix test data and expected results, which are automatically verified using `static_assert` at compile time.
 
+### Compile-Time Verification Limits
+Iterative algorithms like the QR iteration used here are computationally expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test cases without crashing the compiler or hitting operation limits:
+*   **Granular Binaries**: Non-symmetric test cases are split into individual `.cpp` files. This ensures each `static_assert` gets a fresh "budget" of compiler operations and limits the memory overhead to a single matrix solve at a time.
+*   **Resource Management**: Compiling these tests can be RAM-intensive. Building with `make -j 1` is recommended to prevent multiple compiler instances from exhausting system memory.
+*   **Compiler Flags**: Build scripts automatically raise limits like `-fconstexpr-ops-limit` to accommodate the depth of these calculations.
+
 ## What Can Improve
 * Declaring matrices can be initializer bracket hell. Refer to [this example](examples/matrix.cpp)
   for help.
