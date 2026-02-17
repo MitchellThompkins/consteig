@@ -6,7 +6,7 @@
 using namespace consteig;
 
 // These helper functions allow us to call templated constexpr functions
-template<typename T, size_t R, size_t C>
+template<typename T, Size R, Size C>
 static constexpr Matrix<T,R,C> setRowsTest(
         const Matrix<T,1,C> mat[],
         const T val )
@@ -18,7 +18,7 @@ static constexpr Matrix<T,R,C> setRowsTest(
     return out;
 }
 
-template<typename T, size_t R, size_t C>
+template<typename T, Size R, Size C>
 static constexpr Matrix<T,R,C> setColsTest(
         const Matrix<T,R,1> mat[],
         const T val )
@@ -30,28 +30,28 @@ static constexpr Matrix<T,R,C> setColsTest(
     return out;
 }
 
-template<typename T, size_t R, size_t C, size_t startIndex, size_t endIndex>
+template<typename T, Size R, Size C, Size startIndex, Size endIndex>
 static constexpr Matrix<T,R,C> setSubRowTest(
         Matrix<T,R,C> original,
         const Matrix<T,1,endIndex-startIndex+1> mat,
-        const size_t row )
+        const Size row )
 {
     original.template setRow<startIndex,endIndex>(mat, row);
     return original;
 }
 
 
-template<typename T, size_t R, size_t C, size_t startIndex, size_t endIndex>
+template<typename T, Size R, Size C, Size startIndex, Size endIndex>
 static constexpr Matrix<T,R,C> setSubColTest(
         Matrix<T,R,C> original,
         const Matrix<T, endIndex-startIndex+1, 1> mat,
-        const size_t col )
+        const Size col )
 {
     original.template setCol<startIndex,endIndex>(mat, col);
     return original;
 }
 
-template<typename T, size_t R, size_t C, size_t x1, size_t y1, size_t x2, size_t y2>
+template<typename T, Size R, Size C, Size x1, Size y1, Size x2, Size y2>
 static constexpr Matrix<T,R,C> setSubTest(
         Matrix<T,R,C> original,
         const Matrix<T, x2-x1+1, y2-y1+1> mat )
@@ -72,8 +72,8 @@ TEST(matrix, static_constexpr)
     static_assert(matrix(1,1) == 3, MSG);
 
     int m = 0;
-    for( size_t i {0}; i<s; i++ )
-    { for( size_t j {0}; j<s; j++ )
+    for( Size i {0}; i<s; i++ )
+    { for( Size j {0}; j<s; j++ )
         {
             ASSERT_EQ(m, matrix(i,j));
             m++;
@@ -83,14 +83,14 @@ TEST(matrix, static_constexpr)
 
 TEST(matrix, checkSize)
 {
-    static constexpr size_t x {2};
-    static constexpr size_t y {3};
+    static constexpr Size x {2};
+    static constexpr Size y {3};
 
     static constexpr Matrix<int, x, y> matrix
     {{{ {5, -1, -2}, {-4, -2 , 1}}}};
 
-    static constexpr size_t len    {matrix.sizeX()};
-    static constexpr size_t height {matrix.sizeY()};
+    static constexpr Size len    {matrix.sizeX()};
+    static constexpr Size height {matrix.sizeY()};
 
     // Check sizes
     static_assert(len == x, MSG);
@@ -270,9 +270,9 @@ TEST(matrix, static_constexpr_set_col)
 
 TEST(matrix, static_constexpr_set_sub_row)
 {
-    static constexpr size_t x {3};
-    static constexpr size_t start {1};
-    static constexpr size_t end {2};
+    static constexpr Size x {3};
+    static constexpr Size start {1};
+    static constexpr Size end {2};
 
     static constexpr Matrix<int, x, x> original
     {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
@@ -293,9 +293,9 @@ TEST(matrix, static_constexpr_set_sub_row)
 
 TEST(matrix, static_constexpr_set_sub_col)
 {
-    static constexpr size_t x {3};
-    static constexpr size_t start {1};
-    static constexpr size_t end {2};
+    static constexpr Size x {3};
+    static constexpr Size start {1};
+    static constexpr Size end {2};
 
     static constexpr Matrix<int, x, x> original
     {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
@@ -316,12 +316,12 @@ TEST(matrix, static_constexpr_set_sub_col)
 
 TEST(matrix, static_constexpr_set_sub_mat_square)
 {
-    static constexpr size_t x {3};
+    static constexpr Size x {3};
 
-    static constexpr size_t x1 {1};
-    static constexpr size_t x2 {2};
-    static constexpr size_t y1 {1};
-    static constexpr size_t y2 {2};
+    static constexpr Size x1 {1};
+    static constexpr Size x2 {2};
+    static constexpr Size y1 {1};
+    static constexpr Size y2 {2};
 
     static constexpr Matrix<int, x, x> original
     {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
@@ -342,8 +342,8 @@ TEST(matrix, static_constexpr_set_sub_mat_square)
 
 TEST(matrix, static_constexpr_test_square)
 {
-    static constexpr size_t x {3};
-    static constexpr size_t s {2};
+    static constexpr Size x {3};
+    static constexpr Size s {2};
 
     static constexpr Matrix<int, x, x> square
     {{{ {5, -1, -2}, {-4, -2 , 1}, {2, 3, 0} }}};
@@ -364,7 +364,7 @@ TEST(matrix, static_constexpr_test_square)
 
 TEST(matrix, check_symmetry)
 {
-    static constexpr size_t s {5};
+    static constexpr Size s {5};
 
     static constexpr consteig::Matrix<int, s, s> symmetricIntMat
     {{{

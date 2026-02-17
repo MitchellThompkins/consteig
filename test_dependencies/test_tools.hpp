@@ -30,7 +30,7 @@ constexpr bool nearlyEqual(
 }
 
 
-template<size_t R, size_t C>
+template<consteig::Size R, consteig::Size C>
 static constexpr bool compareFloatMat(
         consteig::Matrix<float,R,C> a,
         consteig::Matrix<float,R,C> b,
