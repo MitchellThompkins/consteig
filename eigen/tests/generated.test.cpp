@@ -13,7 +13,7 @@ constexpr Complex<T> sum_eigs(const Matrix<Complex<T>, S, 1>& vec) {
 }
 
 template<typename T, Size S>
-constexpr bool verify_eigenvalues(const Matrix<Complex<T>, S, 1>& computed, const Matrix<Complex<T>, S, 1>& expected, T tol = 1e-1) {
+constexpr bool verify_eigenvalues(const Matrix<Complex<T>, S, 1>& computed, const Matrix<Complex<T>, S, 1>& expected, T tol = 1e-3) {
     bool matched[S] = {};
     for(Size i=0; i<S; ++i) matched[i] = false;
     
@@ -59,8 +59,8 @@ TEST(generated_tests, nonsymmetric_constexpr)
     static_assert(consteig::abs(s.real - tr) < 1e-4, "Compile-time trace mismatch");
 
     // Check Eigenvalues
-    // TODO: Non-symmetric case is currently failing validation.
-    // Computed eigenvalues differ significantly from Octave reference values.
+    // TODO: 5x5 Non-symmetric case is still failing to converge correctly for some random matrices.
+    // The bulge-chasing fix improved stability but more work is needed on shifts/balancing.
     // static_assert(verify_eigenvalues(eigs, eigs_nonsym), "Compile-time eigenvalues mismatch (non-symmetric)");
     
     SUCCEED();
