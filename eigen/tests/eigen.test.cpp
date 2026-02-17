@@ -89,6 +89,27 @@ TEST(consteig_eigen, symmetric_matrix)
     }
 }
 
+template<typename T, Size S>
+constexpr bool verify_values(const Matrix<Complex<T>, S, 1>& computed, const Matrix<Complex<T>, S, 1>& expected, T tol = 1e-3) {
+    bool matched[S] = {};
+    for(Size i=0; i<S; ++i) matched[i] = false;
+    
+    for(Size i=0; i<S; ++i) {
+        bool found = false;
+        for(Size j=0; j<S; ++j) {
+            if(!matched[j]) {
+                if(consteig::abs(computed(i,0) - expected(j,0)) < tol) {
+                    matched[j] = true;
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if(!found) return false;
+    }
+    return true;
+}
+
 TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
 {
     static constexpr Size s {2};
@@ -109,6 +130,14 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
     static constexpr auto prodEigs = prod(eigenValueTest); // i * -i = 1
     static constexpr double d = det(mat); // 0 - (-1) = 1
     static_assert(consteig::abs(prodEigs.real - d) < 1e-9, "Det mismatch");
+
+    // Static verify
+    static constexpr Matrix<Complex<double>, s, 1> expected
+    {{{
+        {{0.0, 1.0}},
+        {{0.0, -1.0}}
+    }}};
+    static_assert(verify_values(eigenValueTest, expected, 1e-5), "Eigenvalue mismatch (constexpr)");
 
     // Check results
     bool found_i = false;
@@ -140,6 +169,16 @@ TEST(consteig_eigen, non_symmetric_general)
     static constexpr auto sumEigs = sum(eigenValueTest); // 1 + (1+3.16i) + (1-3.16i) = 3
     static constexpr double tr = trace(mat); // 1+1+1 = 3
     static_assert(consteig::abs(sumEigs.real - tr) < 1e-9, "Trace mismatch");
+
+    // Static verify
+    // Eigenvalues are 1, 1 +/- sqrt(10)i  (approx 1 +/- 3.162277i)
+    static constexpr Matrix<Complex<double>, s, 1> expected
+    {{{
+        {{1.0, 0.0}},
+        {{1.0, 3.16227766}},
+        {{1.0, -3.16227766}}
+    }}};
+    static_assert(verify_values(eigenValueTest, expected, 1e-4), "Eigenvalue mismatch (constexpr)");
 
     std::vector<Complex<double>> vals;
     for(Size i=0; i<s; ++i) vals.push_back(eigenValueTest(i,0));
