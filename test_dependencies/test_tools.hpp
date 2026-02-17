@@ -12,7 +12,7 @@
 // Use a slightly looser tolerance for tests involving iterative methods (QR, Eigen)
 // compared to the strict symmetry check tolerance.
 #ifndef CONSTEIG_TEST_TOLERANCE
-    #define CONSTEIG_TEST_TOLERANCE 1e-5F
+    #define CONSTEIG_TEST_TOLERANCE 1e-9F
 #endif
 
 // https://stackoverflow.com/a/32334103/3527182

@@ -80,27 +80,31 @@ constexpr Matrix<T,S,S> eig_shifted_qr( Matrix<T,S,S> a )
     if constexpr (S <= 1) {
         return a;
     } else {
-        constexpr Size size {S};
         PHMatrix<T,S> hessTemp {hess(a)};
         a = hessTemp._h;
 
+        T eps = consteig::epsilon<T>() * (norm1(a) + normInf(a));
+        if (eps == 0) eps = consteig::epsilon<T>();
+
+        Size n = S;
         Size iter = 0;
         const Size max_iter = CONSTEIG_MAX_ITER * S;
-        while( iter < max_iter && S > 1 && consteig::abs(a(S-1, S-2)) > 1e-10) 
-        {
-            T mu { wilkinsonShift( a(S-2,S-2), a(S-1,S-1), a(S-2,S-1) ) };
-            Matrix<T,S,S> tempEye { (mu*eye<T,S>()) };
-            QRMatrix<T,S> tempQr { qr( a-tempEye ) };
-            a = (tempQr._r*tempQr._q) + tempEye;
+        
+        while(n > 1 && iter < max_iter) {
+            if(consteig::abs(a(n-1, n-2)) <= eps * (consteig::abs(a(n-1,n-1)) + consteig::abs(a(n-2,n-2)))) {
+                a(n-1, n-2) = 0;
+                n--;
+                continue;
+            }
+
+            T mu = wilkinsonShift(a(n-2, n-2), a(n-1, n-2), a(n-1, n-1));
+            Matrix<T,S,S> eyeS = eye<T,S>();
+            Matrix<T,S,S> shifted = a - (mu * eyeS);
+            QRMatrix<T, S> qrm = qr_hessenberg(shifted);
+            a = (qrm._r * qrm._q) + (mu * eyeS);
             iter++;
         }
-
-        Matrix<T,S-1,S-1> subA = a.template sub<0,0,S-2,S-2>();
-        Matrix<T,S-1,S-1> out = eig<T,S-1>(subA);
-        Matrix<T, S, S> i = eye<T,S>();
-        i.template setSub<0,0,S-2,S-2>(out);
-        i(S-1,S-1) = a(S-1,S-1);
-        return i;
+        return a;
     }
 }
 
