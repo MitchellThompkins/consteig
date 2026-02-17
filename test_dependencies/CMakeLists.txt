@@ -2,13 +2,11 @@ add_subdirectory(googletest)
 
 include(FetchContent)
 
-set(EIGEN_BUILD_TESTING OFF)
-set(EIGEN_BUILD_DOC OFF)
-set(EIGEN_BUILD_PKGCONFIG OFF)
-
-# Save and disable BUILD_TESTING for Eigen
-set(BUILD_TESTING_SAVED ${BUILD_TESTING})
-set(BUILD_TESTING OFF)
+# Comprehensively disable all Eigen tests and extra targets
+set(EIGEN_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(EIGEN_BUILD_DOC OFF CACHE BOOL "" FORCE)
+set(EIGEN_BUILD_PKGCONFIG OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 
 FetchContent_Declare(
   eigen
@@ -17,5 +15,5 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(eigen)
 
-# Restore BUILD_TESTING
-set(BUILD_TESTING ${BUILD_TESTING_SAVED})
+# Re-enable testing for consteig
+set(BUILD_TESTING ON CACHE BOOL "" FORCE)
