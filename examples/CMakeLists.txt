@@ -9,3 +9,6 @@ target_link_libraries(decomp.main matrix array)
 
 add_executable(eigen.main ${CMAKE_CURRENT_SOURCE_DIR}/eigen.cpp)
 target_link_libraries(eigen.main matrix array)
+
+add_executable(population.main ${CMAKE_CURRENT_SOURCE_DIR}/population.cpp)
+target_link_libraries(population.main matrix array)

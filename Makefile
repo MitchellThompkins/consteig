@@ -86,7 +86,7 @@ remove:
 	rm -rf build/
 
 .PHONY: examples
-examples: matrix.main decomp.main eigen.main
+examples: matrix.main decomp.main eigen.main population.main
 
 $(BUILD_PREFIX)/$(BUILD_FILE):
 	# create the temporary build directory if needed

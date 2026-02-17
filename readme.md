@@ -16,6 +16,9 @@ dependences several constexpr functions are implemented as well.
 * Perform a selection of math functions (including complex arithmetic) at compile time.
 * Strictly freestanding: The core library has zero dependencies on the standard library.
 
+An example helps best. Let's say that we take the example from [Using
+Eigenvectors to Find Steady State Population Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)...TODO
+
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
 library targeted at embedded systems in which the digital filter coefficients
@@ -37,6 +40,7 @@ Here are some examples to help get started:
 * [Declaring a matrix](examples/matrix.cpp)
 * [Matrix Arithmetic](examples/matrix.cpp)
 * [Finding eigenvalues](examples/eigen.cpp)
+* [Population flow](examples/population.cpp)
 
 ## How Is This Different
 There are powerful open source C++ eigenvalues solvers already in existence
