@@ -30,15 +30,15 @@ constexpr bool nearlyEqual(
 }
 
 
-template<consteig::Size R, consteig::Size C>
+template<typename T, consteig::Size R, consteig::Size C>
 static constexpr bool compareFloatMat(
-        consteig::Matrix<float,R,C> a,
-        consteig::Matrix<float,R,C> b,
-        const float thresh )
+        consteig::Matrix<T,R,C> a,
+        consteig::Matrix<T,R,C> b,
+        const T thresh )
 {
-    for(int i {0}; i<R; i++)
+    for(consteig::Size i {0}; i<R; i++)
     {
-        for(int j {0}; j<C; j++)
+        for(consteig::Size j {0}; j<C; j++)
         {
             if( !consteig::compareFloats(a(i,j), b(i,j), thresh) )
                 return false;

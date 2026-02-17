@@ -70,12 +70,16 @@ TEST(generated_tests, qr_constexpr)
     static constexpr Matrix<double, 4, 4> recon = res._q * res._r;
     
     // Verify A = Q*R property
+    static_assert(compareFloatMat(recon, mat_qr, 1e-4), "QR Reconstruction failed (constexpr)");
+
+    // Verify Q is unitary
+    static constexpr Matrix<double, 4, 4> qUnitary = transpose(res._q) * res._q;
+    static constexpr Matrix<double, 4, 4> identity = eye<double, 4>();
+    static_assert(compareFloatMat(qUnitary, identity, 1e-4), "Q not unitary (constexpr)");
+
     for(Size i=0; i<4; ++i) {
         for(Size j=0; j<4; ++j) {
             ASSERT_NEAR(recon(i,j), mat_qr(i,j), 1e-4);
         }
     }
-    
-    // Static assert check (approximate equality might require looser threshold or custom checker for static_assert)
-    // We'll rely on the fact that 'res' was computed constexpr.
 }
