@@ -88,6 +88,10 @@ remove:
 .PHONY: examples
 examples: matrix.main decomp.main eigen.main population.main
 
+.PHONY: generate-test-cases
+generate-test-cases:
+	octave octave/generate_test_cases.m
+
 $(BUILD_PREFIX)/$(BUILD_FILE):
 	# create the temporary build directory if needed
 	mkdir -p $(BUILD_PREFIX)
