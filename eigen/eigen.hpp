@@ -85,7 +85,7 @@ constexpr Matrix<T,S,S> eig_shifted_qr( Matrix<T,S,S> a )
         a = hessTemp._h;
 
         Size iter = 0;
-        const Size max_iter = CONSTEIG_SQRT_MAX_ITER * S;
+        const Size max_iter = CONSTEIG_MAX_ITER * S;
         while( iter < max_iter && S > 1 && consteig::abs(a(S-1, S-2)) > 1e-10) 
         {
             T mu { wilkinsonShift( a(S-2,S-2), a(S-1,S-1), a(S-2,S-1) ) };
@@ -119,7 +119,7 @@ constexpr Matrix<T,S,S> eig_double_shifted_qr( Matrix<T,S,S> a )
 
         Size n = S;
         Size total_iter = 0;
-        const Size max_total_iter = CONSTEIG_SQRT_MAX_ITER * S;
+        const Size max_total_iter = CONSTEIG_MAX_ITER * S;
         
         while(n > 1 && total_iter < max_total_iter) {
             // Deflation test
