@@ -106,13 +106,11 @@ public:
         return result;
     }
 
-    //todo(mthompkins): Add test for this
-    constexpr void operator=(const Matrix<T, R, C> &rhs)
-    {
-        for( Size i{0}; i<R; i++ )
-            for( Size j{0}; j<C; j++ )
-                (*this)(i,j) = rhs(i,j);
-    }
+    constexpr Matrix() = default;
+    constexpr Matrix(const Matrix&) = default;
+    constexpr Matrix(Matrix&&) = default;
+    constexpr Matrix& operator=(const Matrix&) = default;
+    constexpr Matrix& operator=(Matrix&&) = default;
 
     constexpr void setRow(const Matrix<T,1,C> &mat, const Size n)
     {

@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#add_compile_options(-Wall -Wextra -pedantic)# -Werror)
+add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 add_compile_options(-nostdlib -nodefaultlibs -lgcc)
 
