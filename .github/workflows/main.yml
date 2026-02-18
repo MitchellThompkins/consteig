@@ -9,6 +9,7 @@ on:
 jobs:
     build_and_publish_container:
         runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
         permissions:
           packages: write
           contents: read
@@ -28,6 +29,7 @@ jobs:
 
     build_and_test:
         needs: build_and_publish_container
+        if: always() && (needs.build_and_publish_container.result == 'success' || needs.build_and_publish_container.result == 'skipped')
         runs-on: ubuntu-latest
         permissions:
           packages: read
