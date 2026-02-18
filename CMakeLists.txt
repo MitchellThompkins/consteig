@@ -8,7 +8,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 #add_compile_options(-Wall -Wextra -pedantic)# -Werror)
 
-#TODO(mthompkins): Investigate if this is doing what I think it is
 add_compile_options(-nostdlib -nodefaultlibs -lgcc)
 add_compile_options(-fconstexpr-ops-limit=1000000000)
 add_compile_options(-fconstexpr-depth=1024)
