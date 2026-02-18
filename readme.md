@@ -117,7 +117,7 @@ The library is verified through two primary methods:
 ### Compile-Time Verification Limits
 Iterative algorithms like the QR iteration used here are computationally expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test cases without crashing the compiler or hitting operation limits, the test suite is divided into **Fast** and **Slow** variants:
 
-*   **Fast Tests (4x4 Matrices)**: These are the default tests. They are small enough to converge quickly within standard compiler limits and provide a baseline for algorithm correctness.
+*   **Fast Tests (3x3 Matrices)**: These are the default tests. They are small enough to converge quickly within standard compiler limits and provide a baseline for algorithm correctness.
 *   **Slow Tests (8x8 Matrices)**: These are exhaustive tests for larger matrices. They require significantly higher `constexpr` step limits (1 billion) and are only enabled on request.
 
 **Running Slow Tests**:
@@ -128,17 +128,45 @@ BUILD_SLOW_TESTS=1 make container.make.build
 
 **CI/CD Integration**:
 *   The **Fast Tests** run on every commit and pull request.
-*   The **Slow Tests** are automatically executed in CI only on the `main` and `develop` branches to ensure rigorous verification before release while maintaining fast feedback for active development.
-
-*   **Granular Binaries**: Non-symmetric test cases are split into individual `.cpp` files. This ensures each `static_assert` gets a fresh "budget" of compiler operations and limits the memory overhead to a single matrix solve at a time.
-*   **Resource Management**: Compiling these tests can be RAM-intensive. Building with `make -j 1` is recommended to prevent multiple compiler instances from exhausting system memory.
-*   **Compiler Flags**: Build scripts automatically raise limits like `-fconstexpr-ops-limit` to accommodate the depth of these calculations.
-*   **Spectral Limits & Matrix Size Constraints**: While the algorithm is algebraically sound for higher orders, random 10x10 matrices (and larger) frequently encounter spectral configurations that fail to converge within even an expanded `constexpr` operation budget (500M+ steps).
+*   The **Slow Tests** are automatically executed in CI only on the `main` and
+    `develop` branches to ensure rigorous verification before release while
+    maintaining fast feedback for active development.
+*   **Granular Binaries**: Non-symmetric test cases are split into individual
+    `.cpp` files. This ensures each `static_assert` gets a fresh "budget" of
+    compiler operations and limits the memory overhead to a single matrix solve
+    at a time.
+*   **Resource Management**: Compiling these tests can be RAM-intensive.
+    Building with `make -j 1` is recommended to prevent multiple compiler
+    instances from exhausting system memory.
+*   **Compiler Flags**: Build scripts automatically raise limits like
+    `-fconstexpr-ops-limit` to accommodate the depth of these calculations.
+*   **Spectral Limits & Matrix Size Constraints**: While the algorithm is
+    algebraically sound for higher orders, random 10x10 matrices (and larger)
+    frequently encounter particular arrangement, spacing, or clustering of
+    eigenvalues in the matrix configurations. They thusly fail to converge
+    within even an expanded `constexpr` operation budget (1BM+ steps).
 *   From a numerical analysis perspective, the 8x8 limit is necessitated by the following factors:
-    *   **Spectral Separation and Convergence Rate**: The convergence rate of the QR algorithm is intrinsically governed by the ratios of adjacent eigenvalues $|\lambda_{i+1}/\lambda_i|$ in the ordered spectrum. As the matrix dimension $n$ increases, the probability of encountering "clustered" eigenvalues (where $\lambda_i \approx \lambda_{i+1}$) rises sharply. In a random real 10x10 matrix, eigenvalues often distribute near the unit circle with several close pairs or nearly equal magnitudes.
-    *   **The Unit Convergence Factor**: When eigenvalues are poorly separated, the convergence factor $\rho = |\lambda_{i+1}/\lambda_i|$ approaches unity. This results in slow linear convergence, requiring an explosive number of iterations to satisfy the deflation criterion ($|h_{k+1,k}| \le \epsilon(|h_{kk}| + |h_{k+1,k+1}|)$).
-    *   **Non-Normal Structure**: Randomly generated matrices are typically highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to transient growth in the QR residual and further stall the convergence of sub-diagonal elements toward the Real Schur Form.
-    *   **Constexpr Step Budget**: While 500M operations is significantly higher than the compiler default (approximately 33.5M, specifically 33,554,432 in GCC), it remains a finite constraint. A stalled QR iteration on a 10x10 non-normal matrix can easily exhaust this budget, causing a compilation failure rather than a runtime timeout. Capping the tests at 8x8 ensures a reliable build while still exercising the solver's complexity.
+    *   **Spectral Separation and Convergence Rate**: The convergence rate of
+        the QR algorithm is intrinsically governed by the ratios of adjacent
+        eigenvalues $|\lambda_{i+1}/\lambda_i|$ in the ordered spectrum. As the
+        matrix dimension $n$ increases, the probability of encountering
+        "clustered" eigenvalues (where $\lambda_i \approx \lambda_{i+1}$) rises
+        sharply. In a random real 10x10 matrix, eigenvalues often distribute
+        near the unit circle with several close pairs or nearly equal
+        magnitudes.
+    *   **The Unit Convergence Factor**: When eigenvalues are poorly separated,
+        the convergence factor $\rho = |\lambda_{i+1}/\lambda_i|$ approaches
+        unity. This results in slow linear convergence, requiring an explosive
+        number of iterations to satisfy the deflation criterion ($|h_{k+1,k}|
+        \le \epsilon(|h_{kk}| + |h_{k+1,k+1}|)$).
+    *   **Non-Normal Structure**: Randomly generated matrices are typically
+        highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
+        transient growth in the QR residual and further stall the convergence of
+        sub-diagonal elements toward the Real Schur Form.
+    *   **Constexpr Step Budget**: While 500M operations is significantly higher
+        than the compiler default (33,554,432 in GCC), it remains a finite
+        constraint. A stalled QR iteration on a 10x10 non-normal matrix can
+        easily exhaust this budget, causing a compilation failure.
 
 ## What Can Improve
 * Declaring matrices can be initializer bracket hell. Refer to [this example](examples/matrix.cpp)
