@@ -199,9 +199,6 @@ make build
 make test
 ```
 
-## TODO
-- [ ] Optimize QR decomposition using scaled Householder reflections (currently uses Gram-Schmidt for constexpr stability)
-
 ## References
 
 ## Thanks
