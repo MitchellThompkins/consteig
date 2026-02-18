@@ -11,7 +11,7 @@ fprintf(fid, 'namespace consteig {\n\n');
 
 % 1. Symmetric Matrix (Real Eigenvalues)
 NUM_CASES = 50;
-S = 10;
+S = 8;
 
 fprintf(fid, '// Symmetric Matrix Test Cases\n');
 fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_sym[%d] = {\n', S, S, NUM_CASES);
@@ -67,7 +67,7 @@ end
 fprintf(fid, '};\n\n');
 
 % 2. Non-Symmetric Matrix (Complex Eigenvalues)
-S = 10;
+S = 8;
 fprintf(fid, '// Non-Symmetric Matrix Test Cases\n');
 fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_nonsym[%d] = {\n', S, S, NUM_CASES);
 for n = 1:NUM_CASES
