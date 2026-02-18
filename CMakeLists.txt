@@ -10,7 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 #TODO(mthompkins): Investigate if this is doing what I think it is
 add_compile_options(-nostdlib -nodefaultlibs -lgcc)
-add_compile_options(-fconstexpr-ops-limit=500000000)
+add_compile_options(-fconstexpr-ops-limit=1000000000)
 add_compile_options(-fconstexpr-depth=1024)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
