@@ -9,80 +9,84 @@ fprintf(fid, '#define GENERATED_CASES_HPP\n\n');
 fprintf(fid, '#include "../consteig.hpp"\n\n');
 fprintf(fid, 'namespace consteig {\n\n');
 
-% 1. Symmetric Matrix (Real Eigenvalues)
-S = 5;
-A_sym = rand(S);
-A_sym = A_sym + A_sym'; % Make symmetric
-e_sym = eig(A_sym);
+NUM_CASES = 50;
 
-fprintf(fid, '// Symmetric Matrix Test Case\n');
-[rows, cols] = size(A_sym);
-fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_sym\n', rows, cols);
-fprintf(fid, '{{{\n');
-for i = 1:rows
-    fprintf(fid, '    {');
-    for j = 1:cols
-        if j > 1
-            fprintf(fid, ', ');
-        endif
-        fprintf(fid, '%.16e', A_sym(i,j));
+function generate_cases(fid, type_str, S, num_cases, suffix)
+    if strcmp(type_str, 'sym')
+        fprintf(fid, '// Symmetric Matrix Test Cases (%dx%d) - %s\n', S, S, suffix);
+        var_name = ['mat_sym_' suffix];
+        eig_var_name = ['eigs_sym_' suffix];
+    else
+        fprintf(fid, '// Non-Symmetric Matrix Test Cases (%dx%d) - %s\n', S, S, suffix);
+        var_name = ['mat_nonsym_' suffix];
+        eig_var_name = ['eigs_nonsym_' suffix];
     end
-    if i < rows
-        fprintf(fid, '},\n');
-    else
-        fprintf(fid, '}\n');
-    endif
-end
-fprintf(fid, '}}};\n\n');
 
-fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> eigs_sym\n', rows);
-fprintf(fid, '{{{\n');
-for i = 1:rows
-    fprintf(fid, '    { { {%.16e, %.16e} } }', real(e_sym(i)), imag(e_sym(i)));
-    if i < rows
-        fprintf(fid, ',\n');
-    else
-        fprintf(fid, '\n');
-    endif
-end
-fprintf(fid, '}}};\n\n');
+    fprintf(fid, 'static constexpr Matrix<double, %d, %d> %s[%d] = {\n', S, S, var_name, num_cases);
+    
+    eigs_all = zeros(S, num_cases);
+    
+    for n = 1:num_cases
+        if strcmp(type_str, 'sym')
+            A = rand(S);
+            A = A + A';
+        else
+            A = rand(S);
+        end
+        e = eig(A);
+        eigs_all(:, n) = e;
 
-% 2. Non-Symmetric Matrix (Complex Eigenvalues)
-S = 5;
-A_nonsym = rand(S);
-e_nonsym = eig(A_nonsym);
-
-fprintf(fid, '// Non-Symmetric Matrix Test Case\n');
-[rows, cols] = size(A_nonsym);
-fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_nonsym\n', rows, cols);
-fprintf(fid, '{{{\n');
-for i = 1:rows
-    fprintf(fid, '    {');
-    for j = 1:cols
-        if j > 1
-            fprintf(fid, ', ');
-        endif
-        fprintf(fid, '%.16e', A_nonsym(i,j));
+        fprintf(fid, '    {{{\n');
+        for i = 1:S
+            fprintf(fid, '        {');
+            for j = 1:S
+                if j > 1
+                    fprintf(fid, ', ');
+                end
+                fprintf(fid, '%.16e', A(i,j));
+            end
+            if i < S
+                fprintf(fid, '},\n');
+            else
+                fprintf(fid, '}\n');
+            end
+        end
+        if n < num_cases
+            fprintf(fid, '    }}},\n');
+        else
+            fprintf(fid, '    }}}\n');
+        end
     end
-    if i < rows
-        fprintf(fid, '},\n');
-    else
-        fprintf(fid, '}\n');
-    endif
-end
-fprintf(fid, '}}};\n\n');
+    fprintf(fid, '};\n\n');
 
-fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> eigs_nonsym\n', rows);
-fprintf(fid, '{{{\n');
-for i = 1:rows
-    fprintf(fid, '    { { {%.16e, %.16e} } }', real(e_nonsym(i)), imag(e_nonsym(i)));
-    if i < rows
-        fprintf(fid, ',\n');
-    else
-        fprintf(fid, '\n');
-    endif
+    fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> %s[%d] = {\n', S, eig_var_name, num_cases);
+    for n = 1:num_cases
+        e = eigs_all(:, n);
+        fprintf(fid, '    {{{\n');
+        for i = 1:S
+            fprintf(fid, '        { { {%.16e, %.16e} } }', real(e(i)), imag(e(i)));
+            if i < S
+                fprintf(fid, ',\n');
+            else
+                fprintf(fid, '\n');
+            end
+        end
+        if n < num_cases
+            fprintf(fid, '    }}},\n');
+        else
+            fprintf(fid, '    }}}\n');
+        end
+    end
+    fprintf(fid, '};\n\n');
 end
-fprintf(fid, '}}};\n\n');
+
+% Fast cases (4x4)
+generate_cases(fid, 'sym', 4, NUM_CASES, 'fast');
+generate_cases(fid, 'nonsym', 4, NUM_CASES, 'fast');
+
+% Slow cases (8x8)
+generate_cases(fid, 'sym', 8, NUM_CASES, 'slow');
+generate_cases(fid, 'nonsym', 8, NUM_CASES, 'slow');
 
 % 3. QR Decomposition Test Case
 S = 4;
@@ -98,14 +102,14 @@ for i = 1:rows
     for j = 1:cols
         if j > 1
             fprintf(fid, ', ');
-        endif
+        end
         fprintf(fid, '%.16e', A_qr(i,j));
     end
     if i < rows
         fprintf(fid, '},\n');
     else
         fprintf(fid, '}\n');
-    endif
+    end
 end
 fprintf(fid, '}}};\n\n');
 

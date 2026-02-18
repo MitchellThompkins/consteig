@@ -41,18 +41,7 @@ constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
     static_assert( R==C, "Hessenberg reduction expects a square matrix");
 
     if constexpr (L <= 2) {
-        PHMatrix<T,R> result;
-        // _p should be Identity or just used as accumulator? 
-        // In the original base case: ._p = {0}, ._h = a.
-        // Wait, {0} for Matrix initializes to zero.
-        // The recursive step does `pRtn = (houseSize>3) ? p*out._p : p`.
-        // If base case returns 0 for P, then P*0 = 0?
-        // Actually, if L=3, it calls hess<...2>. Returns p={0}.
-        // Then (3>3) is false. pRtn = p. Correct.
-        // So base case P is irrelevant if logic handles it, or should be I?
-        // Original code returned {0}.
-        // Let's stick to original behavior but explicit.
-        result._p = Matrix<T,R,R>{}; // Zero
+        PHMatrix<T,R> result{};
         result._h = a;
         return result;
     } else {

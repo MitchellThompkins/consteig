@@ -144,6 +144,36 @@ constexpr T normE( const Matrix<T,R,C> &mat )
     return consteig::sqrt(result);
 }
 
+// 1-norm of a matrix (max column sum)
+template<typename T, Size R, Size C>
+constexpr T norm1( const Matrix<T,R,C> &mat )
+{
+    T max_sum {static_cast<T>(0)};
+    for(Size j{0}; j<C; ++j) {
+        T col_sum {static_cast<T>(0)};
+        for(Size i{0}; i<R; ++i) {
+            col_sum += consteig::abs(mat(i,j));
+        }
+        if(col_sum > max_sum) max_sum = col_sum;
+    }
+    return max_sum;
+}
+
+// Infinity-norm of a matrix (max row sum)
+template<typename T, Size R, Size C>
+constexpr T normInf( const Matrix<T,R,C> &mat )
+{
+    T max_sum {static_cast<T>(0)};
+    for(Size i{0}; i<R; ++i) {
+        T row_sum {static_cast<T>(0)};
+        for(Size j{0}; j<C; ++j) {
+            row_sum += consteig::abs(mat(i,j));
+        }
+        if(row_sum > max_sum) max_sum = row_sum;
+    }
+    return max_sum;
+}
+
 template<typename T, Size R, Size C>
 constexpr Matrix<T,R,C> sqrt( const Matrix<T,R,C> &mat )
 {
@@ -156,48 +186,49 @@ constexpr Matrix<T,R,C> sqrt( const Matrix<T,R,C> &mat )
     return result;
 }
 
+// Forward declaration or include for eigvals if needed. 
+// Since operations.hpp is usually included before eigen.hpp in consteig.hpp, 
+// we might need to handle this carefully.
+// Actually, consteig.hpp includes eigen.hpp last.
+// Let's use a simpler approach for det() that doesn't depend on eigen.hpp if possible,
+// or just accept that it's O(n!) for now if it's not hurting anyone.
+// But wait, QR is in decompositions/qr.hpp which is included in decompositions.hpp.
+// Let's use the R diagonal product from QR.
+
 template<typename T, Size R, Size C>
 constexpr T det( const Matrix<T,R,C> &mat )
 {
     static_assert(R==C, "Can only find determinant of a square matrix");
-
-    Matrix<T,R-1,C-1> submat{};
-
-    T result {static_cast<T>(0)};
-
-    if(R==1)
-    {
-        result = mat(0,0);
-    }
-    else if(R==2)
-    {
-        result = det(mat);
-    }
-    else
-    {
+    
+    if constexpr (R == 1) {
+        return mat(0,0);
+    } else if constexpr (R == 2) {
+        return (mat(0,0)*mat(1,1)) - (mat(0,1)*mat(1,0));
+    } else {
+        // Use recursive expansion for now to avoid circular dependency with eigen.hpp
+        // but it's already there. 
+        // Let's stick with the recursive one if it's not a bottleneck,
+        // or implement a simple Gaussian elimination based one.
+        
+        T result {static_cast<T>(0)};
         for(Size i {0}; i<R; i++)
         {
-            Size subi {0U};
+            Matrix<T,R-1,C-1> submat{};
             for(Size j {1}; j<R; j++)
             {
                 Size subj {0U};
                 for(Size k {0}; k<R; k++)
                 {
-                    if(k==i)
-                    {
-                        continue;
-                    }
-                    submat(subi,subj) = mat(j,k);
+                    if(k==i) continue;
+                    submat(j-1,subj) = mat(j,k);
                     subj++;
                 }
-                subi++;
             }
-            //TODO(mthompkins): Figure out how to handle unsigned T for pow
-            result += (consteig::pow<T>(-1, i) * mat(0,i) * det(submat));
+            T sign = (i % 2 == 0) ? static_cast<T>(1) : static_cast<T>(-1);
+            result += (sign * mat(0,i) * det(submat));
         }
+        return result;
     }
-
-    return result;
 }
 
 template<typename T>

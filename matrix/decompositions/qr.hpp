@@ -17,45 +17,98 @@ struct QRMatrix
     Matrix<T,S,S> _r;
 };
 
-// Modified Gram-Schmidt QR Decomposition
+// Optimized QR for Upper Hessenberg Matrix
+template<typename T, Size R, Size C>
+constexpr QRMatrix<T, R> qr_hessenberg( const Matrix<T,R,C> a )
+{
+    static_assert( R==C, "QR decomposition must be a square matrix");
+
+    Matrix<T,R,R> q = eye<T,R>();
+    Matrix<T,R,R> r = a;
+    
+    for(Size i = 0; i < R - 1; ++i)
+    {
+        // Use Givens rotation to zero a(i+1, i)
+        T x = r(i,i);
+        T y = r(i+1,i);
+        
+        if (consteig::abs(y) > static_cast<T>(1e-15)) {
+            T mag = consteig::sqrt(x*x + y*y);
+            T c = x / mag;
+            T s = y / mag;
+            
+            // R = G * R
+            for (Size j = i; j < R; ++j) {
+                T r_i = r(i,j);
+                T r_ip1 = r(i+1,j);
+                r(i,j) = c * r_i + s * r_ip1;
+                r(i+1,j) = -s * r_i + c * r_ip1;
+            }
+            
+            // Q = Q * G^T
+            for (Size j = 0; j < R; ++j) {
+                T q_i = q(j,i);
+                T q_ip1 = q(j,i+1);
+                q(j,i) = c * q_i + s * q_ip1;
+                q(j,i+1) = -s * q_i + c * q_ip1;
+            }
+            r(i+1,i) = 0;
+        }
+    }
+
+    QRMatrix<T, R> res{};
+    res._q = q;
+    res._r = r;
+    return res;
+}
+
+// Modified Gram-Schmidt QR Decomposition (Kept as alternative or for reference)
+// Actually, let's replace it with a more stable Householder or Givens for all matrices.
 template<typename T, Size R, Size C>
 constexpr QRMatrix<T, R> qr( const Matrix<T,R,C> a )
 {
     static_assert( R==C, "QR decomposition must be a square matrix");
 
-    Matrix<T,R,R> q{}; 
-    Matrix<T,R,R> r{};
+    Matrix<T,R,R> q = eye<T,R>();
+    Matrix<T,R,R> r = a;
     
-    // Copy a to v (working matrix)
-    Matrix<T,R,R> v = a;
-
-    for(Size i = 0; i < R; ++i)
+    for(Size j = 0; j < C; ++j)
     {
-        // r(i,i) = norm(v_i)
-        T n = normE(v.col(i));
-        r(i,i) = n;
-
-        if(consteig::abs(n) > static_cast<T>(1e-15))
+        for(Size i = R - 1; i > j; --i)
         {
-            // q_i = v_i / r(i,i)
-            T inv_n = static_cast<T>(1) / n;
-            Matrix<T,R,1> q_col = inv_n * v.col(i);
-            q.setCol(q_col, i);
-        }
-
-        for(Size j = i + 1; j < R; ++j)
-        {
-            // r(i,j) = q_i . v_j
-            T d = dot(transpose(q.col(i)), transpose(v.col(j)));
-            r(i,j) = d;
+            // Use Givens rotation to zero a(i, j) using a(i-1, j)
+            T x = r(i-1,j);
+            T y = r(i,j);
             
-            // v_j = v_j - r(i,j) * q_i
-            Matrix<T,R,1> v_col_new = v.col(j) - (d * q.col(i));
-            v.setCol(v_col_new, j);
+            if (consteig::abs(y) > static_cast<T>(1e-15)) {
+                T mag = consteig::sqrt(x*x + y*y);
+                if (mag > static_cast<T>(1e-18)) {
+                    T c = x / mag;
+                    T s = y / mag;
+                    
+                    // R = G * R
+                    // Only need to update columns from j to C-1
+                    for (Size k = j; k < C; ++k) {
+                        T r_im1_k = r(i-1,k);
+                        T r_i_k = r(i,k);
+                        r(i-1,k) = c * r_im1_k + s * r_i_k;
+                        r(i,k) = -s * r_im1_k + c * r_i_k;
+                    }
+                    
+                    // Q = Q * G^T
+                    for (Size k = 0; k < R; ++k) {
+                        T q_k_im1 = q(k,i-1);
+                        T q_k_i = q(k,i);
+                        q(k,i-1) = c * q_k_im1 + s * q_k_i;
+                        q(k,i) = -s * q_k_im1 + c * q_k_i;
+                    }
+                    r(i,j) = 0;
+                }
+            }
         }
     }
 
-    QRMatrix<T, R> res;
+    QRMatrix<T, R> res{};
     res._q = q;
     res._r = r;
     return res;
