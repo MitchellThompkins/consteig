@@ -5,8 +5,6 @@ int main()
     bool val = consteig::is_float<consteig::Size>();
     std::cout << val << "\n";
 
-    static constexpr int x {10};
-
     static constexpr int s {10};
     static constexpr consteig::Matrix<float,s,s> mat
     {{{
