@@ -5,8 +5,15 @@
 #include <cfloat>
 
 #include "../consteig.hpp"
+#include "../consteig_options.hpp"
 
 #define MSG "Not constexpr or wrong output"
+
+// Use a slightly looser tolerance for tests involving iterative methods (QR, Eigen)
+// compared to the strict symmetry check tolerance.
+#ifndef CONSTEIG_TEST_TOLERANCE
+    #define CONSTEIG_TEST_TOLERANCE 1e-9F
+#endif
 
 // https://stackoverflow.com/a/32334103/3527182
 template<typename T>
@@ -30,15 +37,15 @@ constexpr bool nearlyEqual(
 }
 
 
-template<consteig::Size R, consteig::Size C>
+template<typename T, consteig::Size R, consteig::Size C>
 static constexpr bool compareFloatMat(
-        consteig::Matrix<float,R,C> a,
-        consteig::Matrix<float,R,C> b,
-        const float thresh )
+        consteig::Matrix<T,R,C> a,
+        consteig::Matrix<T,R,C> b,
+        const T thresh )
 {
-    for(int i {0}; i<R; i++)
+    for(consteig::Size i {0}; i<R; i++)
     {
-        for(int j {0}; j<C; j++)
+        for(consteig::Size j {0}; j<C; j++)
         {
             if( !consteig::compareFloats(a(i,j), b(i,j), thresh) )
                 return false;
