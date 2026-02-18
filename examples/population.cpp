@@ -13,6 +13,7 @@ int main()
     }}};
 
     static constexpr auto pop_eigs {consteig::eig(pop_mat)};
+    static_assert(pop_eigs.sizeX() == pop_size, "Eigen result should match input size");
     static constexpr auto pop_eig_vals {consteig::eigvals(pop_mat)};
 
     // For a Markov matrix describing population flow, the steady state is represented

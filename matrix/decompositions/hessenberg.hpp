@@ -16,15 +16,11 @@ struct PHMatrix
     Matrix<T,S,S> _p;
     Matrix<T,S,S> _h;
 
-    constexpr void operator=(const PHMatrix<T, S> &rhs)
-    {
-        for( Size i{0}; i<S; i++ )
-            for( Size j{0}; j<S; j++ )
-            {
-                (*this._p)(i,j) = rhs._p(i,j);
-                (*this._h)(i,j) = rhs._h(i,j);
-            }
-    }
+    constexpr PHMatrix() = default;
+    constexpr PHMatrix(const PHMatrix&) = default;
+    constexpr PHMatrix(PHMatrix&&) = default;
+    constexpr PHMatrix& operator=(const PHMatrix&) = default;
+    constexpr PHMatrix& operator=(PHMatrix&&) = default;
 };
 
 ///////////// FUNCTION DECLARATIONS /////////////
@@ -71,11 +67,11 @@ constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
         Matrix<T,size,size> pRtn = (houseSize > 3) ? p*out._p : p;
 
         return {
-            ._p = pRtn,
-            ._h = out._h
+            pRtn,
+            out._h
         };
     }
-};
+}
 
 } //end namespace
 #endif
