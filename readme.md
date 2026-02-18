@@ -117,7 +117,7 @@ The library is verified through two primary methods:
 ### Compile-Time Verification Limits
 Iterative algorithms like the QR iteration used here are computationally expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test cases without crashing the compiler or hitting operation limits, the test suite is divided into **Fast** and **Slow** variants:
 
-*   **Fast Tests (3x3 Matrices)**: These are the default tests. They are small enough to converge quickly within standard compiler limits and provide a baseline for algorithm correctness.
+*   **Fast Tests (4x4 Matrices)**: These are the default tests. They are small enough to converge quickly within standard compiler limits and provide a baseline for algorithm correctness.
 *   **Slow Tests (8x8 Matrices)**: These are exhaustive tests for larger matrices. They require significantly higher `constexpr` step limits (1 billion) and are only enabled on request.
 
 **Running Slow Tests**:
