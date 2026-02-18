@@ -6,6 +6,8 @@
 
 using namespace consteig;
 
+static constexpr double kTol = 1e-9;
+
 TEST(qr_decomp, eigen_comparison)
 {
     static constexpr Size s {4};
@@ -27,7 +29,7 @@ TEST(qr_decomp, eigen_comparison)
     // But Q*R should be A.
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
-            ASSERT_NEAR(recon(i,j), mat(i,j), 1e-9);
+            ASSERT_NEAR(recon(i,j), mat(i,j), kTol);
         }
     }
 
@@ -36,8 +38,13 @@ TEST(qr_decomp, eigen_comparison)
     Matrix<double, s, s> ident = eye<double, s>();
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
-            ASSERT_NEAR(qtq(i,j), ident(i,j), 1e-9);
+            ASSERT_NEAR(qtq(i,j), ident(i,j), kTol);
         }
+    }
+    
+    // Compare R diagonal absolute values (since signs can flip)
+    for(Size i=0; i<s; ++i) {
+        ASSERT_NEAR(std::abs(qrRes._r(i,i)), std::abs(rEig(i,i)), kTol);
     }
 }
 
@@ -50,8 +57,8 @@ TEST(qr_decomp, identity_matrix)
     // Q should be I, R should be I (or signed permutations, but for I it should be I)
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
-            ASSERT_NEAR(qrRes._q(i,j), mat(i,j), 1e-9);
-            ASSERT_NEAR(qrRes._r(i,j), mat(i,j), 1e-9);
+            ASSERT_NEAR(qrRes._q(i,j), mat(i,j), kTol);
+            ASSERT_NEAR(qrRes._r(i,j), mat(i,j), kTol);
         }
     }
 }
@@ -68,8 +75,8 @@ TEST(qr_decomp, zero_matrix)
     
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
-            ASSERT_NEAR(qrRes._q(i,j), ident(i,j), 1e-9);
-            ASSERT_NEAR(qrRes._r(i,j), 0.0, 1e-9);
+            ASSERT_NEAR(qrRes._q(i,j), ident(i,j), kTol);
+            ASSERT_NEAR(qrRes._r(i,j), 0.0, kTol);
         }
     }
 }
@@ -83,8 +90,8 @@ TEST(qr_decomp, diagonal_matrix)
     // Q should be I, R should be mat
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
-            ASSERT_NEAR(qrRes._q(i,j), (i==j ? 1.0 : 0.0), 1e-9);
-            ASSERT_NEAR(qrRes._r(i,j), mat(i,j), 1e-9);
+            ASSERT_NEAR(qrRes._q(i,j), (i==j ? 1.0 : 0.0), kTol);
+            ASSERT_NEAR(qrRes._r(i,j), mat(i,j), kTol);
         }
     }
 }
@@ -100,18 +107,8 @@ TEST(qr_decomp, singular_matrix)
     Matrix<double, s, s> recon = qrRes._q * qrRes._r;
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
-            ASSERT_NEAR(recon(i,j), mat(i,j), 1e-9);
+            ASSERT_NEAR(recon(i,j), mat(i,j), kTol);
         }
-    }
-}
- recon = qrRes._q * qrRes._r;
-    for(Size i=0; i<s; ++i)
-        for(Size j=0; j<s; ++j)
-            EXPECT_NEAR(recon(i,j), mat(i,j), CONSTEIG_TEST_TOLERANCE);
-            
-    // Compare R diagonal absolute values (since signs can flip)
-    for(Size i=0; i<s; ++i) {
-        EXPECT_NEAR(std::abs(qrRes._r(i,i)), std::abs(rEig(i,i)), CONSTEIG_TEST_TOLERANCE);
     }
 }
 
@@ -125,12 +122,10 @@ TEST(qr_decomp, static_constexpr_even_mat)
     static constexpr QRMatrix<double, x> test {qr(mat)};
 
     // Test Static Assertion
-    // Gram-Schmidt QR produces different Q/R than Householder QR (signs differ), so exact match against
-    // hardcoded Householder results might fail. We check A=QR and Q unitary instead.
-    static_assert(compareFloatMat(test._q * test._r, mat, static_cast<double>(CONSTEIG_TEST_TOLERANCE)), MSG);
+    static_assert(compareFloatMat(test._q * test._r, mat, kTol), MSG);
 
     // Runtime checks
-    ASSERT_TRUE(compareFloatMat(test._q * test._r, mat, static_cast<double>(CONSTEIG_TEST_TOLERANCE)));
+    ASSERT_TRUE(compareFloatMat(test._q * test._r, mat, kTol));
 }
 
 TEST(qr_decomp, static_constexpr_random)
@@ -155,12 +150,12 @@ TEST(qr_decomp, static_constexpr_random)
     static constexpr Matrix<double, s, s> qrCheck {test._q*test._r};
 
     // Verify properties
-    static_assert(compareFloatMat(qrCheck, mat, static_cast<double>(CONSTEIG_TEST_TOLERANCE)), MSG);
-    ASSERT_TRUE(compareFloatMat(qrCheck, mat, static_cast<double>(CONSTEIG_TEST_TOLERANCE)));
+    static_assert(compareFloatMat(qrCheck, mat, kTol), MSG);
+    ASSERT_TRUE(compareFloatMat(qrCheck, mat, kTol));
     
     // Check Q unitary
     static constexpr Matrix<double, s, s> qUnitary {test._q * transpose(test._q)};
     static constexpr Matrix<double, s, s> identity {eye<double, s>()};
-    static_assert(compareFloatMat(qUnitary, identity, static_cast<double>(CONSTEIG_TEST_TOLERANCE)), MSG);
-    ASSERT_TRUE(compareFloatMat(qUnitary, identity, static_cast<double>(CONSTEIG_TEST_TOLERANCE)));
+    static_assert(compareFloatMat(qUnitary, identity, kTol), MSG);
+    ASSERT_TRUE(compareFloatMat(qUnitary, identity, kTol));
 }
