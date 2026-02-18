@@ -140,11 +140,7 @@ BUILD_SLOW_TESTS=1 make container.make.build
     instances from exhausting system memory.
 *   **Compiler Flags**: Unit test targets automatically raise limits like `-fconstexpr-ops-limit` locally to accommodate the depth of these calculations. For other targets, these limits are not modified by default to avoid unexpected side effects on user compiler configurations. Users can explicitly enable these raised limits globally by setting the `CONSTEIG_RAISE_COMPILER_LIMITS` CMake option to `ON`.
 
-*   **Spectral Limits & Matrix Size Constraints**: While the algorithm is
-    algebraically sound for higher orders, random 10x10 matrices (and larger)
-    frequently encounter particular arrangement, spacing, or clustering of
-    eigenvalues in the matrix configurations. They thusly fail to converge
-    within even an expanded `constexpr` operation budget (1BM+ steps).
+*   **Spectral Limits & Matrix Size Constraints**: While the algorithm is algebraically sound for higher orders, random 10x10 matrices (and larger) frequently encounter particular arrangement, spacing, or clustering of eigenvalues in the matrix configurations. They thusly fail to converge within even an expanded `constexpr` operation budget (1BM+ steps). These limits are applied automatically to library tests, but users may need to explicitly enable them for their own targets using `CONSTEIG_RAISE_COMPILER_LIMITS=ON`.
 *   From a numerical analysis perspective, the 8x8 limit is necessitated by the following factors:
     *   **Spectral Separation and Convergence Rate**: The convergence rate of
         the QR algorithm is intrinsically governed by the ratios of adjacent
