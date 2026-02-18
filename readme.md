@@ -136,7 +136,7 @@ BUILD_SLOW_TESTS=1 make container.make.build
     compiler operations and limits the memory overhead to a single matrix solve
     at a time.
 *   **Resource Management**: Compiling these tests can be RAM-intensive.
-    Building with `make -j 1` is recommended to prevent multiple compiler
+    The build system automatically uses `make -j 1` when `BUILD_SLOW_TESTS=1` is set to prevent multiple compiler
     instances from exhausting system memory.
 *   **Compiler Flags**: Unit test targets automatically raise limits like `-fconstexpr-ops-limit` locally to accommodate the depth of these calculations. For other targets, these limits are not modified by default to avoid unexpected side effects on user compiler configurations. Users can explicitly enable these raised limits globally by setting the `CONSTEIG_RAISE_COMPILER_LIMITS` CMake option to `ON`.
 
