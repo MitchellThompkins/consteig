@@ -158,7 +158,7 @@ constexpr Matrix<T,S,S> eig(
         return eig_shifted_qr<T,S>(a);
     else
         return eig_double_shifted_qr<T,S>(a);
-};
+}
 
 template<typename T, Size S>
 constexpr Matrix<Complex<T>,S,1> eigvals( const Matrix<T,S,S> a )
@@ -187,9 +187,9 @@ constexpr Matrix<Complex<T>,S,1> eigvals( const Matrix<T,S,S> a )
 
 template<typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(
-        const Matrix<T,R,C> a,
-        const Matrix<Complex<T>,R,1> lambda,
-        const T thresh)
+        const Matrix<T,R,C> /*a*/,
+        const Matrix<Complex<T>,R,1> /*lambda*/,
+        const T /*thresh*/)
 {
     return true; 
 }

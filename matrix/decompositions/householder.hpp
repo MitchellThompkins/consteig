@@ -56,7 +56,7 @@ constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
 }
 
 template<typename T>
-constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
+constexpr Matrix<T,2,2> house(Matrix<T,2,2> /*a*/)
 {
     Matrix<T,2,2> i = eye<T,2>();
     i(1,1) = i(1,1)*static_cast<T>(-1);

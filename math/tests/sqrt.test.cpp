@@ -60,6 +60,6 @@ TEST(sqrt_function, sqrt_test)
     static constexpr float gAnswer {-1.0};
     // TODO(mthompkins): This should be NaN, but for now it's this.
     //static constexpr float gAnswer {std::numeric_limits<float>::quiet_NaN()};
-    static_assert(compareFloats(fConsteig,fStd,thresh<float>()), MSG);
-    ASSERT_TRUE(compareFloats(fConsteig,fStd,thresh<float>()));
+    static_assert(compareFloats(gConsteig,gAnswer,thresh<float>()), MSG);
+    ASSERT_TRUE(compareFloats(gConsteig,gAnswer,thresh<float>()));
 }

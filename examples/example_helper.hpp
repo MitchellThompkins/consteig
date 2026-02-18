@@ -10,9 +10,9 @@ template<typename T, consteig::Size R, consteig::Size C>
 void printMat( const std::string name, const consteig::Matrix<T,R,C> &mat)
 {
     std::cout << "\n" << name << "\n";
-    for(int i {0}; i<R; i++)
+    for(consteig::Size i {0}; i<R; i++)
     {
-        for(int j {0}; j<C; j++)
+        for(consteig::Size j {0}; j<C; j++)
         {
             std::cout << std::setprecision(10) << mat(i,j) << " ";
         }
@@ -24,9 +24,9 @@ template<typename T, consteig::Size R, consteig::Size C>
 void printMat( const std::string name, const consteig::Matrix<consteig::Complex<T>,R,C> &mat)
 {
     std::cout << "\n" << name << "\n";
-    for(int i {0}; i<R; i++)
+    for(consteig::Size i {0}; i<R; i++)
     {
-        for(int j {0}; j<C; j++)
+        for(consteig::Size j {0}; j<C; j++)
         {
             std::cout << std::setprecision(10) << "(" << mat(i,j).real << "," << mat(i,j).imag << "i) ";
         }

@@ -40,20 +40,6 @@ TEST(qr_decomp, static_constexpr_even_mat)
 
     static constexpr QRMatrix<double, x> test {qr(mat)};
 
-    static constexpr Matrix<double, x, x> qAnswer
-    {{{
-        {1.0/consteig::sqrt(2.0),  1.0/consteig::sqrt(6.0), -1.0/consteig::sqrt(3.0)},
-        {1.0/consteig::sqrt(2.0), -1.0/consteig::sqrt(6.0),  1.0/consteig::sqrt(3.0)},
-        {0.0,                       2.0/consteig::sqrt(6.0),  1.0/consteig::sqrt(3.0)}
-    }}};
-
-    static constexpr Matrix<double, x, x> rAnswer
-    {{{
-        {2.0/consteig::sqrt(2.0), 1.0/consteig::sqrt(2.0), 1.0/consteig::sqrt(2.0)},
-        {0.0,                      3.0/consteig::sqrt(6.0), 1.0/consteig::sqrt(6.0)},
-        {0.0,                      0.0,                      2.0/consteig::sqrt(3.0)}
-    }}};
-
     // Test Static Assertion
     // Gram-Schmidt QR produces different Q/R than Householder QR (signs differ), so exact match against
     // hardcoded Householder results might fail. We check A=QR and Q unitary instead.
