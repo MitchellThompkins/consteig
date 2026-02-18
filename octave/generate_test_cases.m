@@ -80,9 +80,9 @@ function generate_cases(fid, type_str, S, num_cases, suffix)
     fprintf(fid, '};\n\n');
 end
 
-% Fast cases (5x5)
-generate_cases(fid, 'sym', 5, NUM_CASES, 'fast');
-generate_cases(fid, 'nonsym', 5, NUM_CASES, 'fast');
+% Fast cases (4x4)
+generate_cases(fid, 'sym', 4, NUM_CASES, 'fast');
+generate_cases(fid, 'nonsym', 4, NUM_CASES, 'fast');
 
 % Slow cases (8x8)
 generate_cases(fid, 'sym', 8, NUM_CASES, 'slow');
