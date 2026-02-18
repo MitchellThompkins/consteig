@@ -138,8 +138,8 @@ BUILD_SLOW_TESTS=1 make container.make.build
 *   **Resource Management**: Compiling these tests can be RAM-intensive.
     Building with `make -j 1` is recommended to prevent multiple compiler
     instances from exhausting system memory.
-*   **Compiler Flags**: Build scripts automatically raise limits like
-    `-fconstexpr-ops-limit` to accommodate the depth of these calculations.
+*   **Compiler Flags**: Unit test targets automatically raise limits like `-fconstexpr-ops-limit` locally to accommodate the depth of these calculations. For other targets, these limits are not modified by default to avoid unexpected side effects on user compiler configurations. Users can explicitly enable these raised limits globally by setting the `CONSTEIG_RAISE_COMPILER_LIMITS` CMake option to `ON`.
+
 *   **Spectral Limits & Matrix Size Constraints**: While the algorithm is
     algebraically sound for higher orders, random 10x10 matrices (and larger)
     frequently encounter particular arrangement, spacing, or clustering of

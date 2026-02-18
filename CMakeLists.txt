@@ -9,8 +9,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #add_compile_options(-Wall -Wextra -pedantic)# -Werror)
 
 add_compile_options(-nostdlib -nodefaultlibs -lgcc)
-add_compile_options(-fconstexpr-ops-limit=1000000000)
-add_compile_options(-fconstexpr-depth=1024)
+
+option(CONSTEIG_RAISE_COMPILER_LIMITS "Raise constexpr limits for all targets" OFF)
+if(CONSTEIG_RAISE_COMPILER_LIMITS)
+    add_compile_options(-fconstexpr-ops-limit=1000000000)
+    add_compile_options(-fconstexpr-depth=1024)
+endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
