@@ -25,12 +25,24 @@ CMAKE_GENERATOR = "Unix Makefiles"
 
 # Get number of jobs Make is being called with. This only works with '-j' and not --jobs'
 BUILD_TOOL_PID := $(shell echo $$PPID)
-JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(BUILD_TOOL_PID).*$(BUILD_TOOL)")))
+DETECTED_JOBS := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(BUILD_TOOL_PID).*$(BUILD_TOOL)")))
+
+ifeq "$(BUILD_SLOW_TESTS)" "1"
+    # Force -j 1 for slow builds to avoid exhausting system memory
+    JOB_FLAG := -j 1
+else
+    ifeq "$(DETECTED_JOBS)" ""
+        # Default to -j 4 for fast builds
+        JOB_FLAG := -j 4
+    else
+        JOB_FLAG := $(DETECTED_JOBS)
+    endif
+endif
 
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)/install )
 
 ifeq "$(BUILD_SLOW_TESTS)" "1"
-    CMAKE_OPTIONS += -DCONSTEIG_BUILD_SLOW_TESTS=ON
+    CMAKE_OPTIONS += -DCONSTEIG_BUILD_SLOW_TESTS=ON -DCONSTEIG_MAX_ITER=1000
 endif
 
 RAISE_COMPILER_LIMITS ?= 1
