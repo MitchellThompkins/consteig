@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "eigen_test_tools.hpp"
+#include "test_tools.hpp"
 
 #include "decompositions.hpp"
 
@@ -97,4 +98,31 @@ TEST(householder, house_single)
     static constexpr float thresh {1e-4F};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
+}
+
+TEST(householder, properties)
+{
+    static constexpr int s {4};
+    static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
+    
+    static constexpr Matrix<double, s, s> P = house(mat);
+
+    // Symmetric: P = P^T
+    static constexpr Matrix<double, s, s> PT = transpose(P);
+    
+    for(size_t i=0; i<s; ++i) {
+        for(size_t j=0; j<s; ++j) {
+            ASSERT_NEAR(P(i,j), PT(i,j), 1e-9);
+        }
+    }
+
+    // Orthogonal: P^T * P = I  => P * P = I (since symmetric)
+    static constexpr Matrix<double, s, s> P2 = P * P;
+    static constexpr Matrix<double, s, s> I = eye<double, s>();
+    
+    for(size_t i=0; i<s; ++i) {
+        for(size_t j=0; j<s; ++j) {
+            ASSERT_NEAR(P2(i,j), I(i,j), 1e-9);
+        }
+    }
 }

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "eigen_test_tools.hpp"
+#include "test_tools.hpp"
 
 #include "decompositions.hpp"
 
@@ -21,6 +22,89 @@ TEST(qr_decomp, eigen_comparison)
     
     // Check Q*R reconstruction for consteig
     Matrix<double, s, s> recon = qrRes._q * qrRes._r;
+    
+    // We can't directly compare Q and R with Eigen because QR is not unique (signs of columns can differ)
+    // But Q*R should be A.
+    for(size_t i=0; i<s; ++i) {
+        for(size_t j=0; j<s; ++j) {
+            ASSERT_NEAR(recon(i,j), mat(i,j), 1e-9);
+        }
+    }
+
+    // Check orthogonality of Q: Q^T * Q = I
+    Matrix<double, s, s> qtq = transpose(qrRes._q) * qrRes._q;
+    Matrix<double, s, s> ident = eye<double, s>();
+    for(size_t i=0; i<s; ++i) {
+        for(size_t j=0; j<s; ++j) {
+            ASSERT_NEAR(qtq(i,j), ident(i,j), 1e-9);
+        }
+    }
+}
+
+TEST(qr_decomp, identity_matrix)
+{
+    static constexpr Size s {3};
+    static constexpr Matrix<double, s, s> mat = eye<double, s>();
+    static constexpr QRMatrix<double, s> qrRes = qr(mat);
+    
+    // Q should be I, R should be I (or signed permutations, but for I it should be I)
+    for(size_t i=0; i<s; ++i) {
+        for(size_t j=0; j<s; ++j) {
+            ASSERT_NEAR(qrRes._q(i,j), mat(i,j), 1e-9);
+            ASSERT_NEAR(qrRes._r(i,j), mat(i,j), 1e-9);
+        }
+    }
+}
+
+TEST(qr_decomp, zero_matrix)
+{
+    static constexpr Size s {3};
+    static constexpr Matrix<double, s, s> mat{};
+    static constexpr QRMatrix<double, s> qrRes = qr(mat);
+
+    // Q should be I (default init), R should be 0
+    // Actually our implementation init Q to I, so it should stay I if no rotations needed
+    Matrix<double, s, s> ident = eye<double, s>();
+    
+    for(size_t i=0; i<s; ++i) {
+        for(size_t j=0; j<s; ++j) {
+            ASSERT_NEAR(qrRes._q(i,j), ident(i,j), 1e-9);
+            ASSERT_NEAR(qrRes._r(i,j), 0.0, 1e-9);
+        }
+    }
+}
+
+TEST(qr_decomp, diagonal_matrix)
+{
+    static constexpr Size s {3};
+    static constexpr Matrix<double, s, s> mat = {{{{2, 0, 0}, {0, 3, 0}, {0, 0, 4}}}};
+    static constexpr QRMatrix<double, s> qrRes = qr(mat);
+
+    // Q should be I, R should be mat
+    for(size_t i=0; i<s; ++i) {
+        for(size_t j=0; j<s; ++j) {
+            ASSERT_NEAR(qrRes._q(i,j), (i==j ? 1.0 : 0.0), 1e-9);
+            ASSERT_NEAR(qrRes._r(i,j), mat(i,j), 1e-9);
+        }
+    }
+}
+
+TEST(qr_decomp, singular_matrix)
+{
+    static constexpr Size s {3};
+    // Row 3 is sum of Row 1 and Row 2 -> Singular
+    static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3}, {4, 5, 6}, {5, 7, 9}}}};
+    static constexpr QRMatrix<double, s> qrRes = qr(mat);
+
+    // Reconstruction Check
+    Matrix<double, s, s> recon = qrRes._q * qrRes._r;
+    for(size_t i=0; i<s; ++i) {
+        for(size_t j=0; j<s; ++j) {
+            ASSERT_NEAR(recon(i,j), mat(i,j), 1e-9);
+        }
+    }
+}
+ recon = qrRes._q * qrRes._r;
     for(Size i=0; i<s; ++i)
         for(Size j=0; j<s; ++j)
             EXPECT_NEAR(recon(i,j), mat(i,j), CONSTEIG_TEST_TOLERANCE);
