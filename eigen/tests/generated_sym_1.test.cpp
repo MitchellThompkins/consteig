@@ -1,2 +1,6 @@
 #include "generated_test_helpers.hpp"
-TEST(generated_tests, sym_1) { static_assert(check_single_symmetric<1>(), "Sym 1 failed"); SUCCEED(); }
+#ifndef CONSTEIG_SLOW_TESTS
+TEST(generated_tests, sym_fast_1) { static_assert(check_single_symmetric_fast<1>(), "Sym Fast 1 failed"); SUCCEED(); }
+#else
+TEST(generated_tests, sym_slow_1) { static_assert(check_single_symmetric_slow<1>(), "Sym Slow 1 failed"); SUCCEED(); }
+#endif

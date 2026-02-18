@@ -29,6 +29,10 @@ JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(BUILD_TOOL_P
 
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)/install )
 
+ifeq "$(BUILD_SLOW_TESTS)" "1"
+    CMAKE_OPTIONS += -DCONSTEIG_BUILD_SLOW_TESTS=ON
+endif
+
 ifeq "$(CMAKE_OPTIONS)" ""
     CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCLANG_TIDY_FIX=$(CLANG_TIDY_FIX) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 else

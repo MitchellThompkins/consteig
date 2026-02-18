@@ -37,25 +37,48 @@ constexpr bool verify_eigenvalues(const Matrix<Complex<T>, S, 1>& computed, cons
 }
 
 template<Size INDEX>
-constexpr bool check_single_symmetric() {
-    auto eigs = eigvals(mat_sym[INDEX]);
-    double tr = trace(mat_sym[INDEX]);
+constexpr bool check_single_symmetric_fast() {
+    auto eigs = eigvals(mat_sym_fast[INDEX]);
+    double tr = trace(mat_sym_fast[INDEX]);
     auto s = sum_eigs(eigs);
     
     if (!(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE))) return false;
     if (!(consteig::abs(s.imag) < 1e-9)) return false;
-    if (!verify_eigenvalues(eigs, eigs_sym[INDEX])) return false;
+    if (!verify_eigenvalues(eigs, eigs_sym_fast[INDEX])) return false;
     return true;
 }
 
 template<Size INDEX>
-constexpr bool check_single_nonsymmetric() {
-    auto eigs = eigvals(mat_nonsym[INDEX]);
-    double tr = trace(mat_nonsym[INDEX]);
+constexpr bool check_single_nonsymmetric_fast() {
+    auto eigs = eigvals(mat_nonsym_fast[INDEX]);
+    double tr = trace(mat_nonsym_fast[INDEX]);
     auto s = sum_eigs(eigs);
     
     if (!(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE))) return false;
-    if (!verify_eigenvalues(eigs, eigs_nonsym[INDEX])) return false;
+    if (!verify_eigenvalues(eigs, eigs_nonsym_fast[INDEX])) return false;
+    return true;
+}
+
+template<Size INDEX>
+constexpr bool check_single_symmetric_slow() {
+    auto eigs = eigvals(mat_sym_slow[INDEX]);
+    double tr = trace(mat_sym_slow[INDEX]);
+    auto s = sum_eigs(eigs);
+    
+    if (!(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE))) return false;
+    if (!(consteig::abs(s.imag) < 1e-9)) return false;
+    if (!verify_eigenvalues(eigs, eigs_sym_slow[INDEX])) return false;
+    return true;
+}
+
+template<Size INDEX>
+constexpr bool check_single_nonsymmetric_slow() {
+    auto eigs = eigvals(mat_nonsym_slow[INDEX]);
+    double tr = trace(mat_nonsym_slow[INDEX]);
+    auto s = sum_eigs(eigs);
+    
+    if (!(consteig::abs(s.real - tr) < static_cast<double>(CONSTEIG_TEST_TOLERANCE))) return false;
+    if (!verify_eigenvalues(eigs, eigs_nonsym_slow[INDEX])) return false;
     return true;
 }
 
