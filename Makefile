@@ -23,21 +23,7 @@ BUILD_TOOL ?= make
 BUILD_FILE = Makefile
 CMAKE_GENERATOR = "Unix Makefiles"
 
-# Get number of jobs Make is being called with. This only works with '-j' and not --jobs'
-BUILD_TOOL_PID := $(shell echo $$PPID)
-DETECTED_JOBS := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(BUILD_TOOL_PID).*$(BUILD_TOOL)")))
-
-ifeq "$(BUILD_SLOW_TESTS)" "1"
-    # Force -j 1 for slow builds to avoid exhausting system memory
-    JOB_FLAG := -j 1
-else
-    ifeq "$(DETECTED_JOBS)" ""
-        # Default to -j 4 for fast builds
-        JOB_FLAG := -j 4
-    else
-        JOB_FLAG := $(DETECTED_JOBS)
-    endif
-endif
+JOB_FLAG := -j 4
 
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)/install )
 
