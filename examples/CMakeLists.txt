@@ -12,3 +12,6 @@ target_link_libraries(eigen.main matrix array)
 
 add_executable(population.main ${CMAKE_CURRENT_SOURCE_DIR}/population.cpp)
 target_link_libraries(population.main matrix array)
+
+add_executable(butterworth.main ${CMAKE_CURRENT_SOURCE_DIR}/butterworth.cpp)
+target_link_libraries(butterworth.main matrix array)
