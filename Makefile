@@ -85,7 +85,7 @@ h:
 
 .PHONY: format
 format:
-	find . -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) | xargs clang-format -i
+	find . \( -path "./test_dependencies" -o -path "./eigen" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format -i
 
 .PHONY: remove
 remove:
