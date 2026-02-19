@@ -4,19 +4,8 @@ THIS_DIR := $(shell pwd)
 UID=$(shell id -u)
 GID=$(shell id -g)
 
-# Default to a Debug build. If you want to enable debugging flags, run
-# "make BUILD_TYPE=Release"
-BUILD_TYPE ?= Debug
-ifneq "$(BUILD_TYPE)" "Debug"
-    ifneq "$(BUILD_TYPE)" "Release"
-        $(error Bad BUILD_TYPE value "$(BUILD_TYPE)" please use "Debug" or "Release")
-    endif
-endif
-BUILD_TYPE_LOWER := $(shell echo $(BUILD_TYPE) | tr A-Z a-z)
-
-
 # Figure out where to build the software. Use BUILD_PREFIX if it was passed in.
-BUILD_PREFIX ?= $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)
+BUILD_PREFIX ?= $(THIS_DIR)/build
 
 BUILD_TOOL ?= make
 
@@ -25,7 +14,7 @@ CMAKE_GENERATOR = "Unix Makefiles"
 
 JOB_FLAG := -j 4
 
-INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)/install )
+INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build )
 
 ifeq "$(BUILD_SLOW_TESTS)" "1"
     CMAKE_OPTIONS += -DCONSTEIG_BUILD_SLOW_TESTS=ON -DCONSTEIG_MAX_ITER=1000
@@ -38,7 +27,7 @@ ifeq "$(RAISE_COMPILER_LIMITS)" "1"
 endif
 
 ifeq "$(CMAKE_OPTIONS)" ""
-    CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCLANG_TIDY_FIX=$(CLANG_TIDY_FIX) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+    CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCLANG_TIDY_FIX=$(CLANG_TIDY_FIX) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX)
 else
    # force cmake to be re-run if we change the cmake options
    $(shell rm $(BUILD_PREFIX)/$(BUILD_FILE))
@@ -73,14 +62,9 @@ h:
 	@echo
 	@echo 'OPTIONS:'
 	@echo
-	@echo 'BUILD_TYPE=<Debug|Release>'
-	@echo '    specifies the CMake build type, and the build subdirectory'
-	@echo '    default: Debug'
-	@echo
 	@echo 'INSTALL_PREFIX=<path>'
 	@echo '    Specifies the CMAKE_INSTALL_PREFIX CMake variable value'
-	@echo '    default when BUILD_TYPE is Debug: ./build/debug/install'
-	@echo '    default when BUILD_TYPE is Release: ./build/release/install'
+	@echo '    default: ./build/
 	@echo
 	@echo '-j <jobs>'
 	@echo '    <jobs> pass -j flag to underlying BUILD_TOOL to set the job number'
@@ -108,7 +92,7 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json && \
 	git config core.hooksPath .githooks && \
 	cd $(BUILD_PREFIX) && \
-	cmake ../.. $(CMAKE_OPTIONS); \
+	cmake .. $(CMAKE_OPTIONS); \
 
 # Other (custom) targets are passed through to the cmake-generated $(BUILD_FILE)
 # Note: when no targets are passed from the commanding the special variable $@
