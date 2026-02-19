@@ -57,5 +57,8 @@ jobs:
                     else
                         export BUILD_SLOW_TESTS=0
                     fi
-                    make container.make.build
+                    make CC=gcc CXX=g++ container.make.build
+                    make container.make.test
+                    make remove
+                    make CC=clang CXX=clang++ container.make.build
                     make container.make.test
