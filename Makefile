@@ -87,6 +87,10 @@ h:
 format:
 	find . \( -path "./test_dependencies" -o -path "./eigen" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format -i
 
+.PHONY: check-format
+check-format:
+	find . \( -path "./test_dependencies" -o -path "./eigen" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format --dry-run --Werror
+
 .PHONY: remove
 remove:
 	rm -rf build/

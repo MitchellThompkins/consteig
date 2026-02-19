@@ -45,12 +45,20 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
+            - name: Lint
+              run: |
+                    export MY_UID=$(id -u)
+                    export MY_GID=$(id -g)
+                    # Ensure we pull the latest image
+                    docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
+                    make container.make.check-format
+
             - name: Build tests
               run: |
                     export MY_UID=$(id -u)
                     export MY_GID=$(id -g)
                     git submodule update --init --recursive
-                    # Ensure we pull the latest image we just built
+                    # Ensure we pull the latest image
                     docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
                     if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/develop" ]]; then
                         export BUILD_SLOW_TESTS=1
