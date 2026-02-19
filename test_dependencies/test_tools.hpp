@@ -1,8 +1,8 @@
 #ifndef TEST_TOOLS_HPP
 #define TEST_TOOLS_HPP
 
-#include <limits>
 #include <cfloat>
+#include <limits>
 
 #include "../consteig.hpp"
 #include "../consteig_options.hpp"
@@ -12,43 +12,32 @@
 // Use a slightly looser tolerance for tests involving iterative methods (QR, Eigen)
 // compared to the strict symmetry check tolerance.
 #ifndef CONSTEIG_TEST_TOLERANCE
-    #define CONSTEIG_TEST_TOLERANCE 1e-9F
+#define CONSTEIG_TEST_TOLERANCE 1e-9F
 #endif
 
 // https://stackoverflow.com/a/32334103/3527182
-template<typename T>
-constexpr bool nearlyEqual(
-  T a,
-  T b,
-  T epsilon = 128 * FLT_EPSILON, T relth = FLT_MIN)
-  // those defaults are arbitrary and could be removed
+template <typename T>
+constexpr bool nearlyEqual(T a, T b, T epsilon = 128 * FLT_EPSILON, T relth = FLT_MIN)
+// those defaults are arbitrary and could be removed
 {
-  static_assert(consteig::is_float<T>(), "Expects floating point number");
-  assert(std::numeric_limits<T>::epsilon() <= epsilon);
-  assert(epsilon < 1.f);
+    static_assert(consteig::is_float<T>(), "Expects floating point number");
+    assert(std::numeric_limits<T>::epsilon() <= epsilon);
+    assert(epsilon < 1.f);
 
-  if (a == b) return true;
+    if (a == b) return true;
 
-  auto diff = std::abs(a-b);
-  auto norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
-  // or even faster: std::min(std::abs(a + b), std::numeric_limits<float>::max());
-  // keeping this commented out until I update figures below
-  return diff < std::max(relth, epsilon * norm);
+    auto diff = std::abs(a - b);
+    auto norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
+    // or even faster: std::min(std::abs(a + b), std::numeric_limits<float>::max());
+    // keeping this commented out until I update figures below
+    return diff < std::max(relth, epsilon * norm);
 }
 
-
-template<typename T, consteig::Size R, consteig::Size C>
-static constexpr bool compareFloatMat(
-        consteig::Matrix<T,R,C> a,
-        consteig::Matrix<T,R,C> b,
-        const T thresh )
-{
-    for(consteig::Size i {0}; i<R; i++)
-    {
-        for(consteig::Size j {0}; j<C; j++)
-        {
-            if( !consteig::compareFloats(a(i,j), b(i,j), thresh) )
-                return false;
+template <typename T, consteig::Size R, consteig::Size C>
+static constexpr bool compareFloatMat(consteig::Matrix<T, R, C> a, consteig::Matrix<T, R, C> b, const T thresh) {
+    for (consteig::Size i{0}; i < R; i++) {
+        for (consteig::Size j{0}; j < C; j++) {
+            if (!consteig::compareFloats(a(i, j), b(i, j), thresh)) return false;
         }
     }
     return true;
