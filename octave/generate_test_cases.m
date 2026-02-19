@@ -216,14 +216,8 @@ function write_test_file(filename, category, type, suffix, index)
     test_name = [category '_' suffix '_' num2str(index)];
     check_func = ['check_single_' category '_' type '_' suffix '<' num2str(index) '>'];
     
-    if strcmp(category, 'random')
-        fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
-                test_name, check_func, test_name);
-    else
-        % For robustness tests, allow runtime failure if constexpr hits a limit
-        fprintf(fid, 'TEST(generated_tests, %s) { EXPECT_TRUE(%s()) << "Test %s failed"; }\n', ...
-                test_name, check_func, test_name);
-    end
+    fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
+            test_name, check_func, test_name);
     
     fprintf(fid, '#endif\n');
     if ~strcmp(category, 'random')

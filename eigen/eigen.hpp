@@ -18,7 +18,7 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance = CON
 template <typename T, Size S>
 constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a) {
     bool converged = false;
-    T factor = static_cast<T>(2);  // Typically base 2 for floating point
+    T factor = static_cast<T>(2);
 
     for (Size iter = 0; iter < 10 && !converged; ++iter) {
         converged = true;
@@ -48,9 +48,6 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a) {
 
                 if ((row_norm + col_norm) < 0.95 * s) {
                     converged = false;
-                    // Apply similarity transformation DAD^-1
-                    // D = diag(..., f, ...)
-                    // A_new = DAD^-1 means row i * f, col i / f
                     for (Size j = 0; j < S; ++j) a(i, j) *= f;
                     for (Size j = 0; j < S; ++j) a(j, i) /= f;
                 }
@@ -63,83 +60,170 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a) {
 template <typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c) {
     T delta{(a - c) / 2};
-    if (delta == static_cast<T>(0)) delta = static_cast<T>(1);
-    return (c - ((consteig::sgn(delta) * consteig::pow(b, 2)) /
-                 (consteig::abs(delta) + consteig::sqrt(consteig::pow(delta, 2) + consteig::pow(b, 2)))));
+    if (delta == static_cast<T>(0)) delta = consteig::epsilon<T>();
+    T disc = delta * delta + b * b;
+    T s = (delta < 0) ? -consteig::sqrt(disc) : consteig::sqrt(disc);
+    return c - (b * b) / (delta + s);
 }
 
+// Francis Double-Shift QR Step (implicit)
 template <typename T, Size S>
-constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a) {
-    if constexpr (S <= 1) {
-        return a;
-    } else {
-        PHMatrix<T, S> hessTemp{hess(a)};
-        a = hessTemp._h;
+constexpr void francis_qr_step(Matrix<T, S, S>& H, Size l, Size n, T s, T t) {
+    T p1 = H(l, l) * H(l, l) + H(l, l + 1) * H(l + 1, l) - s * H(l, l) + t;
+    T p2 = H(l + 1, l) * (H(l, l) + H(l + 1, l + 1) - s);
+    T p3 = (l + 2 <= n) ? H(l + 1, l) * H(l + 2, l + 1) : static_cast<T>(0);
 
-        T eps = consteig::epsilon<T>() * (norm1(a) + normInf(a));
-        if (eps == 0) eps = consteig::epsilon<T>();
+    for (Size k = l; k < n; ++k) {
+        Size m = (k + 2 <= n) ? 3 : 2;
+        T v1 = 0, v2 = 0, v3 = 0, norm = 0;
 
-        Size n = S;
-        Size iter = 0;
-        const Size max_iter = CONSTEIG_MAX_ITER * S;
+        if (m == 3) {
+            norm = consteig::sqrt(p1 * p1 + p2 * p2 + p3 * p3);
+            v1 = p1 + (p1 < 0 ? -norm : norm);
+            v2 = p2;
+            v3 = p3;
+        } else {
+            norm = consteig::sqrt(p1 * p1 + p2 * p2);
+            v1 = p1 + (p1 < 0 ? -norm : norm);
+            v2 = p2;
+            v3 = 0;
+        }
 
-        while (n > 1 && iter < max_iter) {
-            if (consteig::abs(a(n - 1, n - 2)) <=
-                eps * (consteig::abs(a(n - 1, n - 1)) + consteig::abs(a(n - 2, n - 2)))) {
-                a(n - 1, n - 2) = 0;
-                n--;
-                continue;
+        if (norm > 0) {
+            T v_sum_sq = v1 * v1 + v2 * v2 + v3 * v3;
+            T beta = static_cast<T>(2) / v_sum_sq;
+
+            // Left application: include column k-1 for k > l to chase the bulge
+            Size j_start = (k > l) ? k - 1 : k;
+            for (Size j = j_start; j < S; ++j) {
+                T sum = beta * (v1 * H(k, j) + v2 * H(k + 1, j) + (m == 3 ? v3 * H(k + 2, j) : 0));
+                H(k, j) -= sum * v1;
+                H(k + 1, j) -= sum * v2;
+                if (m == 3) H(k + 2, j) -= sum * v3;
             }
 
-            T mu = wilkinsonShift(a(n - 2, n - 2), a(n - 1, n - 2), a(n - 1, n - 1));
-            Matrix<T, S, S> eyeS = eye<T, S>();
-            Matrix<T, S, S> shifted = a - (mu * eyeS);
-            QRMatrix<T, S> qrm = qr_hessenberg(shifted);
-            a = (qrm._r * qrm._q) + (mu * eyeS);
-            iter++;
+            // Right application
+            Size upper_row = (k + 3 < n + 1) ? k + 3 : n;
+            for (Size i = 0; i <= upper_row && i < S; ++i) {
+                T sum = beta * (v1 * H(i, k) + v2 * H(i, k + 1) + (m == 3 ? v3 * H(i, k + 2) : 0));
+                H(i, k) -= sum * v1;
+                H(i, k + 1) -= sum * v2;
+                if (m == 3) H(i, k + 2) -= sum * v3;
+            }
+
+            // Explicitly zero bulge elements for numerical stability
+            if (k > l) {
+                H(k + 1, k - 1) = 0;
+                if (m == 3) H(k + 2, k - 1) = 0;
+            }
         }
-        return a;
+
+        if (k < n - 1) {
+            p1 = H(k + 1, k);
+            p2 = H(k + 2, k);
+            if (k < n - 2) p3 = H(k + 3, k);
+        }
     }
 }
 
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
-    if constexpr (S <= 1) {
-        return a;
-    } else {
-        a = balance(a);
-        PHMatrix<T, S> hessTemp{hess(a)};
-        a = hessTemp._h;
+    if constexpr (S <= 1) return a;
+    a = balance(a);
+    a = hess(a)._h;
 
-        T eps = consteig::epsilon<T>() * (norm1(a) + normInf(a));
-        if (eps == 0) eps = consteig::epsilon<T>();
+    T ulp = consteig::epsilon<T>();
+    T matrix_norm = norm1(a) + normInf(a);
+    T eps = ulp * matrix_norm;
+    if (eps == 0) eps = ulp;
 
-        Size n = S;
-        Size total_iter = 0;
-        const Size max_total_iter = CONSTEIG_MAX_ITER * S;
+    Size n = S - 1;
+    Size total_iter = 0;
+    const Size max_total_iter = CONSTEIG_MAX_ITER * S;
+    Size its = 0;
 
-        while (n > 1 && total_iter < max_total_iter) {
-            // Deflation test
-            if (consteig::abs(a(n - 1, n - 2)) <=
-                eps * (consteig::abs(a(n - 1, n - 1)) + consteig::abs(a(n - 2, n - 2)))) {
-                a(n - 1, n - 2) = 0;
-                n--;
-                continue;
+    while (n > 0 && total_iter < max_total_iter) {
+        Size l = n;
+        while (l > 0) {
+            if (consteig::abs(a(l, l - 1)) <= eps * (consteig::abs(a(l, l)) + consteig::abs(a(l - 1, l - 1)))) {
+                a(l, l - 1) = 0;
+                break;
             }
-
-            // Wilkinson shift from bottom 2x2
-            T mu = wilkinsonShift(a(n - 2, n - 2), a(n - 1, n - 2), a(n - 1, n - 1));
-
-            Matrix<T, S, S> eyeS = eye<T, S>();
-            Matrix<T, S, S> shifted = a - (mu * eyeS);
-
-            QRMatrix<T, S> qrm = qr_hessenberg(shifted);
-            a = (qrm._r * qrm._q) + (mu * eyeS);
-
-            total_iter++;
+            l--;
         }
-        return a;
+
+        if (l == n) {
+            n--;
+            its = 0;
+            continue;
+        }
+
+        if (l + 1 == n) {
+            if (n < 2) break;
+            n -= 2;
+            its = 0;
+            continue;
+        }
+
+        // Compute shifts
+        T s = 0, t = 0;
+        if (its > 0 && its % 10 == 0) {
+            // LAPACK-style exceptional shift
+            T sshift = 0;
+            if (its % 20 == 0) {
+                // Bottom-based exceptional shift
+                sshift = consteig::abs(a(n, n - 1)) + consteig::abs(a(n - 1, n - 2));
+            } else {
+                // Top-based exceptional shift
+                sshift = consteig::abs(a(l + 1, l));
+                if (l + 2 <= n) sshift += consteig::abs(a(l + 2, l + 1));
+            }
+            T h11 = static_cast<T>(0.75) * sshift + a(n, n);
+            T h12 = static_cast<T>(-0.4375) * sshift;
+            T h21 = sshift;
+            s = h11 + h11;
+            t = h11 * h11 - h12 * h21;
+        } else {
+            // Standard double shift from bottom-right 2x2
+            s = a(n - 1, n - 1) + a(n, n);
+            t = a(n - 1, n - 1) * a(n, n) - a(n - 1, n) * a(n, n - 1);
+        }
+
+        francis_qr_step(a, l, n, s, t);
+        total_iter++;
+        its++;
     }
+    return a;
+}
+
+template <typename T, Size S>
+constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a) {
+    if constexpr (S <= 1) return a;
+    a = balance(a);
+    a = hess(a)._h;
+
+    T eps = consteig::epsilon<T>() * (norm1(a) + normInf(a));
+    if (eps == 0) eps = consteig::epsilon<T>();
+
+    Size n = S;
+    Size iter = 0;
+    const Size max_iter = CONSTEIG_MAX_ITER * S;
+
+    while (n > 1 && iter < max_iter) {
+        if (consteig::abs(a(n - 1, n - 2)) <= eps * (consteig::abs(a(n - 1, n - 1)) + consteig::abs(a(n - 2, n - 2)))) {
+            a(n - 1, n - 2) = 0;
+            n--;
+            continue;
+        }
+
+        T mu = wilkinsonShift(a(n - 2, n - 2), a(n - 1, n - 2), a(n - 1, n - 1));
+        Matrix<T, S, S> eyeS = eye<T, S>();
+        Matrix<T, S, S> shifted = a - (mu * eyeS);
+        QRMatrix<T, S> qrm = qr_hessenberg(shifted);
+        a = (qrm._r * qrm._q) + (mu * eyeS);
+        iter++;
+    }
+    return a;
 }
 
 template <typename T, Size S>
@@ -155,8 +239,18 @@ template <typename T, Size S>
 constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
     Matrix<T, S, S> out = eig(a);
     Matrix<Complex<T>, S, 1> result{};
+    T eps = consteig::epsilon<T>() * (norm1(out) + static_cast<T>(1.0));
+
     for (Size i = 0; i < S; ++i) {
-        if (i < S - 1 && consteig::abs(out(i + 1, i)) > 1e-6) {
+        bool found_2x2 = false;
+        if (i < S - 1) {
+            T subdiag = out(i + 1, i);
+            if (consteig::abs(subdiag) > eps) {
+                found_2x2 = true;
+            }
+        }
+
+        if (found_2x2) {
             T a00 = out(i, i);
             T a01 = out(i, i + 1);
             T a10 = out(i + 1, i);
@@ -182,8 +276,24 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
 }
 
 template <typename T, Size R, Size C>
-static inline constexpr bool checkEigenValues(const Matrix<T, R, C> /*a*/, const Matrix<Complex<T>, R, 1> /*lambda*/,
-                                              const T /*thresh*/) {
+static inline constexpr bool checkEigenValues(const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
+                                              const T thresh) {
+    T tr = trace(a);
+    Complex<T> sum_lambda{};
+    for (Size i = 0; i < R; ++i) sum_lambda = sum_lambda + lambda(i, 0);
+
+    if (consteig::abs(sum_lambda.real - tr) > thresh) return false;
+    if (consteig::abs(sum_lambda.imag) > thresh) return false;
+
+    if constexpr (R <= 4) {
+        T d = det(a);
+        Complex<T> prod_lambda{1, 0};
+        for (Size i = 0; i < R; ++i) prod_lambda = prod_lambda * lambda(i, 0);
+        T det_tol = thresh * (static_cast<T>(1) + consteig::abs(d));
+        if (consteig::abs(prod_lambda.real - d) > det_tol) return false;
+        if (consteig::abs(prod_lambda.imag) > det_tol) return false;
+    }
+
     return true;
 }
 

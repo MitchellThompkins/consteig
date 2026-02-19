@@ -25,7 +25,8 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a) {
         return eye<T, R>();
     }
 
-    T alpha{static_cast<T>(-1) * consteig::sgn(a(1, 0)) * consteig::sqrt(alphaSum)};
+    T sign = (a(1, 0) < static_cast<T>(0)) ? static_cast<T>(-1) : static_cast<T>(1);
+    T alpha{static_cast<T>(-1) * sign * consteig::sqrt(alphaSum)};
 
     T r_sq{static_cast<T>(0.5) * ((alpha * alpha) - (a(1, 0) * alpha))};
 
