@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "test_tools.hpp"
+
 #include "constmath.hpp"
+#include "test_tools.hpp"
 
 using namespace consteig;
 
-TEST(complex, constexpr_ops)
-{
+TEST(complex, constexpr_ops) {
     static constexpr Complex<double> c1{1.0, 2.0};
     static constexpr Complex<double> c2{3.0, 4.0};
 
@@ -23,8 +23,7 @@ TEST(complex, constexpr_ops)
     static_assert(quot.real == 1.0 && quot.imag == 0.0, MSG);
 }
 
-TEST(complex, abs_conj)
-{
+TEST(complex, abs_conj) {
     static constexpr Complex<double> c{3.0, 4.0};
     static constexpr double m = abs(c);
     static_assert(m == 5.0, MSG);
@@ -33,8 +32,7 @@ TEST(complex, abs_conj)
     static_assert(con.real == 3.0 && con.imag == -4.0, MSG);
 }
 
-TEST(complex, scalar_ops)
-{
+TEST(complex, scalar_ops) {
     static constexpr Complex<double> c{1.0, 2.0};
     static constexpr auto s1 = 2.0 * c;
     static_assert(s1.real == 2.0 && s1.imag == 4.0, MSG);
