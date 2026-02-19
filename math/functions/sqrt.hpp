@@ -10,7 +10,8 @@ namespace internal {
 template <typename T>
 constexpr T sqrt_recur(const T x, const T xn, const int count) {
     return (abs(xn - x / xn) / (T(1) + xn) < epsilon<T>() ? xn
-            : count < CONSTEIG_MAX_ITER                   ? sqrt_recur(x, T(0.5) * (xn + x / xn), count + 1)
+            : count < CONSTEIG_MAX_ITER                   ? 
+            sqrt_recur(x, T(0.5) * (xn + x / xn), count + 1)
                                                           : xn);
 }
 
