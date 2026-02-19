@@ -66,6 +66,7 @@ jobs:
                         export BUILD_SLOW_TESTS=0
                     fi
                     make remove
+                    export CONSTEIG_ENABLE_ROBUSTNESS=1
                     make CC=gcc CXX=g++ container.make.build
                     make container.make.test
 
@@ -82,5 +83,6 @@ jobs:
                         export BUILD_SLOW_TESTS=0
                     fi
                     make remove
+                    export CONSTEIG_ENABLE_ROBUSTNESS=1
                     make CC=clang CXX=clang++ container.make.build
                     make container.make.test

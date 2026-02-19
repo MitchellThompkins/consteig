@@ -44,7 +44,7 @@ int main() {
 
     // 1. Find Continuous-time Eigenvalues (Poles) using Consteig
     // This calculates the poles directly from the system matrix.
-    consteig::Matrix<consteig::Complex<double>, 2, 1> poles_c = consteig::eigvals(A_c);
+    const auto poles_c = consteig::eigvals(A_c);
 
     std::cout << "\nContinuous-time Poles (Eigenvalues of A):" << std::endl;
     std::cout << "p1 = " << poles_c(0, 0).real << " + j" << poles_c(0, 0).imag << std::endl;
