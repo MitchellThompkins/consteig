@@ -42,16 +42,16 @@ constexpr bool verify_eigenvalues(const Matrix<Complex<T>, S, 1>& computed, cons
 }
 
 // Define helper macros for consistency
-#define GENERATE_CHECK(category, type, suffix, mat_var, eig_var, tol) \
-template <Size INDEX> \
-constexpr bool check_single_ ## category ## _ ## type ## _ ## suffix () { \
-    auto eigs = eigvals(mat_var[INDEX]); \
-    double tr = trace(mat_var[INDEX]); \
-    auto s = sum_eigs(eigs); \
-    if (!(consteig::abs(s.real - tr) < static_cast<double>(tol))) return false; \
-    if (!verify_eigenvalues(eigs, eig_var[INDEX], static_cast<double>(tol))) return false; \
-    return true; \
-}
+#define GENERATE_CHECK(category, type, suffix, mat_var, eig_var, tol)                          \
+    template <Size INDEX>                                                                      \
+    constexpr bool check_single_##category##_##type##_##suffix() {                             \
+        auto eigs = eigvals(mat_var[INDEX]);                                                   \
+        double tr = trace(mat_var[INDEX]);                                                     \
+        auto s = sum_eigs(eigs);                                                               \
+        if (!(consteig::abs(s.real - tr) < static_cast<double>(tol))) return false;            \
+        if (!verify_eigenvalues(eigs, eig_var[INDEX], static_cast<double>(tol))) return false; \
+        return true;                                                                           \
+    }
 
 // Random cases
 GENERATE_CHECK(random, sym, fast, mat_random_sym_fast, eigs_random_sym_fast, CONSTEIG_TEST_TOLERANCE)
@@ -62,9 +62,9 @@ GENERATE_CHECK(random, nonsym, slow, mat_random_nonsym_slow, eigs_random_nonsym_
 // Robustness cases (looser tolerance for hard matrices)
 #define ROBUST_TOL 1e-4
 
-#define GENERATE_ROBUST(category) \
-GENERATE_CHECK(category, nonsym, fast, mat_ ## category ## _nonsym_fast, eigs_ ## category ## _nonsym_fast, ROBUST_TOL) \
-GENERATE_CHECK(category, nonsym, slow, mat_ ## category ## _nonsym_slow, eigs_ ## category ## _nonsym_slow, ROBUST_TOL)
+#define GENERATE_ROBUST(category)                                                                                   \
+    GENERATE_CHECK(category, nonsym, fast, mat_##category##_nonsym_fast, eigs_##category##_nonsym_fast, ROBUST_TOL) \
+    GENERATE_CHECK(category, nonsym, slow, mat_##category##_nonsym_slow, eigs_##category##_nonsym_slow, ROBUST_TOL)
 
 GENERATE_ROBUST(defective)
 GENERATE_ROBUST(nearly_defective)

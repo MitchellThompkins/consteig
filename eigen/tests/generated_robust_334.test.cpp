@@ -1,6 +1,8 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
 #ifndef CONSTEIG_SLOW_TESTS
-TEST(generated_tests, hamiltonian_fast_7) { EXPECT_TRUE(check_single_hamiltonian_nonsym_fast<7>()) << "Test hamiltonian_fast_7 failed"; }
+TEST(generated_tests, hamiltonian_fast_7) {
+    EXPECT_TRUE(check_single_hamiltonian_nonsym_fast<7>()) << "Test hamiltonian_fast_7 failed";
+}
 #endif
 #endif
