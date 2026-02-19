@@ -26,6 +26,14 @@ ifeq "$(RAISE_COMPILER_LIMITS)" "1"
     CMAKE_OPTIONS += -DCONSTEIG_RAISE_COMPILER_LIMITS=ON
 endif
 
+# If CC/CXX are set, pass them to CMake
+ifneq "$(CC)" ""
+    CMAKE_OPTIONS += -DCMAKE_C_COMPILER=$(CC)
+endif
+ifneq "$(CXX)" ""
+    CMAKE_OPTIONS += -DCMAKE_CXX_COMPILER=$(CXX)
+endif
+
 ifeq "$(CMAKE_OPTIONS)" ""
     CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCLANG_TIDY_FIX=$(CLANG_TIDY_FIX) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX)
 else
@@ -68,10 +76,16 @@ h:
 	@echo
 	@echo '-j <jobs>'
 	@echo '    <jobs> pass -j flag to underlying BUILD_TOOL to set the job number'
+	@echo
+	@echo 'CC=<compiler>'
+	@echo '    C compiler to use (e.g. clang)'
+	@echo
+	@echo 'CXX=<compiler>'
+	@echo '    C++ compiler to use (e.g. clang++)'
 
 .PHONY: format
 format:
-	find . -iname *.hpp -o -iname *.cpp -o -iname *.h -o -iname *.c | xargs clang-format -i --style=WebKit
+	find . -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) | xargs clang-format -i
 
 .PHONY: remove
 remove:
