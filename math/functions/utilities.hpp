@@ -3,61 +3,52 @@
 
 #include "abs.hpp"
 
-namespace consteig
-{
+namespace consteig {
 
 // These functions determine if a number is a floating point number
 
-template<typename T>
-struct is_float_impl
-{
-    static constexpr bool _(){ return false; }
+template <typename T>
+struct is_float_impl {
+    static constexpr bool _() { return false; }
 };
 
-template<>
-struct is_float_impl<float>
-{
+template <>
+struct is_float_impl<float> {
     static constexpr bool _() { return true; }
 };
 
-template<>
-struct is_float_impl<double>
-{
+template <>
+struct is_float_impl<double> {
     static constexpr bool _() { return true; }
 };
 
-template<>
-struct is_float_impl<long double>
-{
+template <>
+struct is_float_impl<long double> {
     static constexpr bool _() { return true; }
 };
 
-template<typename T>
-constexpr bool is_float(T const&)
-{
+template <typename T>
+constexpr bool is_float(T const&) {
     return is_float_impl<T>::_();
 }
 
 // Check if float
-template<typename T>
-constexpr bool is_float()
-{
+template <typename T>
+constexpr bool is_float() {
     return is_float_impl<T>::_();
 }
 
 // Compare Floats
-template<typename T>
-static constexpr bool compareFloats(T a, T b, T thresh)
-{
+template <typename T>
+static constexpr bool compareFloats(T a, T b, T thresh) {
     return consteig::abs(a - b) < thresh;
 }
 
 // Find machine epsilon
 // Implemented from wikipedia
 // https://en.wikipedia.org/wiki/Machine_epsilon#Approximation
-template<typename T>
-constexpr T epsilon()
-{
+template <typename T>
+constexpr T epsilon() {
     if constexpr (!is_float<T>()) {
         return static_cast<T>(0);
     } else {
@@ -74,8 +65,7 @@ constexpr T epsilon()
         T one = static_cast<T>(1.0);
         T half = static_cast<T>(0.5);
 
-        while ((one + (half * eps)) != one)
-        {
+        while ((one + (half * eps)) != one) {
             eps = half * eps;
         }
 
@@ -83,7 +73,6 @@ constexpr T epsilon()
     }
 }
 
-
-} // end namespace
+}  // namespace consteig
 
 #endif
