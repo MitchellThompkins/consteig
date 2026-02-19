@@ -78,7 +78,7 @@ remove:
 	rm -rf build/
 
 .PHONY: examples
-examples: matrix.main decomp.main eigen.main population.main
+examples: matrix.main decomp.main eigen.main population.main butterworth.main
 
 .PHONY: generate-test-cases
 generate-test-cases:

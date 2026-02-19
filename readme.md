@@ -40,6 +40,39 @@ steady-state population. The next step, (which `consteig` does not attempt to
 solve), would be the computation of the eigenvector corresponding to this
 eigenvalue.
 
+Another powerful application is **Digital Filter Design**. The `butterworth.cpp` example demonstrates how to design a 2nd-order Butterworth digital filter using the Zero-Order Hold (ZOH) method, but **without algebraically performing a Z-transform**.
+
+Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
+1.  Define the continuous-time state-space matrix $A_c$.
+2.  Use `consteig` to find the continuous-time poles (eigenvalues of $A_c$).
+3.  Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
+4.  Reconstruct the digital filter's characteristic polynomial from the mapped poles.
+
+Our `butterworth.cpp` example generates the following design for a 100Hz cutoff at 1kHz sampling:
+
+```
+Designing 2nd Order Butterworth Lowpass Filter
+Cutoff: 100 Hz, Sampling Rate: 1000 Hz
+
+Continuous-time Poles (Eigenvalues of A):
+p1 = -444.288 + j444.288
+p2 = -444.288 + j-444.288
+
+Discrete-time Poles (Mapped via z = exp(sT)):
+z1 = 0.579023 + j0.275632
+z2 = 0.579023 + j-0.275632
+
+Filter Coefficients (Denominator):
+a1 = -1.15805
+a2 = 0.411241
+Gain K = 0.253195
+
+Final Digital Filter Difference Equation:
+y[n] = 0.253195 * x[n] - (-1.15805) * y[n-1] - (0.411241) * y[n-2]
+```
+
+This approach numerically derives the filter coefficients by finding eigenvalues directly, simplifying the design process for high-order filters where algebraic transformation is tedious.
+
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
 library targeted at embedded systems in which the digital filter coefficients
@@ -62,6 +95,7 @@ Here are some examples to help get started:
 * [Matrix Arithmetic](examples/matrix.cpp)
 * [Finding eigenvalues](examples/eigen.cpp)
 * [Population flow](examples/population.cpp)
+* [Butterworth Filter Design](examples/butterworth.cpp)
 
 ## How Is This Different
 There are powerful open source C++ eigenvalues solvers already in existence
@@ -127,8 +161,8 @@ BUILD_SLOW_TESTS=1 make container.make.build
 ```
 
 **CI/CD Integration**:
-*   The **Fast Tests** run on every commit and pull request.
-*   The **Slow Tests** are automatically executed in CI only on the `main` and
+*   **Fast Tests** run on every commit and pull request.
+*   **Slow Tests** are automatically executed in CI only on the `main` and
     `develop` branches to ensure rigorous verification before release while
     maintaining fast feedback for active development.
 *   **Granular Binaries**: Non-symmetric test cases are split into individual
