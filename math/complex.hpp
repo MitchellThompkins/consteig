@@ -2,6 +2,7 @@
 #define COMPLEX_HPP
 
 #include "functions/abs.hpp"
+#include "functions/sqrt.hpp"
 #include "functions/utilities.hpp"
 
 namespace consteig {

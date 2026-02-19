@@ -3,7 +3,7 @@
 
 #include "../consteig_types.hpp"
 #include "../consteig_options.hpp"
-#include "../math/complex.hpp"
+#include "../math/constmath.hpp"
 #include "../matrix/matrix.hpp"
 #include "../matrix/operations.hpp"
 #include "../matrix/decompositions/hessenberg.hpp"

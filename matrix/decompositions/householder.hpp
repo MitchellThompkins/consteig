@@ -1,9 +1,7 @@
 #ifndef HOUSEHOLDER_HPP
 #define HOUSEHOLDER_HPP
 
-#include "../../math/functions/abs.hpp"
-#include "../../math/functions/sqrt.hpp"
-#include "../../math/functions/utilities.hpp"
+#include "../../math/constmath.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"
 

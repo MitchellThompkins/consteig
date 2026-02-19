@@ -1,6 +1,7 @@
 #ifndef HESSENBERG_HPP
 #define HESSENBERG_HPP
 
+#include "../../math/constmath.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"
 #include "householder.hpp"
