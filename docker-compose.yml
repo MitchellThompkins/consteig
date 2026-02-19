@@ -1,5 +1,3 @@
-version: '3'
-
 services:
     dev_env:
         image: ghcr.io/mitchellthompkins/consteig_dev_image:latest

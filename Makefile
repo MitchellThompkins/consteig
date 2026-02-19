@@ -38,7 +38,7 @@ ifeq "$(CMAKE_OPTIONS)" ""
     CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCLANG_TIDY_FIX=$(CLANG_TIDY_FIX) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX)
 else
    # force cmake to be re-run if we change the cmake options
-   $(shell rm $(BUILD_PREFIX)/$(BUILD_FILE))
+   $(shell rm -f $(BUILD_PREFIX)/$(BUILD_FILE))
 endif
 
 .PHONY: build
@@ -85,7 +85,11 @@ h:
 
 .PHONY: format
 format:
-	find . \( -path "./test_dependencies" -o -path "./eigen" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format -i
+	find . \( -path "./test_dependencies/googletest" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format -i
+
+.PHONY: check-format
+check-format:
+	find . \( -path "./test_dependencies/googletest" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format --dry-run --Werror
 
 .PHONY: remove
 remove:
