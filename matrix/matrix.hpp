@@ -2,6 +2,7 @@
 #define MATRIX_HPP
 
 #include "../array/array.hpp"
+#include "../math/functions/utilities.hpp"
 
 namespace consteig {
 

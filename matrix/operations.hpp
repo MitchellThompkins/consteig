@@ -1,6 +1,7 @@
 #ifndef OPERATIONS_HPP
 #define OPERATIONS_HPP
 
+#include "../math/constmath.hpp"
 #include "matrix.hpp"
 
 namespace consteig {
