@@ -4,6 +4,7 @@ RUN apk --no-cache add\
     cmake\
     clang\
     clang-dev\
+    clang-extra-tools\
     make\
     gcc\
     g++\

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.13)
 
 project(eigenvalue_solver)
 
@@ -8,11 +8,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
-add_compile_options(-nostdlib -nodefaultlibs -lgcc)
-
+# Note: The following limits are applied to allow for deeper constexpr functionality, 
+# such as complex eigenvalue calculations which exceed default compiler limits.
+# For GCC, -fconstexpr-ops-limit is increased from the default 33M to 1B.
+# For Clang, -fconstexpr-steps is used for the same purpose.
 option(CONSTEIG_RAISE_COMPILER_LIMITS "Raise constexpr limits for all targets" OFF)
 if(CONSTEIG_RAISE_COMPILER_LIMITS)
-    add_compile_options(-fconstexpr-ops-limit=1000000000)
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        add_compile_options(-fconstexpr-ops-limit=1000000000)
+    endif()
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-fconstexpr-steps=1000000000)
+    endif()
     add_compile_options(-fconstexpr-depth=1024)
 endif()
 
