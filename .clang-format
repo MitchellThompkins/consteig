@@ -2,5 +2,5 @@ BasedOnStyle: Google
 Language: Cpp
 IndentWidth: 4
 ColumnLimit: 120
-SortIncludes: false
+SortIncludes: true
 Standard: c++17
