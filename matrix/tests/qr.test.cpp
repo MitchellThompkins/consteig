@@ -15,27 +15,28 @@ TEST(qr_decomp, eigen_comparison)
     
     // Consteig QR (Calculate at compile time)
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
-    
+
+    // Verify reconstruction and orthogonality at compile time
+    static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
+    static_assert(compareFloatMat(recon, mat, kTol), MSG);
+
+    static constexpr Matrix<double, s, s> qtq = transpose(qrRes._q) * qrRes._q;
+    static constexpr Matrix<double, s, s> ident = eye<double, s>();
+    static_assert(compareFloatMat(qtq, ident, kTol), MSG);
+
     // Eigen QR (Calculate at runtime for comparison)
     Eigen::MatrixXd eigMat = toEigen(mat);
     Eigen::HouseholderQR<Eigen::MatrixXd> qrEig(eigMat);
     Eigen::MatrixXd qEig = qrEig.householderQ();
     Eigen::MatrixXd rEig = qrEig.matrixQR().triangularView<Eigen::Upper>();
     
-    // Check Q*R reconstruction for consteig
-    Matrix<double, s, s> recon = qrRes._q * qrRes._r;
-    
-    // We can't directly compare Q and R with Eigen because QR is not unique (signs of columns can differ)
-    // But Q*R should be A.
+    // Runtime checks
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
             ASSERT_NEAR(recon(i,j), mat(i,j), kTol);
         }
     }
 
-    // Check orthogonality of Q: Q^T * Q = I
-    Matrix<double, s, s> qtq = transpose(qrRes._q) * qrRes._q;
-    Matrix<double, s, s> ident = eye<double, s>();
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
             ASSERT_NEAR(qtq(i,j), ident(i,j), kTol);
@@ -54,7 +55,10 @@ TEST(qr_decomp, identity_matrix)
     static constexpr Matrix<double, s, s> mat = eye<double, s>();
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
     
-    // Q should be I, R should be I (or signed permutations, but for I it should be I)
+    // Checks
+    static_assert(compareFloatMat(qrRes._q, mat, kTol), MSG);
+    static_assert(compareFloatMat(qrRes._r, mat, kTol), MSG);
+
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
             ASSERT_NEAR(qrRes._q(i,j), mat(i,j), kTol);
@@ -69,10 +73,12 @@ TEST(qr_decomp, zero_matrix)
     static constexpr Matrix<double, s, s> mat{};
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
-    // Q should be I (default init), R should be 0
-    // Actually our implementation init Q to I, so it should stay I if no rotations needed
-    Matrix<double, s, s> ident = eye<double, s>();
+    static constexpr Matrix<double, s, s> ident = eye<double, s>();
+    static constexpr Matrix<double, s, s> zeroMat{};
     
+    static_assert(compareFloatMat(qrRes._q, ident, kTol), MSG);
+    static_assert(compareFloatMat(qrRes._r, zeroMat, kTol), MSG);
+
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
             ASSERT_NEAR(qrRes._q(i,j), ident(i,j), kTol);
@@ -87,7 +93,11 @@ TEST(qr_decomp, diagonal_matrix)
     static constexpr Matrix<double, s, s> mat = {{{{2, 0, 0}, {0, 3, 0}, {0, 0, 4}}}};
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
-    // Q should be I, R should be mat
+    static constexpr Matrix<double, s, s> ident = eye<double, s>();
+
+    static_assert(compareFloatMat(qrRes._q, ident, kTol), MSG);
+    static_assert(compareFloatMat(qrRes._r, mat, kTol), MSG);
+
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
             ASSERT_NEAR(qrRes._q(i,j), (i==j ? 1.0 : 0.0), kTol);
@@ -103,8 +113,9 @@ TEST(qr_decomp, singular_matrix)
     static constexpr Matrix<double, s, s> mat = {{{{1, 2, 3}, {4, 5, 6}, {5, 7, 9}}}};
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
-    // Reconstruction Check
-    Matrix<double, s, s> recon = qrRes._q * qrRes._r;
+    static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
+    static_assert(compareFloatMat(recon, mat, kTol), MSG);
+
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
             ASSERT_NEAR(recon(i,j), mat(i,j), kTol);
