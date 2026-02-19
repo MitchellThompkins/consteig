@@ -14,7 +14,7 @@ CMAKE_GENERATOR = "Unix Makefiles"
 
 JOB_FLAG := -j 4
 
-INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build/install )
+INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build )
 
 ifeq "$(BUILD_SLOW_TESTS)" "1"
     CMAKE_OPTIONS += -DCONSTEIG_BUILD_SLOW_TESTS=ON -DCONSTEIG_MAX_ITER=1000
@@ -64,7 +64,7 @@ h:
 	@echo
 	@echo 'INSTALL_PREFIX=<path>'
 	@echo '    Specifies the CMAKE_INSTALL_PREFIX CMake variable value'
-	@echo '    default: ./build/install'
+	@echo '    default: ./build/
 	@echo
 	@echo '-j <jobs>'
 	@echo '    <jobs> pass -j flag to underlying BUILD_TOOL to set the job number'
