@@ -1,8 +1,6 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
 #ifdef CONSTEIG_SLOW_TESTS
-TEST(generated_tests, large_jordan_slow_1) {
-    EXPECT_TRUE(check_single_large_jordan_nonsym_slow<1>()) << "Test large_jordan_slow_1 failed";
-}
+TEST(generated_tests, large_jordan_slow_1) { static_assert(check_single_large_jordan_nonsym_slow<1>(), "Test large_jordan_slow_1 failed"); SUCCEED(); }
 #endif
 #endif
