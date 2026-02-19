@@ -110,6 +110,8 @@ TEST(householder, properties)
     // Symmetric: P = P^T
     static constexpr Matrix<double, s, s> PT = transpose(P);
     
+    static_assert(compareFloatMat(P, PT, 1e-9), MSG);
+
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
             ASSERT_NEAR(P(i,j), PT(i,j), 1e-9);
@@ -119,6 +121,8 @@ TEST(householder, properties)
     // Orthogonal: P^T * P = I  => P * P = I (since symmetric)
     static constexpr Matrix<double, s, s> P2 = P * P;
     static constexpr Matrix<double, s, s> I = eye<double, s>();
+    
+    static_assert(compareFloatMat(P2, I, 1e-9), MSG);
     
     for(size_t i=0; i<s; ++i) {
         for(size_t j=0; j<s; ++j) {
