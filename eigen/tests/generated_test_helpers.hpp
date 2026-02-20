@@ -15,6 +15,7 @@ using namespace consteig;
     constexpr bool check_single_##category##_##type##_##suffix() {                           \
         auto eigs = eigvals(mat_var[INDEX]);                                                 \
         if (!checkEigenValues(mat_var[INDEX], eigs, static_cast<double>(tol))) return false; \
+        if (!compareEigenValues(eigs, eig_var[INDEX], static_cast<double>(tol))) return false; \
         return true;                                                                         \
     }
 

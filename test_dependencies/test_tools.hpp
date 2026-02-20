@@ -43,4 +43,56 @@ static constexpr bool compareFloatMat(consteig::Matrix<T, R, C> a, consteig::Mat
     return true;
 }
 
+template <typename T, consteig::Size S>
+static constexpr bool compareEigenValues(consteig::Matrix<consteig::Complex<T>, S, 1> a,
+                                         consteig::Matrix<consteig::Complex<T>, S, 1> b, const T thresh) {
+    // Bubble sort to canonicalize (sort by real, then imaginary)
+    // We sort local copies 'a' and 'b' (passed by value)
+
+    // Sort a
+    for (consteig::Size i = 0; i < S; ++i) {
+        for (consteig::Size j = 0; j < S - 1 - i; ++j) {
+            bool swap = false;
+            // Primary sort key: Real part (ascending)
+            if (a(j, 0).real > a(j + 1, 0).real + consteig::epsilon<T>()) {
+                swap = true;
+            } else if (consteig::compareFloats(a(j, 0).real, a(j + 1, 0).real, consteig::epsilon<T>()) &&
+                       a(j, 0).imag > a(j + 1, 0).imag) {
+                swap = true;
+            }
+
+            if (swap) {
+                auto temp = a(j, 0);
+                a(j, 0) = a(j + 1, 0);
+                a(j + 1, 0) = temp;
+            }
+        }
+    }
+
+    // Sort b
+    for (consteig::Size i = 0; i < S; ++i) {
+        for (consteig::Size j = 0; j < S - 1 - i; ++j) {
+            bool swap = false;
+            if (b(j, 0).real > b(j + 1, 0).real + consteig::epsilon<T>()) {
+                swap = true;
+            } else if (consteig::compareFloats(b(j, 0).real, b(j + 1, 0).real, consteig::epsilon<T>()) &&
+                       b(j, 0).imag > b(j + 1, 0).imag) {
+                swap = true;
+            }
+
+            if (swap) {
+                auto temp = b(j, 0);
+                b(j, 0) = b(j + 1, 0);
+                b(j + 1, 0) = temp;
+            }
+        }
+    }
+
+    for (consteig::Size i = 0; i < S; ++i) {
+        if (!consteig::compareFloats(a(i, 0).real, b(i, 0).real, thresh)) return false;
+        if (!consteig::compareFloats(a(i, 0).imag, b(i, 0).imag, thresh)) return false;
+    }
+    return true;
+}
+
 #endif
