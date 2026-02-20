@@ -145,7 +145,8 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
     while (n > 0 && total_iter < max_total_iter) {
         Size l = n;
         while (l > 0) {
-            if (consteig::abs(a(l, l - 1)) <= eps * (consteig::abs(a(l, l)) + consteig::abs(a(l - 1, l - 1)))) {
+            T diagonal_sum = consteig::abs(a(l, l)) + consteig::abs(a(l - 1, l - 1));
+            if (consteig::abs(a(l, l - 1)) <= eps * diagonal_sum || consteig::abs(a(l, l - 1)) <= eps) {
                 a(l, l - 1) = 0;
                 break;
             }

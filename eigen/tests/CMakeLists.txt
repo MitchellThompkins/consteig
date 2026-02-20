@@ -30,7 +30,7 @@ create_test(eigen_comparison.test)
 function(add_gen_test target_name source_file)
     add_executable(${target_name}.test ${CMAKE_CURRENT_SOURCE_DIR}/${source_file})
     if(CONSTEIG_BUILD_SLOW_TESTS)
-        target_compile_definitions(${target_name}.test PRIVATE CONSTEIG_SLOW_TESTS CONSTEIG_MAX_ITER=1000)
+        target_compile_definitions(${target_name}.test PRIVATE CONSTEIG_SLOW_TESTS CONSTEIG_MAX_ITER=2000)
         target_compile_options(${target_name}.test PRIVATE
             "$<$<CXX_COMPILER_ID:GNU>:-fconstexpr-ops-limit=1000000000>"
             "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-fconstexpr-steps=1000000000>"
