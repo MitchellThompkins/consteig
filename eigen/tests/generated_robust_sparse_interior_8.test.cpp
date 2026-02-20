@@ -1,14 +1,7 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-#ifndef CONSTEIG_SLOW_TESTS
-TEST(generated_tests, sparse_interior_fast_8) {
-    static_assert(check_single_sparse_interior_nonsym_fast<8>(), "Test sparse_interior_fast_8 failed");
+TEST(generated_tests, sparse_interior_8x8_8) {
+    static_assert(check_single_sparse_interior_nonsym_8x8<8>(), "Test sparse_interior_8x8_8 failed");
     SUCCEED();
 }
-#else
-TEST(generated_tests, sparse_interior_slow_8) {
-    static_assert(check_single_sparse_interior_nonsym_slow<8>(), "Test sparse_interior_slow_8 failed");
-    SUCCEED();
-}
-#endif
 #endif

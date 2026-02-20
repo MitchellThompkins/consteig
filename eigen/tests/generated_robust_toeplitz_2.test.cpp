@@ -1,14 +1,7 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-#ifndef CONSTEIG_SLOW_TESTS
-TEST(generated_tests, toeplitz_fast_2) {
-    static_assert(check_single_toeplitz_nonsym_fast<2>(), "Test toeplitz_fast_2 failed");
+TEST(generated_tests, toeplitz_8x8_2) {
+    static_assert(check_single_toeplitz_nonsym_8x8<2>(), "Test toeplitz_8x8_2 failed");
     SUCCEED();
 }
-#else
-TEST(generated_tests, toeplitz_slow_2) {
-    static_assert(check_single_toeplitz_nonsym_slow<2>(), "Test toeplitz_slow_2 failed");
-    SUCCEED();
-}
-#endif
 #endif

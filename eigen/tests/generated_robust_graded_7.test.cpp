@@ -1,14 +1,7 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-#ifndef CONSTEIG_SLOW_TESTS
-TEST(generated_tests, graded_fast_7) {
-    static_assert(check_single_graded_nonsym_fast<7>(), "Test graded_fast_7 failed");
+TEST(generated_tests, graded_8x8_7) {
+    static_assert(check_single_graded_nonsym_8x8<7>(), "Test graded_8x8_7 failed");
     SUCCEED();
 }
-#else
-TEST(generated_tests, graded_slow_7) {
-    static_assert(check_single_graded_nonsym_slow<7>(), "Test graded_slow_7 failed");
-    SUCCEED();
-}
-#endif
 #endif
