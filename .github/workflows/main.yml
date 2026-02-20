@@ -63,7 +63,7 @@ jobs:
                     if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/develop" ]]; then
                         export BUILD_SLOW_TESTS=1
                     else
-                        export BUILD_SLOW_TESTS=0
+                        export BUILD_SLOW_TESTS=1
                     fi
                     make remove
                     export CONSTEIG_ENABLE_ROBUSTNESS=1
