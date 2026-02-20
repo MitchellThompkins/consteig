@@ -121,10 +121,11 @@ The core eigenvalue solver is based on the highly-optimized **Francis QR algorit
     2.  **Hessenberg Reduction**: The balanced matrix is then reduced to upper Hessenberg form using a series of Householder transformations. This is a critical optimization that reduces the computational cost of each QR iteration from O(n^4) to O(n^2), bringing the overall complexity of the eigenvalue problem down to a manageable O(n^3).
 
 *   **QR Iteration Loop**:
-    *   **Implicit Double-Shift QR**: The algorithm employs an implicit double-shift strategy. This advanced technique allows the solver to find complex conjugate eigenvalues for real non-symmetric matrices without resorting to complex arithmetic during the iteration process, which would be computationally prohibitive in a `constexpr` environment.
+    *   **Implicit Double-Shift QR**: The algorithm employs a true implicit double-shift strategy using Householder reflectors for bulge chasing. Rather than explicitly forming the shifted matrix product, the algorithm introduces a bulge in the Hessenberg form and chases it down the diagonal via a sequence of Householder reflections, preserving Hessenberg structure throughout. This allows the solver to find complex conjugate eigenvalues for real non-symmetric matrices without resorting to complex arithmetic during the iteration process.
     *   **Wilkinson Shifts**: To accelerate convergence, Wilkinson shifts are used as the default shifting strategy. This method provides a quadratically convergent rate in most cases, making the algorithm highly efficient.
     *   **Robust Deflation**: The algorithm checks for convergence by monitoring the sub-diagonal elements. Deflation occurs when an element becomes negligible relative to its neighboring diagonal elements, scaled by machine epsilon, effectively splitting the problem into smaller, independent sub-problems.
-    *   **Exceptional Shifts**: To prevent stalling in rare cases where Wilkinson shifts fail to converge, the solver introduces an exceptional shift after a fixed number of iterations on the same sub-matrix, ensuring forward progress.
+    *   **Exceptional Shifts**: To prevent stalling in cases where Wilkinson shifts fail to converge, the solver introduces LAPACK-style exceptional shifts every 10 iterations, alternating between top-based and bottom-based shift strategies to break out of convergence stalls.
+    *   **Eigenvalue Verification**: After convergence, the solver verifies computed eigenvalues by checking both the trace (sum of eigenvalues equals the matrix trace) and determinant (product of eigenvalues equals the matrix determinant) invariants.
 
 ### Matrix Decompositions
 *   **QR Decomposition**: The general-purpose `qr()` decomposition is implemented using a series of **Givens rotations**. This method was chosen for its excellent numerical stability over alternatives like the Gram-Schmidt process, which can suffer from a loss of orthogonality in the Q matrix due to floating-point inaccuracies. This stability was essential for achieving high-precision results with tighter test tolerances. The specialized `qr_hessenberg()` also uses Givens rotations, optimized for the Hessenberg structure.
@@ -158,6 +159,18 @@ Iterative algorithms like the QR iteration used here are computationally expensi
 To build the slow variant of the tests, use the following command:
 ```bash
 BUILD_SLOW_TESTS=1 make container.make.build
+```
+
+### Robustness Test Suite
+In addition to random matrix tests, a dedicated robustness test suite exercises the solver against 13 categories of numerically challenging matrices:
+
+*   Defective, nearly defective, non-normal, clustered eigenvalues, repeated eigenvalues, companion, graded, large Jordan blocks, Toeplitz, nearly reducible, random non-normal, Hamiltonian, and sparse interior matrices.
+
+Each category includes 10 fast (4x4) and 10 slow (8x8) test cases, totaling **260 test cases**. These tests use a looser tolerance (1e-4) compared to the random matrix tests, reflecting the inherent difficulty of these matrix classes.
+
+**Running Robustness Tests**:
+```bash
+CONSTEIG_ENABLE_ROBUSTNESS=1 make container.make.build
 ```
 
 **CI/CD Integration**:
@@ -201,10 +214,7 @@ BUILD_SLOW_TESTS=1 make container.make.build
 ## What Can Improve
 * Declaring matrices can be initializer bracket hell. Refer to [this example](examples/matrix.cpp)
   for help.
-* The algorithms implemented here do not necessarily take advantage of a
-  collection of optimization techniques for solving matrices nor has there been
-  a concerted effort to optimize the implementations themselves. As such, for
-  large matrices compilation may be slow.
+* For large matrices compilation may be slow due to the inherent cost of `constexpr` evaluation.
 * Currently the matrix [decompositions](examples/decomp.cpp) require square matrices.
 * Support for non-square QR decomposition and optimized determinant/inverse calculations.
 
@@ -231,6 +241,11 @@ Then:
 ```
 make build
 make test
+```
+
+To run the robustness tests:
+```
+CONSTEIG_ENABLE_ROBUSTNESS=1 make container.make.build
 ```
 
 ## References
