@@ -239,13 +239,10 @@ for i = 0:NUM_RANDOM_CASES-1
 end
 
 % Robust cases
-file_idx = NUM_RANDOM_CASES * 2;
 for c = 1:length(ROBUST_CATEGORIES)
     cat = ROBUST_CATEGORIES{c};
     for i = 0:NUM_ROBUST_CASES-1
-        write_test_file(sprintf('eigen/tests/generated_robust_%d.test.cpp', file_idx), cat, 'nonsym', 'fast', i);
-        file_idx = file_idx + 1;
-        write_test_file(sprintf('eigen/tests/generated_robust_%d.test.cpp', file_idx), cat, 'nonsym', 'slow', i);
-        file_idx = file_idx + 1;
+        write_test_file(sprintf('eigen/tests/generated_robust_%s_fast_%d.test.cpp', cat, i), cat, 'nonsym', 'fast', i);
+        write_test_file(sprintf('eigen/tests/generated_robust_%s_slow_%d.test.cpp', cat, i), cat, 'nonsym', 'slow', i);
     end
 end
