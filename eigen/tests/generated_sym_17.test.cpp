@@ -4,4 +4,9 @@ TEST(generated_tests, random_fast_17) {
     static_assert(check_single_random_sym_fast<17>(), "Test random_fast_17 failed");
     SUCCEED();
 }
+#else
+TEST(generated_tests, random_slow_17) {
+    static_assert(check_single_random_sym_slow<17>(), "Test random_slow_17 failed");
+    SUCCEED();
+}
 #endif

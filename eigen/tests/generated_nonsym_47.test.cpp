@@ -4,4 +4,9 @@ TEST(generated_tests, random_fast_47) {
     static_assert(check_single_random_nonsym_fast<47>(), "Test random_fast_47 failed");
     SUCCEED();
 }
+#else
+TEST(generated_tests, random_slow_47) {
+    static_assert(check_single_random_nonsym_slow<47>(), "Test random_slow_47 failed");
+    SUCCEED();
+}
 #endif

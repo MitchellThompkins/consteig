@@ -199,50 +199,49 @@ fclose(fid);
 % Now generate the C++ test files
 [status, output] = system('rm eigen/tests/generated_*.test.cpp');
 
-function write_test_file(filename, category, type, suffix, index)
+% Write a file containing both fast and slow variants of the same test case,
+% selected at compile time by the CONSTEIG_SLOW_TESTS preprocessor flag.
+function write_test_file(filename, category, type, index)
     fid = fopen(filename, 'w');
     fprintf(fid, '#include "generated_test_helpers.hpp"\n');
-    
+
     if ~strcmp(category, 'random')
         fprintf(fid, '#ifdef ENABLE_ROBUSTNESS\n');
     end
 
-    if strcmp(suffix, 'fast')
-        fprintf(fid, '#ifndef CONSTEIG_SLOW_TESTS\n');
-    else
-        fprintf(fid, '#ifdef CONSTEIG_SLOW_TESTS\n');
-    end
-    
-    test_name = [category '_' suffix '_' num2str(index)];
-    check_func = ['check_single_' category '_' type '_' suffix '<' num2str(index) '>'];
-    
+    fast_name  = [category '_fast_' num2str(index)];
+    slow_name  = [category '_slow_' num2str(index)];
+    fast_check = ['check_single_' category '_' type '_fast<' num2str(index) '>'];
+    slow_check = ['check_single_' category '_' type '_slow<' num2str(index) '>'];
+
+    fprintf(fid, '#ifndef CONSTEIG_SLOW_TESTS\n');
     fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
-            test_name, check_func, test_name);
-    
+            fast_name, fast_check, fast_name);
+    fprintf(fid, '#else\n');
+    fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
+            slow_name, slow_check, slow_name);
     fprintf(fid, '#endif\n');
+
     if ~strcmp(category, 'random')
         fprintf(fid, '#endif\n');
     end
     fclose(fid);
 end
 
-% Random sym
+% Random sym (one file per case, both fast 4x4 and slow 8x8 inside)
 for i = 0:NUM_RANDOM_CASES-1
-    write_test_file(sprintf('eigen/tests/generated_sym_%d.test.cpp', i), 'random', 'sym', 'fast', i);
-    write_test_file(sprintf('eigen/tests/generated_sym_%d.test.cpp', i + NUM_RANDOM_CASES), 'random', 'sym', 'slow', i);
+    write_test_file(sprintf('eigen/tests/generated_sym_%d.test.cpp', i), 'random', 'sym', i);
 end
 
-% Random nonsym
+% Random nonsym (one file per case, both fast 4x4 and slow 8x8 inside)
 for i = 0:NUM_RANDOM_CASES-1
-    write_test_file(sprintf('eigen/tests/generated_nonsym_%d.test.cpp', i), 'random', 'nonsym', 'fast', i);
-    write_test_file(sprintf('eigen/tests/generated_nonsym_%d.test.cpp', i + NUM_RANDOM_CASES), 'random', 'nonsym', 'slow', i);
+    write_test_file(sprintf('eigen/tests/generated_nonsym_%d.test.cpp', i), 'random', 'nonsym', i);
 end
 
-% Robust cases
+% Robust cases (one file per category+index, both fast 4x4 and slow 8x8 inside)
 for c = 1:length(ROBUST_CATEGORIES)
     cat = ROBUST_CATEGORIES{c};
     for i = 0:NUM_ROBUST_CASES-1
-        write_test_file(sprintf('eigen/tests/generated_robust_%s_fast_%d.test.cpp', cat, i), cat, 'nonsym', 'fast', i);
-        write_test_file(sprintf('eigen/tests/generated_robust_%s_slow_%d.test.cpp', cat, i), cat, 'nonsym', 'slow', i);
+        write_test_file(sprintf('eigen/tests/generated_robust_%s_%d.test.cpp', cat, i), cat, 'nonsym', i);
     end
 end
