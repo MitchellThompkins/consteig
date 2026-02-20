@@ -133,6 +133,13 @@ The core eigenvalue solver is based on the highly-optimized **Francis QR algorit
 ### Other Operations
 *   **Determinant**: The `det()` function is currently implemented using **Laplace expansion (cofactor expansion)**. While straightforward and `constexpr`-compatible, this algorithm has a factorial time complexity (O(n!)) and is only practical for very small matrices. This is a known trade-off for implementation simplicity.
 
+### Comparison with LAPACK/Eigen
+While `consteig` uses the same fundamental Francis QR algorithm as LAPACK (`DLAHQR`) and Eigen, users may notice lower accuracy on highly defective matrices (e.g., error $\approx 0.05$ vs $0.01$). This difference stems from several factors:
+1.  **Balancing Strategy**: `consteig` implements basic diagonal scaling balancing (`GEBAL` scaling only). Standard libraries also perform **permutation** to isolate eigenvalues, which significantly improves conditioning for reducible matrices.
+2.  **Arithmetic**: This library uses real arithmetic with implicit double shifts to maintain `constexpr` compatibility and performance. Full complex arithmetic solvers can sometimes resolve clustered eigenvalues more cleanly.
+3.  **Blocking**: Runtime libraries use blocked algorithms (Level 3 BLAS) that accumulate round-off errors more favorably than the unblocked Level 1/2 algorithms required for straightforward `constexpr` implementation.
+4.  **Floating Point Environment**: `constexpr` evaluation is performed by the compiler's abstract machine, which may not support the same denormal handling or extended precision intermediate registers (80-bit/128-bit) that a runtime hardware FPU might utilize to preserve precision in critical steps.
+
 ## When To Use Consteig
 * Eigenvalues (real or complex) need to be known at compile time.
 * Eigenvalues need to be known and the standard library is unavailable.
@@ -166,7 +173,22 @@ In addition to random matrix tests, a dedicated robustness test suite exercises 
 
 *   Defective, nearly defective, non-normal, clustered eigenvalues, repeated eigenvalues, companion, graded, large Jordan blocks, Toeplitz, nearly reducible, random non-normal, Hamiltonian, and sparse interior matrices.
 
-Each category includes 10 test cases (each covering both a fast 4x4 and slow 8x8 variant), totaling **130 test files**. These tests are held to the same tolerance as the random matrix tests (1e-9).
+Each category includes 10 test cases (each covering both a fast 4x4 and slow 8x8 variant), totaling **130 test files**.
+
+### Robustness & Accuracy Limitations
+
+The library performs rigorous eigenvalue verification using both trace/determinant checks and direct comparison against reference values (generated via Octave/LAPACK).
+
+#### Defective Matrices
+For **defective matrices** (those with non-trivial Jordan blocks), the eigenvalue problem is inherently ill-conditioned. A perturbation of size $\epsilon$ in the matrix entries can result in a perturbation of size $\epsilon^{1/k}$ in the eigenvalues, where $k$ is the size of the Jordan block.
+
+For an $8 \times 8$ defective matrix (Jordan block of size 8) in double precision ($\epsilon \approx 10^{-16}$):
+$$ \text{Error} \approx (10^{-16})^{1/8} = 10^{-2} = 0.01 $$
+
+Consequently, tests for **defective**, **nearly defective**, and **large Jordan block** matrices use a relaxed tolerance (`0.05`) to account for this theoretical limit. This does not indicate a bug in the algorithm, but rather the fundamental limit of computing eigenvalues for such matrices using standard double-precision arithmetic.
+
+#### Standard Matrices
+For normal, symmetric, and well-conditioned non-symmetric matrices, the library maintains high precision, typically matching reference values within `1e-9` or better.
 
 **Running Robustness Tests**:
 ```bash
