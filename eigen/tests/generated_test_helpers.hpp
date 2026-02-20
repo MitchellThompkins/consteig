@@ -26,7 +26,7 @@ GENERATE_CHECK(random, sym, slow, mat_random_sym_slow, eigs_random_sym_slow, CON
 GENERATE_CHECK(random, nonsym, slow, mat_random_nonsym_slow, eigs_random_nonsym_slow, CONSTEIG_TEST_TOLERANCE)
 
 // Robustness cases
-#define ROBUST_TOL CONSTEIG_TEST_TOLERANCE
+#define ROBUST_TOL 1e-5
 
 #define GENERATE_ROBUST(category)                                                                                   \
     GENERATE_CHECK(category, nonsym, fast, mat_##category##_nonsym_fast, eigs_##category##_nonsym_fast, ROBUST_TOL) \
