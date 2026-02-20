@@ -27,7 +27,7 @@ GENERATE_CHECK(random, nonsym, slow, mat_random_nonsym_slow, eigs_random_nonsym_
 
 // Robustness cases
 #define LOOSE_TOL 0.05
-#define STRICT_TOL 1e-3
+#define STRICT_TOL 1e-9
 
 #define GENERATE_ROBUST(category, tol)                                                                       \
     GENERATE_CHECK(category, nonsym, fast, mat_##category##_nonsym_fast, eigs_##category##_nonsym_fast, tol) \
