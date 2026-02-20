@@ -51,9 +51,9 @@ static constexpr bool compareEigenValues(consteig::Matrix<consteig::Complex<T>, 
     bool used[S] = {};
     for (consteig::Size i = 0; i < S; ++i) used[i] = false;
 
-    for (consteig::Size i = 0; i < S; ++i) { // for each reference eigenvalue b[i]
+    for (consteig::Size i = 0; i < S; ++i) {  // for each reference eigenvalue b[i]
         bool found = false;
-        for (consteig::Size j = 0; j < S; ++j) { // find an unused match in a[j]
+        for (consteig::Size j = 0; j < S; ++j) {  // find an unused match in a[j]
             if (!used[j]) {
                 const T diff_real = consteig::abs(a(j, 0).real - b(i, 0).real);
                 const T diff_imag = consteig::abs(a(j, 0).imag - b(i, 0).imag);
