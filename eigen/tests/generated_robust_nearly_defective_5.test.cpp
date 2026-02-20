@@ -1,0 +1,14 @@
+#include "generated_test_helpers.hpp"
+#ifdef ENABLE_ROBUSTNESS
+#ifndef CONSTEIG_SLOW_TESTS
+TEST(generated_tests, nearly_defective_fast_5) {
+    static_assert(check_single_nearly_defective_nonsym_fast<5>(), "Test nearly_defective_fast_5 failed");
+    SUCCEED();
+}
+#else
+TEST(generated_tests, nearly_defective_slow_5) {
+    static_assert(check_single_nearly_defective_nonsym_slow<5>(), "Test nearly_defective_slow_5 failed");
+    SUCCEED();
+}
+#endif
+#endif
