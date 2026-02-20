@@ -16,12 +16,11 @@ constexpr T sqrt_recur(const T x, const T xn, const int count) {
 
 template <typename T>
 constexpr T sqrt_check(const T x, const T m_val) {
-    return (
-        x == T(0)                      ? T(0)
-        : epsilon<T>() > abs(T(1) - x) ? x
-        : x > T(4)                     ? sqrt_check(x / T(4), T(2) * m_val)
-        : x < T(0.25)                  ? sqrt_check(x * T(4), m_val / T(2))
-                                       : m_val * sqrt_recur(x, x / T(2), 0));
+    return (x == T(0)                      ? T(0)
+            : epsilon<T>() > abs(T(1) - x) ? x
+            : x > T(4)                     ? sqrt_check(x / T(4), T(2) * m_val)
+            : x < T(0.25)                  ? sqrt_check(x * T(4), m_val / T(2))
+                                           : m_val * sqrt_recur(x, x / T(2), 0));
 }
 
 template <typename T>
