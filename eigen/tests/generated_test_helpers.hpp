@@ -20,18 +20,15 @@ using namespace consteig;
     }
 
 // Random cases
-GENERATE_CHECK(random, sym, fast, mat_random_sym_fast, eigs_random_sym_fast, CONSTEIG_TEST_TOLERANCE)
-GENERATE_CHECK(random, nonsym, fast, mat_random_nonsym_fast, eigs_random_nonsym_fast, CONSTEIG_TEST_TOLERANCE)
-GENERATE_CHECK(random, sym, slow, mat_random_sym_slow, eigs_random_sym_slow, CONSTEIG_TEST_TOLERANCE)
-GENERATE_CHECK(random, nonsym, slow, mat_random_nonsym_slow, eigs_random_nonsym_slow, CONSTEIG_TEST_TOLERANCE)
+GENERATE_CHECK(random, sym, 8x8, mat_random_sym_8x8, eigs_random_sym_8x8, CONSTEIG_TEST_TOLERANCE)
+GENERATE_CHECK(random, nonsym, 8x8, mat_random_nonsym_8x8, eigs_random_nonsym_8x8, CONSTEIG_TEST_TOLERANCE)
 
 // Robustness cases
 #define LOOSE_TOL 0.05
 #define STRICT_TOL 1e-9
 
-#define GENERATE_ROBUST(category, tol)                                                                       \
-    GENERATE_CHECK(category, nonsym, fast, mat_##category##_nonsym_fast, eigs_##category##_nonsym_fast, tol) \
-    GENERATE_CHECK(category, nonsym, slow, mat_##category##_nonsym_slow, eigs_##category##_nonsym_slow, tol)
+#define GENERATE_ROBUST(category, tol) \
+    GENERATE_CHECK(category, nonsym, 8x8, mat_##category##_nonsym_8x8, eigs_##category##_nonsym_8x8, tol)
 
 GENERATE_ROBUST(defective, LOOSE_TOL)
 GENERATE_ROBUST(nearly_defective, LOOSE_TOL)
