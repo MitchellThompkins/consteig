@@ -166,7 +166,7 @@ In addition to random matrix tests, a dedicated robustness test suite exercises 
 
 *   Defective, nearly defective, non-normal, clustered eigenvalues, repeated eigenvalues, companion, graded, large Jordan blocks, Toeplitz, nearly reducible, random non-normal, Hamiltonian, and sparse interior matrices.
 
-Each category includes 10 fast (4x4) and 10 slow (8x8) test cases, totaling **260 test cases**. These tests use a looser tolerance (1e-4) compared to the random matrix tests, reflecting the inherent difficulty of these matrix classes.
+Each category includes 10 test cases (each covering both a fast 4x4 and slow 8x8 variant), totaling **130 test files**. These tests are held to the same tolerance as the random matrix tests (1e-9).
 
 **Running Robustness Tests**:
 ```bash
