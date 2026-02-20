@@ -24,8 +24,8 @@ GENERATE_CHECK(random, nonsym, fast, mat_random_nonsym_fast, eigs_random_nonsym_
 GENERATE_CHECK(random, sym, slow, mat_random_sym_slow, eigs_random_sym_slow, CONSTEIG_TEST_TOLERANCE)
 GENERATE_CHECK(random, nonsym, slow, mat_random_nonsym_slow, eigs_random_nonsym_slow, CONSTEIG_TEST_TOLERANCE)
 
-// Robustness cases (looser tolerance for hard matrices)
-#define ROBUST_TOL 1e-4
+// Robustness cases
+#define ROBUST_TOL CONSTEIG_TEST_TOLERANCE
 
 #define GENERATE_ROBUST(category)                                                                                   \
     GENERATE_CHECK(category, nonsym, fast, mat_##category##_nonsym_fast, eigs_##category##_nonsym_fast, ROBUST_TOL) \
