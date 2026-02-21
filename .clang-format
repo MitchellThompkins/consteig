@@ -1,6 +1,6 @@
 BasedOnStyle: Google
 Language: Cpp
 IndentWidth: 4
-ColumnLimit: 120
+ColumnLimit: 80
 SortIncludes: true
 Standard: c++17
