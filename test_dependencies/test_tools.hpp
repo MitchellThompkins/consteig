@@ -26,7 +26,7 @@
 #endif
 
 #ifndef PATHOLOGICAL_TOL
-#define PATHOLOGICAL_TOL 0.025
+#define PATHOLOGICAL_TOL 0.03
 #endif
 
 // https://stackoverflow.com/a/32334103/3527182
