@@ -20,14 +20,10 @@ using namespace consteig;
     }
 
 // Random cases
-#define RANDOM_TOL 1e-7
 GENERATE_CHECK(random, sym, 8x8, mat_random_sym_8x8, eigs_random_sym_8x8, RANDOM_TOL)
 GENERATE_CHECK(random, nonsym, 8x8, mat_random_nonsym_8x8, eigs_random_nonsym_8x8, RANDOM_TOL)
 
 // Robustness cases
-#define PATHOLOGICAL_TOL 0.05
-#define STRICT_TOL 1e-8
-
 #define GENERATE_ROBUST(category, tol) \
     GENERATE_CHECK(category, nonsym, 8x8, mat_##category##_nonsym_8x8, eigs_##category##_nonsym_8x8, tol)
 
