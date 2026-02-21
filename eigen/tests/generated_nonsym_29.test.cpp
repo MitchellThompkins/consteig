@@ -1,5 +1,6 @@
 #include "generated_test_helpers.hpp"
-TEST(generated_tests, random_8x8_29) {
-    static_assert(check_single_random_nonsym_8x8<29>(), "Test random_8x8_29 failed");
-    SUCCEED();
-}
+#ifndef CONSTEIG_SLOW_TESTS
+TEST(generated_tests, random_fast_29) { static_assert(check_single_random_nonsym_fast<29>(), "Test random_fast_29 failed"); SUCCEED(); }
+#else
+TEST(generated_tests, random_slow_29) { static_assert(check_single_random_nonsym_slow<29>(), "Test random_slow_29 failed"); SUCCEED(); }
+#endif

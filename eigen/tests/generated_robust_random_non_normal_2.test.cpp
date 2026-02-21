@@ -1,7 +1,8 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-TEST(generated_tests, random_non_normal_8x8_2) {
-    static_assert(check_single_random_non_normal_nonsym_8x8<2>(), "Test random_non_normal_8x8_2 failed");
-    SUCCEED();
-}
+#ifndef CONSTEIG_SLOW_TESTS
+TEST(generated_tests, random_non_normal_fast_2) { static_assert(check_single_random_non_normal_nonsym_fast<2>(), "Test random_non_normal_fast_2 failed"); SUCCEED(); }
+#else
+TEST(generated_tests, random_non_normal_slow_2) { static_assert(check_single_random_non_normal_nonsym_slow<2>(), "Test random_non_normal_slow_2 failed"); SUCCEED(); }
+#endif
 #endif

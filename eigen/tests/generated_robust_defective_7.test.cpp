@@ -1,7 +1,8 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-TEST(generated_tests, defective_8x8_7) {
-    static_assert(check_single_defective_nonsym_8x8<7>(), "Test defective_8x8_7 failed");
-    SUCCEED();
-}
+#ifndef CONSTEIG_SLOW_TESTS
+TEST(generated_tests, defective_fast_7) { static_assert(check_single_defective_nonsym_fast<7>(), "Test defective_fast_7 failed"); SUCCEED(); }
+#else
+TEST(generated_tests, defective_slow_7) { static_assert(check_single_defective_nonsym_slow<7>(), "Test defective_slow_7 failed"); SUCCEED(); }
+#endif
 #endif
