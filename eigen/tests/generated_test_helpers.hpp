@@ -36,7 +36,7 @@ GENERATE_CHECK(random, nonsym, slow, mat_random_nonsym_slow, eigs_random_nonsym_
 #define LOOSE_SLOW_TOL 1e-7
 #define STRICT_SLOW_TOL 1e-8
 
-#define GENERATE_ROBUST(category, fast_tol, slow_tol)                                                                       \
+#define GENERATE_ROBUST(category, fast_tol, slow_tol)                                                             \
     GENERATE_CHECK(category, nonsym, fast, mat_##category##_nonsym_fast, eigs_##category##_nonsym_fast, fast_tol) \
     GENERATE_CHECK(category, nonsym, slow, mat_##category##_nonsym_slow, eigs_##category##_nonsym_slow, slow_tol)
 
