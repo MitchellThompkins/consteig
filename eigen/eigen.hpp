@@ -11,6 +11,12 @@
 
 namespace consteig {
 
+#ifdef CONSTEIG_USE_LONG_DOUBLE
+using InternalScalar = long double;
+#else
+using InternalScalar = double;
+#endif
+
 // Forward declaration
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
@@ -244,40 +250,40 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance) {
 
 template <typename T, Size S>
 constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
-    Matrix<long double, S, S> a_double{};
+    Matrix<InternalScalar, S, S> a_internal{};
     for (Size i = 0; i < S; ++i) {
         for (Size j = 0; j < S; ++j) {
-            a_double(i, j) = static_cast<long double>(a(i, j));
+            a_internal(i, j) = static_cast<InternalScalar>(a(i, j));
         }
     }
 
-    Matrix<long double, S, S> out = eig(a_double);
+    Matrix<InternalScalar, S, S> out = eig(a_internal);
     Matrix<Complex<T>, S, 1> result{};
-    long double eps = consteig::epsilon<long double>() * (norm1(out) + static_cast<long double>(1.0));
+    InternalScalar eps = consteig::epsilon<InternalScalar>() * (norm1(out) + static_cast<InternalScalar>(1.0));
 
     for (Size i = 0; i < S; ++i) {
         bool found_2x2 = false;
         if (i < S - 1) {
-            long double subdiag = out(i + 1, i);
+            InternalScalar subdiag = out(i + 1, i);
             if (consteig::abs(subdiag) > eps) {
                 found_2x2 = true;
             }
         }
 
         if (found_2x2) {
-            long double a00 = out(i, i);
-            long double a01 = out(i, i + 1);
-            long double a10 = out(i + 1, i);
-            long double a11 = out(i + 1, i + 1);
-            long double tr = a00 + a11;
-            long double d = a00 * a11 - a01 * a10;
-            long double disc = tr * tr - 4 * d;
+            InternalScalar a00 = out(i, i);
+            InternalScalar a01 = out(i, i + 1);
+            InternalScalar a10 = out(i + 1, i);
+            InternalScalar a11 = out(i + 1, i + 1);
+            InternalScalar tr = a00 + a11;
+            InternalScalar d = a00 * a11 - a01 * a10;
+            InternalScalar disc = tr * tr - 4 * d;
             if (disc >= 0) {
-                long double sq = consteig::sqrt(disc);
+                InternalScalar sq = consteig::sqrt(disc);
                 result(i, 0) = Complex<T>{static_cast<T>((tr + sq) / 2), 0};
                 result(i + 1, 0) = Complex<T>{static_cast<T>((tr - sq) / 2), 0};
             } else {
-                long double sq = consteig::sqrt(-disc);
+                InternalScalar sq = consteig::sqrt(-disc);
                 result(i, 0) = Complex<T>{static_cast<T>(tr / 2), static_cast<T>(sq / 2)};
                 result(i + 1, 0) = Complex<T>{static_cast<T>(tr / 2), static_cast<T>(-sq / 2)};
             }

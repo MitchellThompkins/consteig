@@ -12,7 +12,7 @@ BUILD_TOOL ?= make
 BUILD_FILE = Makefile
 CMAKE_GENERATOR = "Unix Makefiles"
 
-JOB_FLAG := -j 1
+JOB_FLAG := -j 4
 
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build )
 
