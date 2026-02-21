@@ -9,9 +9,8 @@
 #define CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE 1e-6
 #endif
 
-// Uncomment to force all internal constexpr eigenvalue calculations to use long double.
-// This improves numerical stability for large/pathological matrices but is very
-// resource intensive for the compiler.
-// #define CONSTEIG_USE_LONG_DOUBLE
+// Uncomment to force all internal constexpr eigenvalue calculations to use long
+// double. This improves numerical stability for large/pathological matrices but
+// is very resource intensive for the compiler. #define CONSTEIG_USE_LONG_DOUBLE
 
 #endif

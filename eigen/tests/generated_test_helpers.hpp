@@ -10,22 +10,28 @@
 using namespace consteig;
 
 // Define helper macros for consistency
-#define GENERATE_CHECK(category, type, suffix, mat_var, eig_var, tol)                          \
-    template <Size INDEX>                                                                      \
-    constexpr bool check_single_##category##_##type##_##suffix() {                             \
-        auto eigs = eigvals(mat_var[INDEX]);                                                   \
-        if (!checkEigenValues(mat_var[INDEX], eigs, static_cast<double>(tol))) return false;   \
-        if (!compareEigenValues(eigs, eig_var[INDEX], static_cast<double>(tol))) return false; \
-        return true;                                                                           \
+#define GENERATE_CHECK(category, type, suffix, mat_var, eig_var, tol)          \
+    template <Size INDEX>                                                      \
+    constexpr bool check_single_##category##_##type##_##suffix() {             \
+        auto eigs = eigvals(mat_var[INDEX]);                                   \
+        if (!checkEigenValues(mat_var[INDEX], eigs, static_cast<double>(tol))) \
+            return false;                                                      \
+        if (!compareEigenValues(eigs, eig_var[INDEX],                          \
+                                static_cast<double>(tol)))                     \
+            return false;                                                      \
+        return true;                                                           \
     }
 
 // Random cases
-GENERATE_CHECK(random, sym, 8x8, mat_random_sym_8x8, eigs_random_sym_8x8, RANDOM_TOL)
-GENERATE_CHECK(random, nonsym, 8x8, mat_random_nonsym_8x8, eigs_random_nonsym_8x8, RANDOM_TOL)
+GENERATE_CHECK(random, sym, 8x8, mat_random_sym_8x8, eigs_random_sym_8x8,
+               RANDOM_TOL)
+GENERATE_CHECK(random, nonsym, 8x8, mat_random_nonsym_8x8,
+               eigs_random_nonsym_8x8, RANDOM_TOL)
 
 // Robustness cases
-#define GENERATE_ROBUST(category, tol) \
-    GENERATE_CHECK(category, nonsym, 8x8, mat_##category##_nonsym_8x8, eigs_##category##_nonsym_8x8, tol)
+#define GENERATE_ROBUST(category, tol)                                 \
+    GENERATE_CHECK(category, nonsym, 8x8, mat_##category##_nonsym_8x8, \
+                   eigs_##category##_nonsym_8x8, tol)
 
 GENERATE_ROBUST(defective, PATHOLOGICAL_TOL)
 GENERATE_ROBUST(nearly_defective, PATHOLOGICAL_TOL)

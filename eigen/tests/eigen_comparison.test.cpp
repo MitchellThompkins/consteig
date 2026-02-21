@@ -38,7 +38,8 @@ void verify_symmetric_random() {
     std::sort(calc.begin(), calc.end());
 
     for (Size i = 0; i < S; ++i) {
-        EXPECT_NEAR(calc[i], ref(i), 1e-3) << "Symmetric mismatch at index " << i;
+        EXPECT_NEAR(calc[i], ref(i), 1e-3)
+            << "Symmetric mismatch at index " << i;
     }
 }
 
@@ -89,15 +90,22 @@ void verify_nonsymmetric_random() {
             if (dist < min_dist) min_dist = dist;
         }
 
-        EXPECT_TRUE(found) << "Failed to match eigenvalue " << real << "+" << imag << "i. Closest dist: " << min_dist;
+        EXPECT_TRUE(found) << "Failed to match eigenvalue " << real << "+"
+                           << imag << "i. Closest dist: " << min_dist;
     }
 }
 
 TEST(eigen_comparison, random_symmetric_3x3) { verify_symmetric_random<3>(); }
 TEST(eigen_comparison, random_symmetric_5x5) { verify_symmetric_random<5>(); }
-TEST(eigen_comparison, random_symmetric_10x10) { verify_symmetric_random<10>(); }
+TEST(eigen_comparison, random_symmetric_10x10) {
+    verify_symmetric_random<10>();
+}
 
-TEST(eigen_comparison, random_nonsymmetric_3x3) { verify_nonsymmetric_random<3>(); }
-// TEST(eigen_comparison, random_nonsymmetric_5x5) { verify_nonsymmetric_random<5>(); }
-// 10x10 non-symmetric is hard for unoptimized double-shift without good balancing/scaling, skipping for now to ensure
-// pass. TEST(eigen_comparison, random_nonsymmetric_10x10) { verify_nonsymmetric_random<10>(); }
+TEST(eigen_comparison, random_nonsymmetric_3x3) {
+    verify_nonsymmetric_random<3>();
+}
+// TEST(eigen_comparison, random_nonsymmetric_5x5) {
+// verify_nonsymmetric_random<5>(); } 10x10 non-symmetric is hard for
+// unoptimized double-shift without good balancing/scaling, skipping for now to
+// ensure pass. TEST(eigen_comparison, random_nonsymmetric_10x10) {
+// verify_nonsymmetric_random<10>(); }
