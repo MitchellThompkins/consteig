@@ -16,7 +16,7 @@
 #endif
 
 #ifndef RANDOM_TOL
-#define RANDOM_TOL 1e-7
+#define RANDOM_TOL 1e-9
 #endif
 
 #ifndef PATHOLOGICAL_TOL
@@ -24,7 +24,7 @@
 #endif
 
 #ifndef STRICT_TOL
-#define STRICT_TOL 1e-8
+#define STRICT_TOL 1e-9
 #endif
 
 // https://stackoverflow.com/a/32334103/3527182
