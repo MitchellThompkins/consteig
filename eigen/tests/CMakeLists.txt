@@ -1,7 +1,6 @@
 ################################################################################
 # Test
 ################################################################################
-option(CONSTEIG_BUILD_SLOW_TESTS "Build slow (8x8) tests" OFF)
 option(CONSTEIG_ENABLE_ROBUSTNESS "Enable intensive robustness tests" OFF)
 
 if(CONSTEIG_ENABLE_ROBUSTNESS)
@@ -29,18 +28,11 @@ create_test(eigen_comparison.test)
 # Helper function to add generated tests
 function(add_gen_test target_name source_file)
     add_executable(${target_name}.test ${CMAKE_CURRENT_SOURCE_DIR}/${source_file})
-    if(CONSTEIG_BUILD_SLOW_TESTS)
-        target_compile_definitions(${target_name}.test PRIVATE CONSTEIG_SLOW_TESTS CONSTEIG_MAX_ITER=2000)
-        target_compile_options(${target_name}.test PRIVATE
-            "$<$<CXX_COMPILER_ID:GNU>:-fconstexpr-ops-limit=1000000000>"
-            "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-fconstexpr-steps=1000000000>"
-        )
-    else()
-        target_compile_options(${target_name}.test PRIVATE
-            "$<$<CXX_COMPILER_ID:GNU>:-fconstexpr-ops-limit=100000000>"
-            "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-fconstexpr-steps=100000000>"
-        )
-    endif()
+    target_compile_definitions(${target_name}.test PRIVATE CONSTEIG_MAX_ITER=2000)
+    target_compile_options(${target_name}.test PRIVATE
+        "$<$<CXX_COMPILER_ID:GNU>:-fconstexpr-ops-limit=1000000000>"
+        "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-fconstexpr-steps=1000000000>"
+    )
     target_include_directories(${target_name}.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
     target_link_libraries(${target_name}.test matrix array gtest_main consteig_eigen)
     create_test(${target_name}.test)
