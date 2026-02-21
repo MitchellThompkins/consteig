@@ -19,7 +19,8 @@ TEST(complex, constexpr_ops) {
     // (1+2i)(3+4i) = 3 + 4i + 6i - 8 = -5 + 10i
     static_assert(prod.real == -5.0 && prod.imag == 10.0, MSG);
 
-    static constexpr auto quot = Complex<double>{1.0, 1.0} / Complex<double>{1.0, 1.0};
+    static constexpr auto quot =
+        Complex<double>{1.0, 1.0} / Complex<double>{1.0, 1.0};
     static_assert(quot.real == 1.0 && quot.imag == 0.0, MSG);
 }
 

@@ -11,7 +11,9 @@ class Matrix {
    public:
     constexpr T &operator()(const Size i, const Size j) { return _data[i][j]; }
 
-    constexpr const T &operator()(const Size i, const Size j) const { return _data[i][j]; }
+    constexpr const T &operator()(const Size i, const Size j) const {
+        return _data[i][j];
+    }
 
     // TODO(mthompkins): Need to handle the equal floats case
     template <typename U>
@@ -40,11 +42,13 @@ class Matrix {
     constexpr Matrix<T, 1, endIndex - startIndex + 1> row(const Size n) const {
         static_assert(C > startIndex, "startIndex cannot be larger than array");
         static_assert(C > endIndex, "endIndex cannot be larger than array");
-        static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
+        static_assert(endIndex >= startIndex,
+                      "startIndex cannot be larger than endIndex");
 
         Matrix<T, 1, endIndex - startIndex + 1> result{};
 
-        for (Size i{startIndex}; i <= endIndex; i++) result(0, i - startIndex) = (*this)(n, i);
+        for (Size i{startIndex}; i <= endIndex; i++)
+            result(0, i - startIndex) = (*this)(n, i);
 
         return result;
     }
@@ -62,11 +66,13 @@ class Matrix {
     constexpr Matrix<T, endIndex - startIndex + 1, 1> col(const Size n) const {
         static_assert(R > startIndex, "startIndex cannot be larger than array");
         static_assert(R > endIndex, "endIndex cannot be larger than array");
-        static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
+        static_assert(endIndex >= startIndex,
+                      "startIndex cannot be larger than endIndex");
 
         Matrix<T, endIndex - startIndex + 1, 1> result{};
 
-        for (Size i{startIndex}; i <= endIndex; i++) result(i - startIndex, 0) = (*this)(i, n);
+        for (Size i{startIndex}; i <= endIndex; i++)
+            result(i - startIndex, 0) = (*this)(i, n);
 
         return result;
     }
@@ -74,13 +80,16 @@ class Matrix {
     // x1,y1,x2,y2 are indexes
     template <Size x1, Size y1, Size x2, Size y2>
     constexpr Matrix<T, x2 - x1 + 1, y2 - y1 + 1> sub() const {
-        static_assert(x2 >= x1, "Second x index must be bigger than the first.");
-        static_assert(y2 >= y1, "Second y index must be bigger than the first.");
+        static_assert(x2 >= x1,
+                      "Second x index must be bigger than the first.");
+        static_assert(y2 >= y1,
+                      "Second y index must be bigger than the first.");
 
         Matrix<T, x2 - x1 + 1, y2 - y1 + 1> result{};
 
         for (Size i{x1}; i <= x2; i++)
-            for (Size j{y1}; j <= y2; j++) result(i - x1, j - y1) = (*this)(i, j);
+            for (Size j{y1}; j <= y2; j++)
+                result(i - x1, j - y1) = (*this)(i, j);
 
         return result;
     }
@@ -96,12 +105,15 @@ class Matrix {
     }
 
     template <Size startIndex, Size endIndex>
-    constexpr void setRow(const Matrix<T, 1, endIndex - startIndex + 1> &mat, const Size n) {
+    constexpr void setRow(const Matrix<T, 1, endIndex - startIndex + 1> &mat,
+                          const Size n) {
         static_assert(C > startIndex, "startIndex cannot be larger than array");
         static_assert(C > endIndex, "endIndex cannot be larger than array");
-        static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
+        static_assert(endIndex >= startIndex,
+                      "startIndex cannot be larger than endIndex");
 
-        for (Size i{startIndex}; i <= endIndex; i++) (*this)(n, i) = mat(0, i - startIndex);
+        for (Size i{startIndex}; i <= endIndex; i++)
+            (*this)(n, i) = mat(0, i - startIndex);
     }
 
     constexpr void setCol(const Matrix<T, R, 1> &mat, const Size n) {
@@ -109,19 +121,24 @@ class Matrix {
     }
 
     template <Size startIndex, Size endIndex>
-    constexpr void setCol(const Matrix<T, endIndex - startIndex + 1, 1> &mat, const Size n) {
+    constexpr void setCol(const Matrix<T, endIndex - startIndex + 1, 1> &mat,
+                          const Size n) {
         static_assert(R > startIndex, "startIndex cannot be larger than array");
         static_assert(R > endIndex, "endIndex cannot be larger than array");
-        static_assert(endIndex >= startIndex, "startIndex cannot be larger than endIndex");
+        static_assert(endIndex >= startIndex,
+                      "startIndex cannot be larger than endIndex");
 
-        for (Size i{startIndex}; i <= endIndex; i++) (*this)(i, n) = mat(i - startIndex, 0);
+        for (Size i{startIndex}; i <= endIndex; i++)
+            (*this)(i, n) = mat(i - startIndex, 0);
     }
 
     // x1,y1,x2,y2 are indexes
     template <Size x1, Size y1, Size x2, Size y2>
     constexpr void setSub(const Matrix<T, y2 - y1 + 1, x2 - x1 + 1> &mat) {
-        static_assert(x2 >= x1, "Second x index must be bigger than the first.");
-        static_assert(y2 >= y1, "Second y index must be bigger than the first.");
+        static_assert(x2 >= x1,
+                      "Second x index must be bigger than the first.");
+        static_assert(y2 >= y1,
+                      "Second y index must be bigger than the first.");
 
         for (Size i{x1}; i <= x2; i++)
             for (Size j{y1}; j <= y2; j++) (*this)(i, j) = mat(i - x1, j - y1);
@@ -158,7 +175,8 @@ class Matrix {
         if (sizeX() > 1) {
             for (unsigned int i{1}; i <= sizeX() - 1; i++) {
                 for (unsigned int j{0}; j < i; j++) {
-                    symmetric &= compareFloats((*this)(i, j), (*this)(j, i), thresh);
+                    symmetric &=
+                        compareFloats((*this)(i, j), (*this)(j, i), thresh);
                     if (!symmetric) break;
                 }
             }

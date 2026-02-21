@@ -26,7 +26,8 @@ namespace consteig {
 ///////////// IMPLEMENTATIONS /////////////
 
 template <typename T, Size R, Size C>
-constexpr Matrix<T, R, C> operator+(const Matrix<T, R, C> &lhs, const Matrix<T, R, C> &rhs) {
+constexpr Matrix<T, R, C> operator+(const Matrix<T, R, C> &lhs,
+                                    const Matrix<T, R, C> &rhs) {
     Matrix<T, R, C> result{};
 
     for (Size i{0}; i < R; ++i)
@@ -36,7 +37,8 @@ constexpr Matrix<T, R, C> operator+(const Matrix<T, R, C> &lhs, const Matrix<T, 
 }
 
 template <typename T, Size R, Size C>
-constexpr Matrix<T, R, C> operator-(const Matrix<T, R, C> &lhs, const Matrix<T, R, C> &rhs) {
+constexpr Matrix<T, R, C> operator-(const Matrix<T, R, C> &lhs,
+                                    const Matrix<T, R, C> &rhs) {
     Matrix<T, R, C> result{};
 
     for (Size i{0}; i < R; ++i)
@@ -47,7 +49,8 @@ constexpr Matrix<T, R, C> operator-(const Matrix<T, R, C> &lhs, const Matrix<T, 
 
 // Multiply two matrices
 template <typename T, Size R1, Size C1, Size R2, Size C2>
-constexpr Matrix<T, R1, C2> operator*(const Matrix<T, R1, C1> &lhs, const Matrix<T, R2, C2> &rhs) {
+constexpr Matrix<T, R1, C2> operator*(const Matrix<T, R1, C1> &lhs,
+                                      const Matrix<T, R2, C2> &rhs) {
     static_assert(C1 == R2, "Number of columns must equal number of rows");
     Matrix<T, R1, C2> result{};
 
@@ -158,14 +161,15 @@ constexpr Matrix<T, R, C> sqrt(const Matrix<T, R, C> &mat) {
 // Since operations.hpp is usually included before eigen.hpp in consteig.hpp,
 // we might need to handle this carefully.
 // Actually, consteig.hpp includes eigen.hpp last.
-// Let's use a simpler approach for det() that doesn't depend on eigen.hpp if possible,
-// or just accept that it's O(n!) for now if it's not hurting anyone.
-// But wait, QR is in decompositions/qr.hpp which is included in decompositions.hpp.
-// Let's use the R diagonal product from QR.
+// Let's use a simpler approach for det() that doesn't depend on eigen.hpp if
+// possible, or just accept that it's O(n!) for now if it's not hurting anyone.
+// But wait, QR is in decompositions/qr.hpp which is included in
+// decompositions.hpp. Let's use the R diagonal product from QR.
 
 // Algorithm: Determinant (Laplace Expansion)
 // Currently implemented using Laplace expansion (cofactor expansion).
-// Note: This has factorial time complexity (O(n!)) and is only practical for very small matrices.
+// Note: This has factorial time complexity (O(n!)) and is only practical for
+// very small matrices.
 template <typename T, Size R, Size C>
 constexpr T det(const Matrix<T, R, C> &mat) {
     static_assert(R == C, "Can only find determinant of a square matrix");
@@ -175,10 +179,10 @@ constexpr T det(const Matrix<T, R, C> &mat) {
     } else if constexpr (R == 2) {
         return (mat(0, 0) * mat(1, 1)) - (mat(0, 1) * mat(1, 0));
     } else {
-        // Use recursive expansion for now to avoid circular dependency with eigen.hpp
-        // but it's already there.
-        // Let's stick with the recursive one if it's not a bottleneck,
-        // or implement a simple Gaussian elimination based one.
+        // Use recursive expansion for now to avoid circular dependency with
+        // eigen.hpp but it's already there. Let's stick with the recursive one
+        // if it's not a bottleneck, or implement a simple Gaussian elimination
+        // based one.
 
         T result{static_cast<T>(0)};
         for (Size i{0}; i < R; i++) {
