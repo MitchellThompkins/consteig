@@ -38,28 +38,9 @@ function(add_gen_test target_name source_file)
     create_test(${target_name}.test)
 endfunction()
 
-# Individual Non-Symmetric Tests (each file contains both fast 4x4 and slow 8x8,
-# selected at compile time by CONSTEIG_SLOW_TESTS)
-foreach(i RANGE 0 49)
-    set(target_name "generated_nonsym_${i}")
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${target_name}.test.cpp)
-        add_gen_test(${target_name} ${target_name}.test.cpp)
-    endif()
-endforeach()
-
-# Individual Symmetric Tests (each file contains both fast 4x4 and slow 8x8,
-# selected at compile time by CONSTEIG_SLOW_TESTS)
-foreach(i RANGE 0 49)
-    set(target_name "generated_sym_${i}")
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${target_name}.test.cpp)
-        add_gen_test(${target_name} ${target_name}.test.cpp)
-    endif()
-endforeach()
-
-# Individual Robustness Tests (each file contains both fast 4x4 and slow 8x8,
-# selected at compile time by CONSTEIG_SLOW_TESTS)
-file(GLOB ROBUST_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/generated_robust_*.test.cpp")
-foreach(test_path ${ROBUST_TESTS})
+# All Generated Tests
+file(GLOB GENERATED_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/generated_*.test.cpp")
+foreach(test_path ${GENERATED_TESTS})
     get_filename_component(test_file ${test_path} NAME)
     string(REPLACE ".test.cpp" "" target_name ${test_file})
     add_gen_test(${target_name} ${test_file})
