@@ -7,7 +7,8 @@ using namespace consteig;
 
 // These helper functions allow us to call templated constexpr functions
 template <typename T, Size R, Size C>
-static constexpr Matrix<T, R, C> setRowsTest(const Matrix<T, 1, C> mat[], const T val) {
+static constexpr Matrix<T, R, C> setRowsTest(const Matrix<T, 1, C> mat[],
+                                             const T val) {
     Matrix<T, R, C> out{};
     out.setRow(mat[0], val);
     out.setRow(mat[1], val + 1);
@@ -16,7 +17,8 @@ static constexpr Matrix<T, R, C> setRowsTest(const Matrix<T, 1, C> mat[], const 
 }
 
 template <typename T, Size R, Size C>
-static constexpr Matrix<T, R, C> setColsTest(const Matrix<T, R, 1> mat[], const T val) {
+static constexpr Matrix<T, R, C> setColsTest(const Matrix<T, R, 1> mat[],
+                                             const T val) {
     Matrix<T, R, C> out{};
     out.setCol(mat[0], val);
     out.setCol(mat[1], val + 1);
@@ -25,21 +27,24 @@ static constexpr Matrix<T, R, C> setColsTest(const Matrix<T, R, 1> mat[], const 
 }
 
 template <typename T, Size R, Size C, Size startIndex, Size endIndex>
-static constexpr Matrix<T, R, C> setSubRowTest(Matrix<T, R, C> original,
-                                               const Matrix<T, 1, endIndex - startIndex + 1> mat, const Size row) {
+static constexpr Matrix<T, R, C> setSubRowTest(
+    Matrix<T, R, C> original, const Matrix<T, 1, endIndex - startIndex + 1> mat,
+    const Size row) {
     original.template setRow<startIndex, endIndex>(mat, row);
     return original;
 }
 
 template <typename T, Size R, Size C, Size startIndex, Size endIndex>
-static constexpr Matrix<T, R, C> setSubColTest(Matrix<T, R, C> original,
-                                               const Matrix<T, endIndex - startIndex + 1, 1> mat, const Size col) {
+static constexpr Matrix<T, R, C> setSubColTest(
+    Matrix<T, R, C> original, const Matrix<T, endIndex - startIndex + 1, 1> mat,
+    const Size col) {
     original.template setCol<startIndex, endIndex>(mat, col);
     return original;
 }
 
 template <typename T, Size R, Size C, Size x1, Size y1, Size x2, Size y2>
-static constexpr Matrix<T, R, C> setSubTest(Matrix<T, R, C> original, const Matrix<T, x2 - x1 + 1, y2 - y1 + 1> mat) {
+static constexpr Matrix<T, R, C> setSubTest(
+    Matrix<T, R, C> original, const Matrix<T, x2 - x1 + 1, y2 - y1 + 1> mat) {
     original.template setSub<x1, y1, x2, y2>(mat);
     return original;
 }
@@ -112,10 +117,12 @@ TEST(matrix, static_constexpr_row) {
     static constexpr int x{3};
     static constexpr int limit{1};
 
-    static constexpr Matrix<float, x, x> mat{{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+    static constexpr Matrix<float, x, x> mat{
+        {{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
 
     static constexpr Matrix<float, 1, x> rowExtract{mat.row(0)};
-    static constexpr Matrix<float, 1, x - limit> rowExtractLimit{mat.row<limit, x - 1>(0)};
+    static constexpr Matrix<float, 1, x - limit> rowExtractLimit{
+        mat.row<limit, x - 1>(0)};
 
     static constexpr Matrix<float, 1, x> answerFull{{{{5.0F, -4.0F, 2.0F}}}};
 
@@ -133,14 +140,18 @@ TEST(matrix, static_constexpr_col) {
     static constexpr int x{3};
     static constexpr int limit{1};
 
-    static constexpr Matrix<float, x, x> mat{{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+    static constexpr Matrix<float, x, x> mat{
+        {{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
 
     static constexpr Matrix<float, x, 1> colExtract{mat.col(0)};
-    static constexpr Matrix<float, x - limit, 1> colExtractLimit{mat.col<limit, x - 1>(0)};
+    static constexpr Matrix<float, x - limit, 1> colExtractLimit{
+        mat.col<limit, x - 1>(0)};
 
-    static constexpr Matrix<float, x, 1> answerFull{{{{5.0F}, {-1.0F}, {-2.0F}}}};
+    static constexpr Matrix<float, x, 1> answerFull{
+        {{{5.0F}, {-1.0F}, {-2.0F}}}};
 
-    static constexpr Matrix<float, x - limit, 1> answerLimit{{{{-1.0F}, {-2.0F}}}};
+    static constexpr Matrix<float, x - limit, 1> answerLimit{
+        {{{-1.0F}, {-2.0F}}}};
 
     // Check that created objects are constexpr
     static_assert(colExtract == answerFull, MSG);
@@ -153,11 +164,13 @@ TEST(matrix, static_constexpr_col) {
 TEST(matrix, static_constexpr_subMatrix) {
     static constexpr int x{3};
 
-    static constexpr Matrix<float, x, x> mat{{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+    static constexpr Matrix<float, x, x> mat{
+        {{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
 
     static constexpr Matrix<float, x - 1, x - 1> subMat{mat.sub<1, 1, 2, 2>()};
 
-    static constexpr Matrix<float, x - 1, x - 1> answer{{{{2.0F, 3.0F}, {1.0F, 0.0F}}}};
+    static constexpr Matrix<float, x - 1, x - 1> answer{
+        {{{2.0F, 3.0F}, {1.0F, 0.0F}}}};
 
     // Check that created objects are constexpr
     static_assert(subMat == answer, MSG);
@@ -191,7 +204,8 @@ TEST(matrix, static_constexpr_set_row) {
 
     static constexpr auto mat{setRowsTest<int, x, x>(collection, 0)};
 
-    static constexpr Matrix<int, x, x> answer{{{{5, -4, 2}, {-1, 2, 3}, {-2, 1, 0}}}};
+    static constexpr Matrix<int, x, x> answer{
+        {{{5, -4, 2}, {-1, 2, 3}, {-2, 1, 0}}}};
 
     // Check that created objects are constexpr
     static_assert(mat == answer, MSG);
@@ -210,7 +224,8 @@ TEST(matrix, static_constexpr_set_col) {
 
     static constexpr auto mat{setColsTest<int, x, x>(collection, 0)};
 
-    static constexpr Matrix<int, x, x> answer{{{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
+    static constexpr Matrix<int, x, x> answer{
+        {{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
 
     // Check that created objects are constexpr
     static_assert(mat == answer, MSG);
@@ -223,13 +238,16 @@ TEST(matrix, static_constexpr_set_sub_row) {
     static constexpr Size start{1};
     static constexpr Size end{2};
 
-    static constexpr Matrix<int, x, x> original{{{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
+    static constexpr Matrix<int, x, x> original{
+        {{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
 
     static constexpr Matrix<int, 1, 2> sub{{{{99, -283}}}};
 
-    static constexpr Matrix<int, x, x> answer{{{{5, -1, -2}, {-4, -2, 1}, {2, 99, -283}}}};
+    static constexpr Matrix<int, x, x> answer{
+        {{{5, -1, -2}, {-4, -2, 1}, {2, 99, -283}}}};
 
-    static constexpr Matrix<int, x, x> mat{setSubRowTest<int, x, x, start, end>(original, sub, 2)};
+    static constexpr Matrix<int, x, x> mat{
+        setSubRowTest<int, x, x, start, end>(original, sub, 2)};
 
     // Check that created objects are constexpr
     static_assert(mat == answer, MSG);
@@ -242,13 +260,16 @@ TEST(matrix, static_constexpr_set_sub_col) {
     static constexpr Size start{1};
     static constexpr Size end{2};
 
-    static constexpr Matrix<int, x, x> original{{{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
+    static constexpr Matrix<int, x, x> original{
+        {{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
 
     static constexpr Matrix<int, 2, 1> sub{{{{99}, {-283}}}};
 
-    static constexpr Matrix<int, x, x> answer{{{{5, -1, -2}, {-4, 99, 1}, {2, -283, 0}}}};
+    static constexpr Matrix<int, x, x> answer{
+        {{{5, -1, -2}, {-4, 99, 1}, {2, -283, 0}}}};
 
-    static constexpr Matrix<int, x, x> mat{setSubColTest<int, x, x, start, end>(original, sub, 1)};
+    static constexpr Matrix<int, x, x> mat{
+        setSubColTest<int, x, x, start, end>(original, sub, 1)};
 
     // Check that created objects are constexpr
     static_assert(mat == answer, MSG);
@@ -264,13 +285,16 @@ TEST(matrix, static_constexpr_set_sub_mat_square) {
     static constexpr Size y1{1};
     static constexpr Size y2{2};
 
-    static constexpr Matrix<int, x, x> original{{{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
+    static constexpr Matrix<int, x, x> original{
+        {{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
 
     static constexpr Matrix<int, x - 1, x - 1> sub{{{{381, -39}, {33, 15}}}};
 
-    static constexpr Matrix<int, x, x> answer{{{{5, -1, -2}, {-4, 381, -39}, {2, 33, 15}}}};
+    static constexpr Matrix<int, x, x> answer{
+        {{{5, -1, -2}, {-4, 381, -39}, {2, 33, 15}}}};
 
-    static constexpr Matrix<int, x, x> mat{setSubTest<int, x, x, x1, y1, x2, y2>(original, sub)};
+    static constexpr Matrix<int, x, x> mat{
+        setSubTest<int, x, x, x1, y1, x2, y2>(original, sub)};
 
     // Check that created objects are constexpr
     static_assert(mat == answer, MSG);
@@ -282,9 +306,11 @@ TEST(matrix, static_constexpr_test_square) {
     static constexpr Size x{3};
     static constexpr Size s{2};
 
-    static constexpr Matrix<int, x, x> square{{{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
+    static constexpr Matrix<int, x, x> square{
+        {{{5, -1, -2}, {-4, -2, 1}, {2, 3, 0}}}};
 
-    static constexpr Matrix<int, x, s> notSquare{{{{381, -39}, {33, 15}, {72, 99}}}};
+    static constexpr Matrix<int, x, s> notSquare{
+        {{{381, -39}, {33, 15}, {72, 99}}}};
 
     static constexpr bool checkSquare{square.isSquare()};
     static constexpr bool checkNotSquare{notSquare.isSquare()};
@@ -335,7 +361,8 @@ TEST(matrix, check_symmetry) {
     static constexpr bool checkSymmetryInt{symmetricIntMat.isSymmetric()};
     static constexpr bool checkAsymmetryInt{asymmetricIntMat.isSymmetric()};
     static constexpr bool checkSymmetryDouble{symmetricDoubleMat.isSymmetric()};
-    static constexpr bool checkAsymmetryDouble{asymmetricDoubleMat.isSymmetric()};
+    static constexpr bool checkAsymmetryDouble{
+        asymmetricDoubleMat.isSymmetric()};
 
     // Check that created objects are constexpr
     static_assert(checkSymmetryInt == true, MSG);

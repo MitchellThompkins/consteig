@@ -15,7 +15,8 @@ struct QRMatrix {
 
 // Optimized QR for Upper Hessenberg Matrix
 // Algorithm: QR Decomposition (Hessenberg Optimized)
-// Uses Givens rotations optimized for the Hessenberg structure for excellent numerical stability.
+// Uses Givens rotations optimized for the Hessenberg structure for excellent
+// numerical stability.
 template <typename T, Size R, Size C>
 constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a) {
     static_assert(R == C, "QR decomposition must be a square matrix");
@@ -59,10 +60,10 @@ constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a) {
 }
 
 // Modified Gram-Schmidt QR Decomposition (Kept as alternative or for reference)
-// Actually, let's replace it with a more stable Householder or Givens for all matrices.
-// Algorithm: QR Decomposition
-// Implemented using a series of Givens rotations for excellent numerical stability
-// over alternatives like the Gram-Schmidt process.
+// Actually, let's replace it with a more stable Householder or Givens for all
+// matrices. Algorithm: QR Decomposition Implemented using a series of Givens
+// rotations for excellent numerical stability over alternatives like the
+// Gram-Schmidt process.
 template <typename T, Size R, Size C>
 constexpr QRMatrix<T, R> qr(const Matrix<T, R, C> a) {
     static_assert(R == C, "QR decomposition must be a square matrix");

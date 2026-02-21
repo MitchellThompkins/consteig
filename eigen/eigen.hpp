@@ -19,7 +19,9 @@ using InternalScalar = double;
 
 // Forward declaration
 template <typename T, Size S>
-constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
+constexpr Matrix<T, S, S> eig(
+    Matrix<T, S, S> a,
+    const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
 
 // Algorithm: Balancing
 // Permutes and scales the matrix to reduce the norm of its rows and columns
@@ -67,7 +69,8 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a) {
 }
 
 // Algorithm: Wilkinson Shifts
-// Default shifting strategy to accelerate convergence (quadratically convergent in most cases).
+// Default shifting strategy to accelerate convergence (quadratically convergent
+// in most cases).
 template <typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c) {
     T delta{(a - c) / 2};
@@ -78,8 +81,8 @@ constexpr T wilkinsonShift(const T a, const T b, const T c) {
 }
 
 // Algorithm: Implicit Double-Shift QR (Francis QR Step)
-// Employs a true implicit double-shift strategy using Householder reflectors for bulge chasing
-// to preserve Hessenberg structure.
+// Employs a true implicit double-shift strategy using Householder reflectors
+// for bulge chasing to preserve Hessenberg structure.
 template <typename T, Size S>
 constexpr void francis_qr_step(Matrix<T, S, S>& H, Size l, Size n, T s, T t) {
     T p1 = H(l, l) * H(l, l) + H(l, l + 1) * H(l + 1, l) - s * H(l, l) + t;
@@ -109,7 +112,8 @@ constexpr void francis_qr_step(Matrix<T, S, S>& H, Size l, Size n, T s, T t) {
             // Left application: include column k-1 for k > l to chase the bulge
             Size j_start = (k > l) ? k - 1 : k;
             for (Size j = j_start; j < S; ++j) {
-                T sum = beta * (v1 * H(k, j) + v2 * H(k + 1, j) + (m == 3 ? v3 * H(k + 2, j) : 0));
+                T sum = beta * (v1 * H(k, j) + v2 * H(k + 1, j) +
+                                (m == 3 ? v3 * H(k + 2, j) : 0));
                 H(k, j) -= sum * v1;
                 H(k + 1, j) -= sum * v2;
                 if (m == 3) H(k + 2, j) -= sum * v3;
@@ -118,7 +122,8 @@ constexpr void francis_qr_step(Matrix<T, S, S>& H, Size l, Size n, T s, T t) {
             // Right application
             Size upper_row = (k + 3 < n + 1) ? k + 3 : n;
             for (Size i = 0; i <= upper_row && i < S; ++i) {
-                T sum = beta * (v1 * H(i, k) + v2 * H(i, k + 1) + (m == 3 ? v3 * H(i, k + 2) : 0));
+                T sum = beta * (v1 * H(i, k) + v2 * H(i, k + 1) +
+                                (m == 3 ? v3 * H(i, k + 2) : 0));
                 H(i, k) -= sum * v1;
                 H(i, k + 1) -= sum * v2;
                 if (m == 3) H(i, k + 2) -= sum * v3;
@@ -158,17 +163,22 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
     while (n > 0 && total_iter < max_total_iter) {
         Size l = n;
         while (l > 0) {
-            T diagonal_sum = consteig::abs(a(l, l)) + consteig::abs(a(l - 1, l - 1));
+            T diagonal_sum =
+                consteig::abs(a(l, l)) + consteig::abs(a(l - 1, l - 1));
             // Algorithm: Robust Deflation
-            // Checks for convergence by monitoring the sub-diagonal elements. Deflates when an
-            // element becomes negligible relative to its neighboring diagonal elements.
-            // Dual-mode deflation: Standard relative check PLUS an absolute check against machine epsilon.
-            // PERFORMANCE NOTE: The absolute check is critical. In the 'develop' branch, some random
-            // non-symmetric matrices have near-zero diagonal entries (|d1| + |d2| \approx 0), causing the
-            // relative check to fail indefinitely and spinning the solver to CONSTEIG_MAX_ITER.
-            // Adding '|| abs(subdiag) <= eps' allows these blocks to deflate early, reducing build
-            // times from ~40m to ~7m even with more complex robustness tests.
-            if (consteig::abs(a(l, l - 1)) <= eps * diagonal_sum || consteig::abs(a(l, l - 1)) <= eps) {
+            // Checks for convergence by monitoring the sub-diagonal elements.
+            // Deflates when an element becomes negligible relative to its
+            // neighboring diagonal elements. Dual-mode deflation: Standard
+            // relative check PLUS an absolute check against machine epsilon.
+            // PERFORMANCE NOTE: The absolute check is critical. In the
+            // 'develop' branch, some random non-symmetric matrices have
+            // near-zero diagonal entries (|d1| + |d2| \approx 0), causing the
+            // relative check to fail indefinitely and spinning the solver to
+            // CONSTEIG_MAX_ITER. Adding '|| abs(subdiag) <= eps' allows these
+            // blocks to deflate early, reducing build times from ~40m to ~7m
+            // even with more complex robustness tests.
+            if (consteig::abs(a(l, l - 1)) <= eps * diagonal_sum ||
+                consteig::abs(a(l, l - 1)) <= eps) {
                 a(l, l - 1) = 0;
                 break;
             }
@@ -192,11 +202,13 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
         T s = 0, t = 0;
         if (its > 0 && its % 10 == 0) {
             // Algorithm: Exceptional Shifts
-            // LAPACK-style exceptional shift every 10 iterations to prevent stalling
+            // LAPACK-style exceptional shift every 10 iterations to prevent
+            // stalling
             T sshift = 0;
             if (its % 20 == 0) {
                 // Bottom-based exceptional shift
-                sshift = consteig::abs(a(n, n - 1)) + consteig::abs(a(n - 1, n - 2));
+                sshift =
+                    consteig::abs(a(n, n - 1)) + consteig::abs(a(n - 1, n - 2));
             } else {
                 // Top-based exceptional shift
                 sshift = consteig::abs(a(l + 1, l));
@@ -234,13 +246,16 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a) {
     const Size max_iter = CONSTEIG_MAX_ITER * S;
 
     while (n > 1 && iter < max_iter) {
-        if (consteig::abs(a(n - 1, n - 2)) <= eps * (consteig::abs(a(n - 1, n - 1)) + consteig::abs(a(n - 2, n - 2)))) {
+        if (consteig::abs(a(n - 1, n - 2)) <=
+            eps * (consteig::abs(a(n - 1, n - 1)) +
+                   consteig::abs(a(n - 2, n - 2)))) {
             a(n - 1, n - 2) = 0;
             n--;
             continue;
         }
 
-        T mu = wilkinsonShift(a(n - 2, n - 2), a(n - 1, n - 2), a(n - 1, n - 1));
+        T mu =
+            wilkinsonShift(a(n - 2, n - 2), a(n - 1, n - 2), a(n - 1, n - 1));
         Matrix<T, S, S> eyeS = eye<T, S>();
         Matrix<T, S, S> shifted = a - (mu * eyeS);
         QRMatrix<T, S> qrm = qr_hessenberg(shifted);
@@ -253,9 +268,10 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a) {
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance) {
     static_assert(is_float<T>(), "eig reduction expects floating point");
-    // symmetryTolerance is a routing threshold. If a matrix is "symmetric enough," we can
-    // use the faster Single-Shift QR algorithm (eig_shifted_qr) which is optimized for real eigenvalues.
-    // Otherwise, we must use the heavier Double-Shift QR (eig_double_shifted_qr) to handle complex pairs.
+    // symmetryTolerance is a routing threshold. If a matrix is "symmetric
+    // enough," we can use the faster Single-Shift QR algorithm (eig_shifted_qr)
+    // which is optimized for real eigenvalues. Otherwise, we must use the
+    // heavier Double-Shift QR (eig_double_shifted_qr) to handle complex pairs.
     if (a.isSymmetric(static_cast<T>(symmetryTolerance)))
         return eig_shifted_qr<T, S>(a);
     else
@@ -273,7 +289,8 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
 
     Matrix<InternalScalar, S, S> out = eig(a_internal);
     Matrix<Complex<T>, S, 1> result{};
-    InternalScalar eps = consteig::epsilon<InternalScalar>() * (norm1(out) + static_cast<InternalScalar>(1.0));
+    InternalScalar eps = consteig::epsilon<InternalScalar>() *
+                         (norm1(out) + static_cast<InternalScalar>(1.0));
 
     for (Size i = 0; i < S; ++i) {
         bool found_2x2 = false;
@@ -298,8 +315,10 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
                 result(i + 1, 0) = Complex<T>{static_cast<T>((tr - sq) / 2), 0};
             } else {
                 InternalScalar sq = consteig::sqrt(-disc);
-                result(i, 0) = Complex<T>{static_cast<T>(tr / 2), static_cast<T>(sq / 2)};
-                result(i + 1, 0) = Complex<T>{static_cast<T>(tr / 2), static_cast<T>(-sq / 2)};
+                result(i, 0) =
+                    Complex<T>{static_cast<T>(tr / 2), static_cast<T>(sq / 2)};
+                result(i + 1, 0) =
+                    Complex<T>{static_cast<T>(tr / 2), static_cast<T>(-sq / 2)};
             }
             i++;
         } else {
@@ -310,11 +329,13 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
 }
 
 // Algorithm: Eigenvalue Verification
-// Verifies computed eigenvalues by checking both the trace (sum of eigenvalues equals matrix trace)
-// and determinant (product of eigenvalues equals matrix determinant) invariants.
+// Verifies computed eigenvalues by checking both the trace (sum of eigenvalues
+// equals matrix trace) and determinant (product of eigenvalues equals matrix
+// determinant) invariants.
 template <typename T, Size R, Size C>
-static inline constexpr bool checkEigenValues(const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
-                                              const T thresh) {
+static inline constexpr bool checkEigenValues(
+    const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
+    const T thresh) {
     T tr = trace(a);
     Complex<T> sum_lambda{};
     for (Size i = 0; i < R; ++i) sum_lambda = sum_lambda + lambda(i, 0);
