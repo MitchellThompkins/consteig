@@ -27,14 +27,15 @@ int main() {
     // A = [   0          1      ]
     //     [ -wc^2   -sqrt(2)*wc ]
 
-    const double sqrt2_wc = std::sqrt(2.0) * wc;
-    const double wc_sq = wc * wc;
+    constexpr double sqrt2_wc = consteig::sqrt(2.0) * wc;
+    constexpr double wc_sq = wc * wc;
 
-    consteig::Matrix<double, 2, 2> A_c;
-    A_c(0, 0) = 0.0;
-    A_c(0, 1) = 1.0;
-    A_c(1, 0) = -wc_sq;
-    A_c(1, 1) = -sqrt2_wc;
+    //A_c(0, 0) = 0.0;
+    //A_c(0, 1) = 1.0;
+    //A_c(1, 0) = -wc_sq;
+    //A_c(1, 1) = -sqrt2_wc;
+    static constexpr consteig::Matrix<double, 2, 2> A_c
+    {{{{0.0,1.0}, {-wc_sq, -sqrt2_wc}}}};
 
     std::cout << "Designing 2nd Order Butterworth Lowpass Filter" << std::endl;
     std::cout << "Cutoff: " << fc << " Hz, Sampling Rate: " << fs << " Hz" << std::endl;
@@ -44,7 +45,7 @@ int main() {
 
     // 1. Find Continuous-time Eigenvalues (Poles) using Consteig
     // This calculates the poles directly from the system matrix.
-    const auto poles_c = consteig::eigvals(A_c);
+    constexpr auto poles_c = consteig::eigvals(A_c);
 
     std::cout << "\nContinuous-time Poles (Eigenvalues of A):" << std::endl;
     std::cout << "p1 = " << poles_c(0, 0).real << " + j" << poles_c(0, 0).imag << std::endl;
