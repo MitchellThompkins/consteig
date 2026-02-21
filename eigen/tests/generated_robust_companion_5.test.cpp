@@ -1,8 +1,14 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
 #ifndef CONSTEIG_SLOW_TESTS
-TEST(generated_tests, companion_fast_5) { static_assert(check_single_companion_nonsym_fast<5>(), "Test companion_fast_5 failed"); SUCCEED(); }
+TEST(generated_tests, companion_fast_5) {
+    static_assert(check_single_companion_nonsym_fast<5>(), "Test companion_fast_5 failed");
+    SUCCEED();
+}
 #else
-TEST(generated_tests, companion_slow_5) { static_assert(check_single_companion_nonsym_slow<5>(), "Test companion_slow_5 failed"); SUCCEED(); }
+TEST(generated_tests, companion_slow_5) {
+    static_assert(check_single_companion_nonsym_slow<5>(), "Test companion_slow_5 failed");
+    SUCCEED();
+}
 #endif
 #endif
