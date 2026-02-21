@@ -16,15 +16,15 @@
 #endif
 
 #ifndef RANDOM_TOL
-#define RANDOM_TOL 1e-9
-#endif
-
-#ifndef PATHOLOGICAL_TOL
-#define PATHOLOGICAL_TOL 0.05
+#define RANDOM_TOL CONSTEIG_TEST_TOLERANCE
 #endif
 
 #ifndef STRICT_TOL
-#define STRICT_TOL 1e-9
+#define STRICT_TOL CONSTEIG_TEST_TOLERANCE
+#endif
+
+#ifndef PATHOLOGICAL_TOL
+#define PATHOLOGICAL_TOL 0.03
 #endif
 
 // https://stackoverflow.com/a/32334103/3527182
