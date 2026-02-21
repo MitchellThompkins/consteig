@@ -21,6 +21,9 @@ using InternalScalar = double;
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
 
+// Algorithm: Balancing
+// Permutes and scales the matrix to reduce the norm of its rows and columns
+// to improve the accuracy and convergence rate of QR iterations.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a) {
     bool converged = false;
@@ -63,6 +66,8 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a) {
     return a;
 }
 
+// Algorithm: Wilkinson Shifts
+// Default shifting strategy to accelerate convergence (quadratically convergent in most cases).
 template <typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c) {
     T delta{(a - c) / 2};
@@ -72,7 +77,9 @@ constexpr T wilkinsonShift(const T a, const T b, const T c) {
     return c - (b * b) / (delta + s);
 }
 
-// Francis Double-Shift QR Step (implicit)
+// Algorithm: Implicit Double-Shift QR (Francis QR Step)
+// Employs a true implicit double-shift strategy using Householder reflectors for bulge chasing
+// to preserve Hessenberg structure.
 template <typename T, Size S>
 constexpr void francis_qr_step(Matrix<T, S, S>& H, Size l, Size n, T s, T t) {
     T p1 = H(l, l) * H(l, l) + H(l, l + 1) * H(l + 1, l) - s * H(l, l) + t;
@@ -152,6 +159,9 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
         Size l = n;
         while (l > 0) {
             T diagonal_sum = consteig::abs(a(l, l)) + consteig::abs(a(l - 1, l - 1));
+            // Algorithm: Robust Deflation
+            // Checks for convergence by monitoring the sub-diagonal elements. Deflates when an
+            // element becomes negligible relative to its neighboring diagonal elements.
             // Dual-mode deflation: Standard relative check PLUS an absolute check against machine epsilon.
             // PERFORMANCE NOTE: The absolute check is critical. In the 'develop' branch, some random
             // non-symmetric matrices have near-zero diagonal entries (|d1| + |d2| \approx 0), causing the
@@ -181,7 +191,8 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
         // Compute shifts
         T s = 0, t = 0;
         if (its > 0 && its % 10 == 0) {
-            // LAPACK-style exceptional shift
+            // Algorithm: Exceptional Shifts
+            // LAPACK-style exceptional shift every 10 iterations to prevent stalling
             T sshift = 0;
             if (its % 20 == 0) {
                 // Bottom-based exceptional shift
@@ -298,6 +309,9 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
     return result;
 }
 
+// Algorithm: Eigenvalue Verification
+// Verifies computed eigenvalues by checking both the trace (sum of eigenvalues equals matrix trace)
+// and determinant (product of eigenvalues equals matrix determinant) invariants.
 template <typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
                                               const T thresh) {
