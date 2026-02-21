@@ -27,6 +27,9 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a);
 
 ///////////// IMPLEMENTATIONS /////////////
 
+// Algorithm: Hessenberg Reduction
+// Reduces a matrix to upper Hessenberg form using a series of Householder transformations.
+// This critical optimization reduces the computational cost of QR iterations from O(n^4) to O(n^2).
 template <typename T, Size R, Size C, Size L>
 constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a) {
     static_assert(is_float<T>(), "hess expects floating point");

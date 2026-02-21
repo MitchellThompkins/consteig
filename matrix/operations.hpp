@@ -163,6 +163,9 @@ constexpr Matrix<T, R, C> sqrt(const Matrix<T, R, C> &mat) {
 // But wait, QR is in decompositions/qr.hpp which is included in decompositions.hpp.
 // Let's use the R diagonal product from QR.
 
+// Algorithm: Determinant (Laplace Expansion)
+// Currently implemented using Laplace expansion (cofactor expansion).
+// Note: This has factorial time complexity (O(n!)) and is only practical for very small matrices.
 template <typename T, Size R, Size C>
 constexpr T det(const Matrix<T, R, C> &mat) {
     static_assert(R == C, "Can only find determinant of a square matrix");
