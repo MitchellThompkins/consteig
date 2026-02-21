@@ -15,7 +15,9 @@ fprintf(fid, '#include "../consteig.hpp"\n\n');
 fprintf(fid, 'namespace consteig {\n\n');
 
 NUM_RANDOM_CASES = 50;
-NUM_ROBUST_CASES = 10;
+NUM_ROBUST_CASES = 50;
+
+MATRIX_SIZE = 8;
 
 function generate_cases(fid, type_str, S, num_cases, suffix, category)
     if nargin < 6
@@ -161,8 +163,8 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
 end
 
 % Random Cases
-generate_cases(fid, 'sym', 8, NUM_RANDOM_CASES, '8x8', 'random');
-generate_cases(fid, 'nonsym', 8, NUM_RANDOM_CASES, '8x8', 'random');
+generate_cases(fid, 'sym', MATRIX_SIZE, NUM_RANDOM_CASES, '8x8', 'random');
+generate_cases(fid, 'nonsym', MATRIX_SIZE, NUM_RANDOM_CASES, '8x8', 'random');
 
 ROBUST_CATEGORIES = {'defective', 'nearly_defective', 'non_normal', 'clustered', 'repeated', ...
                      'companion', 'graded', 'large_jordan', 'toeplitz', 'nearly_reducible', ...
@@ -174,11 +176,10 @@ for c = 1:length(ROBUST_CATEGORIES)
 end
 
 % 3. QR Decomposition Test Case
-S = 4;
-A_qr = rand(S);
+A_qr = rand(MATRIX_SIZE);
 [Q, R] = qr(A_qr);
 fprintf(fid, '// QR Decomposition Test Case\n');
-fprintf(fid, 'static constexpr Matrix<double, 4, 4> mat_qr\n{{{\n');
+fprintf(fid, 'static constexpr Matrix<double, 8, 8> mat_qr\n{{{\n');
 for i = 1:4
     fprintf(fid, '    {');
     for j = 1:4
