@@ -15,6 +15,8 @@
 #define CONSTEIG_TEST_TOLERANCE 1e-9F
 #endif
 
+// It's possible that some of the more diff ult matrices require looser test
+// tolerances
 #ifndef RANDOM_TOL
 #define RANDOM_TOL CONSTEIG_TEST_TOLERANCE
 #endif
@@ -24,7 +26,7 @@
 #endif
 
 #ifndef PATHOLOGICAL_TOL
-#define PATHOLOGICAL_TOL 0.03
+#define PATHOLOGICAL_TOL 0.025
 #endif
 
 // https://stackoverflow.com/a/32334103/3527182
