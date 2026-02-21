@@ -31,7 +31,6 @@ endif
 
 ifeq "$(CONSTEIG_ENABLE_ROBUSTNESS)" "1"
     CMAKE_OPTIONS += -DCONSTEIG_ENABLE_ROBUSTNESS=ON
-    JOB_FLAG := -j 1
 endif
 
 ifeq "$(CMAKE_OPTIONS)" ""
