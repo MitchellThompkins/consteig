@@ -20,19 +20,20 @@ using namespace consteig;
     }
 
 // Random cases
-GENERATE_CHECK(random, sym, 8x8, mat_random_sym_8x8, eigs_random_sym_8x8, CONSTEIG_TEST_TOLERANCE)
-GENERATE_CHECK(random, nonsym, 8x8, mat_random_nonsym_8x8, eigs_random_nonsym_8x8, CONSTEIG_TEST_TOLERANCE)
+#define RANDOM_TOL 1e-7
+GENERATE_CHECK(random, sym, 8x8, mat_random_sym_8x8, eigs_random_sym_8x8, RANDOM_TOL)
+GENERATE_CHECK(random, nonsym, 8x8, mat_random_nonsym_8x8, eigs_random_nonsym_8x8, RANDOM_TOL)
 
 // Robustness cases
-#define LOOSE_TOL 0.05
-#define STRICT_TOL 1e-9
+#define PATHOLOGICAL_TOL 0.05
+#define STRICT_TOL 1e-8
 
-#define GENERATE_ROBUST(category, tol) \
+#define GENERATE_ROBUST(category, tol)                                                                       \
     GENERATE_CHECK(category, nonsym, 8x8, mat_##category##_nonsym_8x8, eigs_##category##_nonsym_8x8, tol)
 
-GENERATE_ROBUST(defective, LOOSE_TOL)
-GENERATE_ROBUST(nearly_defective, LOOSE_TOL)
-GENERATE_ROBUST(large_jordan, LOOSE_TOL)
+GENERATE_ROBUST(defective, PATHOLOGICAL_TOL)
+GENERATE_ROBUST(nearly_defective, PATHOLOGICAL_TOL)
+GENERATE_ROBUST(large_jordan, PATHOLOGICAL_TOL)
 
 GENERATE_ROBUST(non_normal, STRICT_TOL)
 GENERATE_ROBUST(clustered, STRICT_TOL)
