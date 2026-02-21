@@ -244,40 +244,40 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance) {
 
 template <typename T, Size S>
 constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
-    Matrix<double, S, S> a_double{};
+    Matrix<long double, S, S> a_double{};
     for (Size i = 0; i < S; ++i) {
         for (Size j = 0; j < S; ++j) {
-            a_double(i, j) = static_cast<double>(a(i, j));
+            a_double(i, j) = static_cast<long double>(a(i, j));
         }
     }
 
-    Matrix<double, S, S> out = eig(a_double);
+    Matrix<long double, S, S> out = eig(a_double);
     Matrix<Complex<T>, S, 1> result{};
-    double eps = consteig::epsilon<double>() * (norm1(out) + static_cast<double>(1.0));
+    long double eps = consteig::epsilon<long double>() * (norm1(out) + static_cast<long double>(1.0));
 
     for (Size i = 0; i < S; ++i) {
         bool found_2x2 = false;
         if (i < S - 1) {
-            double subdiag = out(i + 1, i);
+            long double subdiag = out(i + 1, i);
             if (consteig::abs(subdiag) > eps) {
                 found_2x2 = true;
             }
         }
 
         if (found_2x2) {
-            double a00 = out(i, i);
-            double a01 = out(i, i + 1);
-            double a10 = out(i + 1, i);
-            double a11 = out(i + 1, i + 1);
-            double tr = a00 + a11;
-            double d = a00 * a11 - a01 * a10;
-            double disc = tr * tr - 4 * d;
+            long double a00 = out(i, i);
+            long double a01 = out(i, i + 1);
+            long double a10 = out(i + 1, i);
+            long double a11 = out(i + 1, i + 1);
+            long double tr = a00 + a11;
+            long double d = a00 * a11 - a01 * a10;
+            long double disc = tr * tr - 4 * d;
             if (disc >= 0) {
-                double sq = consteig::sqrt(disc);
+                long double sq = consteig::sqrt(disc);
                 result(i, 0) = Complex<T>{static_cast<T>((tr + sq) / 2), 0};
                 result(i + 1, 0) = Complex<T>{static_cast<T>((tr - sq) / 2), 0};
             } else {
-                double sq = consteig::sqrt(-disc);
+                long double sq = consteig::sqrt(-disc);
                 result(i, 0) = Complex<T>{static_cast<T>(tr / 2), static_cast<T>(sq / 2)};
                 result(i + 1, 0) = Complex<T>{static_cast<T>(tr / 2), static_cast<T>(-sq / 2)};
             }
