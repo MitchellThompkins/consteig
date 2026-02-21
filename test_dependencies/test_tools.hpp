@@ -15,6 +15,18 @@
 #define CONSTEIG_TEST_TOLERANCE 1e-9F
 #endif
 
+#ifndef RANDOM_TOL
+#define RANDOM_TOL 1e-7
+#endif
+
+#ifndef PATHOLOGICAL_TOL
+#define PATHOLOGICAL_TOL 0.05
+#endif
+
+#ifndef STRICT_TOL
+#define STRICT_TOL 1e-8
+#endif
+
 // https://stackoverflow.com/a/32334103/3527182
 template <typename T>
 constexpr bool nearlyEqual(T a, T b, T epsilon = 128 * FLT_EPSILON, T relth = FLT_MIN)
