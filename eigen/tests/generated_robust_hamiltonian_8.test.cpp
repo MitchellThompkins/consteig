@@ -1,7 +1,8 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-TEST(generated_tests, hamiltonian_8x8_8) {
-    static_assert(check_single_hamiltonian_nonsym_8x8<8>(), "Test hamiltonian_8x8_8 failed");
-    SUCCEED();
-}
+#ifndef CONSTEIG_SLOW_TESTS
+TEST(generated_tests, hamiltonian_fast_8) { static_assert(check_single_hamiltonian_nonsym_fast<8>(), "Test hamiltonian_fast_8 failed"); SUCCEED(); }
+#else
+TEST(generated_tests, hamiltonian_slow_8) { static_assert(check_single_hamiltonian_nonsym_slow<8>(), "Test hamiltonian_slow_8 failed"); SUCCEED(); }
+#endif
 #endif

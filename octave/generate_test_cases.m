@@ -161,8 +161,10 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
 end
 
 % Random Cases
-generate_cases(fid, 'sym', 8, NUM_RANDOM_CASES, '8x8', 'random');
-generate_cases(fid, 'nonsym', 8, NUM_RANDOM_CASES, '8x8', 'random');
+generate_cases(fid, 'sym', 4, NUM_RANDOM_CASES, 'fast', 'random');
+generate_cases(fid, 'nonsym', 4, NUM_RANDOM_CASES, 'fast', 'random');
+generate_cases(fid, 'sym', 8, NUM_RANDOM_CASES, 'slow', 'random');
+generate_cases(fid, 'nonsym', 8, NUM_RANDOM_CASES, 'slow', 'random');
 
 ROBUST_CATEGORIES = {'defective', 'nearly_defective', 'non_normal', 'clustered', 'repeated', ...
                      'companion', 'graded', 'large_jordan', 'toeplitz', 'nearly_reducible', ...
@@ -170,7 +172,8 @@ ROBUST_CATEGORIES = {'defective', 'nearly_defective', 'non_normal', 'clustered',
 
 for c = 1:length(ROBUST_CATEGORIES)
     cat = ROBUST_CATEGORIES{c};
-    generate_cases(fid, 'nonsym', 8, NUM_ROBUST_CASES, '8x8', cat);
+    generate_cases(fid, 'nonsym', 4, NUM_ROBUST_CASES, 'fast', cat);
+    generate_cases(fid, 'nonsym', 8, NUM_ROBUST_CASES, 'slow', cat);
 end
 
 % 3. QR Decomposition Test Case
@@ -196,7 +199,8 @@ fclose(fid);
 % Now generate the C++ test files
 [status, output] = system('rm eigen/tests/generated_*.test.cpp');
 
-% Write a file containing the 8x8 variant of the test case
+% Write a file containing both fast and slow variants of the same test case,
+% selected at compile time by the CONSTEIG_SLOW_TESTS preprocessor flag.
 function write_test_file(filename, category, type, index)
     fid = fopen(filename, 'w');
     fprintf(fid, '#include "generated_test_helpers.hpp"\n');
@@ -205,11 +209,18 @@ function write_test_file(filename, category, type, index)
         fprintf(fid, '#ifdef ENABLE_ROBUSTNESS\n');
     end
 
-    test_name  = [category '_8x8_' num2str(index)];
-    test_check = ['check_single_' category '_' type '_8x8<' num2str(index) '>'];
+    fast_name  = [category '_fast_' num2str(index)];
+    slow_name  = [category '_slow_' num2str(index)];
+    fast_check = ['check_single_' category '_' type '_fast<' num2str(index) '>'];
+    slow_check = ['check_single_' category '_' type '_slow<' num2str(index) '>'];
 
+    fprintf(fid, '#ifndef CONSTEIG_SLOW_TESTS\n');
     fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
-            test_name, test_check, test_name);
+            fast_name, fast_check, fast_name);
+    fprintf(fid, '#else\n');
+    fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
+            slow_name, slow_check, slow_name);
+    fprintf(fid, '#endif\n');
 
     if ~strcmp(category, 'random')
         fprintf(fid, '#endif\n');
@@ -217,17 +228,17 @@ function write_test_file(filename, category, type, index)
     fclose(fid);
 end
 
-% Random sym (one file per case, 8x8 inside)
+% Random sym (one file per case, both fast 4x4 and slow 8x8 inside)
 for i = 0:NUM_RANDOM_CASES-1
     write_test_file(sprintf('eigen/tests/generated_sym_%d.test.cpp', i), 'random', 'sym', i);
 end
 
-% Random nonsym (one file per case, 8x8 inside)
+% Random nonsym (one file per case, both fast 4x4 and slow 8x8 inside)
 for i = 0:NUM_RANDOM_CASES-1
     write_test_file(sprintf('eigen/tests/generated_nonsym_%d.test.cpp', i), 'random', 'nonsym', i);
 end
 
-% Robust cases (one file per category+index, 8x8 inside)
+% Robust cases (one file per category+index, both fast 4x4 and slow 8x8 inside)
 for c = 1:length(ROBUST_CATEGORIES)
     cat = ROBUST_CATEGORIES{c};
     for i = 0:NUM_ROBUST_CASES-1

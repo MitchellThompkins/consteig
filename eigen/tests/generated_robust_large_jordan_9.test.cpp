@@ -1,7 +1,8 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-TEST(generated_tests, large_jordan_8x8_9) {
-    static_assert(check_single_large_jordan_nonsym_8x8<9>(), "Test large_jordan_8x8_9 failed");
-    SUCCEED();
-}
+#ifndef CONSTEIG_SLOW_TESTS
+TEST(generated_tests, large_jordan_fast_9) { static_assert(check_single_large_jordan_nonsym_fast<9>(), "Test large_jordan_fast_9 failed"); SUCCEED(); }
+#else
+TEST(generated_tests, large_jordan_slow_9) { static_assert(check_single_large_jordan_nonsym_slow<9>(), "Test large_jordan_slow_9 failed"); SUCCEED(); }
+#endif
 #endif
