@@ -242,7 +242,7 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a) {
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance) {
     static_assert(is_float<T>(), "eig reduction expects floating point");
-    // symmetryTolerance is a routing threshold. If a matrix is "symmetric enough," we can 
+    // symmetryTolerance is a routing threshold. If a matrix is "symmetric enough," we can
     // use the faster Single-Shift QR algorithm (eig_shifted_qr) which is optimized for real eigenvalues.
     // Otherwise, we must use the heavier Double-Shift QR (eig_double_shifted_qr) to handle complex pairs.
     if (a.isSymmetric(static_cast<T>(symmetryTolerance)))
