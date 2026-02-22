@@ -10,8 +10,6 @@ namespace consteig {
 template <typename T>
 struct Complex;
 
-namespace internal {
-
 // Max iterations for continued fraction expansion
 constexpr int EXP_MAX_ITER = 50;
 
@@ -56,17 +54,15 @@ constexpr T exp_check(const T x) noexcept {
                                     : exp_split(x));
 }
 
-}  // namespace internal
-
 /**
  * @brief Computes the exponential of a real number.
  */
 template <typename T>
 constexpr auto exp(const T x) noexcept {
     if constexpr (!is_float<T>()) {
-        return internal::exp_check(static_cast<double>(x));
+        return exp_check(static_cast<double>(x));
     } else {
-        return internal::exp_check(x);
+        return exp_check(x);
     }
 }
 
@@ -78,7 +74,7 @@ template <typename T>
 constexpr Complex<T> exp(const Complex<T>& z) noexcept {
     // We use the identity exp(z) = exp(x) * exp(iy)
     // exp(x) uses the real version, exp(iy) uses the continued fraction
-    return exp(z.real) * internal::exp_cf(Complex<T>(0, z.imag));
+    return exp(z.real) * exp_cf(Complex<T>(0, z.imag));
 }
 
 }  // namespace consteig
