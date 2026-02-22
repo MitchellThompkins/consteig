@@ -1,5 +1,6 @@
 #include "generated_test_helpers.hpp"
-TEST(generated_tests, random_8x8_7) {
+TEST(generated_tests, random_8x8_7)
+{
     static_assert(check_single_random_nonsym_8x8<7>(),
                   "Test random_8x8_7 failed");
     SUCCEED();

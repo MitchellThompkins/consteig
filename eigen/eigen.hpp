@@ -9,7 +9,8 @@
 #include "../matrix/matrix.hpp"
 #include "../matrix/operations.hpp"
 
-namespace consteig {
+namespace consteig
+{
 
 #ifdef CONSTEIG_USE_LONG_DOUBLE
 using InternalScalar = long double;
@@ -27,40 +28,51 @@ constexpr Matrix<T, S, S> eig(
 // Permutes and scales the matrix to reduce the norm of its rows and columns
 // to improve the accuracy and convergence rate of QR iterations.
 template <typename T, Size S>
-constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a) {
+constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
+{
     bool converged = false;
     T factor = static_cast<T>(2);
 
-    for (Size iter = 0; iter < 10 && !converged; ++iter) {
+    for (Size iter = 0; iter < 10 && !converged; ++iter)
+    {
         converged = true;
-        for (Size i = 0; i < S; ++i) {
+        for (Size i = 0; i < S; ++i)
+        {
             T row_norm = 0;
             T col_norm = 0;
-            for (Size j = 0; j < S; ++j) {
-                if (i != j) {
+            for (Size j = 0; j < S; ++j)
+            {
+                if (i != j)
+                {
                     row_norm += consteig::abs(a(i, j));
                     col_norm += consteig::abs(a(j, i));
                 }
             }
 
-            if (row_norm > 0 && col_norm > 0) {
+            if (row_norm > 0 && col_norm > 0)
+            {
                 T f = 1;
                 T s = row_norm + col_norm;
-                while (row_norm < col_norm / factor) {
+                while (row_norm < col_norm / factor)
+                {
                     f *= factor;
                     row_norm *= factor;
                     col_norm /= factor;
                 }
-                while (row_norm > col_norm * factor) {
+                while (row_norm > col_norm * factor)
+                {
                     f /= factor;
                     row_norm /= factor;
                     col_norm *= factor;
                 }
 
-                if ((row_norm + col_norm) < 0.95 * s) {
+                if ((row_norm + col_norm) < 0.95 * s)
+                {
                     converged = false;
-                    for (Size j = 0; j < S; ++j) a(i, j) *= f;
-                    for (Size j = 0; j < S; ++j) a(j, i) /= f;
+                    for (Size j = 0; j < S; ++j)
+                        a(i, j) *= f;
+                    for (Size j = 0; j < S; ++j)
+                        a(j, i) /= f;
                 }
             }
         }
@@ -72,9 +84,11 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a) {
 // Default shifting strategy to accelerate convergence (quadratically convergent
 // in most cases).
 template <typename T>
-constexpr T wilkinsonShift(const T a, const T b, const T c) {
+constexpr T wilkinsonShift(const T a, const T b, const T c)
+{
     T delta{(a - c) / 2};
-    if (delta == static_cast<T>(0)) delta = consteig::epsilon<T>();
+    if (delta == static_cast<T>(0))
+        delta = consteig::epsilon<T>();
     T disc = delta * delta + b * b;
     T s = (delta < 0) ? -consteig::sqrt(disc) : consteig::sqrt(disc);
     return c - (b * b) / (delta + s);
@@ -84,85 +98,104 @@ constexpr T wilkinsonShift(const T a, const T b, const T c) {
 // Employs a true implicit double-shift strategy using Householder reflectors
 // for bulge chasing to preserve Hessenberg structure.
 template <typename T, Size S>
-constexpr void francis_qr_step(Matrix<T, S, S>& H, Size l, Size n, T s, T t) {
+constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
+{
     T p1 = H(l, l) * H(l, l) + H(l, l + 1) * H(l + 1, l) - s * H(l, l) + t;
     T p2 = H(l + 1, l) * (H(l, l) + H(l + 1, l + 1) - s);
     T p3 = (l + 2 <= n) ? H(l + 1, l) * H(l + 2, l + 1) : static_cast<T>(0);
 
-    for (Size k = l; k < n; ++k) {
+    for (Size k = l; k < n; ++k)
+    {
         Size m = (k + 2 <= n) ? 3 : 2;
         T v1 = 0, v2 = 0, v3 = 0, norm = 0;
 
-        if (m == 3) {
+        if (m == 3)
+        {
             norm = consteig::sqrt(p1 * p1 + p2 * p2 + p3 * p3);
             v1 = p1 + (p1 < 0 ? -norm : norm);
             v2 = p2;
             v3 = p3;
-        } else {
+        }
+        else
+        {
             norm = consteig::sqrt(p1 * p1 + p2 * p2);
             v1 = p1 + (p1 < 0 ? -norm : norm);
             v2 = p2;
             v3 = 0;
         }
 
-        if (norm > 0) {
+        if (norm > 0)
+        {
             T v_sum_sq = v1 * v1 + v2 * v2 + v3 * v3;
             T beta = static_cast<T>(2) / v_sum_sq;
 
             // Left application: include column k-1 for k > l to chase the bulge
             Size j_start = (k > l) ? k - 1 : k;
-            for (Size j = j_start; j < S; ++j) {
+            for (Size j = j_start; j < S; ++j)
+            {
                 T sum = beta * (v1 * H(k, j) + v2 * H(k + 1, j) +
                                 (m == 3 ? v3 * H(k + 2, j) : 0));
                 H(k, j) -= sum * v1;
                 H(k + 1, j) -= sum * v2;
-                if (m == 3) H(k + 2, j) -= sum * v3;
+                if (m == 3)
+                    H(k + 2, j) -= sum * v3;
             }
 
             // Right application
             Size upper_row = (k + 3 < n + 1) ? k + 3 : n;
-            for (Size i = 0; i <= upper_row && i < S; ++i) {
+            for (Size i = 0; i <= upper_row && i < S; ++i)
+            {
                 T sum = beta * (v1 * H(i, k) + v2 * H(i, k + 1) +
                                 (m == 3 ? v3 * H(i, k + 2) : 0));
                 H(i, k) -= sum * v1;
                 H(i, k + 1) -= sum * v2;
-                if (m == 3) H(i, k + 2) -= sum * v3;
+                if (m == 3)
+                    H(i, k + 2) -= sum * v3;
             }
 
             // Explicitly zero bulge elements for numerical stability
-            if (k > l) {
+            if (k > l)
+            {
                 H(k + 1, k - 1) = 0;
-                if (m == 3) H(k + 2, k - 1) = 0;
+                if (m == 3)
+                    H(k + 2, k - 1) = 0;
             }
         }
 
-        if (k < n - 1) {
+        if (k < n - 1)
+        {
             p1 = H(k + 1, k);
             p2 = H(k + 2, k);
-            if (k < n - 2) p3 = H(k + 3, k);
+            if (k < n - 2)
+                p3 = H(k + 3, k);
         }
     }
 }
 
 template <typename T, Size S>
-constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
-    if constexpr (S <= 1) return a;
+constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
+{
+    if constexpr (S <= 1)
+        return a;
     a = balance(a);
     a = hess(a)._h;
 
     T ulp = consteig::epsilon<T>();
     T matrix_norm = norm1(a) + normInf(a);
     T eps = ulp * matrix_norm;
-    if (eps == 0) eps = ulp;
+    if (eps == 0)
+        eps = ulp;
 
     Size n = S - 1;
     Size total_iter = 0;
     const Size max_total_iter = CONSTEIG_MAX_ITER * S;
     Size its = 0;
 
-    while (n > 0 && total_iter < max_total_iter) {
+    while (n > 0 && total_iter < max_total_iter)
+    {
         Size l = n;
-        while (l > 0) {
+        while (l > 0)
+        {
             T diagonal_sum =
                 consteig::abs(a(l, l)) + consteig::abs(a(l - 1, l - 1));
             // Algorithm: Robust Deflation
@@ -178,21 +211,25 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
             // blocks to deflate early, reducing build times from ~40m to ~7m
             // even with more complex robustness tests.
             if (consteig::abs(a(l, l - 1)) <= eps * diagonal_sum ||
-                consteig::abs(a(l, l - 1)) <= eps) {
+                consteig::abs(a(l, l - 1)) <= eps)
+            {
                 a(l, l - 1) = 0;
                 break;
             }
             l--;
         }
 
-        if (l == n) {
+        if (l == n)
+        {
             n--;
             its = 0;
             continue;
         }
 
-        if (l + 1 == n) {
-            if (n < 2) break;
+        if (l + 1 == n)
+        {
+            if (n < 2)
+                break;
             n -= 2;
             its = 0;
             continue;
@@ -200,26 +237,33 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
 
         // Compute shifts
         T s = 0, t = 0;
-        if (its > 0 && its % 10 == 0) {
+        if (its > 0 && its % 10 == 0)
+        {
             // Algorithm: Exceptional Shifts
             // LAPACK-style exceptional shift every 10 iterations to prevent
             // stalling
             T sshift = 0;
-            if (its % 20 == 0) {
+            if (its % 20 == 0)
+            {
                 // Bottom-based exceptional shift
                 sshift =
                     consteig::abs(a(n, n - 1)) + consteig::abs(a(n - 1, n - 2));
-            } else {
+            }
+            else
+            {
                 // Top-based exceptional shift
                 sshift = consteig::abs(a(l + 1, l));
-                if (l + 2 <= n) sshift += consteig::abs(a(l + 2, l + 1));
+                if (l + 2 <= n)
+                    sshift += consteig::abs(a(l + 2, l + 1));
             }
             T h11 = static_cast<T>(0.75) * sshift + a(n, n);
             T h12 = static_cast<T>(-0.4375) * sshift;
             T h21 = sshift;
             s = h11 + h11;
             t = h11 * h11 - h12 * h21;
-        } else {
+        }
+        else
+        {
             // Standard double shift from bottom-right 2x2
             s = a(n - 1, n - 1) + a(n, n);
             t = a(n - 1, n - 1) * a(n, n) - a(n - 1, n) * a(n, n - 1);
@@ -233,22 +277,27 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a) {
 }
 
 template <typename T, Size S>
-constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a) {
-    if constexpr (S <= 1) return a;
+constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
+{
+    if constexpr (S <= 1)
+        return a;
     a = balance(a);
     a = hess(a)._h;
 
     T eps = consteig::epsilon<T>() * (norm1(a) + normInf(a));
-    if (eps == 0) eps = consteig::epsilon<T>();
+    if (eps == 0)
+        eps = consteig::epsilon<T>();
 
     Size n = S;
     Size iter = 0;
     const Size max_iter = CONSTEIG_MAX_ITER * S;
 
-    while (n > 1 && iter < max_iter) {
+    while (n > 1 && iter < max_iter)
+    {
         if (consteig::abs(a(n - 1, n - 2)) <=
             eps * (consteig::abs(a(n - 1, n - 1)) +
-                   consteig::abs(a(n - 2, n - 2)))) {
+                   consteig::abs(a(n - 2, n - 2))))
+        {
             a(n - 1, n - 2) = 0;
             n--;
             continue;
@@ -266,7 +315,8 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a) {
 }
 
 template <typename T, Size S>
-constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance) {
+constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
+{
     static_assert(is_float<T>(), "eig reduction expects floating point");
     // symmetryTolerance is a routing threshold. If a matrix is "symmetric
     // enough," we can use the faster Single-Shift QR algorithm (eig_shifted_qr)
@@ -279,10 +329,13 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance) {
 }
 
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
+constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
+{
     Matrix<InternalScalar, S, S> a_internal{};
-    for (Size i = 0; i < S; ++i) {
-        for (Size j = 0; j < S; ++j) {
+    for (Size i = 0; i < S; ++i)
+    {
+        for (Size j = 0; j < S; ++j)
+        {
             a_internal(i, j) = static_cast<InternalScalar>(a(i, j));
         }
     }
@@ -292,16 +345,20 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
     InternalScalar eps = consteig::epsilon<InternalScalar>() *
                          (norm1(out) + static_cast<InternalScalar>(1.0));
 
-    for (Size i = 0; i < S; ++i) {
+    for (Size i = 0; i < S; ++i)
+    {
         bool found_2x2 = false;
-        if (i < S - 1) {
+        if (i < S - 1)
+        {
             InternalScalar subdiag = out(i + 1, i);
-            if (consteig::abs(subdiag) > eps) {
+            if (consteig::abs(subdiag) > eps)
+            {
                 found_2x2 = true;
             }
         }
 
-        if (found_2x2) {
+        if (found_2x2)
+        {
             InternalScalar a00 = out(i, i);
             InternalScalar a01 = out(i, i + 1);
             InternalScalar a10 = out(i + 1, i);
@@ -309,11 +366,14 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
             InternalScalar tr = a00 + a11;
             InternalScalar d = a00 * a11 - a01 * a10;
             InternalScalar disc = tr * tr - 4 * d;
-            if (disc >= 0) {
+            if (disc >= 0)
+            {
                 InternalScalar sq = consteig::sqrt(disc);
                 result(i, 0) = Complex<T>{static_cast<T>((tr + sq) / 2), 0};
                 result(i + 1, 0) = Complex<T>{static_cast<T>((tr - sq) / 2), 0};
-            } else {
+            }
+            else
+            {
                 InternalScalar sq = consteig::sqrt(-disc);
                 result(i, 0) =
                     Complex<T>{static_cast<T>(tr / 2), static_cast<T>(sq / 2)};
@@ -321,7 +381,9 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
                     Complex<T>{static_cast<T>(tr / 2), static_cast<T>(-sq / 2)};
             }
             i++;
-        } else {
+        }
+        else
+        {
             result(i, 0) = Complex<T>{static_cast<T>(out(i, i)), 0};
         }
     }
@@ -335,26 +397,34 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a) {
 template <typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(
     const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
-    const T thresh) {
+    const T thresh)
+{
     T tr = trace(a);
     Complex<T> sum_lambda{};
-    for (Size i = 0; i < R; ++i) sum_lambda = sum_lambda + lambda(i, 0);
+    for (Size i = 0; i < R; ++i)
+        sum_lambda = sum_lambda + lambda(i, 0);
 
-    if (consteig::abs(sum_lambda.real - tr) > thresh) return false;
-    if (consteig::abs(sum_lambda.imag) > thresh) return false;
+    if (consteig::abs(sum_lambda.real - tr) > thresh)
+        return false;
+    if (consteig::abs(sum_lambda.imag) > thresh)
+        return false;
 
-    if constexpr (R <= 4) {
+    if constexpr (R <= 4)
+    {
         T d = det(a);
         Complex<T> prod_lambda{1, 0};
-        for (Size i = 0; i < R; ++i) prod_lambda = prod_lambda * lambda(i, 0);
+        for (Size i = 0; i < R; ++i)
+            prod_lambda = prod_lambda * lambda(i, 0);
         T det_tol = thresh * (static_cast<T>(1) + consteig::abs(d));
-        if (consteig::abs(prod_lambda.real - d) > det_tol) return false;
-        if (consteig::abs(prod_lambda.imag) > det_tol) return false;
+        if (consteig::abs(prod_lambda.real - d) > det_tol)
+            return false;
+        if (consteig::abs(prod_lambda.imag) > det_tol)
+            return false;
     }
 
     return true;
 }
 
-}  // namespace consteig
+} // namespace consteig
 
 #endif

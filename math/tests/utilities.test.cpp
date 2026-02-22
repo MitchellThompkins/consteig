@@ -7,7 +7,8 @@ static constexpr double kThresh{0.00000001};
 
 using namespace consteig;
 
-TEST(utilities, compare_floats) {
+TEST(utilities, compare_floats)
+{
     static constexpr double aCompare1{45564813e-4};
     static constexpr double aCompare2{45564813e-4};
     static constexpr bool aCompareTest =
@@ -25,7 +26,8 @@ TEST(utilities, compare_floats) {
     ASSERT_TRUE(bCompareTest == bCompareAns);
 }
 
-TEST(utilities, compare_floats_compare) {
+TEST(utilities, compare_floats_compare)
+{
     static constexpr double compare1{1834.2422435};
     static constexpr double compare2{1834.2422436};
 
@@ -40,7 +42,8 @@ TEST(utilities, compare_floats_compare) {
     ASSERT_TRUE(compareTest2 == false);
 }
 
-TEST(utilities, value_type_check) {
+TEST(utilities, value_type_check)
+{
     static constexpr float x{9.4};
     static constexpr double y{45.6};
     static constexpr long double z{-12.3};
@@ -69,7 +72,8 @@ TEST(utilities, value_type_check) {
     ASSERT_FALSE(is_float(d));
 }
 
-TEST(utilities, template_type_check) {
+TEST(utilities, template_type_check)
+{
     static_assert(is_float<float>(), MSG);
     static_assert(is_float<double>(), MSG);
     static_assert(is_float<long double>(), MSG);
@@ -89,18 +93,19 @@ TEST(utilities, template_type_check) {
     ASSERT_FALSE(is_float<long long int>());
 }
 
-TEST(utilities, machine_epsilon) {
+TEST(utilities, machine_epsilon)
+{
     static_assert(epsilon<float>() == std::numeric_limits<float>::epsilon(),
                   MSG);
     static_assert(epsilon<double>() == std::numeric_limits<double>::epsilon(),
                   MSG);
-    static_assert(
-        epsilon<long double>() == std::numeric_limits<long double>::epsilon(),
-        MSG);
+    static_assert(epsilon<long double>() ==
+                      std::numeric_limits<long double>::epsilon(),
+                  MSG);
     static_assert(epsilon<int>() == std::numeric_limits<int>::epsilon(), MSG);
-    static_assert(
-        epsilon<unsigned int>() == std::numeric_limits<unsigned int>::epsilon(),
-        MSG);
+    static_assert(epsilon<unsigned int>() ==
+                      std::numeric_limits<unsigned int>::epsilon(),
+                  MSG);
     static_assert(epsilon<char>() == std::numeric_limits<char>::epsilon(), MSG);
     static_assert(epsilon<bool>() == std::numeric_limits<bool>::epsilon(), MSG);
 

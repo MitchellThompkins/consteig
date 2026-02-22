@@ -4,42 +4,53 @@
 #include "../array/array.hpp"
 #include "../math/functions/utilities.hpp"
 
-namespace consteig {
+namespace consteig
+{
 
-template <typename T, Size R, Size C>
-class Matrix {
-   public:
-    constexpr T &operator()(const Size i, const Size j) { return _data[i][j]; }
+template <typename T, Size R, Size C> class Matrix
+{
+  public:
+    constexpr T &operator()(const Size i, const Size j)
+    {
+        return _data[i][j];
+    }
 
-    constexpr const T &operator()(const Size i, const Size j) const {
+    constexpr const T &operator()(const Size i, const Size j) const
+    {
         return _data[i][j];
     }
 
     // TODO(mthompkins): Need to handle the equal floats case
     template <typename U>
-    constexpr bool operator==(const Matrix<U, R, C> &rhs) const {
+    constexpr bool operator==(const Matrix<U, R, C> &rhs) const
+    {
         for (Size i{0}; i < R; i++)
             for (Size j{0}; j < C; j++)
-                if ((*this)(i, j) != rhs(i, j)) return false;
+                if ((*this)(i, j) != rhs(i, j))
+                    return false;
         return true;
     }
 
     template <typename U>
-    constexpr bool operator!=(const Matrix<U, R, C> &rhs) const {
+    constexpr bool operator!=(const Matrix<U, R, C> &rhs) const
+    {
         return !(*this == rhs);
     }
 
-    constexpr Matrix<T, 1, C> row(const Size n) const {
+    constexpr Matrix<T, 1, C> row(const Size n) const
+    {
         Matrix<T, 1, C> result{};
 
-        for (Size j{0}; j < C; j++) result(0, j) = (*this)(n, j);
+        for (Size j{0}; j < C; j++)
+            result(0, j) = (*this)(n, j);
 
         return result;
     }
 
     // Get subset of row
     template <Size startIndex, Size endIndex>
-    constexpr Matrix<T, 1, endIndex - startIndex + 1> row(const Size n) const {
+    constexpr Matrix<T, 1, endIndex - startIndex + 1> row(const Size n) const
+    {
         static_assert(C > startIndex, "startIndex cannot be larger than array");
         static_assert(C > endIndex, "endIndex cannot be larger than array");
         static_assert(endIndex >= startIndex,
@@ -53,17 +64,20 @@ class Matrix {
         return result;
     }
 
-    constexpr Matrix<T, R, 1> col(const Size n) const {
+    constexpr Matrix<T, R, 1> col(const Size n) const
+    {
         Matrix<T, R, 1> result{};
 
-        for (Size i{0}; i < C; i++) result(i, 0) = (*this)(i, n);
+        for (Size i{0}; i < C; i++)
+            result(i, 0) = (*this)(i, n);
 
         return result;
     }
 
     // Get subset of column
     template <Size startIndex, Size endIndex>
-    constexpr Matrix<T, endIndex - startIndex + 1, 1> col(const Size n) const {
+    constexpr Matrix<T, endIndex - startIndex + 1, 1> col(const Size n) const
+    {
         static_assert(R > startIndex, "startIndex cannot be larger than array");
         static_assert(R > endIndex, "endIndex cannot be larger than array");
         static_assert(endIndex >= startIndex,
@@ -79,7 +93,8 @@ class Matrix {
 
     // x1,y1,x2,y2 are indexes
     template <Size x1, Size y1, Size x2, Size y2>
-    constexpr Matrix<T, x2 - x1 + 1, y2 - y1 + 1> sub() const {
+    constexpr Matrix<T, x2 - x1 + 1, y2 - y1 + 1> sub() const
+    {
         static_assert(x2 >= x1,
                       "Second x index must be bigger than the first.");
         static_assert(y2 >= y1,
@@ -100,13 +115,16 @@ class Matrix {
     constexpr Matrix &operator=(const Matrix &) = default;
     constexpr Matrix &operator=(Matrix &&) = default;
 
-    constexpr void setRow(const Matrix<T, 1, C> &mat, const Size n) {
-        for (Size i{0}; i < C; i++) (*this)(n, i) = mat(0, i);
+    constexpr void setRow(const Matrix<T, 1, C> &mat, const Size n)
+    {
+        for (Size i{0}; i < C; i++)
+            (*this)(n, i) = mat(0, i);
     }
 
     template <Size startIndex, Size endIndex>
     constexpr void setRow(const Matrix<T, 1, endIndex - startIndex + 1> &mat,
-                          const Size n) {
+                          const Size n)
+    {
         static_assert(C > startIndex, "startIndex cannot be larger than array");
         static_assert(C > endIndex, "endIndex cannot be larger than array");
         static_assert(endIndex >= startIndex,
@@ -116,13 +134,16 @@ class Matrix {
             (*this)(n, i) = mat(0, i - startIndex);
     }
 
-    constexpr void setCol(const Matrix<T, R, 1> &mat, const Size n) {
-        for (Size j{0}; j < R; j++) (*this)(j, n) = mat(j, 0);
+    constexpr void setCol(const Matrix<T, R, 1> &mat, const Size n)
+    {
+        for (Size j{0}; j < R; j++)
+            (*this)(j, n) = mat(j, 0);
     }
 
     template <Size startIndex, Size endIndex>
     constexpr void setCol(const Matrix<T, endIndex - startIndex + 1, 1> &mat,
-                          const Size n) {
+                          const Size n)
+    {
         static_assert(R > startIndex, "startIndex cannot be larger than array");
         static_assert(R > endIndex, "endIndex cannot be larger than array");
         static_assert(endIndex >= startIndex,
@@ -134,28 +155,38 @@ class Matrix {
 
     // x1,y1,x2,y2 are indexes
     template <Size x1, Size y1, Size x2, Size y2>
-    constexpr void setSub(const Matrix<T, y2 - y1 + 1, x2 - x1 + 1> &mat) {
+    constexpr void setSub(const Matrix<T, y2 - y1 + 1, x2 - x1 + 1> &mat)
+    {
         static_assert(x2 >= x1,
                       "Second x index must be bigger than the first.");
         static_assert(y2 >= y1,
                       "Second y index must be bigger than the first.");
 
         for (Size i{x1}; i <= x2; i++)
-            for (Size j{y1}; j <= y2; j++) (*this)(i, j) = mat(i - x1, j - y1);
+            for (Size j{y1}; j <= y2; j++)
+                (*this)(i, j) = mat(i - x1, j - y1);
     }
 
-    constexpr bool isSquare() const { return sizeX() == sizeY(); }
+    constexpr bool isSquare() const
+    {
+        return sizeX() == sizeY();
+    }
 
-    constexpr bool isSymmetric() const {
+    constexpr bool isSymmetric() const
+    {
         static_assert(R == C, "Symmetric matrices should be square.");
 
         bool symmetric{true};
 
-        if (sizeX() > 1) {
-            for (unsigned int i{1}; i <= sizeX() - 1; i++) {
-                for (unsigned int j{0}; j < i; j++) {
+        if (sizeX() > 1)
+        {
+            for (unsigned int i{1}; i <= sizeX() - 1; i++)
+            {
+                for (unsigned int j{0}; j < i; j++)
+                {
                     symmetric &= ((*this)(i, j) == (*this)(j, i));
-                    if (!symmetric) break;
+                    if (!symmetric)
+                        break;
                 }
             }
         }
@@ -163,21 +194,24 @@ class Matrix {
         return symmetric;
     }
 
-    template <typename U>
-    constexpr bool isSymmetric(const U thresh) const {
-        static_assert(is_float<U>(),
-                      "isSymmetric with arg expects to compare\
+    template <typename U> constexpr bool isSymmetric(const U thresh) const
+    {
+        static_assert(is_float<U>(), "isSymmetric with arg expects to compare\
                 floating point values");
         static_assert(R == C, "Symmetric matrices should be square.");
 
         bool symmetric{true};
 
-        if (sizeX() > 1) {
-            for (unsigned int i{1}; i <= sizeX() - 1; i++) {
-                for (unsigned int j{0}; j < i; j++) {
+        if (sizeX() > 1)
+        {
+            for (unsigned int i{1}; i <= sizeX() - 1; i++)
+            {
+                for (unsigned int j{0}; j < i; j++)
+                {
                     symmetric &=
                         compareFloats((*this)(i, j), (*this)(j, i), thresh);
-                    if (!symmetric) break;
+                    if (!symmetric)
+                        break;
                 }
             }
         }
@@ -185,11 +219,17 @@ class Matrix {
         return symmetric;
     }
 
-    constexpr Size sizeX() const { return R; }
-    constexpr Size sizeY() const { return C; }
+    constexpr Size sizeX() const
+    {
+        return R;
+    }
+    constexpr Size sizeY() const
+    {
+        return C;
+    }
 
     Array<Array<T, C>, R> _data{};
 };
 
-}  // namespace consteig
-#endif  // MATRIX_HPP
+} // namespace consteig
+#endif // MATRIX_HPP

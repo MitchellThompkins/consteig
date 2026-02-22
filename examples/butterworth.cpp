@@ -6,8 +6,9 @@
 // Reference the constants defined in the other object file
 extern const butterworth::Constants g_butterworth_filter;
 
-int main() {
-    const auto& filter = g_butterworth_filter;
+int main()
+{
+    const auto &filter = g_butterworth_filter;
 
     std::cout << std::fixed << std::setprecision(32);
     std::cout << "Designing 2nd Order Butterworth Lowpass Filter" << std::endl;
