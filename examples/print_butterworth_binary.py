@@ -24,5 +24,7 @@ print(f"{'Name':<12} {'Double (64-bit)':<20} {'Decimal':<25}")
 print("-" * 70)
 for name, value in numbers.items():
     d_hex = struct.pack('<d', value).hex()
-    print(f"{name:<12} {d_hex:<20} {value:<25.15f}")
+    # Insert a space every 8 characters (4 bytes)
+    formatted_hex = ' '.join([d_hex[i:i+4] for i in range(0, len(d_hex), 4)])
+    print(f"{name:<12} {formatted_hex:<20} {value:<25.15f}")
 
