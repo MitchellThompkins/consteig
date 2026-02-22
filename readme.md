@@ -13,7 +13,7 @@ dependences several constexpr functions are implemented as well.
 * Declare, manipulate, perform matrix operations, and a handful of matrix
   decompositions at compile time. That means users can create matrices and
   perform a collection of [operations](matrix/operations.hpp) on them.
-* Perform a selection of math functions (including complex arithmetic) at compile time.
+* Perform a selection of math functions (including complex arithmetic) at compile time. [^2]
 * Strictly freestanding: The core library has zero dependencies on the standard library.
 
 It's important to note that `consteig` currently focuses exclusively on computing **eigenvalues**. For many applications, such as determining the stability of digital filters (as described in "Why Does This Exist"), the eigenvalues themselves are the desired result, and the eigenvectors are not required. Therefore, this library does not currently provide functionality for eigenvector computation.
@@ -178,7 +178,7 @@ library isn’t available.
 
 This solves those two problems in a limited capacity.
 
-## Algorithmic Approach and Optimizations
+## Algorithmic Approach and Optimizations [^1]
 Consteig employs a hybrid approach to performance, balancing `constexpr` compatibility with the use of robust and efficient numerical methods.
 
 ### Eigenvalue Calculation (Core Solver)
@@ -225,35 +225,47 @@ The library is verified through two primary methods:
 2. **Octave Test Generation**: An Octave script (`octave/generate_test_cases.m`) is provided to generate fresh matrix test data and expected results, which are automatically verified using `static_assert` at compile time.
 
 ### Compile-Time Verification Limits
-Iterative algorithms like the QR iteration used here are computationally expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test cases without crashing the compiler or hitting operation limits, the test suite is divided into **Fast** and **Slow** variants:
-
-*   **Fast Tests (4x4 Matrices)**: These are the default tests. They are small enough to converge quickly within standard compiler limits and provide a baseline for algorithm correctness.
-*   **Slow Tests (8x8 Matrices)**: These are exhaustive tests for larger matrices. They require significantly higher `constexpr` step limits (1 billion) and are only enabled on request.
-
-**Running Slow Tests**:
-To build the slow variant of the tests, use the following command:
-```bash
-BUILD_SLOW_TESTS=1 make container.make.build
-```
+Iterative algorithms like the QR iteration used here are computationally expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test cases without crashing the compiler or hitting operation limits.
 
 ### Robustness Test Suite
-In addition to random matrix tests, a dedicated robustness test suite exercises the solver against 13 categories of numerically challenging matrices:
+In addition to random matrix tests, a dedicated robustness test suite exercises
+the solver against the following categories of numerically challenging matrices:
 
-*   Defective, nearly defective, non-normal, clustered eigenvalues, repeated eigenvalues, companion, graded, large Jordan blocks, Toeplitz, nearly reducible, random non-normal, Hamiltonian, and sparse interior matrices.
-
-Each category includes 10 test cases (each covering both a fast 4x4 and slow 8x8 variant), totaling **130 test files**.
+* Defective
+* Nearly defective
+* Non-normal
+* Clustered eigenvalues
+* Repeated eigenvalues
+* companion
+* graded
+* Large Jordan blocks
+* Toeplitz
+* Nearly reducible
+* Random non-normal
+* Hamiltonian
+* Sparse interior matrices.
 
 ### Robustness & Accuracy Limitations
 
-The library performs rigorous eigenvalue verification using both trace/determinant checks and direct comparison against reference values (generated via Octave/LAPACK).
+The library performs rigorous eigenvalue verification using both
+trace/determinant checks and direct comparison against reference values
+(generated via Octave/LAPACK).
 
 #### Defective Matrices
-For **defective matrices** (those with non-trivial Jordan blocks), the eigenvalue problem is inherently ill-conditioned. A perturbation of size $\epsilon$ in the matrix entries can result in a perturbation of size $\epsilon^{1/k}$ in the eigenvalues, where $k$ is the size of the Jordan block.
+For **defective matrices** (those with non-trivial Jordan blocks), the
+eigenvalue problem is inherently ill-conditioned. A perturbation of size
+$\epsilon$ in the matrix entries can result in a perturbation of size
+$\epsilon^{1/k}$ in the eigenvalues, where $k$ is the size of the Jordan block.
 
-For an $8 \times 8$ defective matrix (Jordan block of size 8) in double precision ($\epsilon \approx 10^{-16}$):
-$$ \text{Error} \approx (10^{-16})^{1/8} = 10^{-2} = 0.01 $$
+For an $8 \times 8$ defective matrix (Jordan block of size 8) in double
+precision ($\epsilon \approx 10^{-16}$): $$ \text{Error} \approx
+(10^{-16})^{1/8} = 10^{-2} = 0.01 $$
 
-Consequently, tests for **defective**, **nearly defective**, and **large Jordan block** matrices use a relaxed tolerance (`0.05`) to account for this theoretical limit. This does not indicate a bug in the algorithm, but rather the fundamental limit of computing eigenvalues for such matrices using standard double-precision arithmetic.
+Consequently, tests for **defective**, **nearly defective**, and **large Jordan
+block** matrices use a relaxed tolerance (`0.05`) to account for this
+theoretical limit. This does not indicate a bug in the algorithm, but rather the
+fundamental limit of computing eigenvalues for such matrices using standard
+double-precision arithmetic.
 
 #### Standard Matrices
 For normal, symmetric, and well-conditioned non-symmetric matrices, the library maintains high precision, typically matching reference values within `1e-9` or better.
@@ -324,24 +336,15 @@ These are all packaged into an alpine docker container.
 make container.pull
 export MY_UID=$(id -u)
 export MY_GID=$(id -g)
-make container.start
 ```
 
 Then:
 ```
-make build
-make test
-```
-
-To run the robustness tests:
-```
-CONSTEIG_ENABLE_ROBUSTNESS=1 make container.make.build
+make container.make.build
+make container.make.test
 ```
 
 ## References
 
-## Thanks
-Development began by leveraging [gcem](https://github.com/kthohr/gcem) for all
-of the constexpr math. However, as it depends on the standard library, it's
-usage was temporary. That constexpr math implementations are inspired from the
-gcem implementations.
+[^1]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
+[^2]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
