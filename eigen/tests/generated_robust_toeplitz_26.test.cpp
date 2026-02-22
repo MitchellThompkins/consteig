@@ -1,4 +1,4 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-TEST(generated_tests, toeplitz_8x8_26) { static_assert(check_single_toeplitz_nonsym_8x8<26>(), "Test toeplitz_8x8_26 failed"); SUCCEED(); }
+TEST(generated_tests, toeplitz_10x10_26) { static_assert(check_single_toeplitz_nonsym_10x10<26>(), "Test toeplitz_10x10_26 failed"); SUCCEED(); }
 #endif

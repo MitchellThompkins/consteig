@@ -1,4 +1,4 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-TEST(generated_tests, repeated_8x8_8) { static_assert(check_single_repeated_nonsym_8x8<8>(), "Test repeated_8x8_8 failed"); SUCCEED(); }
+TEST(generated_tests, repeated_10x10_8) { static_assert(check_single_repeated_nonsym_10x10<8>(), "Test repeated_10x10_8 failed"); SUCCEED(); }
 #endif
