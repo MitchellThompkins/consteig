@@ -1,4 +1,4 @@
-BasedOnStyle: Google
+BasedOnStyle: Microsoft
 Language: Cpp
 IndentWidth: 4
 ColumnLimit: 80

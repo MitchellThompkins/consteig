@@ -1,6 +1,7 @@
 #include "example_helper.hpp"
 
-int main() {
+int main()
+{
     bool val = consteig::is_float<consteig::Size>();
     std::cout << val << "\n";
 

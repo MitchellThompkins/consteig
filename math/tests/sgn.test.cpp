@@ -7,7 +7,8 @@ using namespace consteig;
 
 static constexpr double kThresh{std::numeric_limits<double>::epsilon()};
 
-TEST(sgn_function, sgn_test) {
+TEST(sgn_function, sgn_test)
+{
     static constexpr double a{sgn(100.0)};
     static constexpr double aAnswer{1.0};
     static_assert(compareFloats(a, aAnswer, kThresh), MSG);

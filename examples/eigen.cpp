@@ -1,7 +1,8 @@
 #include "../consteig.hpp"
 #include "example_helper.hpp"
 
-int main() {
+int main()
+{
     static constexpr consteig::Size s{4};
 
     static constexpr consteig::Matrix<double, s, s> mat{
@@ -17,7 +18,8 @@ int main() {
     printMat("testEig (Schur Form)", testEig);
 
     std::cout << "testEigVals:\n";
-    for (consteig::Size i = 0; i < s; ++i) {
+    for (consteig::Size i = 0; i < s; ++i)
+    {
         std::cout << "(" << testEigVals(i, 0).real << ", "
                   << testEigVals(i, 0).imag << "i)\n";
     }
