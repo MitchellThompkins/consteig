@@ -72,3 +72,4 @@ TEST(power_function, pow_large) {
     static_assert(val == 1024, MSG);
     ASSERT_EQ(val, 1024);
 }
+
