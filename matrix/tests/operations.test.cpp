@@ -20,25 +20,29 @@ TEST(matrix, eigen_comparison) {
     Matrix<double, 3, 3> sum = mat1 + mat2;
     Eigen::Matrix3d eigSum = eigMat1 + eigMat2;
     for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j) EXPECT_NEAR(sum(i, j), eigSum(i, j), kThresh);
+        for (int j = 0; j < 3; ++j)
+            EXPECT_NEAR(sum(i, j), eigSum(i, j), kThresh);
 
     // Subtraction
     Matrix<double, 3, 3> diff = mat1 - mat2;
     Eigen::Matrix3d eigDiff = eigMat1 - eigMat2;
     for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j) EXPECT_NEAR(diff(i, j), eigDiff(i, j), kThresh);
+        for (int j = 0; j < 3; ++j)
+            EXPECT_NEAR(diff(i, j), eigDiff(i, j), kThresh);
 
     // Multiplication
     Matrix<double, 3, 3> prod = mat1 * mat2;
     Eigen::Matrix3d eigProd = eigMat1 * eigMat2;
     for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j) EXPECT_NEAR(prod(i, j), eigProd(i, j), kThresh);
+        for (int j = 0; j < 3; ++j)
+            EXPECT_NEAR(prod(i, j), eigProd(i, j), kThresh);
 
     // Transpose
     Matrix<double, 3, 3> trans = transpose(mat1);
     Eigen::Matrix3d eigTrans = eigMat1.transpose();
     for (int i = 0; i < 3; ++i)
-        for (int j = 0; j < 3; ++j) EXPECT_NEAR(trans(i, j), eigTrans(i, j), kThresh);
+        for (int j = 0; j < 3; ++j)
+            EXPECT_NEAR(trans(i, j), eigTrans(i, j), kThresh);
 
     // Determinant
     double d = det(mat1);  // 0 for this specific matrix (singular)
@@ -107,7 +111,8 @@ TEST(matrix, static_constexpr_multiplication) {
     static constexpr Matrix<int, c, r> mat2{{{{1, -3, 7}, {2, 5, 9}}}};
     static constexpr Matrix<int, c, c> mat3{{{{0, 1}, {2, 3}}}};
 
-    static constexpr Matrix<int, r, r> answer1{{{{11, 11, 57}, {17, 15, 89}, {21, 36, 102}}}};
+    static constexpr Matrix<int, r, r> answer1{
+        {{{11, 11, 57}, {17, 15, 89}, {21, 36, 102}}}};
     static constexpr Matrix<int, c, c> answer2{{{{9, 49}, {58, 119}}}};
     static constexpr Matrix<int, c, c> answer3{{{{2, 3}, {6, 11}}}};
 
@@ -130,10 +135,12 @@ TEST(matrix, static_constexpr_trans) {
     static constexpr int c{2};
 
     static constexpr Matrix<int, r, c> mat1{{{{3, 4}, {5, 6}, {3, 9}}}};
-    static constexpr Matrix<int, r, r> mat2{{{{3, 4, 8}, {5, 6, 7}, {3, 9, 8}}}};
+    static constexpr Matrix<int, r, r> mat2{
+        {{{3, 4, 8}, {5, 6, 7}, {3, 9, 8}}}};
 
     static constexpr Matrix<int, c, r> answer1{{{{3, 5, 3}, {4, 6, 9}}}};
-    static constexpr Matrix<int, r, r> answer2{{{{3, 5, 3}, {4, 6, 9}, {8, 7, 8}}}};
+    static constexpr Matrix<int, r, r> answer2{
+        {{{3, 5, 3}, {4, 6, 9}, {8, 7, 8}}}};
 
     static constexpr Matrix<int, c, r> mat1Transpose{transpose(mat1)};
     static constexpr Matrix<int, r, r> mat2Transpose{transpose(mat2)};
@@ -168,7 +175,8 @@ TEST(matrix, static_constexpr_dot) {
 TEST(matrix, static_constexpr_diag) {
     static constexpr int x{3};
 
-    static constexpr Matrix<float, x, x> answer{{{{1.0F, 0, 0}, {0, 1.0F, 0}, {0, 0, 1.0F}}}};
+    static constexpr Matrix<float, x, x> answer{
+        {{{1.0F, 0, 0}, {0, 1.0F, 0}, {0, 0, 1.0F}}}};
 
     static constexpr auto mat{diagonal<float, x>(1.0F)};
 
@@ -182,7 +190,8 @@ TEST(matrix, static_constexpr_norm_euclidean) {
     static constexpr int x{3};
     static constexpr int r{2};
 
-    static constexpr Matrix<float, x, x> mat1{{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+    static constexpr Matrix<float, x, x> mat1{
+        {{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
 
     static constexpr Matrix<float, r, r> mat2{{{{1.0F, -7.0F}, {-2.0F, 3.0F}}}};
 
@@ -201,7 +210,8 @@ TEST(matrix, static_constexpr_det) {
     static constexpr int x{3};
     static constexpr int r{2};
 
-    static constexpr Matrix<float, x, x> mat1{{{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
+    static constexpr Matrix<float, x, x> mat1{
+        {{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
 
     static constexpr Matrix<float, r, r> mat2{{{{1.0F, -7.0F}, {-2.0F, 3.0F}}}};
 

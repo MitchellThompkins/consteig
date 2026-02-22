@@ -4,9 +4,10 @@
 
 #include "../consteig.hpp"
 
-// Example: Designing a digital filter using eigenvalue mapping (Matched Z-Transform / ZOH Method)
-// We find the continuous-time eigenvalues (poles) of a Butterworth filter matrix
-// and map them to the Z-domain to form the digital filter coefficients.
+// Example: Designing a digital filter using eigenvalue mapping (Matched
+// Z-Transform / ZOH Method) We find the continuous-time eigenvalues (poles) of
+// a Butterworth filter matrix and map them to the Z-domain to form the digital
+// filter coefficients.
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -34,10 +35,12 @@ int main() {
     // A_c(0, 1) = 1.0;
     // A_c(1, 0) = -wc_sq;
     // A_c(1, 1) = -sqrt2_wc;
-    static constexpr consteig::Matrix<double, 2, 2> A_c{{{{0.0, 1.0}, {-wc_sq, -sqrt2_wc}}}};
+    static constexpr consteig::Matrix<double, 2, 2> A_c{
+        {{{0.0, 1.0}, {-wc_sq, -sqrt2_wc}}}};
 
     std::cout << "Designing 2nd Order Butterworth Lowpass Filter" << std::endl;
-    std::cout << "Cutoff: " << fc << " Hz, Sampling Rate: " << fs << " Hz" << std::endl;
+    std::cout << "Cutoff: " << fc << " Hz, Sampling Rate: " << fs << " Hz"
+              << std::endl;
     std::cout << "Continuous System Matrix A:" << std::endl;
     std::cout << "[ " << A_c(0, 0) << ", " << A_c(0, 1) << " ]" << std::endl;
     std::cout << "[ " << A_c(1, 0) << ", " << A_c(1, 1) << " ]" << std::endl;
@@ -47,8 +50,10 @@ int main() {
     constexpr auto poles_c = consteig::eigvals(A_c);
 
     std::cout << "\nContinuous-time Poles (Eigenvalues of A):" << std::endl;
-    std::cout << "p1 = " << poles_c(0, 0).real << " + j" << poles_c(0, 0).imag << std::endl;
-    std::cout << "p2 = " << poles_c(1, 0).real << " + j" << poles_c(1, 0).imag << std::endl;
+    std::cout << "p1 = " << poles_c(0, 0).real << " + j" << poles_c(0, 0).imag
+              << std::endl;
+    std::cout << "p2 = " << poles_c(1, 0).real << " + j" << poles_c(1, 0).imag
+              << std::endl;
 
     // 2. Map Poles to Z-Domain (Matched Z-Transform)
     // z = exp(sT)
@@ -67,10 +72,11 @@ int main() {
     // 3. Form Digital Filter Transfer Function Denominator
     // D(z) = (z - z1)(z - z2) = z^2 - (z1 + z2)z + (z1 * z2)
     // y[n] = b0*x[n] - a1*y[n-1] - a2*y[n-2]
-    // where D(z) corresponds to 1 + a1*z^-1 + a2*z^-2 in the difference equation
-    // (after normalizing by z^2)
+    // where D(z) corresponds to 1 + a1*z^-1 + a2*z^-2 in the difference
+    // equation (after normalizing by z^2)
 
-    // Coefficients for the characteristic polynomial P(z) = z^2 + coeff1*z + coeff2
+    // Coefficients for the characteristic polynomial P(z) = z^2 + coeff1*z +
+    // coeff2
     double coeff1 = -(p1_d + p2_d).real();
     double coeff2 = (p1_d * p2_d).real();
 
@@ -92,7 +98,8 @@ int main() {
     std::cout << "Gain K = " << K << std::endl;
 
     std::cout << "\nFinal Digital Filter Difference Equation:" << std::endl;
-    std::cout << "y[n] = " << K << " * x[n] - (" << a1 << ") * y[n-1] - (" << a2 << ") * y[n-2]" << std::endl;
+    std::cout << "y[n] = " << K << " * x[n] - (" << a1 << ") * y[n-1] - (" << a2
+              << ") * y[n-2]" << std::endl;
 
     return 0;
 }

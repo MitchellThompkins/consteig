@@ -14,22 +14,32 @@ struct Complex {
 
     constexpr Complex(T r = 0, T i = 0) : real(r), imag(i) {}
 
-    constexpr Complex operator+(const Complex& other) const { return {real + other.real, imag + other.imag}; }
+    constexpr Complex operator+(const Complex& other) const {
+        return {real + other.real, imag + other.imag};
+    }
 
-    constexpr Complex operator-(const Complex& other) const { return {real - other.real, imag - other.imag}; }
+    constexpr Complex operator-(const Complex& other) const {
+        return {real - other.real, imag - other.imag};
+    }
 
     constexpr Complex operator*(const Complex& other) const {
-        return {real * other.real - imag * other.imag, real * other.imag + imag * other.real};
+        return {real * other.real - imag * other.imag,
+                real * other.imag + imag * other.real};
     }
 
     constexpr Complex operator/(const Complex& other) const {
         T denom = other.real * other.real + other.imag * other.imag;
-        return {(real * other.real + imag * other.imag) / denom, (imag * other.real - real * other.imag) / denom};
+        return {(real * other.real + imag * other.imag) / denom,
+                (imag * other.real - real * other.imag) / denom};
     }
 
-    constexpr bool operator==(const Complex& other) const { return real == other.real && imag == other.imag; }
+    constexpr bool operator==(const Complex& other) const {
+        return real == other.real && imag == other.imag;
+    }
 
-    constexpr bool operator!=(const Complex& other) const { return !(*this == other); }
+    constexpr bool operator!=(const Complex& other) const {
+        return !(*this == other);
+    }
 };
 
 template <typename T>

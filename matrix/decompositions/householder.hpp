@@ -16,7 +16,8 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a);
 template <typename T, Size R, Size C>
 constexpr Matrix<T, R, R> house(Matrix<T, R, C> a) {
     static_assert(R == C, "Householder expects a square matrix");
-    static_assert(is_float<T>(), "Householder Reflection expects floating point");
+    static_assert(is_float<T>(),
+                  "Householder Reflection expects floating point");
 
     T alphaSum{0};
     for (Size i{1}; i < R; i++) alphaSum += (a(i, 0) * a(i, 0));
@@ -25,7 +26,8 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a) {
         return eye<T, R>();
     }
 
-    T sign = (a(1, 0) < static_cast<T>(0)) ? static_cast<T>(-1) : static_cast<T>(1);
+    T sign =
+        (a(1, 0) < static_cast<T>(0)) ? static_cast<T>(-1) : static_cast<T>(1);
     T alpha{static_cast<T>(-1) * sign * consteig::sqrt(alphaSum)};
 
     T r_sq{static_cast<T>(0.5) * ((alpha * alpha) - (a(1, 0) * alpha))};

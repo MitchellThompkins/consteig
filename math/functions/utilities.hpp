@@ -52,7 +52,8 @@ constexpr T epsilon() {
     if constexpr (!is_float<T>()) {
         return static_cast<T>(0);
     } else {
-        // Hardcoded for standard IEEE 754 to ensure O(1) performance in recursion
+        // Hardcoded for standard IEEE 754 to ensure O(1) performance in
+        // recursion
         if (sizeof(T) == sizeof(float)) {
             return static_cast<T>(1.19209290e-7);
         }
