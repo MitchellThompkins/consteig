@@ -40,11 +40,12 @@ TEST(exp_function, exp_integer) {
 TEST(exp_function, exp_complex_pure_imaginary) {
     // exp(i * pi/2) = i
     static constexpr double pi_2 = 3.14159265358979323846 / 2.0;
-    static constexpr Complex<double> val = consteig::exp(Complex<double>(0, pi_2));
-    
+    static constexpr Complex<double> val =
+        consteig::exp(Complex<double>(0, pi_2));
+
     static_assert(compareFloats(val.real, 0.0, kThresh), MSG);
     static_assert(compareFloats(val.imag, 1.0, kThresh), MSG);
-    
+
     ASSERT_NEAR(val.real, 0.0, kThresh);
     ASSERT_NEAR(val.imag, 1.0, kThresh);
 }
@@ -53,11 +54,12 @@ TEST(exp_function, exp_complex_general) {
     // exp(1 + i) = e * (cos(1) + i * sin(1))
     // e * cos(1) approx 2.718 * 0.5403 = 1.46869
     // e * sin(1) approx 2.718 * 0.8414 = 2.28735
-    static constexpr Complex<double> val = consteig::exp(Complex<double>(1.0, 1.0));
-    
+    static constexpr Complex<double> val =
+        consteig::exp(Complex<double>(1.0, 1.0));
+
     static_assert(compareFloats(val.real, 1.468693939915, kThresh), MSG);
     static_assert(compareFloats(val.imag, 2.287355287178, kThresh), MSG);
-    
+
     ASSERT_NEAR(val.real, 1.468693939915, kThresh);
     ASSERT_NEAR(val.imag, 2.287355287178, kThresh);
 }

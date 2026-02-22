@@ -1,14 +1,11 @@
 #ifndef CONSTMATH_EXP_HPP
 #define CONSTMATH_EXP_HPP
 
+#include "../complex.hpp"
 #include "pow.hpp"
 #include "utilities.hpp"
 
 namespace consteig {
-
-// Forward declaration of Complex
-template <typename T>
-struct Complex;
 
 // Max iterations for continued fraction expansion
 constexpr int EXP_MAX_ITER = 50;
