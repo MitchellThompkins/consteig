@@ -1,63 +1,58 @@
 #ifndef CONSTMATH_EXP_HPP
 #define CONSTMATH_EXP_HPP
 
-//#include "../../consteig_options.hpp"
-//#include "utilities.hpp"  // For epsilon
+#include "pow.hpp"
+#include "utilities.hpp"
+
+// Finds exponential by euler's continued fraction formula
 
 namespace consteig {
 
-namespace internal {
 template <typename T>
-constexpr T sqrt_recur(const T x, const T xn, const int count) {
-    return (abs(xn - x / xn) / (T(1) + xn) < epsilon<T>() ? xn
-            : count < CONSTEIG_MAX_ITER
-                ? sqrt_recur(x, T(0.5) * (xn + x / xn), count + 1)
-                : xn);
-}
-
-template <typename T>
-constexpr T sqrt_check(const T x, const T m_val) {
-    return (x == T(0)                      ? T(0)
-            : epsilon<T>() > abs(T(1) - x) ? x
-            : x > T(4)                     ? sqrt_check(x / T(4), T(2) * m_val)
-            : x < T(0.25)                  ? sqrt_check(x * T(4), m_val / T(2))
-                          : m_val * sqrt_recur(x, x / T(2), 0));
-}
-
-template <typename T>
-constexpr T sqrt_int(const T x) {
-    // The closed guess will be stored in the root
-    T root{static_cast<T>(0)};
-
-    // Base cases
-    if (x == 0 || x == 1) {
-        root = x;
-    } else {
-        // Staring from 1, try all numbers until
-        // i*i is greater than or equal to val.
-        T i = 1, result = 1;
-        while (result <= x) {
-            i++;
-            result = i * i;
-        }
-        root = i - 1;
+constexpr T exp_cf_recur(const T x, const int depth_end) noexcept {
+    int depth = CONSTEIG_MAX_ITER - 1;
+    T res = static_cast<T>(1);
+    while (depth > depth_end - 1) {
+        res = static_cast<T>(1) + x / static_cast<T>(depth - 1) - x / static_cast<T>(depth) / res;
+        --depth;
     }
-
-    return root;
+    return res;
 }
 
-}  // namespace internal
+template <typename T>
+constexpr T exp_cf(const T x) noexcept {
+    return static_cast<T>(1) / (static_cast<T>(1) - x / exp_cf_recur(x, 2));
+}
 
 template <typename T>
-constexpr T sqrt(const T x) {
-    // TODO(mthompkins): Need to return NaN for negative numbers. This
-    // implementation is really really ugly
-    if (x < static_cast<T>(0))
-        return static_cast<T>(-1);
-    else if (is_float<T>())
-        return internal::sqrt_check(x, static_cast<T>(1));
-    else
-        return internal::sqrt_int(x);
+constexpr T find_whole(const T x) noexcept {
+    return static_cast<T>(static_cast<long long>(x));
+}
+
+template <typename T>
+constexpr T find_fraction(const T x) noexcept {
+    return x - find_whole(x);
+}
+
+template <typename T>
+constexpr T exp_split(const T x) noexcept {
+    return consteig::pow(static_cast<T>(E_CONST), static_cast<int>(find_whole(x))) * exp_cf(find_fraction(x));
+}
+
+template <typename T>
+constexpr T exp_check(const T x) noexcept {
+    return (x < static_cast<T>(0) ? static_cast<T>(1) / exp_check(-x) :
+            x < static_cast<T>(2) ? exp_cf(x) :
+                                    exp_split(x));
+}
+
+template <typename T>
+constexpr auto exp(const T x) noexcept {
+    if constexpr (!is_float<T>()) {
+        return exp_check(static_cast<double>(x));
+    } else {
+        return exp_check(x);
+    }
 }
 
 }  // namespace consteig
