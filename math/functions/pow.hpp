@@ -5,16 +5,16 @@ namespace consteig {
 
 // Exponentiation by squaring
 template <typename T>
-constexpr T powi(const T x, const unsigned int n) {
+constexpr T pow(const T x, const unsigned int n) {
     return n == 0       ? static_cast<T>(1)
-           : n % 2 == 0 ? powi(x * x, n / 2)
-                        : powi(x * x, (n - 1) / 2) * x;
+           : n % 2 == 0 ? pow(x * x, n / 2)
+                        : pow(x * x, (n - 1) / 2) * x;
 }
 
 template <typename T>
-constexpr T powi(const T x, const int n) {
-    return n < 0 ? static_cast<T>(1) / powi(x, static_cast<unsigned int>(-n))
-                 : powi(x, static_cast<unsigned int>(n));
+constexpr T pow(const T x, const int n) {
+    return n < 0 ? static_cast<T>(1) / pow(x, static_cast<unsigned int>(-n))
+                 : pow(x, static_cast<unsigned int>(n));
 }
 
 }  // namespace consteig
