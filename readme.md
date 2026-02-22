@@ -179,34 +179,87 @@ library isn’t available.
 This solves those two problems in a limited capacity.
 
 ## Algorithmic Approach and Optimizations [^1]
-Consteig employs a hybrid approach to performance, balancing `constexpr` compatibility with the use of robust and efficient numerical methods.
+Consteig employs a hybrid approach to performance, balancing `constexpr`
+compatibility with the use of robust and efficient numerical methods.
 
 ### Eigenvalue Calculation (Core Solver)
-The core eigenvalue solver is based on the highly-optimized **Francis QR algorithm**, tailored for a `constexpr` context.
+The core eigenvalue solver is based on the optimized **Francis QR
+algorithm**, tailored for a `constexpr` context.
 
 *   **Preprocessing Steps**:
-    1.  **Balancing**: An initial balancing step permutes and scales the matrix to reduce the norm of its rows and columns. This is a crucial step for improving the accuracy and convergence rate of the subsequent QR iterations, especially for matrices with poorly scaled entries.
-    2.  **Hessenberg Reduction**: The balanced matrix is then reduced to upper Hessenberg form using a series of Householder transformations. This is a critical optimization that reduces the computational cost of each QR iteration from O(n^4) to O(n^2), bringing the overall complexity of the eigenvalue problem down to a manageable O(n^3).
+    1.  **Balancing**: An initial balancing step permutes and scales the matrix
+        to reduce the norm of its rows and columns. This is a crucial step for
+        improving the accuracy and convergence rate of the subsequent QR
+        iterations, especially for matrices with poorly scaled entries.
+    2.  **Hessenberg Reduction**: The balanced matrix is then reduced to upper
+        Hessenberg form using a series of Householder transformations. This is a
+        critical optimization that reduces the computational cost of each QR
+        iteration from O(n^4) to O(n^2), bringing the overall complexity of the
+        eigenvalue problem down to a manageable O(n^3).
 
 *   **QR Iteration Loop**:
-    *   **Implicit Double-Shift QR**: The algorithm employs a true implicit double-shift strategy using Householder reflectors for bulge chasing. Rather than explicitly forming the shifted matrix product, the algorithm introduces a bulge in the Hessenberg form and chases it down the diagonal via a sequence of Householder reflections, preserving Hessenberg structure throughout. This allows the solver to find complex conjugate eigenvalues for real non-symmetric matrices without resorting to complex arithmetic during the iteration process.
-    *   **Wilkinson Shifts**: To accelerate convergence, Wilkinson shifts are used as the default shifting strategy. This method provides a quadratically convergent rate in most cases, making the algorithm highly efficient.
-    *   **Robust Deflation**: The algorithm checks for convergence by monitoring the sub-diagonal elements. Deflation occurs when an element becomes negligible relative to its neighboring diagonal elements, scaled by machine epsilon, effectively splitting the problem into smaller, independent sub-problems.
-    *   **Exceptional Shifts**: To prevent stalling in cases where Wilkinson shifts fail to converge, the solver introduces LAPACK-style exceptional shifts every 10 iterations, alternating between top-based and bottom-based shift strategies to break out of convergence stalls.
-    *   **Eigenvalue Verification**: After convergence, the solver verifies computed eigenvalues by checking both the trace (sum of eigenvalues equals the matrix trace) and determinant (product of eigenvalues equals the matrix determinant) invariants.
+    *   **Implicit Double-Shift QR**: The algorithm employs a true implicit
+        double-shift strategy using Householder reflectors for bulge chasing.
+        Rather than explicitly forming the shifted matrix product, the algorithm
+        introduces a bulge in the Hessenberg form and chases it down the
+        diagonal via a sequence of Householder reflections, preserving
+        Hessenberg structure throughout. This allows the solver to find complex
+        conjugate eigenvalues for real non-symmetric matrices without resorting
+        to complex arithmetic during the iteration process.
+    *   **Wilkinson Shifts**: To accelerate convergence, Wilkinson shifts are
+        used as the default shifting strategy. This method provides a
+        quadratically convergent rate in most cases.
+    *   **Robust Deflation**: The algorithm checks for convergence by monitoring
+        the sub-diagonal elements. Deflation occurs when an element becomes
+        negligible relative to its neighboring diagonal elements, scaled by
+        machine epsilon, effectively splitting the problem into smaller,
+        independent sub-problems.
+    *   **Exceptional Shifts**: To prevent stalling in cases where Wilkinson
+        shifts fail to converge, the solver introduces LAPACK-style exceptional
+        shifts every 10 iterations, alternating between top-based and
+        bottom-based shift strategies to break out of convergence stalls.
+    *   **Eigenvalue Verification**: After convergence, the solver verifies
+        computed eigenvalues by checking both the trace (sum of eigenvalues
+        equals the matrix trace) and determinant (product of eigenvalues equals
+        the matrix determinant) invariants.
 
 ### Matrix Decompositions
-*   **QR Decomposition**: The general-purpose `qr()` decomposition is implemented using a series of **Givens rotations**. This method was chosen for its excellent numerical stability over alternatives like the Gram-Schmidt process, which can suffer from a loss of orthogonality in the Q matrix due to floating-point inaccuracies. This stability was essential for achieving high-precision results with tighter test tolerances. The specialized `qr_hessenberg()` also uses Givens rotations, optimized for the Hessenberg structure.
+*   **QR Decomposition**: The general-purpose `qr()` decomposition is
+    implemented using a series of Givens rotations. This method was chosen
+    for its numerical stability over alternatives like the Gram-Schmidt process,
+    which can suffer from a loss of orthogonality in the Q matrix due to
+    floating-point inaccuracies. This stability was essential for achieving
+    high-precision results with tighter test tolerances. The specialized
+    `qr_hessenberg()` also uses Givens rotations, optimized for the Hessenberg
+    structure.
 
 ### Other Operations
-*   **Determinant**: The `det()` function is currently implemented using **Laplace expansion (cofactor expansion)**. While straightforward and `constexpr`-compatible, this algorithm has a factorial time complexity (O(n!)) and is only practical for very small matrices. This is a known trade-off for implementation simplicity.
+*   **Determinant**: The `det()` function is currently implemented using Laplace
+    expansion (cofactor expansion). While straightforward and
+    `constexpr`-compatible, this algorithm has a factorial time complexity
+    (O(n!)) and is only practical for very small matrices. This is a known
+    trade-off for implementation simplicity.
 
 ### Comparison with LAPACK/Eigen
-While `consteig` uses the same fundamental Francis QR algorithm as LAPACK (`DLAHQR`) and Eigen, users may notice lower accuracy on highly defective matrices (e.g., error $\approx 0.05$ vs $0.01$). This difference stems from several factors:
-1.  **Balancing Strategy**: `consteig` implements basic diagonal scaling balancing (`GEBAL` scaling only). Standard libraries also perform **permutation** to isolate eigenvalues, which significantly improves conditioning for reducible matrices.
-2.  **Arithmetic**: This library uses real arithmetic with implicit double shifts to maintain `constexpr` compatibility and performance. Full complex arithmetic solvers can sometimes resolve clustered eigenvalues more cleanly.
-3.  **Blocking**: Runtime libraries use blocked algorithms (Level 3 BLAS) that accumulate round-off errors more favorably than the unblocked Level 1/2 algorithms required for straightforward `constexpr` implementation.
-4.  **Floating Point Environment**: `constexpr` evaluation is performed by the compiler's abstract machine, which may not support the same denormal handling or extended precision intermediate registers (80-bit/128-bit) that a runtime hardware FPU might utilize to preserve precision in critical steps.
+While `consteig` uses the same fundamental Francis QR algorithm as LAPACK
+(`DLAHQR`) and Eigen, users may notice lower accuracy on highly defective
+matrices (e.g., error $\approx 0.05$ vs $0.01$). This difference stems from
+several factors:
+1.  Balancing Strategy: `consteig` implements basic diagonal scaling balancing
+    (`GEBAL` scaling only). Standard libraries also perform permutation to
+    isolate eigenvalues, which significantly improves conditioning for reducible
+    matrices.
+2.  Arithmetic: This library uses real arithmetic with implicit double shifts to
+    maintain `constexpr` compatibility and performance. Full complex arithmetic
+    solvers can sometimes resolve clustered eigenvalues more cleanly.
+3.  Blocking: Runtime libraries use blocked algorithms (Level 3 BLAS) that
+    accumulate round-off errors more favorably than the unblocked Level 1/2
+    algorithms required for straightforward `constexpr` implementation.
+4.  Floating Point Environment: `constexpr` evaluation is performed by the
+    compiler's abstract machine, which may not support the same denormal
+    handling or extended precision intermediate registers (80-bit/128-bit) that
+    a runtime hardware FPU might utilize to preserve precision in critical
+    steps.
 
 ## When To Use Consteig
 * Eigenvalues (real or complex) need to be known at compile time.
@@ -221,11 +274,17 @@ While `consteig` uses the same fundamental Francis QR algorithm as LAPACK (`DLAH
 
 ## Verification
 The library is verified through two primary methods:
-1. **Eigen Library Comparison**: Unit tests link against the [Eigen](https://eigen.tuxfamily.org/) library to compare compile-time results against a high-performance reference implementation.
-2. **Octave Test Generation**: An Octave script (`octave/generate_test_cases.m`) is provided to generate fresh matrix test data and expected results, which are automatically verified using `static_assert` at compile time.
+1. **Eigen Library Comparison**: Unit tests link against the
+   [Eigen](https://eigen.tuxfamily.org/) library to compare compile-time results
+   against a high-performance reference implementation.
+2. **Octave Test Generation**: An Octave script (`octave/generate_test_cases.m`)
+   is provided to generate fresh matrix test data and expected results, which
+   are automatically verified using `static_assert` at compile time.
 
 ### Compile-Time Verification Limits
-Iterative algorithms like the QR iteration used here are computationally expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test cases without crashing the compiler or hitting operation limits.
+Iterative algorithms like the QR iteration used here are computationally
+expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test
+cases without crashing the compiler or hitting operation limits.
 
 ### Robustness Test Suite
 In addition to random matrix tests, a dedicated robustness test suite exercises
@@ -268,7 +327,9 @@ fundamental limit of computing eigenvalues for such matrices using standard
 double-precision arithmetic.
 
 #### Standard Matrices
-For normal, symmetric, and well-conditioned non-symmetric matrices, the library maintains high precision, typically matching reference values within `1e-9` or better.
+For normal, symmetric, and well-conditioned non-symmetric matrices, the library
+maintains high-precision, typically matching reference values within `1e-9` or
+better.
 
 **Running Robustness Tests**:
 ```bash
@@ -276,21 +337,26 @@ CONSTEIG_ENABLE_ROBUSTNESS=1 make container.make.build
 ```
 
 **CI/CD Integration**:
-*   **Fast Tests** run on every commit and pull request.
-*   **Slow Tests** are automatically executed in CI only on the `main` and
-    `develop` branches to ensure rigorous verification before release while
-    maintaining fast feedback for active development.
 *   **Granular Binaries**: Non-symmetric test cases are split into individual
     `.cpp` files. This ensures each `static_assert` gets a fresh "budget" of
     compiler operations and limits the memory overhead to a single matrix solve
     at a time.
-*   **Resource Management**: Compiling these tests can be RAM-intensive.
-    The build system automatically uses `make -j 1` when `BUILD_SLOW_TESTS=1` is set to prevent multiple compiler
-    instances from exhausting system memory.
-*   **Compiler Flags**: Unit test targets automatically raise limits like `-fconstexpr-ops-limit` locally to accommodate the depth of these calculations. For other targets, these limits are not modified by default to avoid unexpected side effects on user compiler configurations. Users can explicitly enable these raised limits globally by setting the `CONSTEIG_RAISE_COMPILER_LIMITS` CMake option to `ON`.
-
-*   **Spectral Limits & Matrix Size Constraints**: While the algorithm is algebraically sound for higher orders, random 10x10 matrices (and larger) frequently encounter particular arrangement, spacing, or clustering of eigenvalues in the matrix configurations. They thusly fail to converge within even an expanded `constexpr` operation budget (1BM+ steps). These limits are applied automatically to library tests, but users may need to explicitly enable them for their own targets using `CONSTEIG_RAISE_COMPILER_LIMITS=ON`.
-*   From a numerical analysis perspective, the 8x8 limit is necessitated by the following factors:
+*   **Compiler Flags**: Unit test targets automatically raise limits like
+    `-fconstexpr-ops-limit` locally to accommodate the depth of these
+    calculations. For other targets, these limits are not modified by default to
+    avoid unexpected side effects on user compiler configurations. Users can
+    explicitly enable these raised limits globally by setting the
+    `CONSTEIG_RAISE_COMPILER_LIMITS` CMake option to `ON`.
+*   **Spectral Limits & Matrix Size Constraints**: While the algorithm is
+    algebraically sound for higher orders, random matrices of orders higher than
+    8x8 (and larger) frequently encounter particular arrangement, spacing, or
+    clustering of eigenvalues in the matrix configurations. They thusly fail to
+    converge within even an expanded `constexpr` operation budget (1BM+ steps).
+    These limits are applied automatically to library tests, but users may need
+    to explicitly enable them for their own targets using
+    `CONSTEIG_RAISE_COMPILER_LIMITS=ON`.
+*   From a numerical analysis perspective, the following factors have a
+    significant impact:
     *   **Spectral Separation and Convergence Rate**: The convergence rate of
         the QR algorithm is intrinsically governed by the ratios of adjacent
         eigenvalues $|\lambda_{i+1}/\lambda_i|$ in the ordered spectrum. As the
@@ -346,5 +412,5 @@ make container.make.test
 
 ## References
 
-[^1]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
-[^2]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
+[^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
+[^2]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
