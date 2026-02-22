@@ -4,13 +4,20 @@
 #include "pow.hpp"
 #include "utilities.hpp"
 
-// Finds exponential by euler's continued fraction formula
-
 namespace consteig {
+
+// Forward declaration of Complex
+template <typename T>
+struct Complex;
+
+namespace internal {
+
+// Max iterations for continued fraction expansion
+constexpr int EXP_MAX_ITER = 50;
 
 template <typename T>
 constexpr T exp_cf_recur(const T x, const int depth_end) noexcept {
-    int depth = CONSTEIG_MAX_ITER - 1;
+    int depth = EXP_MAX_ITER - 1;
     T res = static_cast<T>(1);
     while (depth > depth_end - 1) {
         res = static_cast<T>(1) + x / static_cast<T>(depth - 1) -
@@ -49,13 +56,29 @@ constexpr T exp_check(const T x) noexcept {
                                     : exp_split(x));
 }
 
+}  // namespace internal
+
+/**
+ * @brief Computes the exponential of a real number.
+ */
 template <typename T>
 constexpr auto exp(const T x) noexcept {
     if constexpr (!is_float<T>()) {
-        return exp_check(static_cast<double>(x));
+        return internal::exp_check(static_cast<double>(x));
     } else {
-        return exp_check(x);
+        return internal::exp_check(x);
     }
+}
+
+/**
+ * @brief Computes the exponential of a complex number.
+ * exp(z) = exp(x + iy) = exp(x) * (cos(y) + i*sin(y))
+ */
+template <typename T>
+constexpr Complex<T> exp(const Complex<T>& z) noexcept {
+    // We use the identity exp(z) = exp(x) * exp(iy)
+    // exp(x) uses the real version, exp(iy) uses the continued fraction
+    return exp(z.real) * internal::exp_cf(Complex<T>(0, z.imag));
 }
 
 }  // namespace consteig
