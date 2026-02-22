@@ -7,4 +7,4 @@
 #include "matrix/matrix.hpp"
 #include "matrix/operations.hpp"
 
-#endif  // CONSTEIG_HPP
+#endif // CONSTEIG_HPP

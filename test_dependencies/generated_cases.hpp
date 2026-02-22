@@ -3,7 +3,8 @@
 
 #include "../consteig.hpp"
 
-namespace consteig {
+namespace consteig
+{
 
 // random sym Matrix Test Cases (8x8) - 8x8
 static constexpr Matrix<double, 8, 8> mat_random_sym_8x8[50] = {
@@ -26848,5 +26849,5 @@ static constexpr Matrix<double, 8, 8> mat_qr{
       {2.0115097984671593e-02, 5.8125889301300049e-01, 2.6219084858894348e-01,
        4.9902686476707458e-01}}}};
 
-}  // namespace consteig
+} // namespace consteig
 #endif

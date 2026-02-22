@@ -6,7 +6,8 @@
 
 using namespace consteig;
 
-TEST(householder, eigen_comparison) {
+TEST(householder, eigen_comparison)
+{
     static constexpr Size s{4};
     static constexpr Matrix<double, s, s> mat = {
         {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
@@ -26,7 +27,8 @@ TEST(householder, eigen_comparison) {
     // creating zeros in col 0 below row 1.
     Eigen::MatrixXd result = eigHouse * eigMat;
 
-    for (Size i = 2; i < s; ++i) {
+    for (Size i = 2; i < s; ++i)
+    {
         EXPECT_NEAR(result(i, 0), 0.0, 1e-4);
     }
 
@@ -35,13 +37,15 @@ TEST(householder, eigen_comparison) {
     // So (P*A).row(0) == A.row(0) if P is block diag(1, ...).
     // Let's check P structure.
     EXPECT_NEAR(houseMat(0, 0), 1.0, 1e-9);
-    for (Size i = 1; i < s; ++i) {
+    for (Size i = 1; i < s; ++i)
+    {
         EXPECT_NEAR(houseMat(0, i), 0.0, 1e-9);
         EXPECT_NEAR(houseMat(i, 0), 0.0, 1e-9);
     }
 }
 
-TEST(householder, house) {
+TEST(householder, house)
+{
     static constexpr int s{10};
     static constexpr Matrix<float, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
@@ -95,7 +99,8 @@ TEST(householder, house) {
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }
 
-TEST(householder, house_single) {
+TEST(householder, house_single)
+{
     static constexpr int s{2};
     static constexpr Matrix<float, s, s> mat{{{
         {-2.0114, -0.52132},
@@ -114,7 +119,8 @@ TEST(householder, house_single) {
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }
 
-TEST(householder, properties) {
+TEST(householder, properties)
+{
     static constexpr int s{4};
     static constexpr Matrix<double, s, s> mat = {
         {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
@@ -126,8 +132,10 @@ TEST(householder, properties) {
 
     static_assert(compareFloatMat(P, PT, 1e-9), MSG);
 
-    for (size_t i = 0; i < s; ++i) {
-        for (size_t j = 0; j < s; ++j) {
+    for (size_t i = 0; i < s; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+        {
             ASSERT_NEAR(P(i, j), PT(i, j), 1e-9);
         }
     }
@@ -138,8 +146,10 @@ TEST(householder, properties) {
 
     static_assert(compareFloatMat(P2, I, 1e-9), MSG);
 
-    for (size_t i = 0; i < s; ++i) {
-        for (size_t j = 0; j < s; ++j) {
+    for (size_t i = 0; i < s; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+        {
             ASSERT_NEAR(P2(i, j), I(i, j), 1e-9);
         }
     }

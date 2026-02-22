@@ -1,6 +1,7 @@
 #include "example_helper.hpp"
 
-int main() {
+int main()
+{
     static constexpr int x{3};
     static constexpr int s{4};
 

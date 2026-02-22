@@ -8,7 +8,8 @@ using namespace consteig;
 
 static constexpr double kTol = 1e-9;
 
-TEST(qr_decomp, eigen_comparison) {
+TEST(qr_decomp, eigen_comparison)
+{
     static constexpr Size s{4};
     static constexpr Matrix<double, s, s> mat = {
         {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
@@ -31,25 +32,31 @@ TEST(qr_decomp, eigen_comparison) {
     Eigen::MatrixXd rEig = qrEig.matrixQR().triangularView<Eigen::Upper>();
 
     // Runtime checks
-    for (size_t i = 0; i < s; ++i) {
-        for (size_t j = 0; j < s; ++j) {
+    for (size_t i = 0; i < s; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+        {
             ASSERT_NEAR(recon(i, j), mat(i, j), kTol);
         }
     }
 
-    for (size_t i = 0; i < s; ++i) {
-        for (size_t j = 0; j < s; ++j) {
+    for (size_t i = 0; i < s; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+        {
             ASSERT_NEAR(qtq(i, j), ident(i, j), kTol);
         }
     }
 
     // Compare R diagonal absolute values (since signs can flip)
-    for (Size i = 0; i < s; ++i) {
+    for (Size i = 0; i < s; ++i)
+    {
         ASSERT_NEAR(std::abs(qrRes._r(i, i)), std::abs(rEig(i, i)), kTol);
     }
 }
 
-TEST(qr_decomp, identity_matrix) {
+TEST(qr_decomp, identity_matrix)
+{
     static constexpr Size s{3};
     static constexpr Matrix<double, s, s> mat = eye<double, s>();
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
@@ -58,15 +65,18 @@ TEST(qr_decomp, identity_matrix) {
     static_assert(compareFloatMat(qrRes._q, mat, kTol), MSG);
     static_assert(compareFloatMat(qrRes._r, mat, kTol), MSG);
 
-    for (size_t i = 0; i < s; ++i) {
-        for (size_t j = 0; j < s; ++j) {
+    for (size_t i = 0; i < s; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+        {
             ASSERT_NEAR(qrRes._q(i, j), mat(i, j), kTol);
             ASSERT_NEAR(qrRes._r(i, j), mat(i, j), kTol);
         }
     }
 }
 
-TEST(qr_decomp, zero_matrix) {
+TEST(qr_decomp, zero_matrix)
+{
     static constexpr Size s{3};
     static constexpr Matrix<double, s, s> mat{};
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
@@ -77,15 +87,18 @@ TEST(qr_decomp, zero_matrix) {
     static_assert(compareFloatMat(qrRes._q, ident, kTol), MSG);
     static_assert(compareFloatMat(qrRes._r, zeroMat, kTol), MSG);
 
-    for (size_t i = 0; i < s; ++i) {
-        for (size_t j = 0; j < s; ++j) {
+    for (size_t i = 0; i < s; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+        {
             ASSERT_NEAR(qrRes._q(i, j), ident(i, j), kTol);
             ASSERT_NEAR(qrRes._r(i, j), 0.0, kTol);
         }
     }
 }
 
-TEST(qr_decomp, diagonal_matrix) {
+TEST(qr_decomp, diagonal_matrix)
+{
     static constexpr Size s{3};
     static constexpr Matrix<double, s, s> mat = {
         {{{2, 0, 0}, {0, 3, 0}, {0, 0, 4}}}};
@@ -96,15 +109,18 @@ TEST(qr_decomp, diagonal_matrix) {
     static_assert(compareFloatMat(qrRes._q, ident, kTol), MSG);
     static_assert(compareFloatMat(qrRes._r, mat, kTol), MSG);
 
-    for (size_t i = 0; i < s; ++i) {
-        for (size_t j = 0; j < s; ++j) {
+    for (size_t i = 0; i < s; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+        {
             ASSERT_NEAR(qrRes._q(i, j), (i == j ? 1.0 : 0.0), kTol);
             ASSERT_NEAR(qrRes._r(i, j), mat(i, j), kTol);
         }
     }
 }
 
-TEST(qr_decomp, singular_matrix) {
+TEST(qr_decomp, singular_matrix)
+{
     static constexpr Size s{3};
     // Row 3 is sum of Row 1 and Row 2 -> Singular
     static constexpr Matrix<double, s, s> mat = {
@@ -114,14 +130,17 @@ TEST(qr_decomp, singular_matrix) {
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
     static_assert(compareFloatMat(recon, mat, kTol), MSG);
 
-    for (size_t i = 0; i < s; ++i) {
-        for (size_t j = 0; j < s; ++j) {
+    for (size_t i = 0; i < s; ++i)
+    {
+        for (size_t j = 0; j < s; ++j)
+        {
             ASSERT_NEAR(recon(i, j), mat(i, j), kTol);
         }
     }
 }
 
-TEST(qr_decomp, static_constexpr_even_mat) {
+TEST(qr_decomp, static_constexpr_even_mat)
+{
     static constexpr Size x{3};
 
     static constexpr Matrix<double, x, x> mat{
@@ -136,7 +155,8 @@ TEST(qr_decomp, static_constexpr_even_mat) {
     ASSERT_TRUE(compareFloatMat(test._q * test._r, mat, kTol));
 }
 
-TEST(qr_decomp, static_constexpr_random) {
+TEST(qr_decomp, static_constexpr_random)
+{
     static constexpr int s{10};
     static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
