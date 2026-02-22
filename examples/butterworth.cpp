@@ -57,11 +57,12 @@ int main() {
     // z = exp(sT)
     // We use consteig::Complex here for the exponential function
 
-    consteig::Complex<double> p1_c = poles_c(0, 0);
-    consteig::Complex<double> p2_c = poles_c(1, 0);
+    // consteig::Complex<double>
+    constexpr auto p1_c = poles_c(0, 0);
+    constexpr auto p2_c = poles_c(1, 0);
 
-    consteig::Complex<double> p1_d = consteig::exp(p1_c * T);
-    consteig::Complex<double> p2_d = consteig::exp(p2_c * T);
+    constexpr auto p1_d = consteig::exp(p1_c * T);
+    constexpr auto p2_d = consteig::exp(p2_c * T);
 
     std::cout << "\nDiscrete-time Poles (Mapped via z = exp(sT)):" << std::endl;
     std::cout << "z1 = " << p1_d.real << " + j" << p1_d.imag << std::endl;
@@ -75,13 +76,13 @@ int main() {
 
     // Coefficients for the characteristic polynomial P(z) = z^2 + coeff1*z +
     // coeff2
-    double coeff1 = -(p1_d + p2_d).real;
-    double coeff2 = (p1_d * p2_d).real;
+    constexpr double coeff1 = -(p1_d + p2_d).real;
+    constexpr double coeff2 = (p1_d * p2_d).real;
 
     // In difference equation y[n] = ... - a1*y[n-1] - a2*y[n-2]
     // These correspond to the polynomial coefficients directly.
-    double a1 = coeff1;
-    double a2 = coeff2;
+    constexpr double a1 = coeff1;
+    constexpr double a2 = coeff2;
 
     std::cout << "\nFilter Coefficients (Denominator):" << std::endl;
     std::cout << "a1 = " << a1 << std::endl;
