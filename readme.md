@@ -163,7 +163,7 @@ Here are some examples to help get started:
 * [Matrix Arithmetic](examples/matrix.cpp)
 * [Finding eigenvalues](examples/eigen.cpp)
 * [Population flow](examples/population.cpp)
-* [Butterworth Filter Design](examples/butterworth.cpp)
+* [Butterworth Filter Design](examples/butterworth_core.hpp)
 
 ## How Is This Different
 There are powerful open source C++ eigenvalues solvers already in existence
