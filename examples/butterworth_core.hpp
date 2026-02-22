@@ -7,9 +7,11 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-namespace butterworth {
+namespace butterworth
+{
 
-struct Constants {
+struct Constants
+{
     double fs;
     double fc;
     consteig::Matrix<double, 2, 2> A_c;
@@ -22,7 +24,8 @@ struct Constants {
     double K;
 };
 
-constexpr Constants design() {
+constexpr Constants design()
+{
     double fs = 1000.0;
     double fc = 100.0;
     double T = 1.0 / fs;
@@ -47,6 +50,6 @@ constexpr Constants design() {
     return {fs, fc, A_c, p1_c, p2_c, p1_d, p2_d, a1, a2, K};
 }
 
-}  // namespace butterworth
+} // namespace butterworth
 
 #endif

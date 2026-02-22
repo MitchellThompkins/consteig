@@ -1,7 +1,8 @@
 #include "../consteig.hpp"
 #include "example_helper.hpp"
 
-int main() {
+int main()
+{
     // example from
     // https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764
     static constexpr consteig::Size pop_size{2};
@@ -27,7 +28,8 @@ int main() {
     printMat("Population Transition Matrix (A)", pop_mat);
 
     std::cout << "\nEigenvalues (lambda):" << std::endl;
-    for (consteig::Size i = 0; i < pop_size; ++i) {
+    for (consteig::Size i = 0; i < pop_size; ++i)
+    {
         std::cout << pop_eig_vals(i, 0).real << std::endl;
     }
 

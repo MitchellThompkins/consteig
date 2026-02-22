@@ -8,7 +8,8 @@ using namespace consteig;
 // These helper functions allow us to call templated constexpr functions
 template <typename T, Size R, Size C>
 static constexpr Matrix<T, R, C> setRowsTest(const Matrix<T, 1, C> mat[],
-                                             const T val) {
+                                             const T val)
+{
     Matrix<T, R, C> out{};
     out.setRow(mat[0], val);
     out.setRow(mat[1], val + 1);
@@ -18,7 +19,8 @@ static constexpr Matrix<T, R, C> setRowsTest(const Matrix<T, 1, C> mat[],
 
 template <typename T, Size R, Size C>
 static constexpr Matrix<T, R, C> setColsTest(const Matrix<T, R, 1> mat[],
-                                             const T val) {
+                                             const T val)
+{
     Matrix<T, R, C> out{};
     out.setCol(mat[0], val);
     out.setCol(mat[1], val + 1);
@@ -29,7 +31,8 @@ static constexpr Matrix<T, R, C> setColsTest(const Matrix<T, R, 1> mat[],
 template <typename T, Size R, Size C, Size startIndex, Size endIndex>
 static constexpr Matrix<T, R, C> setSubRowTest(
     Matrix<T, R, C> original, const Matrix<T, 1, endIndex - startIndex + 1> mat,
-    const Size row) {
+    const Size row)
+{
     original.template setRow<startIndex, endIndex>(mat, row);
     return original;
 }
@@ -37,19 +40,22 @@ static constexpr Matrix<T, R, C> setSubRowTest(
 template <typename T, Size R, Size C, Size startIndex, Size endIndex>
 static constexpr Matrix<T, R, C> setSubColTest(
     Matrix<T, R, C> original, const Matrix<T, endIndex - startIndex + 1, 1> mat,
-    const Size col) {
+    const Size col)
+{
     original.template setCol<startIndex, endIndex>(mat, col);
     return original;
 }
 
 template <typename T, Size R, Size C, Size x1, Size y1, Size x2, Size y2>
 static constexpr Matrix<T, R, C> setSubTest(
-    Matrix<T, R, C> original, const Matrix<T, x2 - x1 + 1, y2 - y1 + 1> mat) {
+    Matrix<T, R, C> original, const Matrix<T, x2 - x1 + 1, y2 - y1 + 1> mat)
+{
     original.template setSub<x1, y1, x2, y2>(mat);
     return original;
 }
 
-TEST(matrix, static_constexpr) {
+TEST(matrix, static_constexpr)
+{
     static constexpr int s{2};
     static constexpr Matrix<int, s, s> matrix{{{{0, 1}, {2, 3}}}};
 
@@ -60,15 +66,18 @@ TEST(matrix, static_constexpr) {
     static_assert(matrix(1, 1) == 3, MSG);
 
     int m = 0;
-    for (Size i{0}; i < s; i++) {
-        for (Size j{0}; j < s; j++) {
+    for (Size i{0}; i < s; i++)
+    {
+        for (Size j{0}; j < s; j++)
+        {
             ASSERT_EQ(m, matrix(i, j));
             m++;
         }
     }
 }
 
-TEST(matrix, checkSize) {
+TEST(matrix, checkSize)
+{
     static constexpr Size x{2};
     static constexpr Size y{3};
 
@@ -85,7 +94,8 @@ TEST(matrix, checkSize) {
     ASSERT_EQ(height, y);
 }
 
-TEST(matrix, equality) {
+TEST(matrix, equality)
+{
     static constexpr int s{2};
     static constexpr Matrix<int, s, s> mat1{{{{0, 1}, {2, 3}}}};
     static constexpr Matrix<int, s, s> mat2{{{{0, 1}, {2, 3}}}};
@@ -102,7 +112,8 @@ TEST(matrix, equality) {
     ASSERT_FALSE(mat1 != mat2);
 }
 
-TEST(matrix, matrix_equals_operator) {
+TEST(matrix, matrix_equals_operator)
+{
     static constexpr int s{2};
     static constexpr Matrix<int, s, s> mat1{{{{0, 1}, {2, 3}}}};
     static constexpr Matrix<int, s, s> mat2 = mat1;
@@ -113,7 +124,8 @@ TEST(matrix, matrix_equals_operator) {
     ASSERT_TRUE(mat1 == mat2);
 }
 
-TEST(matrix, static_constexpr_row) {
+TEST(matrix, static_constexpr_row)
+{
     static constexpr int x{3};
     static constexpr int limit{1};
 
@@ -136,7 +148,8 @@ TEST(matrix, static_constexpr_row) {
     ASSERT_TRUE(rowExtractLimit == answerLimit);
 }
 
-TEST(matrix, static_constexpr_col) {
+TEST(matrix, static_constexpr_col)
+{
     static constexpr int x{3};
     static constexpr int limit{1};
 
@@ -161,7 +174,8 @@ TEST(matrix, static_constexpr_col) {
     ASSERT_TRUE(colExtractLimit == answerLimit);
 }
 
-TEST(matrix, static_constexpr_subMatrix) {
+TEST(matrix, static_constexpr_subMatrix)
+{
     static constexpr int x{3};
 
     static constexpr Matrix<float, x, x> mat{
@@ -178,7 +192,8 @@ TEST(matrix, static_constexpr_subMatrix) {
     ASSERT_TRUE(subMat == answer);
 }
 
-TEST(matrix, static_constexpr_subMatrixSameSize) {
+TEST(matrix, static_constexpr_subMatrixSameSize)
+{
     static constexpr int x{1};
 
     static constexpr Matrix<float, x, x> mat{{{{5.0F}}}};
@@ -193,7 +208,8 @@ TEST(matrix, static_constexpr_subMatrixSameSize) {
     ASSERT_TRUE(subMat == answer);
 }
 
-TEST(matrix, static_constexpr_set_row) {
+TEST(matrix, static_constexpr_set_row)
+{
     static constexpr int x{3};
 
     static constexpr Matrix<int, 1, x> mat0{{{{5, -4, 2}}}};
@@ -213,7 +229,8 @@ TEST(matrix, static_constexpr_set_row) {
     ASSERT_TRUE(mat == answer);
 }
 
-TEST(matrix, static_constexpr_set_col) {
+TEST(matrix, static_constexpr_set_col)
+{
     static constexpr int x{3};
 
     static constexpr Matrix<int, x, 1> mat0{{{{5}, {-4}, {2}}}};
@@ -233,7 +250,8 @@ TEST(matrix, static_constexpr_set_col) {
     ASSERT_TRUE(mat == answer);
 }
 
-TEST(matrix, static_constexpr_set_sub_row) {
+TEST(matrix, static_constexpr_set_sub_row)
+{
     static constexpr Size x{3};
     static constexpr Size start{1};
     static constexpr Size end{2};
@@ -255,7 +273,8 @@ TEST(matrix, static_constexpr_set_sub_row) {
     ASSERT_TRUE(mat == answer);
 }
 
-TEST(matrix, static_constexpr_set_sub_col) {
+TEST(matrix, static_constexpr_set_sub_col)
+{
     static constexpr Size x{3};
     static constexpr Size start{1};
     static constexpr Size end{2};
@@ -277,7 +296,8 @@ TEST(matrix, static_constexpr_set_sub_col) {
     ASSERT_TRUE(mat == answer);
 }
 
-TEST(matrix, static_constexpr_set_sub_mat_square) {
+TEST(matrix, static_constexpr_set_sub_mat_square)
+{
     static constexpr Size x{3};
 
     static constexpr Size x1{1};
@@ -302,7 +322,8 @@ TEST(matrix, static_constexpr_set_sub_mat_square) {
     ASSERT_TRUE(mat == answer);
 }
 
-TEST(matrix, static_constexpr_test_square) {
+TEST(matrix, static_constexpr_test_square)
+{
     static constexpr Size x{3};
     static constexpr Size s{2};
 
@@ -323,7 +344,8 @@ TEST(matrix, static_constexpr_test_square) {
     ASSERT_FALSE(checkNotSquare);
 }
 
-TEST(matrix, check_symmetry) {
+TEST(matrix, check_symmetry)
+{
     static constexpr Size s{5};
 
     static constexpr consteig::Matrix<int, s, s> symmetricIntMat{{{
@@ -338,7 +360,7 @@ TEST(matrix, check_symmetry) {
         {-5, -4, 2, 1, 77},
         {-4, 5, 7, 8, 9},
         {2, 7, 0, -83, 2},
-        {1, 8, -83, 3, 9},  // The 9 here is asymmetric
+        {1, 8, -83, 3, 9}, // The 9 here is asymmetric
         {77, 9, 2, 4, 2},
     }}};
 
@@ -351,7 +373,7 @@ TEST(matrix, check_symmetry) {
     }}};
 
     static constexpr consteig::Matrix<double, s, s> asymmetricDoubleMat{{{
-        {-5, -4, 2, 1, 77.2},  // The 77.2 here is asymmetric
+        {-5, -4, 2, 1, 77.2}, // The 77.2 here is asymmetric
         {-4, 5, 7, 8, 9.2},
         {2, 7, 0, -83, 2},
         {1, 8, -83, 3, 4},
