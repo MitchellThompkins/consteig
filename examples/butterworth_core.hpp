@@ -31,8 +31,7 @@ constexpr Constants design() {
     double sqrt2_wc = consteig::sqrt(2.0) * wc;
     double wc_sq = wc * wc;
 
-    consteig::Matrix<double, 2, 2> A_c{
-        {{{0.0, 1.0}, {-wc_sq, -sqrt2_wc}}}};
+    consteig::Matrix<double, 2, 2> A_c{{{{0.0, 1.0}, {-wc_sq, -sqrt2_wc}}}};
 
     auto poles_c = consteig::eigvals(A_c);
     auto p1_c = poles_c(0, 0);
@@ -48,6 +47,6 @@ constexpr Constants design() {
     return {fs, fc, A_c, p1_c, p2_c, p1_d, p2_d, a1, a2, K};
 }
 
-} // namespace butterworth
+}  // namespace butterworth
 
 #endif
