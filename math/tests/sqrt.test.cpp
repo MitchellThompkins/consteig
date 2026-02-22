@@ -58,7 +58,9 @@ TEST(sqrt_function, sqrt_long_double) {
     static constexpr long double e{58582.28485L};
     static constexpr long double eConsteig{consteig::sqrt(e)};
     // Using simple double precision comparison as long double precision varies
-    static_assert(consteig::compareFloats(static_cast<double>(eConsteig), 242.0377757, 1e-5), MSG);
+    static_assert(consteig::compareFloats(static_cast<double>(eConsteig),
+                                          242.0377757, 1e-5),
+                  MSG);
     ASSERT_NEAR(static_cast<double>(eConsteig), 242.0377757, 1e-5);
 }
 

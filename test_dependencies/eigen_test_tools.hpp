@@ -18,10 +18,12 @@ Eigen::Matrix<T, R, C> toEigen(const consteig::Matrix<T, R, C>& mat) {
 }
 
 template <typename T, consteig::Size R, consteig::Size C>
-void expectNear(const consteig::Matrix<T, R, C>& a, const Eigen::Matrix<T, R, C>& b, double tol = 1e-4) {
+void expectNear(const consteig::Matrix<T, R, C>& a,
+                const Eigen::Matrix<T, R, C>& b, double tol = 1e-4) {
     for (consteig::Size i = 0; i < R; ++i) {
         for (consteig::Size j = 0; j < C; ++j) {
-            EXPECT_NEAR(a(i, j), b(i, j), tol) << "Mismatch at (" << i << "," << j << ")";
+            EXPECT_NEAR(a(i, j), b(i, j), tol)
+                << "Mismatch at (" << i << "," << j << ")";
         }
     }
 }
