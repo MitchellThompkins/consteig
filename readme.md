@@ -18,14 +18,16 @@ dependences several constexpr functions are implemented as well.
 
 It's important to note that `consteig` currently focuses exclusively on computing **eigenvalues**. For many applications, such as determining the stability of digital filters (as described in "Why Does This Exist"), the eigenvalues themselves are the desired result, and the eigenvectors are not required. Therefore, this library does not currently provide functionality for eigenvector computation.
 
+### Example 1 - Population Flow
+
 An example helps best. Let's say that we take the example from [Using Eigenvectors to Find Steady State Population Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764) and apply it using `consteig`.
 
 The `population.cpp` example demonstrates finding the eigenvalues of the population transition matrix:
 
 ```
 Population Transition Matrix (A)
-0.95 0.05 
-0.2 0.8 
+0.95 0.05
+0.2 0.8
 
 Eigenvalues (lambda):
 1
@@ -40,10 +42,12 @@ steady-state population. The next step, (which `consteig` does not attempt to
 solve), would be the computation of the eigenvector corresponding to this
 eigenvalue.
 
-Another powerful application is **Digital Filter Design**. The `butterworth.cpp`
+### Example 2 - Digital Filter Design
+
+Another powerful application is Digital Filter Design. The `butterworth.cpp`
 example demonstrates how to design a 2nd-order Butterworth digital filter using
-the Zero-Order Hold (ZOH) method, but **without algebraically performing a
-Z-transform**.
+the Zero-Order Hold (ZOH) method, but without algebraically performing a
+Z-transform.
 
 Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 1.  Define the continuous-time state-space matrix $A_c$.
@@ -86,15 +90,15 @@ into a special `.filter_data` section of the binary. After building and
 extracting said data with the below, it is demonstrated that all of these
 calculations were performed by the compiler.
 
-```
+```sh
 make butterworth.main
 objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth_values.cpp.o filter_data.bin
 xxd -c 8 filter_data.bin
-python3 examples/print
+python3 examples/print_butterworth_binary.py
 ```
 
-```
-~ $ xxd -c 8 filter_data.bin
+```sh
+xxd -c 8 filter_data.bin
 
 00000000: 0000 0000 0040 8f40  .....@.@
 00000008: 0000 0000 0000 5940  ......Y@
@@ -114,7 +118,7 @@ python3 examples/print
 00000078: afc5 de84 c451 da3f  .....Q.?
 00000080: d727 1cf8 5734 d03f  .'..W4.?
 
-~ $ python3 examples/print_butterworth_binary.py
+python3 examples/print_butterworth_binary.py
 
 Name         Double (64-bit)      Decimal
 ----------------------------------------------------------------------
@@ -144,8 +148,7 @@ could be calculated at compile time. In order to find the filter coefficients
 it’s required to solve a multi order polynomial. Implementing a root finder
 natively is tedious and error prone. Finding the roots of a polynomial can be
 reframed as an eigenvalue problem which makes life easier. The matlab and octave
-root finding functions actually operate in this way. As such development began
-on a compile time eigenvalue finder.
+root finding functions actually operate in this way.
 
 ## How To Use Consteig
 Consteig is a templated library and as such a user does not need to compile
