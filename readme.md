@@ -81,8 +81,10 @@ This approach numerically derives the filter coefficients by finding eigenvalues
 directly, simplifying the design process for high-order filters where algebraic
 transformation is tedious.
 
-To demonstrate the compile time nature of this change, we put the filter data
-into a special `.filter_data` section of the binary.
+To demonstrate the compile time nature of this library, the filter data
+into a special `.filter_data` section of the binary. After building and
+extracting said data with the below, it is demonstrated that all of these
+calculations were performed by the compiler.
 
 ```
 make butterworth.main
@@ -113,6 +115,7 @@ python3 examples/print
 00000080: d727 1cf8 5734 d03f  .'..W4.?
 
 ~ $ python3 examples/print_butterworth_binary.py
+
 Name         Double (64-bit)      Decimal
 ----------------------------------------------------------------------
 fs           0000 0000 0040 8f40  1000.000000000000000
