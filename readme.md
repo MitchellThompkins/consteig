@@ -20,7 +20,7 @@ It's important to note that `consteig` currently focuses exclusively on computin
 
 An example helps best. Let's say that we take the example from [Using Eigenvectors to Find Steady State Population Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764) and apply it using `consteig`.
 
-Our `population.cpp` example demonstrates finding the eigenvalues of the population transition matrix:
+The `population.cpp` example demonstrates finding the eigenvalues of the population transition matrix:
 
 ```
 Population Transition Matrix (A)
@@ -40,7 +40,10 @@ steady-state population. The next step, (which `consteig` does not attempt to
 solve), would be the computation of the eigenvector corresponding to this
 eigenvalue.
 
-Another powerful application is **Digital Filter Design**. The `butterworth.cpp` example demonstrates how to design a 2nd-order Butterworth digital filter using the Zero-Order Hold (ZOH) method, but **without algebraically performing a Z-transform**.
+Another powerful application is **Digital Filter Design**. The `butterworth.cpp`
+example demonstrates how to design a 2nd-order Butterworth digital filter using
+the Zero-Order Hold (ZOH) method, but **without algebraically performing a
+Z-transform**.
 
 Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 1.  Define the continuous-time state-space matrix $A_c$.
@@ -48,7 +51,7 @@ Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 3.  Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
 4.  Reconstruct the digital filter's characteristic polynomial from the mapped poles.
 
-Our `butterworth.cpp` example generates the following design for a 100Hz cutoff at 1kHz sampling:
+The `butterworth.cpp` example generates the following design for a 100Hz cutoff at 1kHz sampling:
 
 ```
 Designing 2nd Order Butterworth Lowpass Filter
@@ -74,7 +77,64 @@ Final Digital Filter Difference Equation:
 y[n] = 0.25319480161180990540614743622427 * x[n] - (-1.15804589983096439809173716639634) * y[n-1] - (0.41124070144277430349788460262062) * y[n-2]
 ```
 
-This approach numerically derives the filter coefficients by finding eigenvalues directly, simplifying the design process for high-order filters where algebraic transformation is tedious.
+This approach numerically derives the filter coefficients by finding eigenvalues
+directly, simplifying the design process for high-order filters where algebraic
+transformation is tedious.
+
+To demonstrate the compile time nature of this change, we put the filter data
+into a special `.filter_data` section of the binary.
+
+```
+make butterworth.main
+objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth_values.cpp.o filter_data.bin
+xxd -c 8 filter_data.bin
+python3 examples/print
+```
+
+```
+~ $ xxd -c 8 filter_data.bin
+
+00000000: 0000 0000 0040 8f40  .....@.@
+00000008: 0000 0000 0000 5940  ......Y@
+00000010: 0000 0000 0000 0000  ........
+00000018: 0000 0000 0000 f03f  .......?
+00000020: 4ac4 44b4 8018 18c1  J.D.....
+00000028: 84ea f9d9 9cc4 8bc0  ........
+00000030: 84ea f9d9 9cc4 7bc0  ......{.
+00000038: 85ea f9d9 9cc4 7b40  ......{@
+00000040: 84ea f9d9 9cc4 7bc0  ......{.
+00000048: 85ea f9d9 9cc4 7bc0  ......{.
+00000050: 76a7 3023 5b87 e23f  v.0#[..?
+00000058: 0c13 dc5a f5a3 d13f  ...Z...?
+00000060: 76a7 3023 5b87 e23f  v.0#[..?
+00000068: 0c13 dc5a f5a3 d1bf  ...Z....
+00000070: 76a7 3023 5b87 f2bf  v.0#[...
+00000078: afc5 de84 c451 da3f  .....Q.?
+00000080: d727 1cf8 5734 d03f  .'..W4.?
+
+~ $ python3 examples/print_butterworth_binary.py
+
+Name         Double (64-bit)      Decimal
+----------------------------------------------------------------------
+fs           0000000000408f40     1000.000000000000000
+fc           0000000000005940     100.000000000000000
+A_c[0][0]    0000000000000000     0.000000000000000
+A_c[0][1]    000000000000f03f     1.000000000000000
+A_c[1][0]    4ac444b4801818c1     -394784.176043574349023
+A_c[1][1]    84eaf9d99cc48bc0     -888.576587631673192
+p1_real      84eaf9d99cc47bc0     -444.288293815836596
+p1_imag      85eaf9d99cc47b40     444.288293815836653
+p2_real      84eaf9d99cc47bc0     -444.288293815836596
+p2_imag      85eaf9d99cc47b40     444.288293815836653
+z1_real      76a730235b87e23f     0.579022949915482
+z1_imag      0c13dc5af5a3d13f     0.275632227640288
+z2_real      76a730235b87e23f     0.579022949915482
+z2_imag      0c13dc5af5a3d1bf     -0.275632227640288
+a1           76a730235b87f2bf     -1.158045899830964
+a2           afc5de84c451da3f     0.411240701442774
+K            d7271cf85734d03f     0.253194801611810
+
+```
 
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
