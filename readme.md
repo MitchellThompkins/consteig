@@ -85,19 +85,19 @@ This approach numerically derives the filter coefficients by finding eigenvalues
 directly, simplifying the design process for high-order filters where algebraic
 transformation is tedious.
 
-To demonstrate the compile time nature of this library, the filter data
-into a special `.filter_data` section of the binary. After building and
-extracting said data with the below, it is demonstrated that all of these
-calculations were performed by the compiler.
+To demonstrate the compile time nature of this library, the filter data is
+compiled into a special `.filter_data` section of the binary. You can compile
+and extract the data as is shown below to demonstrate that the filter
+coefficients are indeed calculated completly at compile time.
 
-```sh
+```
 make butterworth.main
 objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth_values.cpp.o filter_data.bin
 xxd -c 8 filter_data.bin
 python3 examples/print_butterworth_binary.py
 ```
 
-```sh
+```
 xxd -c 8 filter_data.bin
 
 00000000: 0000 0000 0040 8f40  .....@.@
