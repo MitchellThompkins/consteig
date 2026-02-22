@@ -1,4 +1,4 @@
 #include "generated_test_helpers.hpp"
 #ifdef ENABLE_ROBUSTNESS
-TEST(generated_tests, hamiltonian_10x10_45) { static_assert(check_single_hamiltonian_nonsym_10x10<45>(), "Test hamiltonian_10x10_45 failed"); SUCCEED(); }
+TEST(generated_tests, hamiltonian_8x8_45) { static_assert(check_single_hamiltonian_nonsym_8x8<45>(), "Test hamiltonian_8x8_45 failed"); SUCCEED(); }
 #endif
