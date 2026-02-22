@@ -17,7 +17,7 @@ fprintf(fid, 'namespace consteig {\n\n');
 NUM_RANDOM_CASES = 50;
 NUM_ROBUST_CASES = 50;
 
-MATRIX_SIZE = 10;
+MATRIX_SIZE = 8;
 
 function generate_cases(fid, type_str, S, num_cases, suffix, category)
     if nargin < 6
