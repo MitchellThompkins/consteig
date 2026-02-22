@@ -117,7 +117,8 @@ xxd -c 8 filter_data.bin
 00000070: 76a7 3023 5b87 f2bf  v.0#[...
 00000078: afc5 de84 c451 da3f  .....Q.?
 00000080: d727 1cf8 5734 d03f  .'..W4.?
-
+```
+```
 python3 examples/print_butterworth_binary.py
 
 Name         Double (64-bit)      Decimal
