@@ -13,7 +13,8 @@ constexpr T exp_cf_recur(const T x, const int depth_end) noexcept {
     int depth = CONSTEIG_MAX_ITER - 1;
     T res = static_cast<T>(1);
     while (depth > depth_end - 1) {
-        res = static_cast<T>(1) + x / static_cast<T>(depth - 1) - x / static_cast<T>(depth) / res;
+        res = static_cast<T>(1) + x / static_cast<T>(depth - 1) -
+              x / static_cast<T>(depth) / res;
         --depth;
     }
     return res;
@@ -36,14 +37,16 @@ constexpr T find_fraction(const T x) noexcept {
 
 template <typename T>
 constexpr T exp_split(const T x) noexcept {
-    return consteig::pow(static_cast<T>(E_CONST), static_cast<int>(find_whole(x))) * exp_cf(find_fraction(x));
+    return consteig::pow(static_cast<T>(E_CONST),
+                         static_cast<int>(find_whole(x))) *
+           exp_cf(find_fraction(x));
 }
 
 template <typename T>
 constexpr T exp_check(const T x) noexcept {
-    return (x < static_cast<T>(0) ? static_cast<T>(1) / exp_check(-x) :
-            x < static_cast<T>(2) ? exp_cf(x) :
-                                    exp_split(x));
+    return (x < static_cast<T>(0)   ? static_cast<T>(1) / exp_check(-x)
+            : x < static_cast<T>(2) ? exp_cf(x)
+                                    : exp_split(x));
 }
 
 template <typename T>
