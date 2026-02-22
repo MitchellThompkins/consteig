@@ -163,8 +163,9 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
 end
 
 % Random Cases
-generate_cases(fid, 'sym', MATRIX_SIZE, NUM_RANDOM_CASES, '8x8', 'random');
-generate_cases(fid, 'nonsym', MATRIX_SIZE, NUM_RANDOM_CASES, '8x8', 'random');
+size_str = sprintf('%dx%d', MATRIX_SIZE, MATRIX_SIZE);
+generate_cases(fid, 'sym', MATRIX_SIZE, NUM_RANDOM_CASES, size_str, 'random');
+generate_cases(fid, 'nonsym', MATRIX_SIZE, NUM_RANDOM_CASES, size_str, 'random');
 
 ROBUST_CATEGORIES = {'defective', 'nearly_defective', 'non_normal', 'clustered', 'repeated', ...
                      'companion', 'graded', 'large_jordan', 'toeplitz', 'nearly_reducible', ...
@@ -172,21 +173,21 @@ ROBUST_CATEGORIES = {'defective', 'nearly_defective', 'non_normal', 'clustered',
 
 for c = 1:length(ROBUST_CATEGORIES)
     cat = ROBUST_CATEGORIES{c};
-    generate_cases(fid, 'nonsym', 8, NUM_ROBUST_CASES, '8x8', cat);
+    generate_cases(fid, 'nonsym', MATRIX_SIZE, NUM_ROBUST_CASES, size_str, cat);
 end
 
 % 3. QR Decomposition Test Case
 A_qr = rand(MATRIX_SIZE);
 [Q, R] = qr(A_qr);
 fprintf(fid, '// QR Decomposition Test Case\n');
-fprintf(fid, 'static constexpr Matrix<double, 8, 8> mat_qr\n{{{\n');
-for i = 1:4
+fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_qr\n{{{\n', MATRIX_SIZE, MATRIX_SIZE);
+for i = 1:MATRIX_SIZE
     fprintf(fid, '    {');
-    for j = 1:4
+    for j = 1:MATRIX_SIZE
         if j > 1, fprintf(fid, ', '); end
         fprintf(fid, '%.16e', A_qr(i,j));
     end
-    if i < 4, fprintf(fid, '},\n'); else fprintf(fid, '}\n'); end
+    if i < MATRIX_SIZE, fprintf(fid, '},\n'); else fprintf(fid, '}\n'); end
 end
 fprintf(fid, '}}};\n\n');
 
@@ -197,8 +198,8 @@ fclose(fid);
 % Now generate the C++ test files
 [status, output] = system('rm eigen/tests/generated_*.test.cpp');
 
-% Write a file containing the 8x8 variant of the test case
-function write_test_file(filename, category, type, index)
+% Write a file containing the variant of the test case
+function write_test_file(filename, category, type, index, S)
     fid = fopen(filename, 'w');
     fprintf(fid, '#include "generated_test_helpers.hpp"\n');
 
@@ -206,8 +207,9 @@ function write_test_file(filename, category, type, index)
         fprintf(fid, '#ifdef ENABLE_ROBUSTNESS\n');
     end
 
-    test_name  = [category '_8x8_' num2str(index)];
-    test_check = ['check_single_' category '_' type '_8x8<' num2str(index) '>'];
+    size_str = sprintf('%dx%d', S, S);
+    test_name  = [category '_' size_str '_' num2str(index)];
+    test_check = ['check_single_' category '_' type '_' size_str '<' num2str(index) '>'];
 
     fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
             test_name, test_check, test_name);
@@ -218,20 +220,20 @@ function write_test_file(filename, category, type, index)
     fclose(fid);
 end
 
-% Random sym (one file per case, 8x8 inside)
+% Random sym (one file per case, matrix size inside)
 for i = 0:NUM_RANDOM_CASES-1
-    write_test_file(sprintf('eigen/tests/generated_sym_%d.test.cpp', i), 'random', 'sym', i);
+    write_test_file(sprintf('eigen/tests/generated_sym_%d.test.cpp', i), 'random', 'sym', i, MATRIX_SIZE);
 end
 
-% Random nonsym (one file per case, 8x8 inside)
+% Random nonsym (one file per case, matrix size inside)
 for i = 0:NUM_RANDOM_CASES-1
-    write_test_file(sprintf('eigen/tests/generated_nonsym_%d.test.cpp', i), 'random', 'nonsym', i);
+    write_test_file(sprintf('eigen/tests/generated_nonsym_%d.test.cpp', i), 'random', 'nonsym', i, MATRIX_SIZE);
 end
 
-% Robust cases (one file per category+index, 8x8 inside)
+% Robust cases (one file per category+index, matrix size inside)
 for c = 1:length(ROBUST_CATEGORIES)
     cat = ROBUST_CATEGORIES{c};
     for i = 0:NUM_ROBUST_CASES-1
-        write_test_file(sprintf('eigen/tests/generated_robust_%s_%d.test.cpp', cat, i), cat, 'nonsym', i);
+        write_test_file(sprintf('eigen/tests/generated_robust_%s_%d.test.cpp', cat, i), cat, 'nonsym', i, MATRIX_SIZE);
     end
 end
