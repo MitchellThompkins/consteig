@@ -2,7 +2,8 @@
 % Run this in Octave/Matlab to generate 'test_dependencies/generated_cases.hpp'
 % and individual test files in 'eigen/tests/'
 
-% Fix seed for reproducibility
+% Fix seed for reproducibility, removing this will produce truly (well _mostly_)
+% random matrices
 rand('seed', 42);
 randn('seed', 42);
 
