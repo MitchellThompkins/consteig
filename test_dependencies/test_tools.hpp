@@ -15,8 +15,9 @@
 #define CONSTEIG_TEST_TOLERANCE 1e-9
 #endif
 
-// It's possible that some of the more diff ult matrices require looser test
-// tolerances
+// It's possible that some of the more difficult matrices require looser test
+// tolerances. Observationally, that has only shown to be the case for highly
+// defective matrices.
 #ifndef RANDOM_TOL
 #define RANDOM_TOL CONSTEIG_TEST_TOLERANCE
 #endif
