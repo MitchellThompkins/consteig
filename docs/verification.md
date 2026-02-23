@@ -16,7 +16,7 @@ of the machine representation. For defective matrices, eigenvalues are
 intrinsically ill-conditioned. That is, small perturbations to the matrix can
 produce much larger perturbations in the eigenvalues.
 
-For a defective eigenvalue associated with a single N\times N Jordan block,
+For a defective eigenvalue associated with a single $N\times N$ Jordan block,
 classical perturbation theory shows that eigenvalue perturbations scale as
 
 ```math
@@ -50,8 +50,8 @@ then the backward error simplifies to:
 So the solver is effectively perturbing the matrix at the level of machine
 precision.
 
-For IEEE-754 double precision (\epsilon_{\text{mach}}=2^{-53}) and a single
-8\times8 Jordan block this gives:
+For IEEE-754 double precision $\epsilon_{\text{mach}}=2^{-53}$ and a single
+$8\times8$ Jordan block this gives:
 
 ```math
 (2^{-53})^{1\over8} \approx 0.010
