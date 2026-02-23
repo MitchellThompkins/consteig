@@ -3,12 +3,9 @@ services:
         image: ghcr.io/mitchellthompkins/consteig_dev_image:latest
         environment:
             - USER=${USER}
-            - Display=${DISPLAY}
             - MY_UID=${MY_UID:? Error -> need UID.}
             - MY_GID=${MY_GID:? Error -> need GID.}
-            - BUILD_SLOW_TESTS=${BUILD_SLOW_TESTS}
             - CONSTEIG_ENABLE_ROBUSTNESS=${CONSTEIG_ENABLE_ROBUSTNESS}
-            - CMAKE_OPTIONS=${CMAKE_OPTIONS}
         volumes:
             - "${PWD}:${PWD}"
         network_mode: host

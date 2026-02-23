@@ -6,14 +6,18 @@ set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_compile_options(-Wall -Wextra -pedantic -Werror)
+# Only apply aggressive warnings and errors if we are the top-level project.
+# This prevents breaking a parent project's build if they include this via add_subdirectory 
+# and their compiler triggers a warning in this code.
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    add_compile_options(-Wall -Wextra -pedantic -Werror)
+endif()
 
 # Note: The following limits are applied to allow for deeper constexpr functionality, 
 # such as complex eigenvalue calculations which exceed default compiler limits.
 # For GCC, -fconstexpr-ops-limit is increased from the default 33M to 1B.
 # For Clang, -fconstexpr-steps is used for the same purpose.
-option(CONSTEIG_RAISE_COMPILER_LIMITS "Raise constexpr limits for all targets" OFF)
-if(CONSTEIG_RAISE_COMPILER_LIMITS)
+macro(consteig_raise_compiler_limits)
     if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compile_options(-fconstexpr-ops-limit=1000000000)
     endif()
@@ -21,6 +25,14 @@ if(CONSTEIG_RAISE_COMPILER_LIMITS)
         add_compile_options(-fconstexpr-steps=1000000000)
     endif()
     add_compile_options(-fconstexpr-depth=1024)
+endmacro()
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    option(CONSTEIG_RAISE_COMPILER_LIMITS "Raise constexpr limits for all targets" OFF)
+
+    if(CONSTEIG_RAISE_COMPILER_LIMITS)
+        consteig_raise_compiler_limits()
+    endif()
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

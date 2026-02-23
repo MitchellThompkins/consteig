@@ -42,6 +42,16 @@ consteig has a few options which can be modified. However, these defaults are
 well tested and modifying them may have non-desirable results such as increased
 compile times or numerical instability.
 
+CMake Options:
+
+* `CONSTEIG_RAISE_COMPILER_LIMITS` - A convenience option in the root
+  `CMakeLists.txt` that, when enabled (`ON`), automatically applies the
+  necessary compiler flags (`-fconstexpr-ops-limit`, `-fconstexpr-steps`, and
+  `-fconstexpr-depth`) to allow for complex compile-time calculations. This
+  option is only available when building `consteig` directly. If you include
+  this library in your project via `add_subdirectory`, you can manually invoke
+  the `consteig_raise_compiler_limits()` CMake macro on your targets.
+
 User Macros:
 
 * `CONSTEIG_MAX_ITER` - Controls the maximum number of iterations allowed for
@@ -67,6 +77,10 @@ Compiler flags:
   constexpr evaluation. Computing eigenvalues requires substantial constexpr
   iterations, so these limits must typically be raised significantly to avoid
   compilation failure.
+
+* `-fconstexpr-depth` - Increases the maximum depth of the constexpr call stack.
+  Complex decompositions and iterations can lead to deep recursion or nested
+  calls that exceed default limits (typically raised to `1024`).
 
 * `-mfpmath=387` - (x86 specific) Directs the compiler to use the x87 FPU, which
   utilizes 80-bit internal precision. This can improve numeric stability and

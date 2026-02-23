@@ -1,6 +1,8 @@
 ################################################################################
 # Executables
 ################################################################################
+consteig_raise_compiler_limits()
+
 add_executable(matrix.main ${CMAKE_CURRENT_SOURCE_DIR}/matrix.cpp)
 target_link_libraries(matrix.main matrix array)
 
@@ -9,11 +11,6 @@ target_link_libraries(decomp.main matrix array)
 
 add_executable(eigen.main ${CMAKE_CURRENT_SOURCE_DIR}/eigen.cpp)
 target_link_libraries(eigen.main matrix array)
-target_compile_options(eigen.main PRIVATE
-    "$<$<CXX_COMPILER_ID:GNU>:-fconstexpr-ops-limit=1000000000>"
-    "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-fconstexpr-steps=1000000000>"
-    -fconstexpr-depth=1024
-)
 
 add_executable(population.main ${CMAKE_CURRENT_SOURCE_DIR}/population.cpp)
 target_link_libraries(population.main matrix array)
