@@ -8,6 +8,60 @@ The library is verified through two primary methods:
    is provided to generate fresh matrix test data and expected results, which
    are automatically verified using `static_assert` at compile time.
 
+## Accuracy [^3]
+
+An eigenvalue solver is limited not only by the numerical algorithm it employs
+but also by the conditioning of the eigenvalue problem and the finite precision
+of the machine representation. For defective matrices, eigenvalues are
+intrinsically ill-conditioned. That is, small perturbations to the matrix can
+produce much larger perturbations in the eigenvalues.
+
+For a defective eigenvalue associated with a single N\times N Jordan block,
+classical perturbation theory shows that eigenvalue perturbations scale as
+
+```math
+\delta \lambda| \sim \|E\|^{1/N}
+```
+
+Modern dense eigenvalue algorithms (e.g., QR) are backward stable, meaning
+the perturbation they introduce is on the order of machine precision:
+
+```math
+\|E\|\lesssim \epsilon_{\text{mach}}\|A\|
+```
+
+which says
+
+> the numerical error in the matrix is no larger than machine epsilon times the
+size of the matrix.
+
+If the matrix is scaled so that its norm is about 1:
+
+```math
+\|A\| \approx 1
+```
+
+then the backward error simplifies to:
+
+```math
+\|E\| \approx \epsilon_{\text{mach}}
+```
+
+So the solver is effectively perturbing the matrix at the level of machine
+precision.
+
+For IEEE-754 double precision (\epsilon_{\text{mach}}=2^{-53}) and a single
+8\times8 Jordan block this gives:
+
+```math
+(2^{-53})^{1\over8} \approx 0.010
+```
+
+Accordingly, for defective matrices of this type, eigenvalues cannot in general
+be expected to be accurate beyond the percent level in double precision. The
+observed accuracy of ~0.03 for consteig on such matrices is therefore
+consistent with the theoretical limit.
+
 ## Compile-Time Verification Limits
 Iterative algorithms like the QR iteration used here are computationally
 expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test
@@ -106,3 +160,4 @@ make container.make.build
         constraint. A stalled QR iteration on a 10x10 non-normal matrix can
         easily exhaust this budget, causing a compilation failure.
 
+[^3]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
