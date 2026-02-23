@@ -204,10 +204,6 @@ function write_test_file(filename, category, type, index, S)
     fid = fopen(filename, 'w');
     fprintf(fid, '#include "generated_test_helpers.hpp"\n');
 
-    if ~strcmp(category, 'random')
-        fprintf(fid, '#ifdef ENABLE_ROBUSTNESS\n');
-    end
-
     size_str = sprintf('%dx%d', S, S);
     test_name  = [category '_' size_str '_' num2str(index)];
     test_check = ['check_single_' category '_' type '_' size_str '<' num2str(index) '>'];
@@ -215,9 +211,6 @@ function write_test_file(filename, category, type, index, S)
     fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
             test_name, test_check, test_name);
 
-    if ~strcmp(category, 'random')
-        fprintf(fid, '#endif\n');
-    end
     fclose(fid);
 end
 

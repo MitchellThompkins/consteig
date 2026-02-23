@@ -1,12 +1,6 @@
 ################################################################################
 # Test
 ################################################################################
-option(CONSTEIG_ENABLE_ROBUSTNESS "Enable intensive robustness tests" OFF)
-
-if(CONSTEIG_ENABLE_ROBUSTNESS)
-    add_compile_definitions(ENABLE_ROBUSTNESS)
-endif()
-
 consteig_raise_compiler_limits()
 
 add_executable(consteig_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen.test.cpp)
