@@ -266,13 +266,16 @@ the accuracy and verification methods implemented to test this library.
 * Eigenvalues need to be known and the standard library is unavailable.
 * You need to manipulate static matrices at compile time.
 
-## What Can Improve
-* Declaring matrices can be initializer bracket hell. Refer to [this
-  example](examples/matrix.cpp) for help.
+## Limitations
+* Declaring matrices can be initializer bracket hell. Refer to
+[examples/matrix.cpp](examples/matrix.cpp) for help.
+
 * For large matrices compilation may be slow due to the inherent cost of
-  `constexpr` evaluation.
-* Currently the matrix [decompositions](examples/decomp.cpp) require square
-  matrices.
+`constexpr` evaluation.
+
+* The matrix decompositions, as see in
+[examples/decomp.cpp](examples/decomp.cpp) require square matrices.
+
 * Support for non-square QR decomposition and optimized determinant/inverse
   calculations.
 
