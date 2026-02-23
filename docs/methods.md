@@ -1,4 +1,4 @@
-# Algorithmic Approach and Optimizations [^1]
+# Algorithmic Approach and Optimizations [^2]
 
 Consteig employs a hybrid approach to performance, balancing `constexpr`
 compatibility with the use of robust and efficient numerical methods.
@@ -82,4 +82,4 @@ several factors:
     a runtime hardware FPU might utilize to preserve precision in critical
     steps.
 
-[^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
+[^2]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.

@@ -237,19 +237,28 @@ they cannot currently calculate Eigenvalues at compile time.
 Another key component to most eigenvalues solvers is the reliance on the
 standard library. This is for good reason as the standard library, in particular
 the STL containers, are powerful and solve many problems.  Unfortunately in some
-systems, particularly for embedded systems the standard library isn’t available.
+systems, particularly for embedded systems the standard library is not available.
 
 This provides a compile-time alternative.
 
-## Algorithmic Approach and Optimizations [^1]
+## Algorithmic Approach and Optimizations [^2]
 
-See [methods](docs/methods.md) for a discussion on the implementation specifics
-for the numerical solvers implemented by `consteig`.
+See [docs/methods.md](docs/methods.md) for a discussion on the implementation
+specifics for the numerical solvers implemented by `consteig`.
 
-## Verification
+## Verification, Accuracy and Performance
 
-See [verification](docs/verification.md) for a discussion on the verification
-methods implemented to test this library.
+consteig uses `8x8` matrices as its test basis and leverages 2 tolerances for
+verification. For all non-defective matrices it uses `1e-9` as an expectation
+when comparing against a reference.  For highly defective matrices, as is the
+case for Jordan blocks, it uses `0.03` [^3]. `0.03` approaches the numerical limit
+of verification accuracy for 64-bit types.
+
+Note that unit testing _does_ leverage components of the standard
+library and Eigen, but the `consteig` library core does not.
+
+See [docs/verification.md](docs/verification.md) for a detailed discussion on
+the accuracy and verification methods implemented to test this library.
 
 
 ## When To Use Consteig
@@ -266,10 +275,6 @@ methods implemented to test this library.
   matrices.
 * Support for non-square QR decomposition and optimized determinant/inverse
   calculations.
-
-## Performance
-* Unit testing _does_ leverage components of the standard library and Eigen, but
-  the `consteig` library core does not.
 
 ## Development
 Build dependencies rely on:
@@ -292,3 +297,4 @@ make container.make.test
 
 [^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
 [^2]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
+[^3]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
