@@ -70,9 +70,13 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
                 {
                     converged = false;
                     for (Size j = 0; j < S; ++j)
+                    {
                         a(i, j) *= f;
+                    }
                     for (Size j = 0; j < S; ++j)
+                    {
                         a(j, i) /= f;
+                    }
                 }
             }
         }
@@ -203,13 +207,13 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
             // Deflates when an element becomes negligible relative to its
             // neighboring diagonal elements. Dual-mode deflation: Standard
             // relative check PLUS an absolute check against machine epsilon.
-            // PERFORMANCE NOTE: The absolute check is critical. In the
-            // 'develop' branch, some random non-symmetric matrices have
-            // near-zero diagonal entries (|d1| + |d2| \approx 0), causing the
-            // relative check to fail indefinitely and spinning the solver to
-            // CONSTEIG_MAX_ITER. Adding '|| abs(subdiag) <= eps' allows these
-            // blocks to deflate early, reducing build times from ~40m to ~7m
-            // even with more complex robustness tests.
+            // PERFORMANCE NOTE: The absolute check is critical. Some random
+            // non-symmetric matrices have near-zero diagonal entries (|d1| +
+            // |d2| \approx 0), causing the relative check to fail indefinitely
+            // and spinning the solver to CONSTEIG_MAX_ITER. Adding '||
+            // abs(subdiag) <= eps' allows these blocks to deflate early,
+            // reducing build times from ~40m to ~7m even with more complex
+            // robustness tests.
             if (consteig::abs(a(l, l - 1)) <= eps * diagonal_sum ||
                 consteig::abs(a(l, l - 1)) <= eps)
             {

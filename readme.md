@@ -1,14 +1,12 @@
 ![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
 
-## What Is This
+## What Is This 
 Consteig is a constexpr template library which uses both constexpr functions and
 template meta-programming to calculate the eigenvalues of a square matrix at
 compile time. That is, the eigenvalues can be saved as `static constexpr` values
 and no processor execution time is spent calculating them at run-time. Consteig
 also allows for compile time static matrix manipulation. To remove any external
 dependences several constexpr math functions are implemented as well.
-
-## What Does This Do
 
 All at compile time, consteig supports:
 
@@ -24,7 +22,64 @@ eigenvalues themselves are the desired result, and the eigenvectors are not
 required. Therefore, this library does not currently provide functionality for
 eigenvector computation.
 
-### Example 1 - Population Flow
+## How To Use Consteig
+Consteig is a templated library and as such a user does not need to compile
+anything separately. Simply `#include “consteig.hpp”` into your project. The
+cmake files here are only to facilitate testing and development.
+
+You will also need a C++ compiler which supports **C++17**.
+
+Here are some examples to help get started:
+* [Declaring a matrix](examples/matrix.cpp)
+* [Matrix Arithmetic](examples/matrix.cpp)
+* [Finding eigenvalues](examples/eigen.cpp)
+* [Population flow](examples/population.cpp)
+* [Butterworth Filter Design](examples/butterworth_core.hpp)
+
+### Build Options
+
+consteig has a few options which can be modified. However, these defaults are
+well tested and modifying them may have non-desirable results such as increased
+compile times or numerical instability.
+
+User Macros:
+
+* `CONSTEIG_MAX_ITER` - Controls the maximum number of iterations allowed for
+  eigenvalue solvers. Increasing this may help difficult matrices converge, but
+  significantly increases compile times and the likelihood of hitting compiler
+  step limits.
+
+* `CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE` - A routing threshold used to determine
+  if a matrix is "symmetric enough" to use the optimized symmetric eigenvalue
+  solver (`eig_shifted_qr`). If the matrix symmetry exceeds this tolerance, the
+  library falls back to the more robust but heavier non-symmetric solver
+  (`eig_double_shifted_qr`).
+
+* `CONSTEIG_USE_LONG_DOUBLE` - Forces all internal constexpr eigenvalue
+  calculations to use `long double`. This dramatically improves numerical
+  stability for large or pathological matrices but is very resource-intensive
+  for the compiler and will severely increase compile times.
+
+Compiler flags:
+
+* `-fconstexpr-steps` (clang) or `-fconstexpr-ops-limit` (gcc) - These flags
+  increase the maximum number of steps the compiler will execute during
+  constexpr evaluation. Computing eigenvalues requires substantial constexpr
+  iterations, so these limits must typically be raised significantly to avoid
+  compilation failure.
+
+* `-mfpmath=387` - (x86 specific) Directs the compiler to use the x87 FPU, which
+  utilizes 80-bit internal precision. This can improve numeric stability and
+  accuracy during compile-time evaluation and should be used in conjunction with
+  `-mlong-double-80`.
+
+* `-mlong-double-80` - (x86 specific) Ensures that `long double` is 80 bits.
+  When combined with `CONSTEIG_USE_LONG_DOUBLE`, this provides extended
+  precision to the constexpr algorithms, which is often crucial for the
+  stability of operations like QR decomposition at compile time.
+
+## Examples
+### Population Flow
 
 An example helps best. Let's say that we take the example from [Using
 Eigenvectors to Find Steady State Population
@@ -51,7 +106,7 @@ steady-state population. The next step, (which `consteig` does not attempt to
 solve), would be the computation of the eigenvector corresponding to this
 eigenvalue.
 
-### Example 2 - Digital Filter Design
+### Digital Filter Design
 
 Another powerful application is Digital Filter Design. The `butterworth.cpp`
 example demonstrates how to design a 2nd-order Butterworth digital filter using
@@ -159,20 +214,6 @@ it’s required to solve a multi order polynomial. Implementing a root finder
 natively is tedious and error prone. Finding the roots of a polynomial can be
 reframed as an eigenvalue problem which makes life easier. The matlab and octave
 root finding functions actually operate in this way.
-
-## How To Use Consteig
-Consteig is a templated library and as such a user does not need to compile
-anything separately. Simply `#include “consteig.hpp”` into your project. The
-cmake files here are only to facilitate testing and development.
-
-You will also need a C++ compiler which supports **C++17**.
-
-Here are some examples to help get started:
-* [Declaring a matrix](examples/matrix.cpp)
-* [Matrix Arithmetic](examples/matrix.cpp)
-* [Finding eigenvalues](examples/eigen.cpp)
-* [Population flow](examples/population.cpp)
-* [Butterworth Filter Design](examples/butterworth_core.hpp)
 
 ## How Is This Different
 There are powerful open source C++ eigenvalues solvers already in existence
