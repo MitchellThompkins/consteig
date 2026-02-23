@@ -5,7 +5,8 @@
 #include "../matrix.hpp"
 #include "../operations.hpp"
 
-namespace consteig {
+namespace consteig
+{
 
 ///////////// FUNCTION DECLARATIONS /////////////
 template <typename T, Size R, Size C>
@@ -14,45 +15,54 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a);
 // https://pages.mtu.edu/~struther/Courses/OLD/Other/Sp2012/5627/BlockQR/Work/MA5629%20presentation.pdf
 ///////////// IMPLEMENTATIONS /////////////
 template <typename T, Size R, Size C>
-constexpr Matrix<T, R, R> house(Matrix<T, R, C> a) {
+constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
+{
     static_assert(R == C, "Householder expects a square matrix");
-    static_assert(is_float<T>(), "Householder Reflection expects floating point");
+    static_assert(is_float<T>(),
+                  "Householder Reflection expects floating point");
 
     T alphaSum{0};
-    for (Size i{1}; i < R; i++) alphaSum += (a(i, 0) * a(i, 0));
+    for (Size i{1}; i < R; i++)
+        alphaSum += (a(i, 0) * a(i, 0));
 
-    if (consteig::abs(alphaSum) < consteig::epsilon<T>()) {
+    if (consteig::abs(alphaSum) < consteig::epsilon<T>())
+    {
         return eye<T, R>();
     }
 
-    T alpha{static_cast<T>(-1) * consteig::sgn(a(1, 0)) * consteig::sqrt(alphaSum)};
+    T sign =
+        (a(1, 0) < static_cast<T>(0)) ? static_cast<T>(-1) : static_cast<T>(1);
+    T alpha{static_cast<T>(-1) * sign * consteig::sqrt(alphaSum)};
 
     T r_sq{static_cast<T>(0.5) * ((alpha * alpha) - (a(1, 0) * alpha))};
 
-    if (consteig::abs(r_sq) < consteig::epsilon<T>()) {
+    if (consteig::abs(r_sq) < consteig::epsilon<T>())
+    {
         return eye<T, R>();
     }
 
     T r = consteig::sqrt(r_sq);
     T oneOverTwoR{1 / (static_cast<T>(2) * r)};
 
-    Matrix<T, R, 1> v{};  // Zero init
-    for (Size i = 0; i < R; ++i) v(i, 0) = 0;
+    Matrix<T, R, 1> v{}; // Zero init
+    for (Size i = 0; i < R; ++i)
+        v(i, 0) = 0;
 
     v(1, 0) = (a(1, 0) - alpha) * oneOverTwoR;
-    for (Size i{2}; i < R; i++) v(i, 0) = a(i, 0) * oneOverTwoR;
+    for (Size i{2}; i < R; i++)
+        v(i, 0) = a(i, 0) * oneOverTwoR;
 
     Matrix<T, R, R> p = eye<T, R>() - (static_cast<T>(2) * v * transpose(v));
 
     return p;
 }
 
-template <typename T>
-constexpr Matrix<T, 2, 2> house(Matrix<T, 2, 2> /*a*/) {
+template <typename T> constexpr Matrix<T, 2, 2> house(Matrix<T, 2, 2> /*a*/)
+{
     Matrix<T, 2, 2> i = eye<T, 2>();
     i(1, 1) = i(1, 1) * static_cast<T>(-1);
     return i;
 }
 
-}  // namespace consteig
+} // namespace consteig
 #endif

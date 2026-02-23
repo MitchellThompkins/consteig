@@ -6,19 +6,20 @@
 #include "../operations.hpp"
 #include "householder.hpp"
 
-namespace consteig {
+namespace consteig
+{
 
 ///////////// TYPES /////////////
-template <typename T, Size S>
-struct PHMatrix {
+template <typename T, Size S> struct PHMatrix
+{
     Matrix<T, S, S> _p;
     Matrix<T, S, S> _h;
 
     constexpr PHMatrix() = default;
-    constexpr PHMatrix(const PHMatrix&) = default;
-    constexpr PHMatrix(PHMatrix&&) = default;
-    constexpr PHMatrix& operator=(const PHMatrix&) = default;
-    constexpr PHMatrix& operator=(PHMatrix&&) = default;
+    constexpr PHMatrix(const PHMatrix &) = default;
+    constexpr PHMatrix(PHMatrix &&) = default;
+    constexpr PHMatrix &operator=(const PHMatrix &) = default;
+    constexpr PHMatrix &operator=(PHMatrix &&) = default;
 };
 
 ///////////// FUNCTION DECLARATIONS /////////////
@@ -27,21 +28,30 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a);
 
 ///////////// IMPLEMENTATIONS /////////////
 
+// Algorithm: Hessenberg Reduction
+// Reduces a matrix to upper Hessenberg form using a series of Householder
+// transformations. This critical optimization reduces the computational cost of
+// QR iterations from O(n^4) to O(n^2).
 template <typename T, Size R, Size C, Size L>
-constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a) {
+constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a)
+{
     static_assert(is_float<T>(), "hess expects floating point");
     static_assert(R == C, "Hessenberg reduction expects a square matrix");
 
-    if constexpr (L <= 2) {
+    if constexpr (L <= 2)
+    {
         PHMatrix<T, R> result{};
         result._h = a;
         return result;
-    } else {
+    }
+    else
+    {
         constexpr Size size{R};
         constexpr Size houseSize{L};
         constexpr Size end{R - 1};
 
-        Matrix<T, L, L> subA{a.template sub<R - houseSize, R - houseSize, end, end>()};
+        Matrix<T, L, L> subA{
+            a.template sub<R - houseSize, R - houseSize, end, end>()};
         Matrix<T, L, L> m{house(subA)};
 
         Matrix<T, size, size> p{eye<T, R>()};
@@ -56,5 +66,5 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a) {
     }
 }
 
-}  // namespace consteig
+} // namespace consteig
 #endif
