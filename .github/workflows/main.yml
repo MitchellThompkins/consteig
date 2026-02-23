@@ -60,11 +60,6 @@ jobs:
                     git submodule update --init --recursive
                     # Ensure we pull the latest image
                     docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/develop" ]]; then
-                        export BUILD_SLOW_TESTS=1
-                    else
-                        export BUILD_SLOW_TESTS=0
-                    fi
                     make remove
                     make CC=gcc CXX=g++ container.make.build
                     make container.make.test
@@ -76,11 +71,6 @@ jobs:
                     git submodule update --init --recursive
                     # Ensure we pull the latest image
                     docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/develop" ]]; then
-                        export BUILD_SLOW_TESTS=1
-                    else
-                        export BUILD_SLOW_TESTS=0
-                    fi
                     make remove
                     make CC=clang CXX=clang++ container.make.build
                     make container.make.test

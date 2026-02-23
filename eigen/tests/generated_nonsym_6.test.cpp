@@ -1,12 +1,7 @@
 #include "generated_test_helpers.hpp"
-#ifndef CONSTEIG_SLOW_TESTS
-TEST(generated_tests, nonsym_fast_6) {
-    static_assert(check_single_nonsymmetric_fast<6>(), "NonSym Fast 6 failed");
+TEST(generated_tests, random_8x8_6)
+{
+    static_assert(check_single_random_nonsym_8x8<6>(),
+                  "Test random_8x8_6 failed");
     SUCCEED();
 }
-#else
-TEST(generated_tests, nonsym_slow_6) {
-    static_assert(check_single_nonsymmetric_slow<6>(), "NonSym Slow 6 failed");
-    SUCCEED();
-}
-#endif
