@@ -60,7 +60,7 @@ better.
 
 **Running Robustness Tests**:
 ```bash
-CONSTEIG_ENABLE_ROBUSTNESS=1 make container.make.build
+make container.make.build
 ```
 
 **CI/CD Integration**:

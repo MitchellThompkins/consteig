@@ -61,7 +61,6 @@ jobs:
                     # Ensure we pull the latest image
                     docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
                     make remove
-                    export CONSTEIG_ENABLE_ROBUSTNESS=1
                     make CC=gcc CXX=g++ container.make.build
                     make container.make.test
 
@@ -73,6 +72,5 @@ jobs:
                     # Ensure we pull the latest image
                     docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
                     make remove
-                    export CONSTEIG_ENABLE_ROBUSTNESS=1
                     make CC=clang CXX=clang++ container.make.build
                     make container.make.test

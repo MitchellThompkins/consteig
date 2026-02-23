@@ -5,7 +5,6 @@ services:
             - USER=${USER}
             - MY_UID=${MY_UID:? Error -> need UID.}
             - MY_GID=${MY_GID:? Error -> need GID.}
-            - CONSTEIG_ENABLE_ROBUSTNESS=${CONSTEIG_ENABLE_ROBUSTNESS}
         volumes:
             - "${PWD}:${PWD}"
         network_mode: host
