@@ -98,8 +98,8 @@ $\epsilon$ in the matrix entries can result in a perturbation of size
 $\epsilon^{1/k}$ in the eigenvalues, where $k$ is the size of the Jordan block.
 
 For an $8 \times 8$ defective matrix (Jordan block of size 8) in double
-precision ($\epsilon \approx 10^{-16}$): $$ \text{Error} \approx
-(10^{-16})^{1/8} = 10^{-2} = 0.01 $$
+precision ($\epsilon \approx 10^{-16}$): $ \text{Error} \approx
+(10^{-16})^{1/8} = 10^{-2} = 0.01 $
 
 Consequently, tests for **defective**, **nearly defective**, and **large Jordan
 block** matrices use a relaxed tolerance (`0.05`) to account for this
@@ -149,8 +149,8 @@ make container.make.build
     *   **The Unit Convergence Factor**: When eigenvalues are poorly separated,
         the convergence factor $\rho = |\lambda_{i+1}/\lambda_i|$ approaches
         unity. This results in slow linear convergence, requiring an explosive
-        number of iterations to satisfy the deflation criterion ($|h_{k+1,k}|
-        \le \epsilon(|h_{kk}| + |h_{k+1,k+1}|)$).
+        number of iterations to satisfy the deflation criterion ( $|h_{k+1,k}|
+        \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)$ ).
     *   **Non-Normal Structure**: Randomly generated matrices are typically
         highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
         transient growth in the QR residual and further stall the convergence of
