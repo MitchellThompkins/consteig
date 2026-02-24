@@ -69,10 +69,20 @@ TEST(lu_decomp, complex_system)
     static constexpr Size s{2};
     // (1+i)x + 2y = 1
     // 0x + (1-i)y = i
-    static constexpr Matrix<Complex<double>, s, s> mat = {
-        {{{{{{1.0, 1.0}, {2.0, 0.0}}}, {{{0.0, 0.0}, {1.0, -1.0}}}}}}};
-    static constexpr Matrix<Complex<double>, s, 1> b = {
-        {{{{{{1.0, 0.0}}}, {{{0.0, 1.0}}}}}}};
+    static constexpr Matrix<Complex<double>, s, s> mat = []() {
+        Matrix<Complex<double>, s, s> m{};
+        m(0, 0) = {1.0, 1.0};
+        m(0, 1) = {2.0, 0.0};
+        m(1, 0) = {0.0, 0.0};
+        m(1, 1) = {1.0, -1.0};
+        return m;
+    }();
+    static constexpr Matrix<Complex<double>, s, 1> b = []() {
+        Matrix<Complex<double>, s, 1> m{};
+        m(0, 0) = {1.0, 0.0};
+        m(1, 0) = {0.0, 1.0};
+        return m;
+    }();
 
     static constexpr LUMatrix<Complex<double>, s> luRes = lu(mat);
     static constexpr Matrix<Complex<double>, s, 1> x = lu_solve(luRes, b);
@@ -92,10 +102,20 @@ TEST(lu_decomp, complex_system)
 TEST(lu_decomp, complex_identity)
 {
     static constexpr Size s{2};
-    static constexpr Matrix<Complex<double>, s, s> mat = {
-        {{{{{{1.0, 0.0}, {0.0, 0.0}}}, {{{0.0, 0.0}, {1.0, 0.0}}}}}}};
-    static constexpr Matrix<Complex<double>, s, 1> b = {
-        {{{{{{1.0, 2.0}}}, {{{3.0, 4.0}}}}}}};
+    static constexpr Matrix<Complex<double>, s, s> mat = []() {
+        Matrix<Complex<double>, s, s> m{};
+        m(0, 0) = {1.0, 0.0};
+        m(0, 1) = {0.0, 0.0};
+        m(1, 0) = {0.0, 0.0};
+        m(1, 1) = {1.0, 0.0};
+        return m;
+    }();
+    static constexpr Matrix<Complex<double>, s, 1> b = []() {
+        Matrix<Complex<double>, s, 1> m{};
+        m(0, 0) = {1.0, 2.0};
+        m(1, 0) = {3.0, 4.0};
+        return m;
+    }();
 
     static constexpr LUMatrix<Complex<double>, s> luRes = lu(mat);
     static constexpr Matrix<Complex<double>, s, 1> x = lu_solve(luRes, b);
