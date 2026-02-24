@@ -53,7 +53,27 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
         {
             b = lu_solve(lu_res, b);
 
-            // Normalize b (Euclidean norm)
+            // Safe normalization to prevent overflow during Euclidean norm calculation.
+            // First, scale by the maximum absolute component.
+            T max_val = 0;
+            for (Size j = 0; j < S; ++j)
+            {
+                T abs_real = consteig::abs(b(j, 0).real);
+                T abs_imag = consteig::abs(b(j, 0).imag);
+                if (abs_real > max_val) max_val = abs_real;
+                if (abs_imag > max_val) max_val = abs_imag;
+            }
+
+            if (max_val > 0)
+            {
+                T inv_max = static_cast<T>(1) / max_val;
+                for (Size j = 0; j < S; ++j)
+                {
+                    b(j, 0) = b(j, 0) * inv_max;
+                }
+            }
+
+            // Now compute Euclidean norm safely
             T norm_sq = 0;
             for (Size j = 0; j < S; ++j)
             {
