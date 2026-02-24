@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 
 #include "../consteig.hpp"
-#include "../eigenvectors.hpp"
 #include "generated_cases.hpp"
 #include "test_tools.hpp"
 

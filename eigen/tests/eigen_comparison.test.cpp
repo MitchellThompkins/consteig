@@ -3,7 +3,6 @@
 #include <random>
 
 #include "../consteig.hpp"
-#include "../eigenvectors.hpp"
 #include "eigen_test_tools.hpp"
 
 using namespace consteig;
