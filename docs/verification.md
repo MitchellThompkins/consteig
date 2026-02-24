@@ -96,19 +96,13 @@ For **defective matrices** (those with non-trivial Jordan blocks), the
 eigenvalue problem is inherently ill-conditioned. A perturbation of size
 $\epsilon$ in the matrix entries can result in a perturbation of size
 $\epsilon^{1/k}$ in the eigenvalues, where $k$ is the size of the Jordan block.
-
-For an $8 \times 8$ defective matrix (Jordan block of size 8) in double
-precision ($\epsilon \approx 10^{-16}$):
-
-```math
-\text{Error} \approx (10^{-16})^{1/8} = 10^{-2} = 0.01
-```
+This ii described above.
 
 Consequently, tests for **defective**, **nearly defective**, and **large Jordan
-block** matrices use a relaxed tolerance (`0.05`) to account for this
-theoretical limit. This does not indicate a bug in the algorithm, but rather the
-fundamental limit of computing eigenvalues for such matrices using standard
-double-precision arithmetic.
+block** matrices use a relaxed tolerance (`0.03`) to account for this
+theoretical limit. As described above, this describes a fundamental limit of
+computing eigenvalues for such matrices using standard double-precision
+arithmetic.
 
 ### Standard Matrices
 For normal, symmetric, and well-conditioned non-symmetric matrices, the library
@@ -153,9 +147,9 @@ make container.make.build
         the convergence factor $\rho = |\lambda_{i+1}/\lambda_i|$ approaches
         unity. This results in slow linear convergence, requiring an explosive
         number of iterations to satisfy the deflation criterion
-```math
-|h_{k+1,k}| \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)
-```
+        ```math
+        |{h_{k+1,k}}| \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)
+        ```
     *   **Non-Normal Structure**: Randomly generated matrices are typically
         highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
         transient growth in the QR residual and further stall the convergence of
