@@ -38,6 +38,7 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
     fprintf(fid, 'static constexpr Matrix<double, %d, %d> %s[%d] = {\n', S, S, var_name, num_cases);
     
     eigs_all = zeros(S, num_cases);
+    vecs_all = zeros(S, S, num_cases);
     
     for n = 1:num_cases
         if strcmp(category, 'random')
@@ -116,8 +117,10 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             A = rand(S);
         end
 
-        e = eig(A);
+        [V, D] = eig(A);
+        e = diag(D);
         eigs_all(:, n) = e;
+        vecs_all(:, :, n) = V;
 
         fprintf(fid, '    {{{\n');
         for i = 1:S
@@ -152,6 +155,33 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
                 fprintf(fid, ',\n');
             else
                 fprintf(fid, '\n');
+            end
+        end
+        if n < num_cases
+            fprintf(fid, '    }}},\n');
+        else
+            fprintf(fid, '    }}}\n');
+        end
+    end
+    fprintf(fid, '};\n\n');
+
+    eigvec_var_name = ['vecs_' category '_' prefix '_' suffix];
+    fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, %d> %s[%d] = {\n', S, S, eigvec_var_name, num_cases);
+    for n = 1:num_cases
+        V = vecs_all(:, :, n);
+        fprintf(fid, '    {{{\n');
+        for i = 1:S
+            fprintf(fid, '        {{');
+            for j = 1:S
+                if j > 1
+                    fprintf(fid, ', ');
+                end
+                fprintf(fid, '{%.16e, %.16e}', real(V(i,j)), imag(V(i,j)));
+            end
+            if i < S
+                fprintf(fid, '}},\n');
+            else
+                fprintf(fid, '}}\n');
             end
         end
         if n < num_cases

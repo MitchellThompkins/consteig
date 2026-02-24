@@ -13,6 +13,11 @@ target_include_directories(eigen_comparison.test INTERFACE ${PROJECT_SOURCE_DIR}
 target_link_libraries(eigen_comparison.test matrix array gtest_main Eigen3::Eigen consteig_eigen)
 create_test(eigen_comparison.test)
 
+add_executable(eigenvectors.test ${CMAKE_CURRENT_SOURCE_DIR}/eigenvectors.test.cpp)
+target_include_directories(eigenvectors.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(eigenvectors.test matrix array gtest_main Eigen3::Eigen consteig_eigen)
+create_test(eigenvectors.test)
+
 # Helper function to add generated tests
 function(add_gen_test target_name source_file)
     add_executable(${target_name}.test ${CMAKE_CURRENT_SOURCE_DIR}/${source_file})

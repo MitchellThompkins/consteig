@@ -20,6 +20,10 @@ using namespace consteig;
         if (!compareEigenValues(eigs, eig_var[INDEX],                          \
                                 static_cast<double>(tol)))                     \
             return false;                                                      \
+        auto vecs = eigvecs(mat_var[INDEX], eigs);                             \
+        if (!checkEigenVectorsInvariant(mat_var[INDEX], eigs, vecs,            \
+                                        static_cast<double>(tol)))             \
+            return false;                                                      \
         return true;                                                           \
     }
 
