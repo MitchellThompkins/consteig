@@ -2,25 +2,20 @@
 
 ## What Is This 
 Consteig is a constexpr template library which uses both constexpr functions and
-template meta-programming to calculate the eigenvalues of a square matrix at
-compile time. That is, the eigenvalues can be saved as `static constexpr` values
-and no processor execution time is spent calculating them at run-time. Consteig
-also allows for compile time static matrix manipulation. To remove any external
-dependences several constexpr math functions are implemented as well.
+template meta-programming to calculate the eigenvalues and corresponding eigen
+vectors of a square matrix at compile time. That is, the eigenvalues and
+eigenvectors can be saved as `static constexpr` values and no processor
+execution time is spent calculating them at run-time. Consteig also allows for
+compile time static matrix manipulation. To remove any external dependences
+several constexpr math functions are implemented as well.
 
 All at compile time, consteig supports:
 
-* Computation of real and complex eigenvalues for symmetric and non-symmetric matrices.
+* Computation of real and complex eigenvalues and eigenvectors for symmetric and
+  non-symmetric matrices.
 * Matrix construction and manipulation, including common operations and decompositions.
 * A selection of mathematical functions, including complex arithmetic. [^1]
 * A strictly freestanding core with no dependence on the C++ standard library.
-
-It's important to note that `consteig` currently focuses exclusively on
-computing **eigenvalues**. For many applications, such as determining the
-stability of digital filters (as described in "Why Does This Exist"), the
-eigenvalues themselves are the desired result, and the eigenvectors are not
-required. Therefore, this library does not currently provide functionality for
-eigenvector computation.
 
 ## How To Use Consteig
 Consteig is a templated library and as such a user does not need to compile
@@ -104,8 +99,8 @@ The `population.cpp` example demonstrates finding the eigenvalues of the populat
 
 ```
 Population Transition Matrix (A)
-0.95 0.05
-0.2 0.8
+0.95 0.2
+0.05 0.8
 
 Eigenvalues (lambda):
 1
@@ -113,12 +108,12 @@ Eigenvalues (lambda):
 
 To find the steady-state population distribution, we need to find the eigenvector 'v'
 that corresponds to the eigenvalue of 1 by solving (A - lambda*I)v = 0.
-```
 
-As explained in the article, the eigenvalue of 1 is crucial for finding the
-steady-state population. The next step, (which `consteig` does not attempt to
-solve), would be the computation of the eigenvector corresponding to this
-eigenvalue.
+Steady-State Population Distribution:
+0.8
+0.2
+
+```
 
 ### Digital Filter Design
 
