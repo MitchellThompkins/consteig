@@ -102,4 +102,39 @@ static constexpr bool compareEigenValues(
     return true;
 }
 
+template <typename T, consteig::Size S>
+static constexpr bool checkEigenVectorsInvariant(
+    const consteig::Matrix<T, S, S> &A,
+    const consteig::Matrix<consteig::Complex<T>, S, 1> &lambda,
+    const consteig::Matrix<consteig::Complex<T>, S, S> &V,
+    const T thresh)
+{
+    // For each eigenvalue / eigenvector pair...
+    for (consteig::Size j = 0; j < S; ++j)
+    {
+        consteig::Complex<T> lam = lambda(j, 0);
+
+        // Check A * v = lambda * v for the j-th column
+        for (consteig::Size i = 0; i < S; ++i)
+        {
+            consteig::Complex<T> Av_i{0, 0};
+            for (consteig::Size k = 0; k < S; ++k)
+            {
+                Av_i = Av_i + consteig::Complex<T>{A(i, k)} * V(k, j);
+            }
+
+            consteig::Complex<T> lv_i = lam * V(i, j);
+
+            T diff_real = consteig::abs(Av_i.real - lv_i.real);
+            T diff_imag = consteig::abs(Av_i.imag - lv_i.imag);
+
+            if (diff_real > thresh || diff_imag > thresh)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 #endif

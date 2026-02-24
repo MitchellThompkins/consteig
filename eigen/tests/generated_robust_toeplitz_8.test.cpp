@@ -1,7 +1,2 @@
 #include "generated_test_helpers.hpp"
-TEST(generated_tests, toeplitz_8x8_8)
-{
-    static_assert(check_single_toeplitz_nonsym_8x8<8>(),
-                  "Test toeplitz_8x8_8 failed");
-    SUCCEED();
-}
+TEST(generated_tests, toeplitz_8x8_8) { static_assert(check_single_toeplitz_nonsym_8x8<8>(), "Test toeplitz_8x8_8 failed"); SUCCEED(); }
