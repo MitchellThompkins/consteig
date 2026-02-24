@@ -25,3 +25,13 @@ add_executable(qr.test ${CMAKE_CURRENT_SOURCE_DIR}/qr.test.cpp)
 target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
 target_link_libraries(qr.test matrix array gtest_main Eigen3::Eigen)
 create_test(qr.test)
+
+add_executable(lu.test ${CMAKE_CURRENT_SOURCE_DIR}/lu.test.cpp)
+target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(lu.test matrix array gtest_main Eigen3::Eigen)
+create_test(lu.test)
+
+add_executable(complex_init.test ${CMAKE_CURRENT_SOURCE_DIR}/complex_init.test.cpp)
+target_include_directories(matrix INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(complex_init.test matrix array gtest_main Eigen3::Eigen)
+create_test(complex_init.test)
