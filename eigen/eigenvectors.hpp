@@ -40,28 +40,31 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
         LUMatrix<Complex<T>, S> lu_res = lu(shifted_A);
 
         // Initial random vector b
-        // In a strict constexpr environment, we use a deterministic "random" vector (e.g., all 1s).
+        // In a strict constexpr environment, we use a deterministic "random"
+        // vector (e.g., all 1s).
         Matrix<Complex<T>, S, 1> b{};
         for (Size j = 0; j < S; ++j)
         {
             b(j, 0) = Complex<T>{1.0, 0.0};
         }
 
-        // Inverse iteration (usually 1 or 2 iterations is sufficient for convergence
-        // given that the eigenvalue is highly accurate).
+        // Inverse iteration (usually 1 or 2 iterations is sufficient for
+        // convergence given that the eigenvalue is highly accurate).
         for (Size iter = 0; iter < 2; ++iter)
         {
             b = lu_solve(lu_res, b);
 
-            // Safe normalization to prevent overflow during Euclidean norm calculation.
-            // First, scale by the maximum absolute component.
+            // Safe normalization to prevent overflow during Euclidean norm
+            // calculation. First, scale by the maximum absolute component.
             T max_val = 0;
             for (Size j = 0; j < S; ++j)
             {
                 T abs_real = consteig::abs(b(j, 0).real);
                 T abs_imag = consteig::abs(b(j, 0).imag);
-                if (abs_real > max_val) max_val = abs_real;
-                if (abs_imag > max_val) max_val = abs_imag;
+                if (abs_real > max_val)
+                    max_val = abs_real;
+                if (abs_imag > max_val)
+                    max_val = abs_imag;
             }
 
             if (max_val > 0)

@@ -33,16 +33,21 @@ template <Size S> void verify_symmetric_random()
     auto vecs = eigvecs(mat, res);
 
     // Verify Eigenvector Invariant at runtime
-    for (Size j = 0; j < S; ++j) {
+    for (Size j = 0; j < S; ++j)
+    {
         Complex<double> lam = res(j, 0);
-        for (Size i = 0; i < S; ++i) {
+        for (Size i = 0; i < S; ++i)
+        {
             Complex<double> Av_i{0, 0};
-            for (Size k = 0; k < S; ++k) {
+            for (Size k = 0; k < S; ++k)
+            {
                 Av_i = Av_i + Complex<double>{mat(i, k)} * vecs(k, j);
             }
             Complex<double> lv_i = lam * vecs(i, j);
-            EXPECT_NEAR(Av_i.real, lv_i.real, 1e-3) << "Symmetric eigenvector invariant (real) mismatch";
-            EXPECT_NEAR(Av_i.imag, lv_i.imag, 1e-3) << "Symmetric eigenvector invariant (imag) mismatch";
+            EXPECT_NEAR(Av_i.real, lv_i.real, 1e-3)
+                << "Symmetric eigenvector invariant (real) mismatch";
+            EXPECT_NEAR(Av_i.imag, lv_i.imag, 1e-3)
+                << "Symmetric eigenvector invariant (imag) mismatch";
         }
     }
 
@@ -83,16 +88,21 @@ template <Size S> void verify_nonsymmetric_random()
     auto vecs = eigvecs(mat, res);
 
     // Verify Eigenvector Invariant at runtime
-    for (Size j = 0; j < S; ++j) {
+    for (Size j = 0; j < S; ++j)
+    {
         Complex<double> lam = res(j, 0);
-        for (Size i = 0; i < S; ++i) {
+        for (Size i = 0; i < S; ++i)
+        {
             Complex<double> Av_i{0, 0};
-            for (Size k = 0; k < S; ++k) {
+            for (Size k = 0; k < S; ++k)
+            {
                 Av_i = Av_i + Complex<double>{mat(i, k)} * vecs(k, j);
             }
             Complex<double> lv_i = lam * vecs(i, j);
-            EXPECT_NEAR(Av_i.real, lv_i.real, 1e-2) << "Nonsymmetric eigenvector invariant (real) mismatch";
-            EXPECT_NEAR(Av_i.imag, lv_i.imag, 1e-2) << "Nonsymmetric eigenvector invariant (imag) mismatch";
+            EXPECT_NEAR(Av_i.real, lv_i.real, 1e-2)
+                << "Nonsymmetric eigenvector invariant (real) mismatch";
+            EXPECT_NEAR(Av_i.imag, lv_i.imag, 1e-2)
+                << "Nonsymmetric eigenvector invariant (imag) mismatch";
         }
     }
 
