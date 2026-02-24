@@ -22,6 +22,13 @@ template <typename T> struct Complex
         return {real + other.real, imag + other.imag};
     }
 
+    constexpr Complex &operator+=(const Complex &other)
+    {
+        real += other.real;
+        imag += other.imag;
+        return *this;
+    }
+
     constexpr Complex operator-(const Complex &other) const
     {
         return {real - other.real, imag - other.imag};
