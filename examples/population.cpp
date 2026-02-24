@@ -16,6 +16,8 @@ int main()
                   "Eigen result should match input size");
     static constexpr auto pop_eig_vals{consteig::eigvals(pop_mat)};
 
+    static constexpr auto pop_eig_vec {consteig::eigvecs(pop_mat, pop_eig_vals)};
+
     // For a Markov matrix describing population flow, the steady state is
     // represented by the eigenvector associated with the eigenvalue of 1.
 
@@ -39,6 +41,12 @@ int main()
     std::cout << "that corresponds to the eigenvalue of 1 by solving (A - "
                  "lambda*I)v = 0."
               << std::endl;
+
+    std::cout << "\nEigenvectors:" << std::endl;
+    for (consteig::Size i = 0; i < pop_size; ++i)
+    {
+        std::cout << pop_eig_vec(i, 0).real << std::endl;
+    }
 
     // TODO: The consteig library does not currently have a function to compute
     // eigenvectors from the Schur form (pop_eigs). The Schur form is an
