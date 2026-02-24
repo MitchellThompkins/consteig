@@ -6,7 +6,8 @@ int main()
     // example from
     // https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764
     static constexpr consteig::Size pop_size{2};
-    // The matrix must be left-stochastic (columns sum to 1) for right-multiplication (A*v).
+    // The matrix must be left-stochastic (columns sum to 1) for
+    // right-multiplication (A*v).
     static constexpr consteig::Matrix<double, pop_size, pop_size> pop_mat{{{
         {0.95, 0.20},
         {0.05, 0.80},
@@ -17,7 +18,7 @@ int main()
                   "Eigen result should match input size");
     static constexpr auto pop_eig_vals{consteig::eigvals(pop_mat)};
 
-    static constexpr auto pop_eig_vec {consteig::eigvecs(pop_mat, pop_eig_vals)};
+    static constexpr auto pop_eig_vec{consteig::eigvecs(pop_mat, pop_eig_vals)};
 
     // For a Markov matrix describing population flow, the steady state is
     // represented by the eigenvector associated with the eigenvalue of 1.
@@ -25,16 +26,20 @@ int main()
     // First, we verify that one of the eigenvalues is 1.
     consteig::Size steady_state_idx = 0;
     bool found_steady_state = false;
-    for (consteig::Size i = 0; i < pop_size; ++i) {
-        if (consteig::abs(pop_eig_vals(i, 0).real - 1.0) < 1e-6) {
+    for (consteig::Size i = 0; i < pop_size; ++i)
+    {
+        if (consteig::abs(pop_eig_vals(i, 0).real - 1.0) < 1e-6)
+        {
             steady_state_idx = i;
             found_steady_state = true;
             break;
         }
     }
 
-    if (!found_steady_state) {
-        std::cerr << "Error: No steady state (eigenvalue = 1) found." << std::endl;
+    if (!found_steady_state)
+    {
+        std::cerr << "Error: No steady state (eigenvalue = 1) found."
+                  << std::endl;
         return 1;
     }
 
@@ -53,7 +58,8 @@ int main()
                  "lambda*I)v = 0."
               << std::endl;
 
-    // Calculate sum of the steady-state eigenvector components to normalize to 100%
+    // Calculate sum of the steady-state eigenvector components to normalize to
+    // 100%
     double sum = 0;
     for (consteig::Size i = 0; i < pop_size; ++i)
     {
@@ -63,7 +69,8 @@ int main()
     std::cout << "\nSteady-State Population Distribution:" << std::endl;
     for (consteig::Size i = 0; i < pop_size; ++i)
     {
-        // Normalize the Euclidean eigenvector into a population distribution (sum = 1)
+        // Normalize the Euclidean eigenvector into a population distribution
+        // (sum = 1)
         double val = consteig::abs(pop_eig_vec(i, steady_state_idx).real) / sum;
         std::cout << val << std::endl;
     }

@@ -106,8 +106,7 @@ template <typename T, consteig::Size S>
 static constexpr bool checkEigenVectorsInvariant(
     const consteig::Matrix<T, S, S> &A,
     const consteig::Matrix<consteig::Complex<T>, S, 1> &lambda,
-    const consteig::Matrix<consteig::Complex<T>, S, S> &V,
-    const T thresh)
+    const consteig::Matrix<consteig::Complex<T>, S, S> &V, const T thresh)
 {
     // For each eigenvalue / eigenvector pair...
     for (consteig::Size j = 0; j < S; ++j)
