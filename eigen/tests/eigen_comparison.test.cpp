@@ -10,10 +10,10 @@ using namespace consteig;
 // Runtime verification of the algorithm against Eigen on random matrices
 // This ensures algorithmic correctness beyond the static constexpr cases.
 
-template <Size S> void verify_symmetric_random()
+template <Size S> void verify_symmetric_random(const int seed)
 {
     // Generate random symmetric matrix
-    std::mt19937 gen(42); // Fixed seed
+    std::mt19937 gen(seed); // Fixed seed
     std::uniform_real_distribution<double> dist(-10.0, 10.0);
 
     Matrix<double, S, S> mat;
@@ -67,10 +67,10 @@ template <Size S> void verify_symmetric_random()
     }
 }
 
-template <Size S> void verify_nonsymmetric_random()
+template <Size S> void verify_nonsymmetric_random(const int seed)
 {
     // Generate random matrix
-    std::mt19937 gen(123);
+    std::mt19937 gen(seed);
     std::uniform_real_distribution<double> dist(-5.0, 5.0);
 
     Matrix<double, S, S> mat;
@@ -148,26 +148,44 @@ template <Size S> void verify_nonsymmetric_random()
 
 TEST(eigen_comparison, random_symmetric_3x3)
 {
-    verify_symmetric_random<3>();
+    for (int i{1}; i < 100; i++)
+    {
+        verify_symmetric_random<3>(i);
+    }
 }
 TEST(eigen_comparison, random_symmetric_5x5)
 {
-    verify_symmetric_random<5>();
+    for (int i{1}; i < 100; i++)
+    {
+        verify_symmetric_random<5>(i);
+    }
 }
 TEST(eigen_comparison, random_symmetric_8x8)
 {
-    verify_symmetric_random<8>();
+    for (int i{1}; i < 100; i++)
+    {
+        verify_symmetric_random<8>(i);
+    }
 }
 
 TEST(eigen_comparison, random_nonsymmetric_3x3)
 {
-    verify_nonsymmetric_random<3>();
+    for (int i{1}; i < 100; i++)
+    {
+        verify_nonsymmetric_random<3>(i);
+    }
 }
 TEST(eigen_comparison, random_nonsymmetric_5x5)
 {
-    verify_nonsymmetric_random<5>();
+    for (int i{1}; i < 100; i++)
+    {
+        verify_nonsymmetric_random<5>(i);
+    }
 }
 TEST(eigen_comparison, random_nonsymmetric_8x8)
 {
-    verify_nonsymmetric_random<8>();
+    for (int i{1}; i < 100; i++)
+    {
+        verify_nonsymmetric_random<8>(i);
+    }
 }
