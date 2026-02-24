@@ -1,7 +1,2 @@
 #include "generated_test_helpers.hpp"
-TEST(generated_tests, sparse_interior_8x8_27)
-{
-    static_assert(check_single_sparse_interior_nonsym_8x8<27>(),
-                  "Test sparse_interior_8x8_27 failed");
-    SUCCEED();
-}
+TEST(generated_tests, sparse_interior_8x8_27) { static_assert(check_single_sparse_interior_nonsym_8x8<27>(), "Test sparse_interior_8x8_27 failed"); SUCCEED(); }

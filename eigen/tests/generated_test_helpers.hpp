@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "../consteig.hpp"
+#include "../eigenvectors.hpp"
 #include "generated_cases.hpp"
 #include "test_tools.hpp"
 
@@ -19,6 +20,10 @@ using namespace consteig;
             return false;                                                      \
         if (!compareEigenValues(eigs, eig_var[INDEX],                          \
                                 static_cast<double>(tol)))                     \
+            return false;                                                      \
+        auto vecs = eigvecs(mat_var[INDEX], eigs);                             \
+        if (!checkEigenVectorsInvariant(mat_var[INDEX], eigs, vecs,            \
+                                        static_cast<double>(tol)))             \
             return false;                                                      \
         return true;                                                           \
     }
