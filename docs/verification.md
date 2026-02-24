@@ -153,7 +153,9 @@ make container.make.build
         the convergence factor $\rho = |\lambda_{i+1}/\lambda_i|$ approaches
         unity. This results in slow linear convergence, requiring an explosive
         number of iterations to satisfy the deflation criterion
-        ($|h_{k+1,k}| \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)$).
+        ```math
+        $|h_{k+1,k}| \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)$.
+        ```
     *   **Non-Normal Structure**: Randomly generated matrices are typically
         highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
         transient growth in the QR residual and further stall the convergence of
