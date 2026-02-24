@@ -10,6 +10,10 @@ The library is verified through two primary methods:
 
 ## Accuracy [^3]
 
+```math
+|{h_{k+1,k}}| \le \epsilon {|h_{kk}| + |h_{k+1,k+1}|}
+```
+
 An eigenvalue solver is limited not only by the numerical algorithm it employs
 but also by the conditioning of the eigenvalue problem and the finite precision
 of the machine representation. For defective matrices, eigenvalues are
@@ -148,7 +152,7 @@ make container.make.build
         unity. This results in slow linear convergence, requiring an explosive
         number of iterations to satisfy the deflation criterion
         ```math
-        |{h_{k+1,k}}| \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)
+        |{h_{k+1,k}}| \le \epsilon {|h_{kk}| + |h_{k+1,k+1}|}
         ```
     *   **Non-Normal Structure**: Randomly generated matrices are typically
         highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
