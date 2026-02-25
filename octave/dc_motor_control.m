@@ -45,7 +45,7 @@ D = 0;
 
 sys_ol = ss(A, B, C, D);
 
-fprintf('Extended open loop poles:\n');
+fprintf('\nExtended open loop poles:\n');
 ol_poles = eig(A)
 
 % ── Performance Requirements ──────────────────────────────────────
@@ -101,79 +101,45 @@ function print_poles(poles, min_damp)
 end
 
 % ═════════════════════════════════════════════════════════════════
-% APPROACH 1: Pole Placement
-% Designer specifies desired poles, gains are computed analytically
-% ═════════════════════════════════════════════════════════════════
-fprintf('\n══════════════════════════════════════════\n');
-fprintf('APPROACH 1: Pole Placement\n');
-fprintf('══════════════════════════════════════════\n');
-
-desired_poles = [-5+4j, -5-4j, -6];
-K_placed = place(A, B, desired_poles);
-
-fprintf('Desired poles: [%+.1f%+.1fj, %+.1f%+.1fj, %+.1f]\n', ...
-        real(desired_poles(1)), imag(desired_poles(1)), ...
-        real(desired_poles(2)), imag(desired_poles(2)), ...
-        real(desired_poles(3)));
-fprintf('Computed gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', ...
-        K_placed(1), K_placed(2), K_placed(3));
-
-A_cl_placed = A - B * K_placed;
-sys_cl_placed = ss(A_cl_placed, B, C, D);
-poles_placed = eig(A_cl_placed);
-
-fprintf('Resulting poles:\n');
-print_poles(poles_placed, min_damping);
-
-if check_performance(poles_placed, min_convergence, max_convergence, min_damping)
-    fprintf('PASS: all performance requirements met\n');
-else
-    fprintf('FAIL: performance requirements violated\n');
-end
-
-% ═════════════════════════════════════════════════════════════════
-% APPROACH 2: Hand-Tuned PID Gains (Good)
+% APPROACH 1: Hand-Tuned PID Gains (Good)
 % Designer picks gains directly, we find out where the poles ended up
 % ═════════════════════════════════════════════════════════════════
 fprintf('\n══════════════════════════════════════════\n');
-fprintf('APPROACH 2: Hand-Tuned Gains (Good)\n');
+fprintf('SCENARIO 1: Hand-Tuned Gains (Good)\n');
 fprintf('══════════════════════════════════════════\n');
 
-% These happen to be the same gains as above - the point is the
-% engineer chose them empirically, not via pole placement
-Kp     = K_placed(1);
-Kd     = K_placed(2);
-Ki_eff = K_placed(3);
-K_hand = [Kp, Kd, Ki_eff];
+Kp_good     = 123.0;
+Kd_good     = 20.49;
+Ki_eff_good = 2.0;
+K_good = [Kp_good, Kd_good, Ki_eff_good];
 
-fprintf('Hand-tuned gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', Kp, Kd, Ki_eff);
+fprintf('Hand-tuned gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', Kp_good, Kd_good, Ki_eff_good);
 
-A_cl_hand = A - B * K_hand;
-sys_cl_hand = ss(A_cl_hand, B, C, D);
-poles_hand = eig(A_cl_hand);
+A_cl_good = A - B * K_good;
+sys_cl_good = ss(A_cl_good, B, C, D);
+poles_good = eig(A_cl_good);
 
 fprintf('Resulting poles:\n');
-print_poles(poles_hand, min_damping);
+print_poles(poles_good, min_damping);
 
-if check_performance(poles_hand, min_convergence, max_convergence, min_damping)
+if check_performance(poles_good, min_convergence, max_convergence, min_damping)
     fprintf('PASS: all performance requirements met\n');
 else
     fprintf('FAIL: performance requirements violated\n');
 end
 
 % ═════════════════════════════════════════════════════════════════
-% APPROACH 3: Hand-Tuned PID Gains (Underdamped)
+% APPROACH 2: Hand-Tuned PID Gains (Underdamped)
 % Engineer increased Kp chasing faster response - poles look fine
 % on paper but damping ratio is too low
 % ═════════════════════════════════════════════════════════════════
 fprintf('\n══════════════════════════════════════════\n');
-fprintf('APPROACH 3: Hand-Tuned Gains (Underdamped)\n');
+fprintf('SCENARIO 2: Hand-Tuned Gains (Underdamped)\n');
 fprintf('══════════════════════════════════════════\n');
 
-% Engineer bumped Kp for faster response - looks reasonable by inspection
-Kp_bad     = K_placed(1) * 2.5;
-Kd_bad     = K_placed(2) * 0.8;
-Ki_eff_bad = K_placed(3);
+Kp_bad     = 375.0;
+Kd_bad     = 62.49;
+Ki_eff_bad = 2.0;
 K_bad = [Kp_bad, Kd_bad, Ki_eff_bad];
 
 fprintf('Hand-tuned gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', ...
@@ -192,25 +158,12 @@ else
     fprintf('FAIL: performance requirements violated - would be compile error in C++\n');
 end
 
-% ── Export Matrices for C++ ───────────────────────────────────────
-fprintf('\n══════════════════════════════════════════\n');
-fprintf('C++ Export\n');
-fprintf('══════════════════════════════════════════\n');
-fprintf('// Good hand-tuned gains\n');
-fprintf('static constexpr double Kp     = %.8f;\n', Kp);
-fprintf('static constexpr double Kd     = %.8f;\n', Kd);
-fprintf('static constexpr double Ki_eff = %.8f;\n', Ki_eff);
-fprintf('\n// Bad hand-tuned gains\n');
-fprintf('static constexpr double Kp_bad     = %.8f;\n', Kp_bad);
-fprintf('static constexpr double Kd_bad     = %.8f;\n', Kd_bad);
-fprintf('static constexpr double Ki_eff_bad = %.8f;\n', Ki_eff_bad);
-
 % ── Bode Plot ─────────────────────────────────────────────────────
 figure(1);
 w = logspace(-2, 3, 500);
 
 [mag_ol,   phase_ol]   = bode(sys_ol,        w);
-[mag_good, phase_good] = bode(sys_cl_placed, w);
+[mag_good, phase_good] = bode(sys_cl_good, w);
 [mag_bad,  phase_bad]  = bode(sys_cl_bad,    w);
 
 mag_ol    = squeeze(mag_ol);    phase_ol    = squeeze(phase_ol);
@@ -242,7 +195,7 @@ figure(2);
 t = linspace(0, 3, 1000);
 
 [y_ol,   t_ol]   = step(sys_ol,        t);
-[y_good, t_good] = step(sys_cl_placed, t);
+[y_good, t_good] = step(sys_cl_good, t);
 [y_bad,  t_bad]  = step(sys_cl_bad,    t);
 
 plot(t_ol,   y_ol,   'b--', 'LineWidth', 1.5); hold on;
@@ -265,4 +218,3 @@ ylabel('Position [rad]');
 title('Step Response: Open Loop vs Good Gains vs Underdamped Gains');
 legend('Open Loop', 'Good Gains', 'Underdamped Gains');
 grid on;
-

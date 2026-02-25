@@ -28,6 +28,11 @@ constexpr bool check_performance(
         T omega = eigs(i, 0).imag;
 
         // Stability & Convergence Rate (Real part check)
+        // 'sigma' (the real part) dictates the exponential decay envelope of
+        // the response e^(sigma*t). It must be strictly negative for stability.
+        // We also constrain it between min and max bounds to ensure the system
+        // is neither too sluggish nor demands too much instantaneous control
+        // effort.
         if (sigma >= reqs.min_convergence || sigma <= reqs.max_convergence)
         {
             return false;
@@ -36,6 +41,13 @@ constexpr bool check_performance(
         // Damping Ratio Analysis (for complex pairs)
         if (consteig::abs(omega) > 1e-6)
         {
+            // For a complex pole pair p = sigma +/- j*omega, the natural
+            // frequency is wn = sqrt(sigma^2 + omega^2). The damping ratio
+            // (zeta) is defined by the relation: sigma = -zeta * wn.
+            // Rearranging gives: zeta = -sigma / wn = -sigma / sqrt(sigma^2 +
+            // omega^2). A higher zeta means less overshoot and ringing. We
+            // enforce a minimum damping ratio so the physical system (e.g., a
+            // gearbox) isn't subjected to excessive mechanical stress.
             T zeta = -sigma / consteig::sqrt(sigma * sigma + omega * omega);
             if (zeta < reqs.min_damping)
             {
@@ -122,6 +134,7 @@ int main()
 
     // This assertion will intentionally fail the build!
     // The compiler prevents the firmware with bad dynamics from ever executing.
+    // comment the below static assert out to actually build
     static constexpr bool bad_perf_ok = check_performance(eigs_bad, limits);
     static_assert(bad_perf_ok, "SYSTEM REJECTED: Underdamped system detected "
                                "(damping ratio too low) - retune!");
