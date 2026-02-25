@@ -286,6 +286,46 @@ Resulting Poles:
 
 ```
 
+The above matches that which is reported by octave:
+
+```
+UofM open loop poles:
+ans =
+
+  -9.9975
+  -2.0025
+
+
+Extended open loop poles:
+ol_poles =
+
+        0
+  -9.9975
+  -2.0025
+
+
+══════════════════════════════════════════
+SCENARIO 1: Hand-Tuned Gains (Good)
+══════════════════════════════════════════
+Hand-tuned gains: Kp=123.0000, Kd=20.4900, Ki_eff=2.0000
+Resulting poles:
+  Pole 1: -5.0000 +4.0000j  ->  zeta=0.7809, wn=6.4031 rad/s
+  Pole 2: -5.0000 -4.0000j  ->  zeta=0.7809, wn=6.4031 rad/s
+  Pole 3: -6.0000 (real)
+PASS: all performance requirements met
+
+══════════════════════════════════════════
+SCENARIO 2: Hand-Tuned Gains (Underdamped)
+══════════════════════════════════════════
+Hand-tuned gains: Kp=375.0000, Kd=62.4900, Ki_eff=2.0000
+Resulting poles:
+  Pole 1: -6.0000 (real)
+  Pole 2: -5.0000 +10.0000j  ->  zeta=0.4472, wn=11.1803 rad/s  *** UNDERDAMPED ***
+  Pole 3: -5.0000 -10.0000j  ->  zeta=0.4472, wn=11.1803 rad/s  *** UNDERDAMPED ***
+FAIL: performance requirements violated - would be compile error in C++
+
+Good gains settling time (2%): 0.880 s
+```
 
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
