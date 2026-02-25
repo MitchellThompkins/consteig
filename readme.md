@@ -98,9 +98,11 @@ Compiler flags:
 Let's say that we take the example from [Using Eigenvectors to Find Steady State
 Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
-and apply it using `consteig`.
+and apply it using `consteig`. All of this information is static, so we can find
+the solution at compile-time and if we wanted, use it for something later in the
+program.
 
-The `population.cpp` example demonstrates finding the eigenvalues of the population transition matrix:
+The [`population.cpp`](examples/population.cpp) example demonstrates finding the eigenvalues of the population transition matrix:
 
 ```
 Population Transition Matrix (A)
@@ -125,10 +127,12 @@ Portland: 200000 (20.00%)
 
 ### Digital Filter Design
 
-Another powerful application is Digital Filter Design. The `butterworth.cpp`
-example demonstrates how to design a 2nd-order Butterworth digital filter using
-the Zero-Order Hold (ZOH) method, but without algebraically performing a
-Z-transform.
+Another powerful application is Digital Filter Design. This example demonstrates
+how to design a 2nd-order Butterworth digital filter using the Zero-Order Hold
+(ZOH) method, but without algebraically performing a Z-transform.
+
+The digital filter coefficients are derived at compile-time and can be saved for
+use in the filter step when the actual filtering takes place.
 
 Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 1.  Define the continuous-time state-space matrix $A_c$.
@@ -136,7 +140,8 @@ Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 3.  Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
 4.  Reconstruct the digital filter's characteristic polynomial from the mapped poles.
 
-The `butterworth.cpp` example generates the following design for a 100Hz cutoff at 1kHz sampling:
+The [`butterworth_core.hpp`](examples/butterworth_core.hpp) example generates
+the following design for a 100Hz cutoff at 1kHz sampling:
 
 ```
 Designing 2nd Order Butterworth Lowpass Filter
@@ -222,6 +227,65 @@ a1           76a7 3023 5b87 f2bf  -1.158045899830964
 a2           afc5 de84 c451 da3f  0.411240701442774
 K            d727 1cf8 5734 d03f  0.253194801611810
 ```
+
+### Control Theory
+
+These techniques are also applicable for control theory. Consider the [DC Motor
+Speed System
+Model](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling)
+from the University of Michigan. The motor parameters and the resultant state
+space equations are known entities. The goal is then to create a stable PID controller
+that complies with system performance requirements. If the chosen gains don't
+meet those requirements, the build will fail to compile via the usage of a
+`static_assert`. This allows for the avoidance of discovering during test that
+the chosen gains are wrong (or simply that they were mistyped).
+
+Stated another way, given a set of control gains `consteig` can evaluate the
+closed loop control system against system performance requirements.
+
+A comparison model is shown at [dc_motor_control.m](octave/dc_motor_control.m),
+and the compile-time examples are in
+[dc_motor_control.cpp](examples/dc_motor_control.cpp).
+
+When building the system with gains that do not meet the system requirements,
+the build will fail to compile:
+
+```
+make container.make.dc_motor_control.main
+
+...
+
+Building CXX object examples/CMakeFiles/dc_motor_control.main.dir/dc_motor_control.cpp.o
+/home/mthompkins/workspace/consteig/examples/dc_motor_control.cpp: In function 'int main()':
+/home/mthompkins/workspace/consteig/examples/dc_motor_control.cpp:138:19: error: static assertion failed: SYSTEM REJECTED: Underdamped system detected (damping ratio too low) - retune!
+  138 |     static_assert(bad_perf_ok, "SYSTEM REJECTED: Underdamped system detected "
+      |                   ^~~~~~~~~~~
+
+```
+
+If you comment out the `static_assert` you can see the `consteig` calculated the
+eigenvalues (poles) of the system:
+
+```
++ ./build/bin/dc_motor_control.main
+System Parameters (constexpr): J=0.01, b=0.1, K_m=0.01
+
+--- SCENARIO 1: Good PID Tuning ---
+Gains [Kp=123, Kd=20.49, Ki_eff=2] passed all checks.
+Resulting Poles (behavior):
+  -6 + 0i
+  -5 + 4i
+  -5 + -4i
+
+--- SCENARIO 2: Aggressive PID Tuning ---
+Gains [Kp=375, Kd=62.49, Ki_eff=2] rejected.
+Resulting Poles:
+  -6 + 0i
+  -5 + 10i (zeta = 0.447214)
+  -5 + -10i (zeta = 0.447214)
+
+```
+
 
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
