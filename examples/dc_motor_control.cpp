@@ -122,9 +122,9 @@ int main()
 
     // This assertion will intentionally fail the build!
     // The compiler prevents the firmware with bad dynamics from ever executing.
-    // static constexpr bool bad_perf_ok = check_performance(eigs_bad, limits);
-    // static_assert(bad_perf_ok, "SYSTEM REJECTED: Underdamped system detected
-    // (damping ratio too low) - retune!");
+    static constexpr bool bad_perf_ok = check_performance(eigs_bad, limits);
+    static_assert(bad_perf_ok, "SYSTEM REJECTED: Underdamped system detected "
+                               "(damping ratio too low) - retune!");
 
     std::cout << "\n--- SCENARIO 2: Aggressive PID Tuning ---\n";
     std::cout << "Gains [Kp=" << Kp_bad << ", Kd=" << Kd_bad
