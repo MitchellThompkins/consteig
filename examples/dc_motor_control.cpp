@@ -61,40 +61,44 @@ constexpr bool check_performance(
 int main()
 {
     // --- Motor Parameters (Defined at compile-time) ---
-    static constexpr double J = 0.01;   // Moment of inertia [kg⋅m²]
-    static constexpr double b = 0.1;    // Viscous friction [N⋅m⋅s/rad]
-    static constexpr double K_m = 0.01; // Motor constant [V⋅s/rad]
-    static constexpr double R = 1.0;    // Armature resistance [Ω]
-    static constexpr double L = 0.5;    // Armature inductance [H]
+    static constexpr double J = 3.2284e-6;   // Moment of inertia [kg⋅m²]
+    static constexpr double b = 3.5077e-6;   // Viscous friction [N⋅m⋅s/rad]
+    static constexpr double K_m = 0.0274;    // Motor constant [V⋅s/rad]
+    static constexpr double R = 4.0;         // Armature resistance [Ω]
+    static constexpr double L = 2.75e-6;     // Armature inductance [H]
 
-    static constexpr consteig::Size s{3};
+    static constexpr consteig::Size s{4};
 
     // --- State Space Assembly (constexpr) ---
-    // x = [position; velocity; current]
+    // Augmented state: x = [position; velocity; current; integral_error]
     static constexpr consteig::Matrix<double, s, s> A{
-        {{{0.0, 1.0, 0.0}, {0.0, -b / J, K_m / J}, {0.0, -K_m / L, -R / L}}}};
+        {{{0.0, 1.0, 0.0, 0.0},
+          {0.0, -b / J, K_m / J, 0.0},
+          {0.0, -K_m / L, -R / L, 0.0},
+          {-1.0, 0.0, 0.0, 0.0}}}};
 
     static constexpr consteig::Matrix<double, s, 1> B{
-        {{{0.0}, {0.0}, {1.0 / L}}}};
+        {{{0.0}, {0.0}, {1.0 / L}, {0.0}}}};
 
     // --- Control Constraints ---
     static constexpr PerformanceRequirements limits = {
-        -2.0,  // min_convergence: slowest pole allowed
-        -50.0, // max_convergence: fastest pole allowed (limit current)
-        0.55   // min_damping: avoid gearbox stress
+        -80.0,  // min_convergence: slowest pole allowed (settling time < 40ms)
+        -500.0, // max_convergence: fastest pole allowed (limit current)
+        0.504   // min_damping: avoid overshoot > 16%
     };
 
     // =========================================================================
     // SCENARIO 1: A Firmware Engineer tunes a good set of PID gains.
     // =========================================================================
 
-    // Gains tuned by hand / Ziegler-Nichols / etc.
-    static constexpr double Kp_good = 123.0;
-    static constexpr double Kd_good = 20.49;
-    static constexpr double Ki_eff_good = 2.0;
+    // State feedback gains (Position, Velocity, Current, Integral Error)
+    static constexpr double K1_good = 0.021871;
+    static constexpr double K2_good = -0.027279;
+    static constexpr double K3_good = -3.997253;
+    static constexpr double K4_good = -1.749699;
 
-    static constexpr consteig::Matrix<double, 1, 3> K_good{
-        {{{Kp_good, Kd_good, Ki_eff_good}}}};
+    static constexpr consteig::Matrix<double, 1, s> K_good{
+        {{{K1_good, K2_good, K3_good, K4_good}}}};
 
     // Where did my poles end up? The eigenvalue solver is the bridge between
     // "gains I chose" and "behaviour I get."
@@ -107,9 +111,9 @@ int main()
 
     std::cout << "System Parameters (constexpr): J=" << J << ", b=" << b
               << ", K_m=" << K_m << "\n\n";
-    std::cout << "--- SCENARIO 1: Good PID Tuning ---\n";
-    std::cout << "Gains [Kp=" << Kp_good << ", Kd=" << Kd_good
-              << ", Ki_eff=" << Ki_eff_good << "] passed all checks.\n";
+    std::cout << "--- SCENARIO 1: Good Tuning (With Integral Action) ---\n";
+    std::cout << "Gains [K=" << K1_good << ", " << K2_good << ", "
+              << K3_good << ", " << K4_good << "] passed all checks.\n";
     std::cout << "Resulting Poles (behavior):\n";
     for (consteig::Size i = 0; i < s; ++i)
     {
@@ -121,13 +125,14 @@ int main()
     // SCENARIO 2: An overly aggressive tune that causes dangerous oscillation.
     // =========================================================================
 
-    // Aggressively high proportional and derivative gains
-    static constexpr double Kp_bad = 375.0;
-    static constexpr double Kd_bad = 62.49;
-    static constexpr double Ki_eff_bad = 2.0;
+    // Aggressively high gains with poor damping
+    static constexpr double K1_bad = 0.014486;
+    static constexpr double K2_bad = -0.027317;
+    static constexpr double K3_bad = -3.997693;
+    static constexpr double K4_bad = -1.550194;
 
-    static constexpr consteig::Matrix<double, 1, 3> K_bad{
-        {{{Kp_bad, Kd_bad, Ki_eff_bad}}}};
+    static constexpr consteig::Matrix<double, 1, s> K_bad{
+        {{{K1_bad, K2_bad, K3_bad, K4_bad}}}};
 
     static constexpr consteig::Matrix<double, s, s> A_cl_bad{A - B * K_bad};
     static constexpr auto eigs_bad = consteig::eigvals(A_cl_bad);
@@ -139,9 +144,9 @@ int main()
     static_assert(bad_perf_ok, "SYSTEM REJECTED: Underdamped system detected "
                                "(damping ratio too low) - retune!");
 
-    std::cout << "\n--- SCENARIO 2: Aggressive PID Tuning ---\n";
-    std::cout << "Gains [Kp=" << Kp_bad << ", Kd=" << Kd_bad
-              << ", Ki_eff=" << Ki_eff_bad << "] rejected.\n";
+    std::cout << "\n--- SCENARIO 2: Underdamped Tuning ---\n";
+    std::cout << "Gains [K=" << K1_bad << ", " << K2_bad << ", "
+              << K3_bad << ", " << K4_bad << "] rejected.\n";
     std::cout << "Resulting Poles:\n";
     for (consteig::Size i = 0; i < s; ++i)
     {
