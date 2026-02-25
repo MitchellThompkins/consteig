@@ -78,9 +78,13 @@ constexpr consteig::Matrix<T, 1, 3> place(const consteig::Matrix<T, 3, 3>& A,
                                           consteig::Complex<T> p3)
 {
     // Characteristic polynomial: (s - p1)(s - p2)(s - p3) = s^3 + a2*s^2 + a1*s + a0
-    consteig::Complex<T> a2_c = -(p1 + p2 + p3);
+    consteig::Complex<T> sum_p = p1 + p2 + p3;
+    consteig::Complex<T> a2_c{ -sum_p.real, -sum_p.imag };
+    
     consteig::Complex<T> a1_c = (p1 * p2) + (p2 * p3) + (p1 * p3);
-    consteig::Complex<T> a0_c = -(p1 * p2 * p3);
+    
+    consteig::Complex<T> prod_p = p1 * p2 * p3;
+    consteig::Complex<T> a0_c{ -prod_p.real, -prod_p.imag };
 
     // Coefficients are real for physical systems (complex conjugate pairs)
     T a2 = a2_c.real;
@@ -141,7 +145,7 @@ int main()
     static constexpr PerformanceRequirements limits = {
         -2.0,  // min_convergence: slowest pole allowed
         -50.0, // max_convergence: fastest pole allowed (limit current)
-        0.5    // min_damping: avoid gearbox stress
+        0.55   // min_damping: avoid gearbox stress
     };
 
     // --- 1. GOOD CONTROL ---
@@ -182,8 +186,10 @@ int main()
         consteig::eigvals(A_cl_bad)};
 
     // Prove Compile-Time Detection of Performance Violation
+    // This will intentionally fail the compilation to demonstrate that
+    // bad control gains are rejected by the compiler before the program can run!
     static constexpr bool bad_perf_ok = check_performance(eigs_bad, limits);
-    static_assert(!bad_perf_ok, "EXPECTED FAILURE: Underdamped system was not detected!");
+    static_assert(bad_perf_ok, "SYSTEM REJECTED: Underdamped system detected (damping ratio too low)!");
 
     std::cout << "\nComputed bad gains K = [" << K_bad(0,0) << ", " << K_bad(0,1) << ", " << K_bad(0,2) << "]\n";
     std::cout << "Bad gains rejected due to performance violation.\n";
