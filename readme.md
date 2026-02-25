@@ -90,8 +90,8 @@ Compiler flags:
 ## Examples
 ### Population Flow
 
-An example helps best. Let's say that we take the example from [Using
-Eigenvectors to Find Steady State Population
+Let's say that we take the example from [Using Eigenvectors to Find Steady State
+Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
 and apply it using `consteig`.
 
@@ -102,6 +102,10 @@ Population Transition Matrix (A)
 0.95 0.2
 0.05 0.8
 
+Initial Population Vector (u0)
+500000
+500000
+
 Eigenvalues (lambda):
 1
 0.75
@@ -109,10 +113,9 @@ Eigenvalues (lambda):
 To find the steady-state population distribution, we need to find the eigenvector 'v'
 that corresponds to the eigenvalue of 1 by solving (A - lambda*I)v = 0.
 
-Steady-State Population Distribution:
-0.8
-0.2
-
+Steady-State Population Flow (Total: 1000000):
+Seattle:  800000 (80.00%)
+Portland: 200000 (20.00%)
 ```
 
 ### Digital Filter Design
