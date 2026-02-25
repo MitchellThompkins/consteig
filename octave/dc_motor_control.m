@@ -1,0 +1,156 @@
+% DC Motor Position Control
+% Based on UofM CTMS model: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling
+% Extended from velocity to position control by adding position state
+%
+% States: x = [position; velocity; current]
+% Input:  u = voltage
+% Output: y = position
+
+clear all;
+close all;
+pkg load control;
+
+% ── Motor Parameters (from UofM example) ─────────────────────────
+J = 0.01;    % Moment of inertia [kg⋅m²]
+b = 0.1;     % Viscous friction [N⋅m⋅s/rad]
+K = 0.01;    % Motor constant [N⋅m/A = V⋅s/rad]
+R = 1.0;     % Armature resistance [Ω]
+L = 0.5;     % Armature inductance [H]
+
+% ── State Space (UofM velocity model for reference) ───────────────
+% x = [velocity; current]
+A_uom = [-b/J,  K/J;
+         -K/L, -R/L];
+B_uom = [0; 1/L];
+C_uom = [1, 0];
+D_uom = 0;
+
+sys_uom = ss(A_uom, B_uom, C_uom, D_uom);
+fprintf('UofM open loop poles:\n');
+eig(A_uom)
+
+% ── Extended to Position Control ──────────────────────────────────
+% Add position as first state: position_dot = velocity
+% x = [position; velocity; current]
+A = [0,    1,     0;
+     0,  -b/J,  K/J;
+     0,  -K/L, -R/L];
+
+B = [0;
+     0;
+     1/L];
+
+C = [1, 0, 0];   % measure position
+D = 0;
+
+sys_ol = ss(A, B, C, D);
+
+fprintf('Extended open loop poles:\n');
+ol_poles = eig(A)
+
+% ── Pole Placement ────────────────────────────────────────────────
+% 3 states -> need 3 desired poles
+% Keep poles real for no oscillation, reasonably fast settling
+desired_poles = [-5, -6, -7];
+K_gain = place(A, B, desired_poles);
+
+fprintf('Control gains: K = [%.4f, %.4f, %.4f]\n', ...
+        K_gain(1), K_gain(2), K_gain(3));
+
+% ── Closed Loop System ────────────────────────────────────────────
+A_cl = A - B * K_gain;
+sys_cl = ss(A_cl, B, C, D);
+
+fprintf('Closed loop poles:\n');
+cl_poles = eig(A_cl)
+
+% Stability assertions
+assert(all(real(cl_poles) < 0), ...
+       'UNSTABLE: one or more closed loop poles have positive real part!');
+assert(max(abs(sort(real(cl_poles)) - sort(real(desired_poles(:))))) < 1e-6, ...
+       'Pole placement failed!');
+
+fprintf('Max settling rate (most negative pole): %.2f rad/s\n', min(real(cl_poles)));
+
+% ── Bode Plot ─────────────────────────────────────────────────────
+figure(1);
+w = logspace(-2, 3, 500);
+
+[mag_ol, phase_ol] = bode(sys_ol, w);
+[mag_cl, phase_cl] = bode(sys_cl, w);
+mag_ol   = squeeze(mag_ol);
+phase_ol = squeeze(phase_ol);
+mag_cl   = squeeze(mag_cl);
+phase_cl = squeeze(phase_cl);
+
+subplot(2,1,1);
+semilogx(w, 20*log10(mag_ol),        'b--', 'LineWidth', 1.5); hold on;
+semilogx(w, 20*log10(mag_cl),        'r-',  'LineWidth', 1.5);
+semilogx([w(1), w(end)], [0, 0],     'k:',  'LineWidth', 1.0);
+ylabel('Magnitude [dB]');
+title('Bode Plot: DC Motor Position Control');
+legend('Open Loop', 'Closed Loop', '0 dB');
+grid on;
+
+subplot(2,1,2);
+semilogx(w, phase_ol,                    'b--', 'LineWidth', 1.5); hold on;
+semilogx(w, phase_cl,                    'r-',  'LineWidth', 1.5);
+semilogx([w(1), w(end)], [-180, -180],   'k:',  'LineWidth', 1.0);
+ylabel('Phase [deg]');
+xlabel('Frequency [rad/s]');
+legend('Open Loop', 'Closed Loop', '-180°');
+grid on;
+
+% ── Step Response ─────────────────────────────────────────────────
+figure(2);
+t = linspace(0, 3, 1000);
+[y_cl, t_cl] = step(sys_cl, t);
+
+steady_state = y_cl(end);
+settled = find(abs(y_cl - steady_state) > 0.02 * abs(steady_state));
+
+plot(t_cl, y_cl, 'r-', 'LineWidth', 1.5); hold on;
+
+if ~isempty(settled)
+    t_settle = t_cl(settled(end));
+    fprintf('Settling time (2%%): %.3f s\n', t_settle);
+    plot([t_settle, t_settle], [0, steady_state], 'k--', 'LineWidth', 1.0);
+    text(t_settle + 0.05, steady_state * 0.5, ...
+         sprintf('t_{settle} = %.2fs', t_settle));
+end
+
+xlabel('Time [s]');
+ylabel('Position [rad]');
+title('Closed Loop Step Response');
+grid on;
+
+% ── Open Loop Step Response ───────────────────────────────────────
+figure(3);
+t = linspace(0, 3, 1000);
+
+% Open loop will likely rail so limit the time window
+[y_ol, t_ol] = step(sys_ol, t);
+[y_cl, t_cl] = step(sys_cl, t);
+
+plot(t_ol, y_ol, 'b--', 'LineWidth', 1.5); hold on;
+plot(t_cl, y_cl, 'r-',  'LineWidth', 1.5);
+
+xlabel('Time [s]');
+ylabel('Position [rad]');
+title('Step Response: Open Loop vs Closed Loop');
+legend('Open Loop', 'Closed Loop');
+grid on;
+
+% ── Unstable Example ──────────────────────────────────────────────
+fprintf('\n--- Attempting unstable pole placement ---\n');
+bad_poles = [2, -5, -6];   % positive real part -> unstable
+K_bad     = place(A, B, bad_poles);
+A_bad     = A - B * K_bad;
+bad_eigs  = eig(A_bad);
+
+fprintf('Bad closed loop poles: [%.3f, %.3f, %.3f]\n', ...
+        bad_eigs(1), bad_eigs(2), bad_eigs(3));
+if any(real(bad_eigs) > 0)
+    fprintf('UNSTABLE SYSTEM DETECTED - would be a compile error in C++\n');
+end
+
