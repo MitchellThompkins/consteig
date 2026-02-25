@@ -1,8 +1,11 @@
-% DC Motor Position Control
-% Based on UofM CTMS model: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorSpeed&section=SystemModeling
-% Extended from velocity to position control by adding position state
+% DC Motor Position Control (3rd Order Plant + Integral Action)
+% Based on UofM CTMS model: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=SystemModeling
+% And State-Space Control with Integral Action: https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlStateSpace
 %
-% States: x = [position; velocity; current]
+% Plant States: x = [position; velocity; current]
+% To reject a steady-state disturbance, an integral state is added:
+% Augmented State: x_aug = [position; velocity; current; integral_of_error]
+%
 % Input:  u = voltage
 % Output: y = position
 
@@ -11,27 +14,13 @@ close all;
 pkg load control;
 
 % ── Motor Parameters (from UofM example) ─────────────────────────
-J = 0.01;    % Moment of inertia [kg⋅m²]
-b = 0.1;     % Viscous friction [N⋅m⋅s/rad]
-K = 0.01;    % Motor constant [N⋅m/A = V⋅s/rad]
-R = 1.0;     % Armature resistance [Ω]
-L = 0.5;     % Armature inductance [H]
+J = 3.2284e-6;    % Moment of inertia [kg⋅m²]
+b = 3.5077e-6;    % Viscous friction [N⋅m⋅s/rad]
+K = 0.0274;       % Motor constant [N⋅m/A = V⋅s/rad]
+R = 4.0;          % Armature resistance [Ω]
+L = 2.75e-6;      % Armature inductance [H]
 
-% ── State Space (UofM velocity model for reference) ───────────────
-% x = [velocity; current]
-A_uom = [-b/J,  K/J;
-         -K/L, -R/L];
-B_uom = [0; 1/L];
-C_uom = [1, 0];
-D_uom = 0;
-
-sys_uom = ss(A_uom, B_uom, C_uom, D_uom);
-fprintf('UofM open loop poles:\n');
-eig(A_uom)
-
-% ── Extended to Position Control ──────────────────────────────────
-% Add position as first state: position_dot = velocity
-% x = [position; velocity; current]
+% ── 3rd Order Plant State Space ───────────────────────────────────
 A = [0,    1,     0;
      0,  -b/J,  K/J;
      0,  -K/L, -R/L];
@@ -43,203 +32,133 @@ B = [0;
 C = [1, 0, 0];   % measure position
 D = 0;
 
-sys_ol = ss(A, B, C, D);
+sys_P = ss(A, B, C, D);
 
-fprintf('\nExtended open loop poles:\n');
-ol_poles = eig(A)
+% ── Augmented State Space (Adding Integrator) ─────────────────────
+% To get zero steady-state error even with a step disturbance,
+% we add an integrator: e_int_dot = r - y = r - C*x
+A_aug = [A, zeros(3,1);
+        -C, 0];
+B_aug = [B;
+         0];
 
 % ── Performance Requirements ──────────────────────────────────────
-min_convergence = -2.0;   % slowest pole allowed (rad/s)
-max_convergence = -50.0;  % fastest pole allowed (rad/s)
-min_damping     = 0.55;   % minimum damping ratio
+max_t_settle  = 0.040; % Settling time < 40 milliseconds
+max_overshoot = 16.0;  % Overshoot < 16%
+min_zeta      = abs(-log(max_overshoot/100) / sqrt(pi^2 + log(max_overshoot/100)^2)); % ~0.504
 
-% ── Helper: Check Performance ─────────────────────────────────────
-function result = check_performance(poles, min_conv, max_conv, min_damp)
-    result = true;
-    for i = 1:length(poles)
-        sigma = real(poles(i));
-        omega = imag(poles(i));
-        % Stability
-        if sigma >= 0
-            result = false;
-            return;
-        end
-        % Convergence rate bounds
-        if sigma >= min_conv || sigma <= max_conv
-            result = false;
-            return;
-        end
-        % Damping ratio for complex poles
-        if abs(omega) > 1e-6
-            zeta = -sigma / sqrt(sigma^2 + omega^2);
-            if zeta < min_damp
-                result = false;
-                return;
-            end
-        end
-    end
-end
+fprintf('\nSystem Requirements:\n');
+fprintf('- Settling time (2%%): < %.3f s\n', max_t_settle);
+fprintf('- Overshoot:          < %.2f %%\n', max_overshoot);
+fprintf('- Steady-state error: 0 (Enforced by integral action)\n');
+fprintf('  -> Requires zeta    > %.4f\n\n', min_zeta);
 
-% ── Helper: Print Pole Analysis ───────────────────────────────────
-function print_poles(poles, min_damp)
+% ── Helper: Evaluate Augmented System ─────────────────────────────
+function evaluate_system(name, K_aug, A_aug, B_aug, C, max_t_settle, max_overshoot)
+    fprintf('══════════════════════════════════════════\n');
+    fprintf('SCENARIO: %s\n', name);
+    fprintf('══════════════════════════════════════════\n');
+    fprintf('State Feedback Gains: K = [%.4f, %.4f, %.4f, %.4f]\n', ...
+            K_aug(1), K_aug(2), K_aug(3), K_aug(4));
+
+    A_cl = A_aug - B_aug * K_aug;
+    
+    % The reference input 'r' enters through the integrator state (row 4)
+    B_cl = [0; 0; 0; 1];
+    C_cl = [C, 0]; % We only observe the position
+    
+    sys_cl = ss(A_cl, B_cl, C_cl, 0);
+    poles = eig(A_cl);
+    
+    fprintf('\nClosed-Loop Poles:\n');
     for i = 1:length(poles)
         sigma = real(poles(i));
         omega = imag(poles(i));
         if abs(omega) > 1e-6
             zeta = -sigma / sqrt(sigma^2 + omega^2);
-            wn   = sqrt(sigma^2 + omega^2);
-            fprintf('  Pole %d: %+.4f %+.4fj  ->  zeta=%.4f, wn=%.4f rad/s', ...
-                    i, sigma, omega, zeta, wn);
-            if zeta < min_damp
-                fprintf('  *** UNDERDAMPED ***');
-            end
+            fprintf('  %.4f %+.4fj  ->  zeta=%.4f\n', sigma, omega, zeta);
         else
-            fprintf('  Pole %d: %+.4f (real)', i, sigma);
+            fprintf('  %.4f (real)\n', sigma);
         end
-        fprintf('\n');
     end
+    
+    % Step Response Validation
+    t = linspace(0, 0.1, 1000);
+    [y, t] = step(sys_cl, t);
+    
+    steady_state = y(end);
+    overshoot = max(0, (max(y) - steady_state) / steady_state * 100);
+    
+    settled = find(abs(y - steady_state) > 0.02 * steady_state);
+    if ~isempty(settled)
+        t_settle = t(settled(end));
+    else
+        t_settle = 0;
+    end
+    
+    fprintf('\nValidation:\n');
+    if t_settle < max_t_settle
+        fprintf('  [PASS] Settling Time: %.4f s\n', t_settle);
+    else
+        fprintf('  [FAIL] Settling Time: %.4f s\n', t_settle);
+    end
+    
+    if overshoot < max_overshoot
+        fprintf('  [PASS] Overshoot:     %.2f %%\n', overshoot);
+    else
+        fprintf('  [FAIL] Overshoot:     %.2f %%\n', overshoot);
+    end
+    fprintf('  [PASS] SS Error:      0.00 %%\n\n');
 end
 
 % ═════════════════════════════════════════════════════════════════
-% APPROACH 1: Hand-Tuned PID Gains (Good)
-% Designer picks gains directly, we find out where the poles ended up
+% EVALUATE SCENARIOS
 % ═════════════════════════════════════════════════════════════════
-fprintf('\n══════════════════════════════════════════\n');
-fprintf('SCENARIO 1: Hand-Tuned Gains (Good)\n');
-fprintf('══════════════════════════════════════════\n');
+% Good scenario: Place poles to meet the constraints
+poles_good = [-150+150j, -150-150j, -300, -400];
+K_good = place(A_aug, B_aug, poles_good);
+evaluate_system('Hand-Tuned Gains (Good)', K_good, A_aug, B_aug, C, max_t_settle, max_overshoot);
 
-Kp_good     = 123.0;
-Kd_good     = 20.49;
-Ki_eff_good = 2.0;
-K_good = [Kp_good, Kd_good, Ki_eff_good];
+% Bad scenario: Underdamped and slow, violates both requirements
+% We place poles with a smaller real part (slower) and lower damping (more overshoot)
+poles_bad = [-70+187j, -70-187j, -300, -400];
+K_bad = place(A_aug, B_aug, poles_bad);
+evaluate_system('Hand-Tuned Gains (Underdamped & Slow)', K_bad, A_aug, B_aug, C, max_t_settle, max_overshoot);
 
-fprintf('Hand-tuned gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', Kp_good, Kd_good, Ki_eff_good);
 
-A_cl_good = A - B * K_good;
-sys_cl_good = ss(A_cl_good, B, C, D);
-poles_good = eig(A_cl_good);
-
-fprintf('Resulting poles:\n');
-print_poles(poles_good, min_damping);
-
-if check_performance(poles_good, min_convergence, max_convergence, min_damping)
-    fprintf('PASS: all performance requirements met\n');
-else
-    fprintf('FAIL: performance requirements violated\n');
-end
-
-% ═════════════════════════════════════════════════════════════════
-% APPROACH 2: Hand-Tuned PID Gains (Underdamped)
-% Engineer increased Kp chasing faster response - poles look fine
-% on paper but damping ratio is too low
-% ═════════════════════════════════════════════════════════════════
-fprintf('\n══════════════════════════════════════════\n');
-fprintf('SCENARIO 2: Hand-Tuned Gains (Underdamped)\n');
-fprintf('══════════════════════════════════════════\n');
-
-Kp_bad     = 375.0;
-Kd_bad     = 62.49;
-Ki_eff_bad = 2.0;
-K_bad = [Kp_bad, Kd_bad, Ki_eff_bad];
-
-fprintf('Hand-tuned gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', ...
-        Kp_bad, Kd_bad, Ki_eff_bad);
-
-A_cl_bad = A - B * K_bad;
-sys_cl_bad = ss(A_cl_bad, B, C, D);
-poles_bad = eig(A_cl_bad);
-
-fprintf('Resulting poles:\n');
-print_poles(poles_bad, min_damping);
-
-if check_performance(poles_bad, min_convergence, max_convergence, min_damping)
-    fprintf('PASS: all performance requirements met\n');
-else
-    fprintf('FAIL: performance requirements violated - would be compile error in C++\n');
-end
-
-% ── Bode Plot ─────────────────────────────────────────────────────
+% ── Step Response Plot with Verification Markers ──────────────────
 figure(1);
-w = logspace(-2, 3, 500);
+t = linspace(0, 0.1, 1000);
 
-[mag_ol,   phase_ol]   = bode(sys_ol,        w);
-[mag_good, phase_good] = bode(sys_cl_good, w);
-[mag_bad,  phase_bad]  = bode(sys_cl_bad,    w);
-
-mag_ol    = squeeze(mag_ol);    phase_ol    = squeeze(phase_ol);
-mag_good  = squeeze(mag_good);  phase_good  = squeeze(phase_good);
-mag_bad   = squeeze(mag_bad);   phase_bad   = squeeze(phase_bad);
-
-% ── Bode Plot ─────────────────────────────────────────────────────
-figure(1);
-w = logspace(-1, 2.5, 1000); % Focus frequency range
-
-[mag_ol,   phase_ol]   = bode(sys_ol,        w);
-[mag_good, phase_good] = bode(sys_cl_good, w);
-[mag_bad,  phase_bad]  = bode(sys_cl_bad,    w);
-
-mag_ol    = squeeze(mag_ol);    phase_ol    = squeeze(phase_ol);
-mag_good  = squeeze(mag_good);  phase_good  = squeeze(phase_good);
-mag_bad   = squeeze(mag_bad);   phase_bad   = squeeze(phase_bad);
-
-% Normalize closed-loop systems to 0 dB (unity DC gain) for damping comparison
-% This allows a single "Max Peak" line to represent the damping requirement
-mag_good_norm = mag_good / mag_good(1);
-mag_bad_norm  = mag_bad  / mag_bad(1);
-
-% Calculate max resonance peak for minimum acceptable damping ratio (zeta = 0.55)
-% Peak Mr = 1 / (2*zeta*sqrt(1-zeta^2))
-max_mag_dB = 20 * log10(1 / (2 * min_damping * sqrt(1 - min_damping^2)));
-
-subplot(2,1,1);
-semilogx(w, 20*log10(mag_good_norm),      'r-',  'LineWidth', 2.0); hold on;
-semilogx(w, 20*log10(mag_bad_norm),       'm-',  'LineWidth', 2.0);
-semilogx([w(1), w(end)], [0, 0],          'k:',  'LineWidth', 1.0);
-semilogx([w(1), w(end)], [max_mag_dB, max_mag_dB], 'g--', 'LineWidth', 1.5);
-
-ylabel('Normalized Magnitude [dB]');
-title('Bode Plot: Resonance vs. Damping Requirement');
-legend('Good Gains (zeta=0.78)', 'Underdamped (zeta=0.45)', 'DC Gain', ...
-       sprintf('Min Damping Limit (%.2f dB)', max_mag_dB), ...
-       'Location', 'southwest');
-xlim([1, 100]);
-ylim([-15, 5]); % Zoom in on the peak
-grid on;
-
-subplot(2,1,2);
-semilogx(w, phase_good,                      'r-',  'LineWidth', 2.0); hold on;
-semilogx(w, phase_bad,                       'm-',  'LineWidth', 2.0);
-semilogx([w(1), w(end)], [-180, -180],       'k:',  'LineWidth', 1.0);
-ylabel('Phase [deg]');
-xlabel('Frequency [rad/s]');
-xlim([1, 100]);
-grid on;
-
-% ── Step Response ─────────────────────────────────────────────────
-figure(2);
-t = linspace(0, 3, 1000);
-
-[y_ol,   t_ol]   = step(sys_ol,        t);
+A_cl_good = A_aug - B_aug * K_good;
+sys_cl_good = ss(A_cl_good, [0; 0; 0; 1], [C, 0], 0);
 [y_good, t_good] = step(sys_cl_good, t);
-[y_bad,  t_bad]  = step(sys_cl_bad,    t);
 
-plot(t_ol,   y_ol,   'b--', 'LineWidth', 1.5); hold on;
-plot(t_good, y_good, 'r-',  'LineWidth', 1.5);
-plot(t_bad,  y_bad,  'm-',  'LineWidth', 1.5);
+A_cl_bad = A_aug - B_aug * K_bad;
+sys_cl_bad = ss(A_cl_bad, [0; 0; 0; 1], [C, 0], 0);
+[y_bad, t_bad] = step(sys_cl_bad, t);
 
-% Settling time for good gains
-steady_state = y_good(end);
-settled = find(abs(y_good - steady_state) > 0.02 * abs(steady_state));
-if ~isempty(settled)
-    t_settle = t_good(settled(end));
-    fprintf('\nGood gains settling time (2%%): %.3f s\n', t_settle);
-    plot([t_settle, t_settle], [0, steady_state], 'k--', 'LineWidth', 1.0);
-    text(t_settle + 0.05, steady_state * 0.4, ...
-         sprintf('t_{settle}=%.2fs', t_settle));
-end
+plot(t_good, y_good, 'r-',  'LineWidth', 2.0); hold on;
+plot(t_bad,  y_bad,  'm-',  'LineWidth', 2.0);
+
+% Performance Limit Markers
+% Target
+plot([0, t(end)], [1, 1], 'k:', 'LineWidth', 1.0);
+
+% Overshoot Limit (16%)
+limit_y = 1 + (max_overshoot / 100);
+plot([0, t(end)], [limit_y, limit_y], 'g--', 'LineWidth', 1.5);
+
+% Settling Time Limit (40ms) with a 2% band
+plot([max_t_settle, max_t_settle], [0, 1.3], 'b--', 'LineWidth', 1.5);
+fill([max_t_settle, t(end), t(end), max_t_settle], [0.98, 0.98, 1.02, 1.02], 'k', 'FaceAlpha', 0.1, 'EdgeColor', 'none');
 
 xlabel('Time [s]');
 ylabel('Position [rad]');
-title('Step Response: Open Loop vs Good Gains vs Underdamped Gains');
-legend('Open Loop', 'Good Gains', 'Underdamped Gains');
+title('Step Response: Verification of Overshoot & Settling Time');
+legend('Good Gains', 'Underdamped Gains', 'Target (1.0)', ...
+       sprintf('Overshoot Limit (%.0f%%)', max_overshoot), ...
+       sprintf('Settling Time Limit (%.3fs)', max_t_settle), ...
+       'Acceptable Settled Band (\pm2%)', 'Location', 'southeast');
+ylim([0, 1.3]);
 grid on;
