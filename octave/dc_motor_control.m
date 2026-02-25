@@ -170,24 +170,49 @@ mag_ol    = squeeze(mag_ol);    phase_ol    = squeeze(phase_ol);
 mag_good  = squeeze(mag_good);  phase_good  = squeeze(phase_good);
 mag_bad   = squeeze(mag_bad);   phase_bad   = squeeze(phase_bad);
 
+% ── Bode Plot ─────────────────────────────────────────────────────
+figure(1);
+w = logspace(-1, 2.5, 1000); % Focus frequency range
+
+[mag_ol,   phase_ol]   = bode(sys_ol,        w);
+[mag_good, phase_good] = bode(sys_cl_good, w);
+[mag_bad,  phase_bad]  = bode(sys_cl_bad,    w);
+
+mag_ol    = squeeze(mag_ol);    phase_ol    = squeeze(phase_ol);
+mag_good  = squeeze(mag_good);  phase_good  = squeeze(phase_good);
+mag_bad   = squeeze(mag_bad);   phase_bad   = squeeze(phase_bad);
+
+% Normalize closed-loop systems to 0 dB (unity DC gain) for damping comparison
+% This allows a single "Max Peak" line to represent the damping requirement
+mag_good_norm = mag_good / mag_good(1);
+mag_bad_norm  = mag_bad  / mag_bad(1);
+
+% Calculate max resonance peak for minimum acceptable damping ratio (zeta = 0.55)
+% Peak Mr = 1 / (2*zeta*sqrt(1-zeta^2))
+max_mag_dB = 20 * log10(1 / (2 * min_damping * sqrt(1 - min_damping^2)));
+
 subplot(2,1,1);
-semilogx(w, 20*log10(mag_ol),            'b--', 'LineWidth', 1.5); hold on;
-semilogx(w, 20*log10(mag_good),          'r-',  'LineWidth', 1.5);
-semilogx(w, 20*log10(mag_bad),           'm-',  'LineWidth', 1.5);
-semilogx([w(1), w(end)], [0, 0],         'k:',  'LineWidth', 1.0);
-ylabel('Magnitude [dB]');
-title('Bode Plot: DC Motor Position Control');
-legend('Open Loop', 'Good Gains', 'Underdamped Gains', '0 dB');
+semilogx(w, 20*log10(mag_good_norm),      'r-',  'LineWidth', 2.0); hold on;
+semilogx(w, 20*log10(mag_bad_norm),       'm-',  'LineWidth', 2.0);
+semilogx([w(1), w(end)], [0, 0],          'k:',  'LineWidth', 1.0);
+semilogx([w(1), w(end)], [max_mag_dB, max_mag_dB], 'g--', 'LineWidth', 1.5);
+
+ylabel('Normalized Magnitude [dB]');
+title('Bode Plot: Resonance vs. Damping Requirement');
+legend('Good Gains (zeta=0.78)', 'Underdamped (zeta=0.45)', 'DC Gain', ...
+       sprintf('Min Damping Limit (%.2f dB)', max_mag_dB), ...
+       'Location', 'southwest');
+xlim([1, 100]);
+ylim([-15, 5]); % Zoom in on the peak
 grid on;
 
 subplot(2,1,2);
-semilogx(w, phase_ol,                        'b--', 'LineWidth', 1.5); hold on;
-semilogx(w, phase_good,                      'r-',  'LineWidth', 1.5);
-semilogx(w, phase_bad,                       'm-',  'LineWidth', 1.5);
+semilogx(w, phase_good,                      'r-',  'LineWidth', 2.0); hold on;
+semilogx(w, phase_bad,                       'm-',  'LineWidth', 2.0);
 semilogx([w(1), w(end)], [-180, -180],       'k:',  'LineWidth', 1.0);
 ylabel('Phase [deg]');
 xlabel('Frequency [rad/s]');
-legend('Open Loop', 'Good Gains', 'Underdamped Gains', '-180°');
+xlim([1, 100]);
 grid on;
 
 % ── Step Response ─────────────────────────────────────────────────
