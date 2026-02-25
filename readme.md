@@ -272,6 +272,43 @@ eigenvalues (poles) of the system:
 The above matches that which is reported by octave:
 
 ```
+System Requirements:
+- Settling time (2%): < 0.040 s
+- Overshoot:          < 16.00 %
+- Steady-state error: 0 (Enforced by integral action)
+  -> Requires zeta    > 0.5039
+
+══════════════════════════════════════════
+SCENARIO: Hand-Tuned Gains (Good)
+══════════════════════════════════════════
+State Feedback Gains: K = [0.0219, -0.0273, -3.9973, -1.7497]
+
+Closed-Loop Poles:
+  -400.0000 (real)
+  -300.0000 (real)
+  -150.0000 +150.0000j  ->  zeta=0.7071
+  -150.0000 -150.0000j  ->  zeta=0.7071
+
+Validation:
+  [PASS] Settling Time: 0.0319 s
+  [PASS] Overshoot:     2.18 %
+  [PASS] SS Error:      0.00 %
+
+══════════════════════════════════════════
+SCENARIO: Hand-Tuned Gains (Underdamped & Slow)
+══════════════════════════════════════════
+State Feedback Gains: K = [0.0145, -0.0273, -3.9977, -1.5502]
+
+Closed-Loop Poles:
+  -70.0000 +187.0000j  ->  zeta=0.3506
+  -70.0000 -187.0000j  ->  zeta=0.3506
+  -400.0000 (real)
+  -300.0000 (real)
+
+Validation:
+  [FAIL] Settling Time: 0.0475 s
+  [FAIL] Overshoot:     20.85 %
+  [PASS] SS Error:      0.00 %
 ```
 
 ## Why Does This Exist
