@@ -48,162 +48,221 @@ sys_ol = ss(A, B, C, D);
 fprintf('Extended open loop poles:\n');
 ol_poles = eig(A)
 
-% ── Pole Placement ────────────────────────────────────────────────
-% Place complex conjugate poles for fast response
-% This gives a non-trivial damping ratio that isn't obvious from gains
+% ── Performance Requirements ──────────────────────────────────────
+min_convergence = -2.0;   % slowest pole allowed (rad/s)
+max_convergence = -50.0;  % fastest pole allowed (rad/s)
+min_damping     = 0.55;   % minimum damping ratio
+
+% ── Helper: Check Performance ─────────────────────────────────────
+function result = check_performance(poles, min_conv, max_conv, min_damp)
+    result = true;
+    for i = 1:length(poles)
+        sigma = real(poles(i));
+        omega = imag(poles(i));
+        % Stability
+        if sigma >= 0
+            result = false;
+            return;
+        end
+        % Convergence rate bounds
+        if sigma >= min_conv || sigma <= max_conv
+            result = false;
+            return;
+        end
+        % Damping ratio for complex poles
+        if abs(omega) > 1e-6
+            zeta = -sigma / sqrt(sigma^2 + omega^2);
+            if zeta < min_damp
+                result = false;
+                return;
+            end
+        end
+    end
+end
+
+% ── Helper: Print Pole Analysis ───────────────────────────────────
+function print_poles(poles, min_damp)
+    for i = 1:length(poles)
+        sigma = real(poles(i));
+        omega = imag(poles(i));
+        if abs(omega) > 1e-6
+            zeta = -sigma / sqrt(sigma^2 + omega^2);
+            wn   = sqrt(sigma^2 + omega^2);
+            fprintf('  Pole %d: %+.4f %+.4fj  ->  zeta=%.4f, wn=%.4f rad/s', ...
+                    i, sigma, omega, zeta, wn);
+            if zeta < min_damp
+                fprintf('  *** UNDERDAMPED ***');
+            end
+        else
+            fprintf('  Pole %d: %+.4f (real)', i, sigma);
+        end
+        fprintf('\n');
+    end
+end
+
+% ═════════════════════════════════════════════════════════════════
+% APPROACH 1: Pole Placement
+% Designer specifies desired poles, gains are computed analytically
+% ═════════════════════════════════════════════════════════════════
+fprintf('\n══════════════════════════════════════════\n');
+fprintf('APPROACH 1: Pole Placement\n');
+fprintf('══════════════════════════════════════════\n');
+
 desired_poles = [-5+4j, -5-4j, -6];
-K_gain = place(A, B, desired_poles);
+K_placed = place(A, B, desired_poles);
 
-fprintf('Control gains: K = [%.4f, %.4f, %.4f]\n', ...
-        K_gain(1), K_gain(2), K_gain(3));
+fprintf('Desired poles: [%+.1f%+.1fj, %+.1f%+.1fj, %+.1f]\n', ...
+        real(desired_poles(1)), imag(desired_poles(1)), ...
+        real(desired_poles(2)), imag(desired_poles(2)), ...
+        real(desired_poles(3)));
+fprintf('Computed gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', ...
+        K_placed(1), K_placed(2), K_placed(3));
 
-% ── Closed Loop System ────────────────────────────────────────────
-A_cl = A - B * K_gain;
-sys_cl = ss(A_cl, B, C, D);
+A_cl_placed = A - B * K_placed;
+sys_cl_placed = ss(A_cl_placed, B, C, D);
+poles_placed = eig(A_cl_placed);
 
-fprintf('Closed loop poles:\n');
-cl_poles = eig(A_cl)
+fprintf('Resulting poles:\n');
+print_poles(poles_placed, min_damping);
 
-% ── Damping Ratio Analysis ────────────────────────────────────────
-% For each complex conjugate pair, compute damping ratio
-% zeta = -sigma / sqrt(sigma^2 + omega^2)
-% where pole = sigma + j*omega
-fprintf('\n--- Damping Ratio Analysis ---\n');
-min_zeta = inf;
-for i = 1:length(cl_poles)
-    sigma = real(cl_poles(i));
-    omega = imag(cl_poles(i));
-    if abs(omega) > 1e-6
-        zeta = -sigma / sqrt(sigma^2 + omega^2);
-        wn   = sqrt(sigma^2 + omega^2);
-        fprintf('  Pole %d: %.4f + %.4fj  ->  zeta = %.4f, wn = %.4f rad/s\n', ...
-                i, sigma, omega, zeta, wn);
-        min_zeta = min(min_zeta, zeta);
-    else
-        fprintf('  Pole %d: %.4f (real)\n', i, sigma);
-    end
+if check_performance(poles_placed, min_convergence, max_convergence, min_damping)
+    fprintf('PASS: all performance requirements met\n');
+else
+    fprintf('FAIL: performance requirements violated\n');
 end
 
-% ── Assertions ────────────────────────────────────────────────────
-fprintf('\n--- Assertions ---\n');
+% ═════════════════════════════════════════════════════════════════
+% APPROACH 2: Hand-Tuned PID Gains (Good)
+% Designer picks gains directly, we find out where the poles ended up
+% ═════════════════════════════════════════════════════════════════
+fprintf('\n══════════════════════════════════════════\n');
+fprintf('APPROACH 2: Hand-Tuned Gains (Good)\n');
+fprintf('══════════════════════════════════════════\n');
 
-% Stability: all poles must have negative real part
-assert(all(real(cl_poles) < 0), ...
-       'UNSTABLE: one or more closed loop poles have positive real part!');
-fprintf('OK: all poles stable\n');
+% These happen to be the same gains as above - the point is the
+% engineer chose them empirically, not via pole placement
+Kp     = K_placed(1);
+Kd     = K_placed(2);
+Ki_eff = K_placed(3);
+K_hand = [Kp, Kd, Ki_eff];
 
-% Performance: slowest pole must be fast enough for control loop
-min_convergence = -2.0;   % rad/s - tune to your loop deadline
-assert(all(real(cl_poles) < min_convergence), ...
-       sprintf('TOO SLOW: a pole is slower than %.1f rad/s', min_convergence));
-fprintf('OK: all poles faster than %.1f rad/s\n', min_convergence);
+fprintf('Hand-tuned gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', Kp, Kd, Ki_eff);
 
-% Performance: fastest pole not too aggressive
-max_convergence = -50.0;  % rad/s - beyond this demands excessive current
-assert(all(real(cl_poles) > max_convergence), ...
-       sprintf('TOO AGGRESSIVE: a pole is faster than %.1f rad/s', max_convergence));
-fprintf('OK: no poles more aggressive than %.1f rad/s\n', max_convergence);
+A_cl_hand = A - B * K_hand;
+sys_cl_hand = ss(A_cl_hand, B, C, D);
+poles_hand = eig(A_cl_hand);
 
-% Damping: complex poles must not be too underdamped
-% Below 0.5 risks mechanical oscillation stressing the gearbox
-min_damping = 0.5;
-if min_zeta < inf
-    assert(min_zeta >= min_damping, ...
-           sprintf('UNDERDAMPED: zeta = %.4f < %.4f, oscillation will stress gearbox!', ...
-                   min_zeta, min_damping));
-    fprintf('OK: damping ratio %.4f >= %.4f\n', min_zeta, min_damping);
+fprintf('Resulting poles:\n');
+print_poles(poles_hand, min_damping);
+
+if check_performance(poles_hand, min_convergence, max_convergence, min_damping)
+    fprintf('PASS: all performance requirements met\n');
+else
+    fprintf('FAIL: performance requirements violated\n');
 end
 
-% ── Export Closed Loop Matrix for constexpr Verification ──────────
-fprintf('\n--- Closed Loop A matrix (paste into C++) ---\n');
-fprintf('constexpr Matrix<double, 3, 3> A_cl = {{\n');
-for i = 1:3
-    fprintf('    {{ %12.8f, %12.8f, %12.8f }}', A_cl(i,1), A_cl(i,2), A_cl(i,3));
-    if i < 3
-        fprintf(',');
-    end
-    fprintf('\n');
-end
-fprintf('}};\n\n');
+% ═════════════════════════════════════════════════════════════════
+% APPROACH 3: Hand-Tuned PID Gains (Underdamped)
+% Engineer increased Kp chasing faster response - poles look fine
+% on paper but damping ratio is too low
+% ═════════════════════════════════════════════════════════════════
+fprintf('\n══════════════════════════════════════════\n');
+fprintf('APPROACH 3: Hand-Tuned Gains (Underdamped)\n');
+fprintf('══════════════════════════════════════════\n');
 
-fprintf('Expected eigenvalues (from Octave):\n');
-for i = 1:3
-    fprintf('    %12.8f + %12.8fj\n', real(cl_poles(i)), imag(cl_poles(i)));
+% Engineer bumped Kp for faster response - looks reasonable by inspection
+Kp_bad     = K_placed(1) * 2.5;
+Kd_bad     = K_placed(2) * 0.8;
+Ki_eff_bad = K_placed(3);
+K_bad = [Kp_bad, Kd_bad, Ki_eff_bad];
+
+fprintf('Hand-tuned gains: Kp=%.4f, Kd=%.4f, Ki_eff=%.4f\n', ...
+        Kp_bad, Kd_bad, Ki_eff_bad);
+
+A_cl_bad = A - B * K_bad;
+sys_cl_bad = ss(A_cl_bad, B, C, D);
+poles_bad = eig(A_cl_bad);
+
+fprintf('Resulting poles:\n');
+print_poles(poles_bad, min_damping);
+
+if check_performance(poles_bad, min_convergence, max_convergence, min_damping)
+    fprintf('PASS: all performance requirements met\n');
+else
+    fprintf('FAIL: performance requirements violated - would be compile error in C++\n');
 end
+
+% ── Export Matrices for C++ ───────────────────────────────────────
+fprintf('\n══════════════════════════════════════════\n');
+fprintf('C++ Export\n');
+fprintf('══════════════════════════════════════════\n');
+fprintf('// Good hand-tuned gains\n');
+fprintf('static constexpr double Kp     = %.8f;\n', Kp);
+fprintf('static constexpr double Kd     = %.8f;\n', Kd);
+fprintf('static constexpr double Ki_eff = %.8f;\n', Ki_eff);
+fprintf('\n// Bad hand-tuned gains\n');
+fprintf('static constexpr double Kp_bad     = %.8f;\n', Kp_bad);
+fprintf('static constexpr double Kd_bad     = %.8f;\n', Kd_bad);
+fprintf('static constexpr double Ki_eff_bad = %.8f;\n', Ki_eff_bad);
 
 % ── Bode Plot ─────────────────────────────────────────────────────
 figure(1);
 w = logspace(-2, 3, 500);
 
-[mag_ol, phase_ol] = bode(sys_ol, w);
-[mag_cl, phase_cl] = bode(sys_cl, w);
-mag_ol   = squeeze(mag_ol);
-phase_ol = squeeze(phase_ol);
-mag_cl   = squeeze(mag_cl);
-phase_cl = squeeze(phase_cl);
+[mag_ol,   phase_ol]   = bode(sys_ol,        w);
+[mag_good, phase_good] = bode(sys_cl_placed, w);
+[mag_bad,  phase_bad]  = bode(sys_cl_bad,    w);
+
+mag_ol    = squeeze(mag_ol);    phase_ol    = squeeze(phase_ol);
+mag_good  = squeeze(mag_good);  phase_good  = squeeze(phase_good);
+mag_bad   = squeeze(mag_bad);   phase_bad   = squeeze(phase_bad);
 
 subplot(2,1,1);
-semilogx(w, 20*log10(mag_ol),        'b--', 'LineWidth', 1.5); hold on;
-semilogx(w, 20*log10(mag_cl),        'r-',  'LineWidth', 1.5);
-semilogx([w(1), w(end)], [0, 0],     'k:',  'LineWidth', 1.0);
+semilogx(w, 20*log10(mag_ol),            'b--', 'LineWidth', 1.5); hold on;
+semilogx(w, 20*log10(mag_good),          'r-',  'LineWidth', 1.5);
+semilogx(w, 20*log10(mag_bad),           'm-',  'LineWidth', 1.5);
+semilogx([w(1), w(end)], [0, 0],         'k:',  'LineWidth', 1.0);
 ylabel('Magnitude [dB]');
 title('Bode Plot: DC Motor Position Control');
-legend('Open Loop', 'Closed Loop', '0 dB');
+legend('Open Loop', 'Good Gains', 'Underdamped Gains', '0 dB');
 grid on;
 
 subplot(2,1,2);
-semilogx(w, phase_ol,                    'b--', 'LineWidth', 1.5); hold on;
-semilogx(w, phase_cl,                    'r-',  'LineWidth', 1.5);
-semilogx([w(1), w(end)], [-180, -180],   'k:',  'LineWidth', 1.0);
+semilogx(w, phase_ol,                        'b--', 'LineWidth', 1.5); hold on;
+semilogx(w, phase_good,                      'r-',  'LineWidth', 1.5);
+semilogx(w, phase_bad,                       'm-',  'LineWidth', 1.5);
+semilogx([w(1), w(end)], [-180, -180],       'k:',  'LineWidth', 1.0);
 ylabel('Phase [deg]');
 xlabel('Frequency [rad/s]');
-legend('Open Loop', 'Closed Loop', '-180°');
+legend('Open Loop', 'Good Gains', 'Underdamped Gains', '-180°');
 grid on;
 
 % ── Step Response ─────────────────────────────────────────────────
 figure(2);
 t = linspace(0, 3, 1000);
 
-[y_ol, t_ol] = step(sys_ol, t);
-[y_cl, t_cl] = step(sys_cl, t);
+[y_ol,   t_ol]   = step(sys_ol,        t);
+[y_good, t_good] = step(sys_cl_placed, t);
+[y_bad,  t_bad]  = step(sys_cl_bad,    t);
 
-steady_state = y_cl(end);
-settled = find(abs(y_cl - steady_state) > 0.02 * abs(steady_state));
+plot(t_ol,   y_ol,   'b--', 'LineWidth', 1.5); hold on;
+plot(t_good, y_good, 'r-',  'LineWidth', 1.5);
+plot(t_bad,  y_bad,  'm-',  'LineWidth', 1.5);
 
-plot(t_ol, y_ol, 'b--', 'LineWidth', 1.5); hold on;
-plot(t_cl, y_cl, 'r-',  'LineWidth', 1.5);
-
+% Settling time for good gains
+steady_state = y_good(end);
+settled = find(abs(y_good - steady_state) > 0.02 * abs(steady_state));
 if ~isempty(settled)
-    t_settle = t_cl(settled(end));
-    fprintf('Settling time (2%%): %.3f s\n', t_settle);
+    t_settle = t_good(settled(end));
+    fprintf('\nGood gains settling time (2%%): %.3f s\n', t_settle);
     plot([t_settle, t_settle], [0, steady_state], 'k--', 'LineWidth', 1.0);
-    text(t_settle + 0.05, steady_state * 0.5, ...
-         sprintf('t_{settle} = %.2fs', t_settle));
+    text(t_settle + 0.05, steady_state * 0.4, ...
+         sprintf('t_{settle}=%.2fs', t_settle));
 end
 
 xlabel('Time [s]');
 ylabel('Position [rad]');
-title('Step Response: Open Loop vs Closed Loop');
-legend('Open Loop', 'Closed Loop');
+title('Step Response: Open Loop vs Good Gains vs Underdamped Gains');
+legend('Open Loop', 'Good Gains', 'Underdamped Gains');
 grid on;
 
-% ── Underdamped Example ───────────────────────────────────────────
-fprintf('\n--- Attempting underdamped pole placement ---\n');
-bad_poles = [-5+8j, -5-8j, -6];   % high imaginary part -> low damping ratio
-K_bad    = place(A, B, bad_poles);
-A_bad    = A - B * K_bad;
-bad_eigs = eig(A_bad);
-
-fprintf('Underdamped closed loop poles:\n');
-for i = 1:length(bad_eigs)
-    sigma = real(bad_eigs(i));
-    omega = imag(bad_eigs(i));
-    if abs(omega) > 1e-6
-        zeta = -sigma / sqrt(sigma^2 + omega^2);
-        fprintf('  Pole %d: %.4f + %.4fj  ->  zeta = %.4f\n', ...
-                i, sigma, omega, zeta);
-        if zeta < min_damping
-            fprintf('  WARNING: underdamped! would be a compile error in C++\n');
-        end
-    end
-end
