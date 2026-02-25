@@ -9,6 +9,11 @@ execution time is spent calculating them at run-time. Consteig also allows for
 compile time static matrix manipulation. To remove any external dependences
 several constexpr math functions are implemented as well.
 
+This is particularly powerful if there is information that would normally
+require an offline tool (MATLAB, Python/scipy, etc...) to verify or compute, but
+which you could express directly in your source code and have verified or
+computed automatically at every build.
+
 All at compile time, consteig supports:
 
 * Computation of real and complex eigenvalues and eigenvectors for symmetric and
