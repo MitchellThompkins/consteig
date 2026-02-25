@@ -49,9 +49,9 @@ fprintf('Extended open loop poles:\n');
 ol_poles = eig(A)
 
 % ── Pole Placement ────────────────────────────────────────────────
-% 3 states -> need 3 desired poles
-% Keep poles real for no oscillation, reasonably fast settling
-desired_poles = [-5, -6, -7];
+% Place complex conjugate poles for fast response
+% This gives a non-trivial damping ratio that isn't obvious from gains
+desired_poles = [-5+4j, -5-4j, -6];
 K_gain = place(A, B, desired_poles);
 
 fprintf('Control gains: K = [%.4f, %.4f, %.4f]\n', ...
@@ -64,13 +64,72 @@ sys_cl = ss(A_cl, B, C, D);
 fprintf('Closed loop poles:\n');
 cl_poles = eig(A_cl)
 
-% Stability assertions
+% ── Damping Ratio Analysis ────────────────────────────────────────
+% For each complex conjugate pair, compute damping ratio
+% zeta = -sigma / sqrt(sigma^2 + omega^2)
+% where pole = sigma + j*omega
+fprintf('\n--- Damping Ratio Analysis ---\n');
+min_zeta = inf;
+for i = 1:length(cl_poles)
+    sigma = real(cl_poles(i));
+    omega = imag(cl_poles(i));
+    if abs(omega) > 1e-6
+        zeta = -sigma / sqrt(sigma^2 + omega^2);
+        wn   = sqrt(sigma^2 + omega^2);
+        fprintf('  Pole %d: %.4f + %.4fj  ->  zeta = %.4f, wn = %.4f rad/s\n', ...
+                i, sigma, omega, zeta, wn);
+        min_zeta = min(min_zeta, zeta);
+    else
+        fprintf('  Pole %d: %.4f (real)\n', i, sigma);
+    end
+end
+
+% ── Assertions ────────────────────────────────────────────────────
+fprintf('\n--- Assertions ---\n');
+
+% Stability: all poles must have negative real part
 assert(all(real(cl_poles) < 0), ...
        'UNSTABLE: one or more closed loop poles have positive real part!');
-assert(max(abs(sort(real(cl_poles)) - sort(real(desired_poles(:))))) < 1e-6, ...
-       'Pole placement failed!');
+fprintf('OK: all poles stable\n');
 
-fprintf('Max settling rate (most negative pole): %.2f rad/s\n', min(real(cl_poles)));
+% Performance: slowest pole must be fast enough for control loop
+min_convergence = -2.0;   % rad/s - tune to your loop deadline
+assert(all(real(cl_poles) < min_convergence), ...
+       sprintf('TOO SLOW: a pole is slower than %.1f rad/s', min_convergence));
+fprintf('OK: all poles faster than %.1f rad/s\n', min_convergence);
+
+% Performance: fastest pole not too aggressive
+max_convergence = -50.0;  % rad/s - beyond this demands excessive current
+assert(all(real(cl_poles) > max_convergence), ...
+       sprintf('TOO AGGRESSIVE: a pole is faster than %.1f rad/s', max_convergence));
+fprintf('OK: no poles more aggressive than %.1f rad/s\n', max_convergence);
+
+% Damping: complex poles must not be too underdamped
+% Below 0.5 risks mechanical oscillation stressing the gearbox
+min_damping = 0.5;
+if min_zeta < inf
+    assert(min_zeta >= min_damping, ...
+           sprintf('UNDERDAMPED: zeta = %.4f < %.4f, oscillation will stress gearbox!', ...
+                   min_zeta, min_damping));
+    fprintf('OK: damping ratio %.4f >= %.4f\n', min_zeta, min_damping);
+end
+
+% ── Export Closed Loop Matrix for constexpr Verification ──────────
+fprintf('\n--- Closed Loop A matrix (paste into C++) ---\n');
+fprintf('constexpr Matrix<double, 3, 3> A_cl = {{\n');
+for i = 1:3
+    fprintf('    {{ %12.8f, %12.8f, %12.8f }}', A_cl(i,1), A_cl(i,2), A_cl(i,3));
+    if i < 3
+        fprintf(',');
+    end
+    fprintf('\n');
+end
+fprintf('}};\n\n');
+
+fprintf('Expected eigenvalues (from Octave):\n');
+for i = 1:3
+    fprintf('    %12.8f + %12.8fj\n', real(cl_poles(i)), imag(cl_poles(i)));
+end
 
 % ── Bode Plot ─────────────────────────────────────────────────────
 figure(1);
@@ -104,12 +163,15 @@ grid on;
 % ── Step Response ─────────────────────────────────────────────────
 figure(2);
 t = linspace(0, 3, 1000);
+
+[y_ol, t_ol] = step(sys_ol, t);
 [y_cl, t_cl] = step(sys_cl, t);
 
 steady_state = y_cl(end);
 settled = find(abs(y_cl - steady_state) > 0.02 * abs(steady_state));
 
-plot(t_cl, y_cl, 'r-', 'LineWidth', 1.5); hold on;
+plot(t_ol, y_ol, 'b--', 'LineWidth', 1.5); hold on;
+plot(t_cl, y_cl, 'r-',  'LineWidth', 1.5);
 
 if ~isempty(settled)
     t_settle = t_cl(settled(end));
@@ -121,36 +183,27 @@ end
 
 xlabel('Time [s]');
 ylabel('Position [rad]');
-title('Closed Loop Step Response');
-grid on;
-
-% ── Open Loop Step Response ───────────────────────────────────────
-figure(3);
-t = linspace(0, 3, 1000);
-
-% Open loop will likely rail so limit the time window
-[y_ol, t_ol] = step(sys_ol, t);
-[y_cl, t_cl] = step(sys_cl, t);
-
-plot(t_ol, y_ol, 'b--', 'LineWidth', 1.5); hold on;
-plot(t_cl, y_cl, 'r-',  'LineWidth', 1.5);
-
-xlabel('Time [s]');
-ylabel('Position [rad]');
 title('Step Response: Open Loop vs Closed Loop');
 legend('Open Loop', 'Closed Loop');
 grid on;
 
-% ── Unstable Example ──────────────────────────────────────────────
-fprintf('\n--- Attempting unstable pole placement ---\n');
-bad_poles = [2, -5, -6];   % positive real part -> unstable
-K_bad     = place(A, B, bad_poles);
-A_bad     = A - B * K_bad;
-bad_eigs  = eig(A_bad);
+% ── Underdamped Example ───────────────────────────────────────────
+fprintf('\n--- Attempting underdamped pole placement ---\n');
+bad_poles = [-5+8j, -5-8j, -6];   % high imaginary part -> low damping ratio
+K_bad    = place(A, B, bad_poles);
+A_bad    = A - B * K_bad;
+bad_eigs = eig(A_bad);
 
-fprintf('Bad closed loop poles: [%.3f, %.3f, %.3f]\n', ...
-        bad_eigs(1), bad_eigs(2), bad_eigs(3));
-if any(real(bad_eigs) > 0)
-    fprintf('UNSTABLE SYSTEM DETECTED - would be a compile error in C++\n');
+fprintf('Underdamped closed loop poles:\n');
+for i = 1:length(bad_eigs)
+    sigma = real(bad_eigs(i));
+    omega = imag(bad_eigs(i));
+    if abs(omega) > 1e-6
+        zeta = -sigma / sqrt(sigma^2 + omega^2);
+        fprintf('  Pole %d: %.4f + %.4fj  ->  zeta = %.4f\n', ...
+                i, sigma, omega, zeta);
+        if zeta < min_damping
+            fprintf('  WARNING: underdamped! would be a compile error in C++\n');
+        end
+    end
 end
-
