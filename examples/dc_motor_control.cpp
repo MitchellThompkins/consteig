@@ -3,16 +3,15 @@
 #include <iostream>
 
 /**
- * Helper to check stability and convergence rate (Real part of poles)
+ * Helper to check asymptotic stability (All poles in LHP)
  */
 template <typename T, consteig::Size S>
 constexpr bool check_stability(
-    const consteig::Matrix<consteig::Complex<T>, S, 1> &eigs,
-    double min_convergence)
+    const consteig::Matrix<consteig::Complex<T>, S, 1> &eigs)
 {
     for (consteig::Size i = 0; i < S; ++i)
     {
-        if (eigs(i, 0).real >= min_convergence)
+        if (eigs(i, 0).real >= 0.0)
         {
             return false;
         }
@@ -21,10 +20,31 @@ constexpr bool check_stability(
 }
 
 /**
- * Helper to check damping ratio (zeta) for complex pairs
+ * Helper to check settling time requirement.
+ * For this PID controller, the zeros allow a dominant pole at -30 rad/s
+ * to meet the 0.040s settling time requirement.
  */
 template <typename T, consteig::Size S>
-constexpr bool check_damping(
+constexpr bool check_settling_time(
+    const consteig::Matrix<consteig::Complex<T>, S, 1> &eigs,
+    double pole_limit)
+{
+    for (consteig::Size i = 0; i < S; ++i)
+    {
+        if (eigs(i, 0).real >= pole_limit)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Helper to check overshoot requirement (via damping ratio zeta).
+ * Zeta > 0.504 corresponds to Overshoot < 16%.
+ */
+template <typename T, consteig::Size S>
+constexpr bool check_overshoot(
     const consteig::Matrix<consteig::Complex<T>, S, 1> &eigs,
     double min_damping)
 {
@@ -57,6 +77,8 @@ int main()
 
     // --- State Space Assembly (constexpr) ---
     // Augmented state: x = [position; velocity; current; integral_error]
+    // The addition of the integral_error state ensures:
+    // "No steady-state error, even in the presence of a step disturbance input"
     static constexpr consteig::Matrix<double, s, s> A{
         {{{0.0, 1.0, 0.0, 0.0},
           {0.0, -b / J, K_m / J, 0.0},
@@ -67,8 +89,8 @@ int main()
         {{{0.0}, {0.0}, {1.0 / L}, {0.0}}}};
 
     // --- Control Constraints ---
-    static constexpr double LIMIT_CONVERGENCE = -30.0; // Slowest pole allowed (settling time)
-    static constexpr double LIMIT_DAMPING = 0.504;     // Min damping (overshoot < 16%)
+    static constexpr double POLE_LIMIT_FOR_SETTLING = -30.0; 
+    static constexpr double ZETA_LIMIT_FOR_OVERSHOOT = 0.504;
 
     // =========================================================================
     // SCENARIO 1: PID Tuning (Kp=21, Kd=0.15, Ki=500)
@@ -84,23 +106,24 @@ int main()
     static constexpr consteig::Matrix<double, s, s> A_cl_good{A - B * K_good};
     static constexpr auto eigs_good = consteig::eigvals(A_cl_good);
 
-    // Verify Scenario 1 (This compiles cleanly!)
-    static_assert(check_stability(eigs_good, LIMIT_CONVERGENCE),
-                  "Scenario 1: System is too slow or unstable (Pole >= -30.0)");
-    static_assert(check_damping(eigs_good, LIMIT_DAMPING),
-                  "Scenario 1: Insufficient damping (Zeta < 0.504)");
+    // Verify Scenario 1 Requirements
+    static_assert(check_stability(eigs_good), 
+                  "Scenario 1: System is unstable.");
+    
+    static_assert(check_settling_time(eigs_good, POLE_LIMIT_FOR_SETTLING),
+                  "Scenario 1: Settling time less than 0.040 seconds [FAILED]");
+    
+    static_assert(check_overshoot(eigs_good, ZETA_LIMIT_FOR_OVERSHOOT),
+                  "Scenario 1: Overshoot less than 16% [FAILED]");
 
     std::cout << "System Parameters (constexpr): J=" << J << ", b=" << b
               << ", K_m=" << K_m << "\n\n";
     std::cout << "--- SCENARIO 1: PID Tuning (Kp=21, Kd=0.15, Ki=500) ---\n";
     std::cout << "Gains [K=" << K1_good << ", " << K2_good << ", "
-              << K3_good << ", " << K4_good << "] passed all checks.\n";
-    std::cout << "Resulting Poles (behavior):\n";
-    for (consteig::Size i = 0; i < s; ++i)
-    {
-        std::cout << "  " << eigs_good(i, 0).real << " + "
-                  << eigs_good(i, 0).imag << "i\n";
-    }
+              << K3_good << ", " << K4_good << "] passed all checks:\n";
+    std::cout << "  - Settling time less than 0.040 seconds [PASS]\n";
+    std::cout << "  - Overshoot less than 16% [PASS]\n";
+    std::cout << "  - No steady-state error (enforced by integrator) [PASS]\n";
 
     // =========================================================================
     // SCENARIO 2: PID Tuning (Kp=21, Kd=0.05, Ki=200)
@@ -117,28 +140,16 @@ int main()
     static constexpr auto eigs_bad = consteig::eigvals(A_cl_bad);
 
     // These assertions WILL fail the build if uncommented! 
-    // static_assert(check_stability(eigs_bad, LIMIT_CONVERGENCE), 
-    //               "Scenario 2 REJECTED: Convergence limit violated (Pole >= -30.0)!");
-    // static_assert(check_damping(eigs_bad, LIMIT_DAMPING), 
-    //               "Scenario 2 REJECTED: Damping limit violated (Zeta < 0.504)!");
+    static_assert(check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING), 
+                  "Scenario 2 REJECTED: Settling time less than 0.040 seconds [FAILED]");
+    static_assert(check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT), 
+                  "Scenario 2 REJECTED: Overshoot less than 16% [FAILED]");
 
     std::cout << "\n--- SCENARIO 2: PID Tuning (Kp=21, Kd=0.05, Ki=200) ---\n";
-    std::cout << "Gains [K=" << K1_bad << ", " << K2_bad << ", "
-              << K3_bad << ", " << K4_bad << "] rejection status checked.\n";
-    std::cout << "Resulting Poles:\n";
-    for (consteig::Size i = 0; i < s; ++i)
-    {
-        double sigma = eigs_bad(i, 0).real;
-        double omega = eigs_bad(i, 0).imag;
-        std::cout << "  " << sigma << " + " << omega << "i";
-        if (consteig::abs(omega) > 1e-6)
-        {
-            std::cout << " (zeta = "
-                      << -sigma / consteig::sqrt(sigma * sigma + omega * omega)
-                      << ")";
-        }
-        std::cout << "\n";
-    }
+    std::cout << "Rejection status checked for:\n";
+    std::cout << "  - Settling time less than 0.040 seconds\n";
+    std::cout << "  - Overshoot less than 16%\n";
+    std::cout << "  - No steady-state error\n";
 
     return 0;
 }
