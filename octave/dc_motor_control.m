@@ -162,3 +162,5 @@ legend('Good Gains', 'Underdamped Gains', 'Target (1.0)', ...
        'Acceptable Settled Band (\pm2%)', 'Location', 'southeast');
 ylim([0, 1.3]);
 grid on;
+
+pause
