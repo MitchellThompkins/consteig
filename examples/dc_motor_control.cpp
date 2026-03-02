@@ -106,12 +106,12 @@ int main()
     }
 
     // =========================================================================
-    // SCENARIO 2: Underdamped Tuning
+    // SCENARIO 2: PID Tuning (Kp=21, Kd=0.05, Ki=200)
     // =========================================================================
-    static constexpr double K1_bad = 0.014486;
-    static constexpr double K2_bad = -0.027317;
-    static constexpr double K3_bad = -3.997693;
-    static constexpr double K4_bad = -1.550194;
+    static constexpr double K1_bad = 21.0;
+    static constexpr double K2_bad = 0.05;
+    static constexpr double K3_bad = 0.0;
+    static constexpr double K4_bad = -200.0;
 
     static constexpr consteig::Matrix<double, 1, s> K_bad{
         {{{K1_bad, K2_bad, K3_bad, K4_bad}}}};
@@ -120,9 +120,9 @@ int main()
     static constexpr auto eigs_bad = consteig::eigvals(A_cl_bad);
 
     // This assertion WILL fail the build! 
-    static_assert(check_performance(eigs_bad, limits), "SYSTEM REJECTED: Underdamped system detected!");
+    static_assert(check_performance(eigs_bad, limits), "SYSTEM REJECTED: Performance requirements not met!");
 
-    std::cout << "\n--- SCENARIO 2: Underdamped Tuning ---\n";
+    std::cout << "\n--- SCENARIO 2: PID Tuning (Kp=21, Kd=0.05, Ki=200) ---\n";
     std::cout << "Gains [K=" << K1_bad << ", " << K2_bad << ", "
               << K3_bad << ", " << K4_bad << "] rejection status checked.\n";
     std::cout << "Resulting Poles:\n";

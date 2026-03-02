@@ -122,13 +122,18 @@ end
 % ═════════════════════════════════════════════════════════════════
 % EVALUATE SCENARIOS
 % ═════════════════════════════════════════════════════════════════
-% Good scenario: Place poles to meet the constraints
-K_good = [21.0, 0.15, 0.0, -500.0];
-evaluate_system('Hand-Tuned Gains (Good)', K_good, A_aug, B_aug, C, max_t_settle, max_overshoot);
+% In this section, we apply PID control gains to the state-space model.
+% The gains [Kp, Kd, 0, -Ki] map to the augmented states [pos, vel, curr, int_err].
+% Standard PID action on the reference error (Kp, Kd) is achieved by 
+% including reference feedforward in the closed-loop B and D matrices.
 
-% Bad scenario: PID Control with lower Ki and Kd
+% Good scenario: PID Control gains from CTMS (Kp=21, Ki=500, Kd=0.15)
+K_good = [21.0, 0.15, 0.0, -500.0];
+evaluate_system('PID Control (Standard)', K_good, A_aug, B_aug, C, max_t_settle, max_overshoot);
+
+% Bad scenario: PID Control with lower Ki and Kd (Kp=21, Ki=200, Kd=0.05)
 K_bad = [21.0, 0.05, 0.0, -200.0];
-evaluate_system('PID Control (Kp=21, Ki=200, Kd=0.05)', K_bad, A_aug, B_aug, C, max_t_settle, max_overshoot);
+evaluate_system('PID Control (Low Gains)', K_bad, A_aug, B_aug, C, max_t_settle, max_overshoot);
 
 
 % ── Step Response Plot with Verification Markers ──────────────────
