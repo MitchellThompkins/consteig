@@ -129,7 +129,7 @@ Portland: 200000 (20.00%)
 
 This example demonstrates how to design a 2nd-order IIR Butterworth digital
 filter using the Zero-Order Hold (ZOH) method by directly computing the roots
-of the polynomial of the transfer fucntions but without algebraically
+of the polynomial of the transfer functions but without algebraically
 performing a Z-transform nor by performing a bilinear transform.
 
 The digital filter coefficients are derived at compile-time and can be saved
@@ -173,7 +173,7 @@ y[n] = 0.2532 * x[n] - (-1.1580) * y[n-1] - (0.4112) * y[n-2]
 To demonstrate the compile time nature of this library, the filter data is
 compiled into a special `.filter_data` section of the binary. You can compile
 and extract the data as is shown below to demonstrate that the filter
-coefficients are indeed calculated completly at compile time.
+coefficients are indeed calculated completely at compile time.
 
 ```
 > make butterworth.main
