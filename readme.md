@@ -127,12 +127,13 @@ Portland: 200000 (20.00%)
 
 ### Digital Filter Design
 
-Another powerful application is Digital Filter Design. This example demonstrates
-how to design a 2nd-order Butterworth digital filter using the Zero-Order Hold
-(ZOH) method, but without algebraically performing a Z-transform.
+This example demonstrates how to design a 2nd-order IIR Butterworth digital
+filter using the Zero-Order Hold (ZOH) method by directly computing the roots
+of the polynomial of the transfer fucntions but without algebraically
+performing a Z-transform nor by performing a bilinear transform.
 
-The digital filter coefficients are derived at compile-time and can be saved for
-use in the filter step when the actual filtering takes place.
+The digital filter coefficients are derived at compile-time and can be saved
+for use in the filter step when the actual filtering takes place.
 
 Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 1.  Define the continuous-time state-space matrix $A_c$.
@@ -144,32 +145,30 @@ The [`butterworth_core.hpp`](examples/butterworth_core.hpp) example generates
 the following design for a 100Hz cutoff at 1kHz sampling:
 
 ```
+> ./build/bin/butterworth.main
 Designing 2nd Order Butterworth Lowpass Filter
-Cutoff: 100.00000000000000000000000000000000 Hz, Sampling Rate: 1000.00000000000000000000000000000000 Hz
+Cutoff: 100.0000 Hz, Sampling Rate: 1000.0000 Hz
 Continuous System Matrix A:
-[ 0.00000000000000000000000000000000, 1.00000000000000000000000000000000 ]
-[ -394784.17604357434902340173721313476562, -888.57658763167319193598814308643341 ]
+[ 0.0000, 1.0000 ]
+[ -394784.1760, -888.5766 ]
 
 Continuous-time Poles (Eigenvalues of A):
-p1 = -444.28829381583659596799407154321671 + j444.28829381583665281141293235123158
-p2 = -444.28829381583659596799407154321671 + j-444.28829381583665281141293235123158
+p1 = -444.2883 + j444.2883
+p2 = -444.2883 + j-444.2883
 
 Discrete-time Poles (Mapped via z = exp(sT)):
-z1 = 0.57902294991548219904586858319817 + j0.27563222764028760813914686877979
-z2 = 0.57902294991548219904586858319817 + j-0.27563222764028760813914686877979
+z1 = 0.5790 + j0.2756
+z2 = 0.5790 + j-0.2756
 
 Filter Coefficients (Denominator):
-a1 = -1.15804589983096439809173716639634
-a2 = 0.41124070144277430349788460262062
-Gain K = 0.25319480161180990540614743622427
+a1 = -1.1580
+a2 = 0.4112
+Gain K = 0.2532
 
 Final Digital Filter Difference Equation:
-y[n] = 0.25319480161180990540614743622427 * x[n] - (-1.15804589983096439809173716639634) * y[n-1] - (0.41124070144277430349788460262062) * y[n-2]
-```
+y[n] = 0.2532 * x[n] - (-1.1580) * y[n-1] - (0.4112) * y[n-2]
 
-This approach numerically derives the filter coefficients by finding eigenvalues
-directly, simplifying the design process for high-order filters where algebraic
-transformation is tedious.
+```
 
 To demonstrate the compile time nature of this library, the filter data is
 compiled into a special `.filter_data` section of the binary. You can compile
@@ -177,14 +176,10 @@ and extract the data as is shown below to demonstrate that the filter
 coefficients are indeed calculated completly at compile time.
 
 ```
-make butterworth.main
-objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth_values.cpp.o filter_data.bin
-xxd -c 8 filter_data.bin
-python3 examples/print_butterworth_binary.py
-```
+> make butterworth.main
+> objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth_values.cpp.o filter_data.bin
 
-```
-xxd -c 8 filter_data.bin
+> xxd -c 8 filter_data.bin
 
 00000000: 0000 0000 0040 8f40  .....@.@
 00000008: 0000 0000 0000 5940  ......Y@
@@ -203,9 +198,8 @@ xxd -c 8 filter_data.bin
 00000070: 76a7 3023 5b87 f2bf  v.0#[...
 00000078: afc5 de84 c451 da3f  .....Q.?
 00000080: d727 1cf8 5734 d03f  .'..W4.?
-```
-```
-python3 examples/print_butterworth_binary.py
+
+> python3 examples/print_butterworth_binary.py
 
 Name         Double (64-bit)      Decimal
 ----------------------------------------------------------------------
@@ -231,85 +225,54 @@ K            d727 1cf8 5734 d03f  0.253194801611810
 ### Control Theory
 
 These techniques are also applicable for control theory. Consider the [DC Motor
-Position System
-Model](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=SystemModeling)
-from the University of Michigan. The motor parameters and the resultant state
-space equations are known entities. The goal is then to create a stable PID controller
-that complies with system performance requirements. If the chosen gains don't
-meet those requirements, the build will fail to compile via the usage of a
-`static_assert`. This allows for the avoidance of discovering during test that
-the chosen gains are wrong (or simply that they were mistyped).
+Position: PID Controller
+Design](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlPID)
+, along with the [state space
+model](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlStateSpace)
+from the University of Michigan. The information known at compile time is:
 
-Stated another way, given a set of control gains `consteig` can evaluate the
-closed loop control system against system performance requirements.
-
-A comparison model is shown at [dc_motor_control.m](octave/dc_motor_control.m),
-and the compile-time examples are in
-[dc_motor_control.cpp](examples/dc_motor_control.cpp).
+* The motor parameters (and thus state space model)
+* Chosen gains
+* System performance requirements
 
 When building the system with gains that do not meet the system requirements,
-the build will fail to compile:
+`static_assert`s can validate system gains by preventing compilation:
 
 ```
-make container.make.dc_motor_control.main
-
+> make container.make.dc_motor_control.main
 ...
-
-Building CXX object examples/CMakeFiles/dc_motor_control.main.dir/dc_motor_control.cpp.o
-/home/mthompkins/workspace/consteig/examples/dc_motor_control.cpp: In function 'int main()':
-/home/mthompkins/workspace/consteig/examples/dc_motor_control.cpp:138:19: error: static assertion failed: SYSTEM REJECTED: Underdamped system detected (damping ratio too low) - retune!
-  138 |     static_assert(bad_perf_ok, "SYSTEM REJECTED: Underdamped system detected "
-      |                   ^~~~~~~~~~~
-
-```
-
-If you comment out the `static_assert` you can see the `consteig` calculated the
-eigenvalues (poles) of the system:
+/Users/mitchellthompkins/workspace/consteig/examples/dc_motor_control.cpp:143:19: error: static assertion failed due to requirement 'check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING)': Scenario 2 REJECTED: Settling time less than 0.040 seconds [FAILED]
+  143 |     static_assert(check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING),
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/mitchellthompkins/workspace/consteig/examples/dc_motor_control.cpp:145:19: error: static assertion failed due to requirement 'check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT)': Scenario 2 REJECTED: Overshoot less than 16% [FAILED]
+  145 |     static_assert(check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT),
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ```
+
+which aligns with the output produced by octave:
+
 ```
-
-The above matches that which is reported by octave:
-
-```
-System Requirements:
-- Settling time (2%): < 0.040 s
-- Overshoot:          < 16.00 %
-- Steady-state error: 0 (Enforced by integral action)
-  -> Requires zeta    > 0.5039
-
-══════════════════════════════════════════
-SCENARIO: Hand-Tuned Gains (Good)
-══════════════════════════════════════════
-State Feedback Gains: K = [0.0219, -0.0273, -3.9973, -1.7497]
+> octave octave/dc_motor_control.m
+...
+State Feedback Gains: K = [21.0000, 0.0500, 0.0000, -200.0000]
 
 Closed-Loop Poles:
-  -400.0000 (real)
-  -300.0000 (real)
-  -150.0000 +150.0000j  ->  zeta=0.7071
-  -150.0000 -150.0000j  ->  zeta=0.7071
+  -1454381.2397 (real)
+  -77.7191 +192.3253j  ->  zeta=0.3747
+  -77.7191 -192.3253j  ->  zeta=0.3747
+  -9.8632 (real)
 
 Validation:
-  [PASS] Settling Time: 0.0319 s
-  [PASS] Overshoot:     2.18 %
-  [PASS] SS Error:      0.00 %
+  [PASS] Stability check (All poles in LHP)
+  [FAIL] Settling time less than 0.040 seconds (Actual: 0.0509 s)
+  [FAIL] Overshoot less than 16% (Actual: 33.40 %)
+  [PASS] No steady-state error (Enforced by integral action)
 
-══════════════════════════════════════════
-SCENARIO: Hand-Tuned Gains (Underdamped & Slow)
-══════════════════════════════════════════
-State Feedback Gains: K = [0.0145, -0.0273, -3.9977, -1.5502]
-
-Closed-Loop Poles:
-  -70.0000 +187.0000j  ->  zeta=0.3506
-  -70.0000 -187.0000j  ->  zeta=0.3506
-  -400.0000 (real)
-  -300.0000 (real)
-
-Validation:
-  [FAIL] Settling Time: 0.0475 s
-  [FAIL] Overshoot:     20.85 %
-  [PASS] SS Error:      0.00 %
 ```
+
+![Motor Control](docs/imgs/step_response.png "step_response")
+
 
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
