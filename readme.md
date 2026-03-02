@@ -9,6 +9,11 @@ execution time is spent calculating them at run-time. Consteig also allows for
 compile time static matrix manipulation. To remove any external dependences
 several constexpr math functions are implemented as well.
 
+This is particularly powerful if there is information that would normally
+require an offline tool (MATLAB, Python/scipy, etc...) to verify or compute, but
+which you could express directly in your source code and have verified or
+computed automatically at every build.
+
 All at compile time, consteig supports:
 
 * Computation of real and complex eigenvalues and eigenvectors for symmetric and
@@ -90,17 +95,23 @@ Compiler flags:
 ## Examples
 ### Population Flow
 
-An example helps best. Let's say that we take the example from [Using
-Eigenvectors to Find Steady State Population
+Let's say that we take the example from [Using Eigenvectors to Find Steady State
+Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
-and apply it using `consteig`.
+and apply it using `consteig`. All of this information is static, so we can find
+the solution at compile-time and if we wanted, use it for something later in the
+program.
 
-The `population.cpp` example demonstrates finding the eigenvalues of the population transition matrix:
+The [`population.cpp`](examples/population.cpp) example demonstrates finding the eigenvalues of the population transition matrix:
 
 ```
 Population Transition Matrix (A)
 0.95 0.2
 0.05 0.8
+
+Initial Population Vector (u0)
+500000
+500000
 
 Eigenvalues (lambda):
 1
@@ -109,18 +120,20 @@ Eigenvalues (lambda):
 To find the steady-state population distribution, we need to find the eigenvector 'v'
 that corresponds to the eigenvalue of 1 by solving (A - lambda*I)v = 0.
 
-Steady-State Population Distribution:
-0.8
-0.2
-
+Steady-State Population Flow (Total: 1000000):
+Seattle:  800000 (80.00%)
+Portland: 200000 (20.00%)
 ```
 
 ### Digital Filter Design
 
-Another powerful application is Digital Filter Design. The `butterworth.cpp`
-example demonstrates how to design a 2nd-order Butterworth digital filter using
-the Zero-Order Hold (ZOH) method, but without algebraically performing a
-Z-transform.
+This example demonstrates how to design a 2nd-order IIR Butterworth digital
+filter using the Zero-Order Hold (ZOH) method by directly computing the roots
+of the polynomial of the transfer functions but without algebraically
+performing a Z-transform nor by performing a bilinear transform.
+
+The digital filter coefficients are derived at compile-time and can be saved
+for use in the filter step when the actual filtering takes place.
 
 Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 1.  Define the continuous-time state-space matrix $A_c$.
@@ -128,50 +141,45 @@ Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 3.  Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
 4.  Reconstruct the digital filter's characteristic polynomial from the mapped poles.
 
-The `butterworth.cpp` example generates the following design for a 100Hz cutoff at 1kHz sampling:
+The [`butterworth_core.hpp`](examples/butterworth_core.hpp) example generates
+the following design for a 100Hz cutoff at 1kHz sampling:
 
 ```
+> ./build/bin/butterworth.main
 Designing 2nd Order Butterworth Lowpass Filter
-Cutoff: 100.00000000000000000000000000000000 Hz, Sampling Rate: 1000.00000000000000000000000000000000 Hz
+Cutoff: 100.0000 Hz, Sampling Rate: 1000.0000 Hz
 Continuous System Matrix A:
-[ 0.00000000000000000000000000000000, 1.00000000000000000000000000000000 ]
-[ -394784.17604357434902340173721313476562, -888.57658763167319193598814308643341 ]
+[ 0.0000, 1.0000 ]
+[ -394784.1760, -888.5766 ]
 
 Continuous-time Poles (Eigenvalues of A):
-p1 = -444.28829381583659596799407154321671 + j444.28829381583665281141293235123158
-p2 = -444.28829381583659596799407154321671 + j-444.28829381583665281141293235123158
+p1 = -444.2883 + j444.2883
+p2 = -444.2883 + j-444.2883
 
 Discrete-time Poles (Mapped via z = exp(sT)):
-z1 = 0.57902294991548219904586858319817 + j0.27563222764028760813914686877979
-z2 = 0.57902294991548219904586858319817 + j-0.27563222764028760813914686877979
+z1 = 0.5790 + j0.2756
+z2 = 0.5790 + j-0.2756
 
 Filter Coefficients (Denominator):
-a1 = -1.15804589983096439809173716639634
-a2 = 0.41124070144277430349788460262062
-Gain K = 0.25319480161180990540614743622427
+a1 = -1.1580
+a2 = 0.4112
+Gain K = 0.2532
 
 Final Digital Filter Difference Equation:
-y[n] = 0.25319480161180990540614743622427 * x[n] - (-1.15804589983096439809173716639634) * y[n-1] - (0.41124070144277430349788460262062) * y[n-2]
-```
+y[n] = 0.2532 * x[n] - (-1.1580) * y[n-1] - (0.4112) * y[n-2]
 
-This approach numerically derives the filter coefficients by finding eigenvalues
-directly, simplifying the design process for high-order filters where algebraic
-transformation is tedious.
+```
 
 To demonstrate the compile time nature of this library, the filter data is
 compiled into a special `.filter_data` section of the binary. You can compile
 and extract the data as is shown below to demonstrate that the filter
-coefficients are indeed calculated completly at compile time.
+coefficients are indeed calculated completely at compile time.
 
 ```
-make butterworth.main
-objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth_values.cpp.o filter_data.bin
-xxd -c 8 filter_data.bin
-python3 examples/print_butterworth_binary.py
-```
+> make butterworth.main
+> objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth_values.cpp.o filter_data.bin
 
-```
-xxd -c 8 filter_data.bin
+> xxd -c 8 filter_data.bin
 
 00000000: 0000 0000 0040 8f40  .....@.@
 00000008: 0000 0000 0000 5940  ......Y@
@@ -190,9 +198,8 @@ xxd -c 8 filter_data.bin
 00000070: 76a7 3023 5b87 f2bf  v.0#[...
 00000078: afc5 de84 c451 da3f  .....Q.?
 00000080: d727 1cf8 5734 d03f  .'..W4.?
-```
-```
-python3 examples/print_butterworth_binary.py
+
+> python3 examples/print_butterworth_binary.py
 
 Name         Double (64-bit)      Decimal
 ----------------------------------------------------------------------
@@ -214,6 +221,58 @@ a1           76a7 3023 5b87 f2bf  -1.158045899830964
 a2           afc5 de84 c451 da3f  0.411240701442774
 K            d727 1cf8 5734 d03f  0.253194801611810
 ```
+
+### Control Theory
+
+These techniques are also applicable for control theory. Consider the [DC Motor
+Position: PID Controller
+Design](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlPID)
+, along with the [state space
+model](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlStateSpace)
+from the University of Michigan. The information known at compile time is:
+
+* The motor parameters (and thus state space model)
+* Chosen gains
+* System performance requirements
+
+When building the system with gains that do not meet the system requirements,
+`static_assert`s can validate system gains by preventing compilation:
+
+```
+> make container.make.dc_motor_control.main
+...
+/Users/mitchellthompkins/workspace/consteig/examples/dc_motor_control.cpp:143:19: error: static assertion failed due to requirement 'check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING)': Scenario 2 REJECTED: Settling time less than 0.040 seconds [FAILED]
+  143 |     static_assert(check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING),
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/mitchellthompkins/workspace/consteig/examples/dc_motor_control.cpp:145:19: error: static assertion failed due to requirement 'check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT)': Scenario 2 REJECTED: Overshoot less than 16% [FAILED]
+  145 |     static_assert(check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT),
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+```
+
+which aligns with the output produced by octave:
+
+```
+> octave octave/dc_motor_control.m
+...
+State Feedback Gains: K = [21.0000, 0.0500, 0.0000, -200.0000]
+
+Closed-Loop Poles:
+  -1454381.2397 (real)
+  -77.7191 +192.3253j  ->  zeta=0.3747
+  -77.7191 -192.3253j  ->  zeta=0.3747
+  -9.8632 (real)
+
+Validation:
+  [PASS] Stability check (All poles in LHP)
+  [FAIL] Settling time less than 0.040 seconds (Actual: 0.0509 s)
+  [FAIL] Overshoot less than 16% (Actual: 33.40 %)
+  [PASS] No steady-state error (Enforced by integral action)
+
+```
+
+![Motor Control](docs/imgs/step_response.png "step_response")
+
 
 ## Why Does This Exist
 Originally this library was developed to support a generic digital filter
