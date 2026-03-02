@@ -105,16 +105,18 @@ function evaluate_system(name, K_aug, A_aug, B_aug, C, max_t_settle, max_oversho
     end
     
     fprintf('\nValidation:\n');
+    % 1. Convergence / Stability Check
     if t_settle < max_t_settle
-        fprintf('  [PASS] Settling Time: %.4f s\n', t_settle);
+        fprintf('  [PASS] Convergence: Settling Time %.4f s < %.4f s\n', t_settle, max_t_settle);
     else
-        fprintf('  [FAIL] Settling Time: %.4f s\n', t_settle);
+        fprintf('  [FAIL] Convergence: Settling Time %.4f s > %.4f s\n', t_settle, max_t_settle);
     end
     
+    % 2. Damping / Overshoot Check
     if overshoot < max_overshoot
-        fprintf('  [PASS] Overshoot:     %.2f %%\n', overshoot);
+        fprintf('  [PASS] Damping:     Overshoot %.2f %% < %.2f %%\n', overshoot, max_overshoot);
     else
-        fprintf('  [FAIL] Overshoot:     %.2f %%\n', overshoot);
+        fprintf('  [FAIL] Damping:     Overshoot %.2f %% > %.2f %%\n', overshoot, max_overshoot);
     end
     fprintf('  [PASS] SS Error:      0.00 %%\n\n');
 end
