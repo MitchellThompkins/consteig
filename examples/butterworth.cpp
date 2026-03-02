@@ -10,7 +10,7 @@ int main()
 {
     const auto &filter = g_butterworth_filter;
 
-    std::cout << std::fixed << std::setprecision(32);
+    std::cout << std::fixed << std::setprecision(4);
     std::cout << "Designing 2nd Order Butterworth Lowpass Filter" << std::endl;
     std::cout << "Cutoff: " << filter.fc << " Hz, Sampling Rate: " << filter.fs
               << " Hz" << std::endl;
