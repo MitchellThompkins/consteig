@@ -26,8 +26,7 @@ constexpr bool check_stability(
  */
 template <typename T, consteig::Size S>
 constexpr bool check_settling_time(
-    const consteig::Matrix<consteig::Complex<T>, S, 1> &eigs,
-    double pole_limit)
+    const consteig::Matrix<consteig::Complex<T>, S, 1> &eigs, double pole_limit)
 {
     for (consteig::Size i = 0; i < S; ++i)
     {
@@ -67,11 +66,11 @@ constexpr bool check_overshoot(
 int main()
 {
     // --- Motor Parameters (Defined at compile-time) ---
-    static constexpr double J = 3.2284e-6;   // Moment of inertia [kg⋅m²]
-    static constexpr double b = 3.5077e-6;   // Viscous friction [N⋅m⋅s/rad]
-    static constexpr double K_m = 0.0274;    // Motor constant [V⋅s/rad]
-    static constexpr double R = 4.0;         // Armature resistance [Ω]
-    static constexpr double L = 2.75e-6;     // Armature inductance [H]
+    static constexpr double J = 3.2284e-6; // Moment of inertia [kg⋅m²]
+    static constexpr double b = 3.5077e-6; // Viscous friction [N⋅m⋅s/rad]
+    static constexpr double K_m = 0.0274;  // Motor constant [V⋅s/rad]
+    static constexpr double R = 4.0;       // Armature resistance [Ω]
+    static constexpr double L = 2.75e-6;   // Armature inductance [H]
 
     static constexpr consteig::Size s{4};
 
@@ -89,7 +88,7 @@ int main()
         {{{0.0}, {0.0}, {1.0 / L}, {0.0}}}};
 
     // --- Control Constraints ---
-    static constexpr double POLE_LIMIT_FOR_SETTLING = -30.0; 
+    static constexpr double POLE_LIMIT_FOR_SETTLING = -30.0;
     static constexpr double ZETA_LIMIT_FOR_OVERSHOOT = 0.504;
 
     // =========================================================================
@@ -107,20 +106,20 @@ int main()
     static constexpr auto eigs_good = consteig::eigvals(A_cl_good);
 
     // Verify Scenario 1 Requirements
-    static_assert(check_stability(eigs_good), 
+    static_assert(check_stability(eigs_good),
                   "Scenario 1: System is unstable.");
-    
+
     static_assert(check_settling_time(eigs_good, POLE_LIMIT_FOR_SETTLING),
                   "Scenario 1: Settling time less than 0.040 seconds [FAILED]");
-    
+
     static_assert(check_overshoot(eigs_good, ZETA_LIMIT_FOR_OVERSHOOT),
                   "Scenario 1: Overshoot less than 16% [FAILED]");
 
     std::cout << "System Parameters (constexpr): J=" << J << ", b=" << b
               << ", K_m=" << K_m << "\n\n";
     std::cout << "--- SCENARIO 1: PID Tuning (Kp=21, Kd=0.15, Ki=500) ---\n";
-    std::cout << "Gains [K=" << K1_good << ", " << K2_good << ", "
-              << K3_good << ", " << K4_good << "] passed all checks:\n";
+    std::cout << "Gains [K=" << K1_good << ", " << K2_good << ", " << K3_good
+              << ", " << K4_good << "] passed all checks:\n";
     std::cout << "  - Settling time less than 0.040 seconds [PASS]\n";
     std::cout << "  - Overshoot less than 16% [PASS]\n";
     std::cout << "  - No steady-state error (enforced by integrator) [PASS]\n";
@@ -139,10 +138,11 @@ int main()
     static constexpr consteig::Matrix<double, s, s> A_cl_bad{A - B * K_bad};
     static constexpr auto eigs_bad = consteig::eigvals(A_cl_bad);
 
-    // These assertions WILL fail the build if uncommented! 
-    static_assert(check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING), 
-                  "Scenario 2 REJECTED: Settling time less than 0.040 seconds [FAILED]");
-    static_assert(check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT), 
+    // These assertions WILL fail the build if uncommented!
+    static_assert(
+        check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING),
+        "Scenario 2 REJECTED: Settling time less than 0.040 seconds [FAILED]");
+    static_assert(check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT),
                   "Scenario 2 REJECTED: Overshoot less than 16% [FAILED]");
 
     std::cout << "\n--- SCENARIO 2: PID Tuning (Kp=21, Kd=0.05, Ki=200) ---\n";
