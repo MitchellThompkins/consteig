@@ -63,11 +63,19 @@ function evaluate_system(name, K_aug, A_aug, B_aug, C, max_t_settle, max_oversho
 
     A_cl = A_aug - B_aug * K_aug;
     
-    % The reference input 'r' enters through the integrator state (row 4)
-    B_cl = [0; 0; 0; 1];
-    C_cl = [C, 0]; % We only observe the position
+    % Standard PID in State-Space: u = Kp(r-y) + Ki*int(r-y) + Kd(rdot-ydot)
+    % For a step reference r, the rdot term is an impulse.
+    % To represent this in standard ss(A,B,C,D) form:
+    Kp = K_aug(1);
+    Kd = K_aug(2);
     
-    sys_cl = ss(A_cl, B_cl, C_cl, 0);
+    % B_cl and D_cl accounting for zeros (reference feedforward)
+    % This matches the Transfer Function: C(s)P(s) / (1 + C(s)P(s))
+    B_cl = (A_cl * [B_aug * Kd]) + [B_aug * Kp] + [0; 0; 0; 1];
+    D_cl = 0; % C*B*Kd is 0 for this plant (3rd order, relative degree 3)
+    
+    C_cl = [C, 0];
+    sys_cl = ss(A_cl, B_cl, C_cl, D_cl);
     poles = eig(A_cl);
     
     fprintf('\nClosed-Loop Poles:\n');
@@ -115,8 +123,7 @@ end
 % EVALUATE SCENARIOS
 % ═════════════════════════════════════════════════════════════════
 % Good scenario: Place poles to meet the constraints
-poles_good = [-150+150j, -150-150j, -300, -400];
-K_good = place(A_aug, B_aug, poles_good);
+K_good = [21.0, 0.15, 0.0, -500.0];
 evaluate_system('Hand-Tuned Gains (Good)', K_good, A_aug, B_aug, C, max_t_settle, max_overshoot);
 
 % Bad scenario: Underdamped and slow, violates both requirements
@@ -131,7 +138,9 @@ figure(1);
 t = linspace(0, 0.1, 1000);
 
 A_cl_good = A_aug - B_aug * K_good;
-sys_cl_good = ss(A_cl_good, [0; 0; 0; 1], [C, 0], 0);
+Kp_g = K_good(1); Kd_g = K_good(2);
+B_cl_good = (A_cl_good * [B_aug * Kd_g]) + [B_aug * Kp_g] + [0; 0; 0; 1];
+sys_cl_good = ss(A_cl_good, B_cl_good, [C, 0], 0);
 [y_good, t_good] = step(sys_cl_good, t);
 
 A_cl_bad = A_aug - B_aug * K_bad;
