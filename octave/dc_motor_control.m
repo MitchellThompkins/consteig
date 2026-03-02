@@ -126,11 +126,9 @@ end
 K_good = [21.0, 0.15, 0.0, -500.0];
 evaluate_system('Hand-Tuned Gains (Good)', K_good, A_aug, B_aug, C, max_t_settle, max_overshoot);
 
-% Bad scenario: Underdamped and slow, violates both requirements
-% We place poles with a smaller real part (slower) and lower damping (more overshoot)
-poles_bad = [-70+187j, -70-187j, -300, -400];
-K_bad = place(A_aug, B_aug, poles_bad);
-evaluate_system('Hand-Tuned Gains (Underdamped & Slow)', K_bad, A_aug, B_aug, C, max_t_settle, max_overshoot);
+% Bad scenario: PID Control with lower Ki and Kd
+K_bad = [21.0, 0.05, 0.0, -200.0];
+evaluate_system('PID Control (Kp=21, Ki=200, Kd=0.05)', K_bad, A_aug, B_aug, C, max_t_settle, max_overshoot);
 
 
 % ── Step Response Plot with Verification Markers ──────────────────
@@ -144,7 +142,9 @@ sys_cl_good = ss(A_cl_good, B_cl_good, [C, 0], 0);
 [y_good, t_good] = step(sys_cl_good, t);
 
 A_cl_bad = A_aug - B_aug * K_bad;
-sys_cl_bad = ss(A_cl_bad, [0; 0; 0; 1], [C, 0], 0);
+Kp_b = K_bad(1); Kd_b = K_bad(2);
+B_cl_bad = (A_cl_bad * [B_aug * Kd_b]) + [B_aug * Kp_b] + [0; 0; 0; 1];
+sys_cl_bad = ss(A_cl_bad, B_cl_bad, [C, 0], 0);
 [y_bad, t_bad] = step(sys_cl_bad, t);
 
 plot(t_good, y_good, 'r-',  'LineWidth', 2.0); hold on;
@@ -156,10 +156,10 @@ plot([0, t(end)], [1, 1], 'k:', 'LineWidth', 1.0);
 
 % Overshoot Limit (16%)
 limit_y = 1 + (max_overshoot / 100);
-plot([0, t(end)], [limit_y, limit_y], 'g--', 'LineWidth', 1.5);
+plot([0, t(end)], [limit_y, limit_y], 'g--', 'LineWidth', 1.4);
 
 % Settling Time Limit (40ms) with a 2% band
-plot([max_t_settle, max_t_settle], [0, 1.3], 'b--', 'LineWidth', 1.5);
+plot([max_t_settle, max_t_settle], [0, 1.4], 'b--', 'LineWidth', 1.5);
 fill([max_t_settle, t(end), t(end), max_t_settle], [0.98, 0.98, 1.02, 1.02], 'k', 'FaceAlpha', 0.1, 'EdgeColor', 'none');
 
 xlabel('Time [s]');
@@ -169,7 +169,7 @@ legend('Good Gains', 'Underdamped Gains', 'Target (1.0)', ...
        sprintf('Overshoot Limit (%.0f%%)', max_overshoot), ...
        sprintf('Settling Time Limit (%.3fs)', max_t_settle), ...
        'Acceptable Settled Band (\pm2%)', 'Location', 'southeast');
-ylim([0, 1.3]);
+ylim([0, 1.4]);
 grid on;
 
 pause
