@@ -75,14 +75,37 @@ TEST(sqrt_function, sqrt_float)
     ASSERT_NEAR(fConsteig, 2.0585189f, 1e-5f);
 }
 
-TEST(sqrt_function, sqrt_negative)
+TEST(sqrt_function, csqrt_positive)
 {
-    // Current implementation returns -1 for negative inputs
-    static constexpr float g{-22.2f};
-    static constexpr float gConsteig{consteig::sqrt(g)};
-    static_assert(gConsteig == -1.0f, MSG);
-    ASSERT_EQ(gConsteig, -1.0f);
+    static constexpr float g{22.2f};
+    static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
+    static_assert(consteig::compareFloats(gConsteig.real, 4.711687f, 1e-5f),
+                  MSG);
+    static_assert(gConsteig.imag == 0.0f, MSG);
+    ASSERT_NEAR(gConsteig.real, 4.711687f, 1e-5f);
+    ASSERT_EQ(gConsteig.imag, 0.0f);
+}
 
+TEST(sqrt_function, csqrt_negative)
+{
+    static constexpr float g{-22.2f};
+    static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
+    static_assert(gConsteig.real == 0.0f, MSG);
+    static_assert(consteig::compareFloats(gConsteig.imag, 4.711687f, 1e-5f),
+                  MSG);
+    ASSERT_EQ(gConsteig.real, 0.0f);
+    ASSERT_NEAR(gConsteig.imag, 4.711687f, 1e-5f);
+
+    static constexpr int h{-9};
+    static constexpr Complex<int> hConsteig{consteig::csqrt(h)};
+    static_assert(hConsteig.real == 0, MSG);
+    static_assert(hConsteig.imag == 3, MSG);
+    ASSERT_EQ(hConsteig.real, 0);
+    ASSERT_EQ(hConsteig.imag, 3);
+}
+
+TEST(sqrt_function, sqrt_negative_int)
+{
     static constexpr int h{-5};
     static constexpr int hConsteig{consteig::sqrt(h)};
     static_assert(hConsteig == -1, MSG);

@@ -104,6 +104,18 @@ template <typename T> constexpr Complex<T> conj(const Complex<T> &c)
     return {c.real, -c.imag};
 }
 
+template <typename T> constexpr Complex<T> csqrt(const T x)
+{
+    if (x < static_cast<T>(0))
+    {
+        return {static_cast<T>(0), consteig::sqrt(consteig::abs(x))};
+    }
+    else
+    {
+        return {consteig::sqrt(x), static_cast<T>(0)};
+    }
+}
+
 } // namespace consteig
 
 #endif

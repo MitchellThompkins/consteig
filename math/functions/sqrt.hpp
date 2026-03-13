@@ -53,11 +53,21 @@ template <typename T> constexpr T sqrt_int(const T x)
 
 template <typename T> constexpr T sqrt(const T x)
 {
-    // TODO(mthompkins): Need to return NaN for negative numbers. This
-    // implementation is really really ugly
+    // Note: static_assert(x >= 0) is not possible here as x is a function
+    // argument. Users should call csqrt(x) if x might be negative.
     if (x < static_cast<T>(0))
-        return static_cast<T>(-1);
-    else if (is_float<T>())
+    {
+        if constexpr (is_float<T>())
+        {
+            return nan<T>();
+        }
+        else
+        {
+            return static_cast<T>(-1);
+        }
+    }
+
+    if (is_float<T>())
         return sqrt_check(x, static_cast<T>(1));
     else
         return sqrt_int(x);

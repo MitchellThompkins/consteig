@@ -93,6 +93,18 @@ template <typename T> constexpr T epsilon()
     }
 }
 
+// Get NaN. Fails to compile if T is not a floating point type.
+template <typename T> constexpr T nan()
+{
+    static_assert(is_float<T>(),
+                  "NaN is only supported for floating point types.");
+    // Compiler-independent way to generate NaN in many environments.
+    // Note: Some strict compilers may warn about division by zero.
+    // If this causes issues, a poison value like -1.0 is the only
+    // alternative without <limits> or built-ins.
+    return static_cast<T>(0.0) / static_cast<T>(0.0);
+}
+
 } // namespace consteig
 
 #endif
