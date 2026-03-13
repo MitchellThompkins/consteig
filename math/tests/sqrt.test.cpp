@@ -23,7 +23,7 @@ TEST(sqrt_function, sqrt_basic_double)
 
     static constexpr double b{58582.28485};
     static constexpr double bConsteig{consteig::sqrt(b)};
-    static constexpr double bStd{242.0377757}; // approx
+    static constexpr double bStd{242.0377756673646}; // highly precise
     static_assert(
         consteig::compareFloats(bConsteig, bStd, CONSTEIG_TEST_TOLERANCE), MSG);
     ASSERT_NEAR(bConsteig, bStd, CONSTEIG_TEST_TOLERANCE);
@@ -64,9 +64,9 @@ TEST(sqrt_function, sqrt_long_double)
     static constexpr long double eConsteig{consteig::sqrt(e)};
     // Using simple double precision comparison as long double precision varies
     static_assert(consteig::compareFloats(static_cast<double>(eConsteig),
-                                          242.0377757, CONSTEIG_TEST_TOLERANCE),
+                                          242.0377756673646, CONSTEIG_TEST_TOLERANCE),
                   MSG);
-    ASSERT_NEAR(static_cast<double>(eConsteig), 242.0377757,
+    ASSERT_NEAR(static_cast<double>(eConsteig), 242.0377756673646,
                 CONSTEIG_TEST_TOLERANCE);
 }
 
@@ -84,11 +84,11 @@ TEST(sqrt_function, csqrt_positive)
 {
     static constexpr float g{22.2f};
     static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
-    static_assert(consteig::compareFloats(gConsteig.real, 4.711687f,
+    static_assert(consteig::compareFloats(gConsteig.real, 4.711687595f,
                                           CONSTEIG_TEST_TOLERANCE),
                   MSG);
     static_assert(gConsteig.imag == 0.0f, MSG);
-    ASSERT_NEAR(gConsteig.real, 4.711687f, CONSTEIG_TEST_TOLERANCE);
+    ASSERT_NEAR(gConsteig.real, 4.711687595f, CONSTEIG_TEST_TOLERANCE);
     ASSERT_EQ(gConsteig.imag, 0.0f);
 }
 
@@ -97,11 +97,11 @@ TEST(sqrt_function, csqrt_negative)
     static constexpr float g{-22.2f};
     static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
     static_assert(gConsteig.real == 0.0f, MSG);
-    static_assert(consteig::compareFloats(gConsteig.imag, 4.711687f,
+    static_assert(consteig::compareFloats(gConsteig.imag, 4.711687595f,
                                           CONSTEIG_TEST_TOLERANCE),
                   MSG);
     ASSERT_EQ(gConsteig.real, 0.0f);
-    ASSERT_NEAR(gConsteig.imag, 4.711687f, CONSTEIG_TEST_TOLERANCE);
+    ASSERT_NEAR(gConsteig.imag, 4.711687595f, CONSTEIG_TEST_TOLERANCE);
 
     static constexpr int h{-9};
     static constexpr Complex<int> hConsteig{consteig::csqrt(h)};

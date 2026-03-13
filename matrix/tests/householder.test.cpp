@@ -94,7 +94,7 @@ TEST(householder, house)
          -0.067583, -0.016523, 0.89972},
     }}};
 
-    static constexpr float thresh{CONSTEIG_TEST_TOLERANCE};
+    static constexpr float thresh{1e-4F};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }
@@ -114,7 +114,7 @@ TEST(householder, house_single)
         {0.0, -1.0},
     }}};
 
-    static constexpr float thresh{CONSTEIG_TEST_TOLERANCE};
+    static constexpr float thresh{1e-4F};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }

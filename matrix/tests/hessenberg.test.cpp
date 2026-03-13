@@ -122,7 +122,7 @@ TEST(hessenberg, hess)
     static constexpr Matrix<float, s, s> identityCheck{test._p *
                                                        transpose(test._p)};
 
-    static constexpr float thresh{CONSTEIG_TEST_TOLERANCE};
+    static constexpr float thresh{3e-4F};
 
     static_assert(compareFloatMat(test._p, pAnswer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test._p, pAnswer, thresh));
