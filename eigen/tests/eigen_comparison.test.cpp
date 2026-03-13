@@ -120,7 +120,7 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
         double imag = res(i, 0).imag;
 
         bool found = false;
-        double min_dist = 1e9;
+        double min_dist = MAX_SENTINEL_VAL;
 
         for (Size j = 0; j < S; ++j)
         {

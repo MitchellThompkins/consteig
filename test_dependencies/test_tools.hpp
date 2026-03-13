@@ -20,6 +20,12 @@
 #define CONSTEIG_FLOAT_TEST_TOLERANCE 1e-7f
 #endif
 
+// Tolerance for complex iterative methods using 32-bit floats
+// (e.g., Hessenberg reduction) where error accumulation is significant.
+#ifndef CONSTEIG_ITERATIVE_FLOAT_TOLERANCE
+#define CONSTEIG_ITERATIVE_FLOAT_TOLERANCE 3e-4f
+#endif
+
 // It's possible that some of the more difficult matrices require looser test
 // tolerances. Observationally, that has only shown to be the case for highly
 // defective matrices.
@@ -33,6 +39,18 @@
 
 #ifndef PATHOLOGICAL_TOL
 #define PATHOLOGICAL_TOL 0.03
+#endif
+
+// Specific tolerance for very large value comparisons (e.g., 1e10).
+// While 1.0 seems large, it represents high precision (~1e-10 relative error)
+// for high-magnitude numbers.
+#ifndef LARGE_VAL_TOL
+#define LARGE_VAL_TOL 1.0
+#endif
+
+// Large sentinel value for initializing minimum distance searches
+#ifndef MAX_SENTINEL_VAL
+#define MAX_SENTINEL_VAL 1e12
 #endif
 
 // https://stackoverflow.com/a/32334103/3527182

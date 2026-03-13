@@ -165,6 +165,7 @@ TEST(sqrt_function, sqrt_large)
     // sqrt(1e20) = 1e10
     static constexpr double l{1e20};
     static constexpr double lRes{consteig::sqrt(l)};
-    static_assert(consteig::compareFloats(lRes, 1e10, 1.0), MSG);
-    ASSERT_NEAR(lRes, 1e10, 1.0); // Allow some error for large numbers
+    static_assert(consteig::compareFloats(lRes, 1e10, LARGE_VAL_TOL), MSG);
+    ASSERT_NEAR(lRes, 1e10,
+                LARGE_VAL_TOL); // Allow some error for large numbers
 }
