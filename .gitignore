@@ -1,8 +1,8 @@
-# created by Makefile
+# Makefile
 build/
-
-# linked by Makefile
 compile_commands.json
 
-# Created by vim
+# development
 *.swp
+*.swo
+tags
