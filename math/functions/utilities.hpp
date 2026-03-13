@@ -52,9 +52,10 @@ template <typename T> constexpr bool is_float()
 }
 
 // Compare Floats
-template <typename T> static constexpr bool compareFloats(T a, T b, T thresh)
+template <typename T, typename U>
+static constexpr bool compareFloats(T a, T b, U thresh)
 {
-    return consteig::abs(a - b) < thresh;
+    return consteig::abs(a - b) < static_cast<T>(thresh);
 }
 
 // Find machine epsilon

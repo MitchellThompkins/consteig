@@ -76,10 +76,9 @@ TEST(absolute_value, abs_long_double)
     // Using a slightly looser threshold for long double just in case, or same
     // one if precision allows
     static_assert(consteig::abs(val) > 0, "abs should be positive");
-    static_assert(consteig::compareFloats(
-                      consteig::abs(val), expected,
-                      static_cast<long double>(CONSTEIG_TEST_TOLERANCE)),
-                  MSG);
+        static_assert(consteig::compareFloats(consteig::abs(val), expected,
+                                              CONSTEIG_TEST_TOLERANCE),
+                      MSG);
 
     ASSERT_NEAR(static_cast<double>(consteig::abs(val)),
                 static_cast<double>(expected), CONSTEIG_TEST_TOLERANCE);

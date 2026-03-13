@@ -76,7 +76,7 @@ TEST(sqrt_function, sqrt_float)
     static constexpr float fConsteig{consteig::sqrt(f)};
     static_assert(
         consteig::compareFloats(fConsteig, 2.0585189f,
-                                static_cast<float>(CONSTEIG_TEST_TOLERANCE)),
+                                CONSTEIG_TEST_TOLERANCE),
         MSG);
     ASSERT_NEAR(fConsteig, 2.0585189f, CONSTEIG_TEST_TOLERANCE);
 }
@@ -87,7 +87,7 @@ TEST(sqrt_function, csqrt_positive)
     static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
     static_assert(
         consteig::compareFloats(gConsteig.real, 4.711687f,
-                                static_cast<float>(CONSTEIG_TEST_TOLERANCE)),
+                                CONSTEIG_TEST_TOLERANCE),
         MSG);
     static_assert(gConsteig.imag == 0.0f, MSG);
     ASSERT_NEAR(gConsteig.real, 4.711687f, CONSTEIG_TEST_TOLERANCE);
@@ -101,7 +101,7 @@ TEST(sqrt_function, csqrt_negative)
     static_assert(gConsteig.real == 0.0f, MSG);
     static_assert(
         consteig::compareFloats(gConsteig.imag, 4.711687f,
-                                static_cast<float>(CONSTEIG_TEST_TOLERANCE)),
+                                CONSTEIG_TEST_TOLERANCE),
         MSG);
     ASSERT_EQ(gConsteig.real, 0.0f);
     ASSERT_NEAR(gConsteig.imag, 4.711687f, CONSTEIG_TEST_TOLERANCE);
