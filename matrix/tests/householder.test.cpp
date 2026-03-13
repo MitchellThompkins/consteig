@@ -20,7 +20,7 @@ TEST(householder, eigen_comparison)
     Eigen::MatrixXd eigMat = toEigen(mat);
 
     // 1. Is unitary?
-    EXPECT_TRUE(eigHouse.isUnitary(CONSTEIG_TEST_TOLERANCE));
+    EXPECT_TRUE(eigHouse.isUnitary(CONSTEIG_FLOAT_TEST_TOLERANCE));
 
     // 2. Does it zero out elements below a(1,0)? (indices 2, 3...)
     // house() is designed for Hessenberg reduction, preserving row 0 and
@@ -29,7 +29,7 @@ TEST(householder, eigen_comparison)
 
     for (Size i = 2; i < s; ++i)
     {
-        EXPECT_NEAR(result(i, 0), 0.0, CONSTEIG_TEST_TOLERANCE);
+        EXPECT_NEAR(result(i, 0), 0.0, CONSTEIG_FLOAT_TEST_TOLERANCE);
     }
 
     // 3. Does it leave row 0 affected?
@@ -94,7 +94,7 @@ TEST(householder, house)
          -0.067583, -0.016523, 0.89972},
     }}};
 
-    static constexpr float thresh{1e-4F};
+    static constexpr float thresh{CONSTEIG_FLOAT_TEST_TOLERANCE};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }
@@ -114,7 +114,7 @@ TEST(householder, house_single)
         {0.0, -1.0},
     }}};
 
-    static constexpr float thresh{1e-4F};
+    static constexpr float thresh{CONSTEIG_FLOAT_TEST_TOLERANCE};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }

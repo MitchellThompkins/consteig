@@ -15,6 +15,11 @@
 #define CONSTEIG_TEST_TOLERANCE 1e-9
 #endif
 
+// Tolerance specific to 32-bit floating point precision
+#ifndef CONSTEIG_FLOAT_TEST_TOLERANCE
+#define CONSTEIG_FLOAT_TEST_TOLERANCE 1e-4f
+#endif
+
 // It's possible that some of the more difficult matrices require looser test
 // tolerances. Observationally, that has only shown to be the case for highly
 // defective matrices.

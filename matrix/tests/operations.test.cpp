@@ -5,7 +5,7 @@
 
 using namespace consteig;
 
-static constexpr float kThresh{CONSTEIG_TEST_TOLERANCE};
+static constexpr float kThresh{CONSTEIG_FLOAT_TEST_TOLERANCE};
 
 TEST(matrix, eigen_comparison)
 {
