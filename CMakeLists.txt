@@ -11,8 +11,24 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # This prevents breaking a parent project's build if they include this via add_subdirectory 
 # and their compiler triggers a warning in this code.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    add_compile_options(-Wall
+                        -Wextra
+                        -pedantic
+                        -Werror
+                        -Wmisleading-indentation
+                        -Wshadow
+                        -Wconversion
+                        -Wsign-conversion
+                        -Wnull-dereference
+                        -Wdouble-promotion
+                        -Wformat=2
+                        -Wundef
+                        -Wduplicated-cond
+                        -Wduplicated-branches
+                        -Wlogical-op
+                    )
 endif()
+
 
 # Note: The following limits are applied to allow for deeper constexpr functionality, 
 # such as complex eigenvalue calculations which exceed default compiler limits.
