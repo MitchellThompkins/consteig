@@ -9,15 +9,15 @@
 
 #define MSG "Not constexpr or wrong output"
 
-// Use a slightly looser tolerance for tests involving iterative methods (QR,
-// Eigen) compared to the strict symmetry check tolerance.
+// Standard tolerance used to compare against double percistion iterative and
+// math operations
 #ifndef CONSTEIG_TEST_TOLERANCE
 #define CONSTEIG_TEST_TOLERANCE 1e-9
 #endif
 
 // Tolerance specific to 32-bit floating point precision
 #ifndef CONSTEIG_FLOAT_TEST_TOLERANCE
-#define CONSTEIG_FLOAT_TEST_TOLERANCE 1e-4f
+#define CONSTEIG_FLOAT_TEST_TOLERANCE 1e-7f
 #endif
 
 // It's possible that some of the more difficult matrices require looser test
