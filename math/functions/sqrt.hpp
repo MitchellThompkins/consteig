@@ -7,8 +7,6 @@
 namespace consteig
 {
 
-namespace internal
-{
 template <typename T>
 constexpr T sqrt_recur(const T x, const T xn, const int count)
 {
@@ -53,8 +51,6 @@ template <typename T> constexpr T sqrt_int(const T x)
     return root;
 }
 
-} // namespace internal
-
 template <typename T> constexpr T sqrt(const T x)
 {
     // TODO(mthompkins): Need to return NaN for negative numbers. This
@@ -62,9 +58,9 @@ template <typename T> constexpr T sqrt(const T x)
     if (x < static_cast<T>(0))
         return static_cast<T>(-1);
     else if (is_float<T>())
-        return internal::sqrt_check(x, static_cast<T>(1));
+        return sqrt_check(x, static_cast<T>(1));
     else
-        return internal::sqrt_int(x);
+        return sqrt_int(x);
 }
 
 } // namespace consteig

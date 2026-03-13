@@ -352,10 +352,10 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
 
     for (Size i = 0; i < S; ++i)
     {
-       // If subdiag is essentially zero (smaller than eps), we have a 1x1 *
-       // block.  If subdiag is significantly larger than zero, it means the
-       // current row and the next row are "tangled" together, forming a 2x2
-       // block (which means there should be complex conjugate eigen values.
+        // If subdiag is essentially zero (smaller than eps), we have a 1x1 *
+        // block.  If subdiag is significantly larger than zero, it means the
+        // current row and the next row are "tangled" together, forming a 2x2
+        // block (which means there should be complex conjugate eigen values.
         bool found_2x2 = false;
         if (i < S - 1)
         {
