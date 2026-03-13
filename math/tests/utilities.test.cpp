@@ -32,9 +32,9 @@ TEST(utilities, compare_floats_compare)
     static constexpr double compare2{1834.2422436};
 
     static constexpr bool compareTest1 =
-        compareFloats(compare1, compare2, 1e-6);
+        compareFloats(compare1, compare2, 1e-6); // Design-intent: Expect true
     static constexpr bool compareTest2 =
-        compareFloats(compare1, compare2, 1e-8);
+        compareFloats(compare1, compare2, 1e-8); // Design-intent: Expect false
 
     static_assert(compareTest1 == true, MSG);
     static_assert(compareTest2 == false, MSG);
