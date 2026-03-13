@@ -129,12 +129,22 @@ TEST(sqrt_function, csqrt_negative_double)
     ASSERT_NEAR(gConsteig.imag, 4.711687595674061, CONSTEIG_TEST_TOLERANCE);
 }
 
-TEST(sqrt_function, csqrt_negative_int)
+TEST(sqrt_function, sqrt_negative_int)
 {
     static constexpr int h{-5};
     static constexpr int hConsteig{consteig::sqrt(h)};
     static_assert(hConsteig == -1, MSG);
     ASSERT_EQ(hConsteig, -1);
+}
+
+TEST(sqrt_function, csqrt_negative_int)
+{
+    static constexpr int h{-4};
+    static constexpr Complex<int> hConsteig{consteig::csqrt(h)};
+    static_assert(hConsteig.real == 0, MSG);
+    static_assert(hConsteig.imag == 2, MSG);
+    ASSERT_EQ(hConsteig.real, 0);
+    ASSERT_EQ(hConsteig.imag, 2);
 }
 
 TEST(sqrt_function, sqrt_zero_one)
