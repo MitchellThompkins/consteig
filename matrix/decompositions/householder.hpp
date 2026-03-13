@@ -23,9 +23,7 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
 
     T alphaSum{0};
     for (Size i{1}; i < R; i++)
-    {
         alphaSum += (a(i, 0) * a(i, 0));
-    }
 
     if (consteig::abs(alphaSum) < consteig::epsilon<T>())
     {
@@ -48,15 +46,11 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
 
     Matrix<T, R, 1> v{}; // Zero init
     for (Size i = 0; i < R; ++i)
-    {
         v(i, 0) = 0;
-    }
 
     v(1, 0) = (a(1, 0) - alpha) * oneOverTwoR;
     for (Size i{2}; i < R; i++)
-    {
         v(i, 0) = a(i, 0) * oneOverTwoR;
-    }
 
     Matrix<T, R, R> p = eye<T, R>() - (static_cast<T>(2) * v * transpose(v));
 

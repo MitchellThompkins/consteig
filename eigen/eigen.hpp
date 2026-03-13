@@ -93,9 +93,7 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
 {
     T delta{(a - c) / 2};
     if (delta == static_cast<T>(0))
-    {
         delta = consteig::epsilon<T>();
-    }
     T disc = delta * delta + b * b;
     T s = (delta < 0) ? -consteig::sqrt(disc) : consteig::sqrt(disc);
     return c - (b * b) / (delta + s);
@@ -145,9 +143,7 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
                 H(k, j) -= sum * v1;
                 H(k + 1, j) -= sum * v2;
                 if (m == 3)
-                {
                     H(k + 2, j) -= sum * v3;
-                }
             }
 
             // Right application
@@ -159,9 +155,7 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
                 H(i, k) -= sum * v1;
                 H(i, k + 1) -= sum * v2;
                 if (m == 3)
-                {
                     H(i, k + 2) -= sum * v3;
-                }
             }
 
             // Explicitly zero bulge elements for numerical stability
@@ -169,9 +163,7 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
             {
                 H(k + 1, k - 1) = 0;
                 if (m == 3)
-                {
                     H(k + 2, k - 1) = 0;
-                }
             }
         }
 
@@ -180,9 +172,7 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
             p1 = H(k + 1, k);
             p2 = H(k + 2, k);
             if (k < n - 2)
-            {
                 p3 = H(k + 3, k);
-            }
         }
     }
 }
@@ -191,9 +181,7 @@ template <typename T, Size S>
 constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
 {
     if constexpr (S <= 1)
-    {
         return a;
-    }
     a = balance(a);
     a = hess(a)._h;
 
@@ -201,9 +189,7 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
     T matrix_norm = norm1(a) + normInf(a);
     T eps = ulp * matrix_norm;
     if (eps == 0)
-    {
         eps = ulp;
-    }
 
     Size n = S - 1;
     Size total_iter = 0;
@@ -273,9 +259,7 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
                 // Top-based exceptional shift
                 sshift = consteig::abs(a(l + 1, l));
                 if (l + 2 <= n)
-                {
                     sshift += consteig::abs(a(l + 2, l + 1));
-                }
             }
             T h11 = static_cast<T>(0.75) * sshift + a(n, n);
             T h12 = static_cast<T>(-0.4375) * sshift;
@@ -301,17 +285,13 @@ template <typename T, Size S>
 constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
 {
     if constexpr (S <= 1)
-    {
         return a;
-    }
     a = balance(a);
     a = hess(a)._h;
 
     T eps = consteig::epsilon<T>() * (norm1(a) + normInf(a));
     if (eps == 0)
-    {
         eps = consteig::epsilon<T>();
-    }
 
     Size n = S;
     Size iter = 0;
@@ -348,13 +328,9 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
     // which is optimized for real eigenvalues. Otherwise, we must use the
     // heavier Double-Shift QR (eig_double_shifted_qr) to handle complex pairs.
     if (a.isSymmetric(static_cast<T>(symmetryTolerance)))
-    {
         return eig_shifted_qr<T, S>(a);
-    }
     else
-    {
         return eig_double_shifted_qr<T, S>(a);
-    }
 }
 
 template <typename T, Size S>
@@ -445,36 +421,24 @@ static inline constexpr bool checkEigenValues(
     T tr = trace(a);
     Complex<T> sum_lambda{};
     for (Size i = 0; i < R; ++i)
-    {
         sum_lambda = sum_lambda + lambda(i, 0);
-    }
 
     if (consteig::abs(sum_lambda.real - tr) > thresh)
-    {
         return false;
-    }
     if (consteig::abs(sum_lambda.imag) > thresh)
-    {
         return false;
-    }
 
     if constexpr (R <= 4)
     {
         T d = det(a);
         Complex<T> prod_lambda{1, 0};
         for (Size i = 0; i < R; ++i)
-        {
             prod_lambda = prod_lambda * lambda(i, 0);
-        }
         T det_tol = thresh * (static_cast<T>(1) + consteig::abs(d));
         if (consteig::abs(prod_lambda.real - d) > det_tol)
-        {
             return false;
-        }
         if (consteig::abs(prod_lambda.imag) > det_tol)
-        {
             return false;
-        }
     }
 
     return true;
@@ -533,13 +497,9 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
                 T abs_real = consteig::abs(b(j, 0).real);
                 T abs_imag = consteig::abs(b(j, 0).imag);
                 if (abs_real > max_val)
-                {
                     max_val = abs_real;
-                }
                 if (abs_imag > max_val)
-                {
                     max_val = abs_imag;
-                }
             }
 
             if (max_val > 0)
