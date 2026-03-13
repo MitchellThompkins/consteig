@@ -36,12 +36,20 @@ int main()
     printMat("Mat4", mat4);
 
     if (checkSymmetryMat1)
+    {
         std::cout << "\nsymmetricMat1 is symmetric!\n";
+    }
     else
+    {
         std::cout << "\nsymmetricMat1 is not symmetric!\n";
+    }
 
     if (checkSymmetryMat2)
+    {
         std::cout << "\nsymmetricMat2 is symmetric!\n";
+    }
     else
+    {
         std::cout << "\nsymmetricMat2 is not symmetric!\n";
+    }
 }

@@ -247,7 +247,9 @@ constexpr T det(const Matrix<T, R, C> &mat)
                 for (Size k{0}; k < R; k++)
                 {
                     if (k == i)
+                    {
                         continue;
+                    }
                     submat(j - 1, subj) = mat(j, k);
                     subj++;
                 }
@@ -266,7 +268,9 @@ constexpr T trace(const Matrix<T, R, C> &mat)
 
     T result{static_cast<T>(0)};
     for (Size i{0}; i < R; ++i)
+    {
         result += mat(i, i);
+    }
     return result;
 }
 

@@ -68,9 +68,13 @@ template <typename T> constexpr T sqrt(const T x)
     }
 
     if (is_float<T>())
+    {
         return sqrt_check(x, static_cast<T>(1));
+    }
     else
+    {
         return sqrt_int(x);
+    }
 }
 
 } // namespace consteig

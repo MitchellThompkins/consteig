@@ -14,7 +14,9 @@ constexpr Complex<T> sum(const Matrix<Complex<T>, S, 1> &vec)
 {
     Complex<T> s{};
     for (Size i = 0; i < S; ++i)
+    {
         s = s + vec(i, 0);
+    }
     return s;
 }
 
@@ -24,7 +26,9 @@ constexpr Complex<T> prod(const Matrix<Complex<T>, S, 1> &vec)
 {
     Complex<T> p{1, 0};
     for (Size i = 0; i < S; ++i)
+    {
         p = p * vec(i, 0);
+    }
     return p;
 }
 
@@ -35,7 +39,9 @@ constexpr bool verify_values(const Matrix<Complex<T>, S, 1> &computed,
 {
     bool matched[S] = {};
     for (Size i = 0; i < S; ++i)
+    {
         matched[i] = false;
+    }
 
     for (Size i = 0; i < S; ++i)
     {
@@ -53,7 +59,9 @@ constexpr bool verify_values(const Matrix<Complex<T>, S, 1> &computed,
             }
         }
         if (!found)
+        {
             return false;
+        }
     }
     return true;
 }
@@ -165,9 +173,13 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
         Complex<double> val = eigenValueTest(i, 0);
         EXPECT_NEAR(val.real, 0.0, CONSTEIG_TEST_TOLERANCE);
         if (std::abs(val.imag - 1.0) < CONSTEIG_TEST_TOLERANCE)
+        {
             found_i = true;
+        }
         if (std::abs(val.imag + 1.0) < CONSTEIG_TEST_TOLERANCE)
+        {
             found_neg_i = true;
+        }
     }
     EXPECT_TRUE(found_i);
     EXPECT_TRUE(found_neg_i);
@@ -198,7 +210,9 @@ TEST(consteig_eigen, non_symmetric_general)
 
     std::vector<Complex<double>> vals;
     for (Size i = 0; i < s; ++i)
+    {
         vals.push_back(eigenValueTest(i, 0));
+    }
 
     bool found_1 = false;
     bool found_c1 = false;
@@ -209,13 +223,19 @@ TEST(consteig_eigen, non_symmetric_general)
         if (std::abs(v.real - 1.0) < CONSTEIG_TEST_TOLERANCE)
         {
             if (std::abs(v.imag) < CONSTEIG_TEST_TOLERANCE)
+            {
                 found_1 = true;
+            }
             else if (std::abs(v.imag - std::sqrt(10.0)) <
                      CONSTEIG_TEST_TOLERANCE)
+            {
                 found_c1 = true;
+            }
             else if (std::abs(v.imag + std::sqrt(10.0)) <
                      CONSTEIG_TEST_TOLERANCE)
+            {
                 found_c2 = true;
+            }
         }
     }
 

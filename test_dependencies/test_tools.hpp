@@ -64,7 +64,9 @@ constexpr bool nearlyEqual(T a, T b, T epsilon = 128 * FLT_EPSILON,
     assert(epsilon < 1.f);
 
     if (a == b)
+    {
         return true;
+    }
 
     auto diff = std::abs(a - b);
     auto norm =
@@ -85,7 +87,9 @@ static constexpr bool compareFloatMat(consteig::Matrix<T, R, C> a,
         for (consteig::Size j{0}; j < C; j++)
         {
             if (!consteig::compareFloats(a(i, j), b(i, j), thresh))
+            {
                 return false;
+            }
         }
     }
     return true;
@@ -100,7 +104,9 @@ static constexpr bool compareEigenValues(
     // Set matching algorithm (O(N^2)) - robust against permutations and jitter.
     bool used[S] = {};
     for (consteig::Size i = 0; i < S; ++i)
+    {
         used[i] = false;
+    }
 
     for (consteig::Size i = 0; i < S; ++i)
     { // for each reference eigenvalue b[i]
@@ -120,7 +126,9 @@ static constexpr bool compareEigenValues(
             }
         }
         if (!found)
+        {
             return false;
+        }
     }
     return true;
 }

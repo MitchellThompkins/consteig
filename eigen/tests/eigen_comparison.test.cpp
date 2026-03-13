@@ -57,7 +57,9 @@ template <Size S> void verify_symmetric_random(const int seed)
 
     std::vector<double> calc;
     for (Size i = 0; i < S; ++i)
+    {
         calc.push_back(res(i, 0).real);
+    }
     std::sort(calc.begin(), calc.end());
 
     for (Size i = 0; i < S; ++i)
@@ -125,7 +127,9 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
         for (Size j = 0; j < S; ++j)
         {
             if (matched[j])
+            {
                 continue;
+            }
 
             double d_real = real - ref(j).real();
             double d_imag = imag - ref(j).imag();
@@ -138,7 +142,9 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
                 break;
             }
             if (dist < min_dist)
+            {
                 min_dist = dist;
+            }
         }
 
         EXPECT_TRUE(found) << "Failed to match eigenvalue " << real << "+"
