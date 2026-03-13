@@ -17,14 +17,16 @@ TEST(sqrt_function, sqrt_basic_double)
     static constexpr double a{4.2375};
     static constexpr double aConsteig{consteig::sqrt(a)};
     static constexpr double aStd{2.058518885}; // approx
-    static_assert(consteig::compareFloats(aConsteig, aStd, 1e-6), MSG);
-    ASSERT_NEAR(aConsteig, aStd, 1e-6);
+    static_assert(
+        consteig::compareFloats(aConsteig, aStd, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(aConsteig, aStd, CONSTEIG_TEST_TOLERANCE);
 
     static constexpr double b{58582.28485};
     static constexpr double bConsteig{consteig::sqrt(b)};
     static constexpr double bStd{242.0377757}; // approx
-    static_assert(consteig::compareFloats(bConsteig, bStd, 1e-5), MSG);
-    ASSERT_NEAR(bConsteig, bStd, 1e-5);
+    static_assert(
+        consteig::compareFloats(bConsteig, bStd, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(bConsteig, bStd, CONSTEIG_TEST_TOLERANCE);
 }
 
 TEST(sqrt_function, sqrt_int)
@@ -62,27 +64,31 @@ TEST(sqrt_function, sqrt_long_double)
     static constexpr long double eConsteig{consteig::sqrt(e)};
     // Using simple double precision comparison as long double precision varies
     static_assert(consteig::compareFloats(static_cast<double>(eConsteig),
-                                          242.0377757, 1e-5),
+                                          242.0377757, CONSTEIG_TEST_TOLERANCE),
                   MSG);
-    ASSERT_NEAR(static_cast<double>(eConsteig), 242.0377757, 1e-5);
+    ASSERT_NEAR(static_cast<double>(eConsteig), 242.0377757,
+                CONSTEIG_TEST_TOLERANCE);
 }
 
 TEST(sqrt_function, sqrt_float)
 {
     static constexpr float f{4.2375f};
     static constexpr float fConsteig{consteig::sqrt(f)};
-    static_assert(consteig::compareFloats(fConsteig, 2.0585189f, 1e-5f), MSG);
-    ASSERT_NEAR(fConsteig, 2.0585189f, 1e-5f);
+    static_assert(
+        consteig::compareFloats(fConsteig, 2.0585189f, CONSTEIG_TEST_TOLERANCE),
+        MSG);
+    ASSERT_NEAR(fConsteig, 2.0585189f, CONSTEIG_TEST_TOLERANCE);
 }
 
 TEST(sqrt_function, csqrt_positive)
 {
     static constexpr float g{22.2f};
     static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
-    static_assert(consteig::compareFloats(gConsteig.real, 4.711687f, 1e-5f),
+    static_assert(consteig::compareFloats(gConsteig.real, 4.711687f,
+                                          CONSTEIG_TEST_TOLERANCE),
                   MSG);
     static_assert(gConsteig.imag == 0.0f, MSG);
-    ASSERT_NEAR(gConsteig.real, 4.711687f, 1e-5f);
+    ASSERT_NEAR(gConsteig.real, 4.711687f, CONSTEIG_TEST_TOLERANCE);
     ASSERT_EQ(gConsteig.imag, 0.0f);
 }
 
@@ -91,10 +97,11 @@ TEST(sqrt_function, csqrt_negative)
     static constexpr float g{-22.2f};
     static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
     static_assert(gConsteig.real == 0.0f, MSG);
-    static_assert(consteig::compareFloats(gConsteig.imag, 4.711687f, 1e-5f),
+    static_assert(consteig::compareFloats(gConsteig.imag, 4.711687f,
+                                          CONSTEIG_TEST_TOLERANCE),
                   MSG);
     ASSERT_EQ(gConsteig.real, 0.0f);
-    ASSERT_NEAR(gConsteig.imag, 4.711687f, 1e-5f);
+    ASSERT_NEAR(gConsteig.imag, 4.711687f, CONSTEIG_TEST_TOLERANCE);
 
     static constexpr int h{-9};
     static constexpr Complex<int> hConsteig{consteig::csqrt(h)};

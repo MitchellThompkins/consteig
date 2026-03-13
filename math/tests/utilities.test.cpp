@@ -3,7 +3,7 @@
 #include "constmath.hpp"
 #include "test_tools.hpp"
 
-static constexpr double kThresh{0.00000001};
+static constexpr double kThresh{CONSTEIG_TEST_TOLERANCE};
 
 using namespace consteig;
 
@@ -32,9 +32,9 @@ TEST(utilities, compare_floats_compare)
     static constexpr double compare2{1834.2422436};
 
     static constexpr bool compareTest1 =
-        compareFloats(compare1, compare2, 0.0000001);
+        compareFloats(compare1, compare2, CONSTEIG_TEST_TOLERANCE);
     static constexpr bool compareTest2 =
-        compareFloats(compare1, compare2, 0.00000001);
+        compareFloats(compare1, compare2, CONSTEIG_TEST_TOLERANCE);
 
     static_assert(compareTest1 == true, MSG);
     static_assert(compareTest2 == false, MSG);

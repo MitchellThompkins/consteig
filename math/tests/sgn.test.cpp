@@ -5,7 +5,7 @@
 
 using namespace consteig;
 
-static constexpr double kThresh{std::numeric_limits<double>::epsilon()};
+static constexpr double kThresh{CONSTEIG_TEST_TOLERANCE};
 
 TEST(sgn_function, sgn_test)
 {

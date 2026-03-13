@@ -5,7 +5,7 @@
 #include "constmath.hpp"
 #include "test_tools.hpp"
 
-static constexpr double kThresh{0.00000001};
+static constexpr double kThresh{CONSTEIG_TEST_TOLERANCE};
 
 using namespace consteig;
 
@@ -76,9 +76,10 @@ TEST(absolute_value, abs_long_double)
     // Using a slightly looser threshold for long double just in case, or same
     // one if precision allows
     static_assert(consteig::abs(val) > 0, "abs should be positive");
-    static_assert(consteig::compareFloats(consteig::abs(val), expected, 1e-9L),
+    static_assert(consteig::compareFloats(consteig::abs(val), expected,
+                                          CONSTEIG_TEST_TOLERANCE),
                   MSG);
 
     ASSERT_NEAR(static_cast<double>(consteig::abs(val)),
-                static_cast<double>(expected), 1e-9);
+                static_cast<double>(expected), CONSTEIG_TEST_TOLERANCE);
 }

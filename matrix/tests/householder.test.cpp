@@ -20,7 +20,7 @@ TEST(householder, eigen_comparison)
     Eigen::MatrixXd eigMat = toEigen(mat);
 
     // 1. Is unitary?
-    EXPECT_TRUE(eigHouse.isUnitary(1e-4));
+    EXPECT_TRUE(eigHouse.isUnitary(CONSTEIG_TEST_TOLERANCE));
 
     // 2. Does it zero out elements below a(1,0)? (indices 2, 3...)
     // house() is designed for Hessenberg reduction, preserving row 0 and
@@ -29,18 +29,18 @@ TEST(householder, eigen_comparison)
 
     for (Size i = 2; i < s; ++i)
     {
-        EXPECT_NEAR(result(i, 0), 0.0, 1e-4);
+        EXPECT_NEAR(result(i, 0), 0.0, CONSTEIG_TEST_TOLERANCE);
     }
 
     // 3. Does it leave row 0 affected?
     // Actually P = diag(1, P') where P' acts on subvector.
     // So (P*A).row(0) == A.row(0) if P is block diag(1, ...).
     // Let's check P structure.
-    EXPECT_NEAR(houseMat(0, 0), 1.0, 1e-9);
+    EXPECT_NEAR(houseMat(0, 0), 1.0, CONSTEIG_TEST_TOLERANCE);
     for (Size i = 1; i < s; ++i)
     {
-        EXPECT_NEAR(houseMat(0, i), 0.0, 1e-9);
-        EXPECT_NEAR(houseMat(i, 0), 0.0, 1e-9);
+        EXPECT_NEAR(houseMat(0, i), 0.0, CONSTEIG_TEST_TOLERANCE);
+        EXPECT_NEAR(houseMat(i, 0), 0.0, CONSTEIG_TEST_TOLERANCE);
     }
 }
 
@@ -94,7 +94,7 @@ TEST(householder, house)
          -0.067583, -0.016523, 0.89972},
     }}};
 
-    static constexpr float thresh{1e-4F};
+    static constexpr float thresh{CONSTEIG_TEST_TOLERANCE};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }
@@ -114,7 +114,7 @@ TEST(householder, house_single)
         {0.0, -1.0},
     }}};
 
-    static constexpr float thresh{1e-4F};
+    static constexpr float thresh{CONSTEIG_TEST_TOLERANCE};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }
@@ -130,13 +130,13 @@ TEST(householder, properties)
     // Symmetric: P = P^T
     static constexpr Matrix<double, s, s> PT = transpose(P);
 
-    static_assert(compareFloatMat(P, PT, 1e-9), MSG);
+    static_assert(compareFloatMat(P, PT, CONSTEIG_TEST_TOLERANCE), MSG);
 
     for (size_t i = 0; i < s; ++i)
     {
         for (size_t j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(P(i, j), PT(i, j), 1e-9);
+            ASSERT_NEAR(P(i, j), PT(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 
@@ -144,13 +144,13 @@ TEST(householder, properties)
     static constexpr Matrix<double, s, s> P2 = P * P;
     static constexpr Matrix<double, s, s> I = eye<double, s>();
 
-    static_assert(compareFloatMat(P2, I, 1e-9), MSG);
+    static_assert(compareFloatMat(P2, I, CONSTEIG_TEST_TOLERANCE), MSG);
 
     for (size_t i = 0; i < s; ++i)
     {
         for (size_t j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(P2(i, j), I(i, j), 1e-9);
+            ASSERT_NEAR(P2(i, j), I(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 }

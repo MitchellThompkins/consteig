@@ -5,7 +5,7 @@
 
 using namespace consteig;
 
-static constexpr double kThresh{1e-7};
+static constexpr double kThresh{CONSTEIG_TEST_TOLERANCE};
 
 TEST(exp_function, exp_zero)
 {

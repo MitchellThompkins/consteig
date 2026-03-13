@@ -24,7 +24,7 @@ TEST(hessenberg, eigen_comparison)
     {
         for (Size j = 0; j < i - 1; ++j)
         {
-            EXPECT_NEAR(hessRes._h(i, j), 0.0, 1e-4);
+            EXPECT_NEAR(hessRes._h(i, j), 0.0, CONSTEIG_TEST_TOLERANCE);
         }
     }
 
@@ -39,7 +39,8 @@ TEST(hessenberg, eigen_comparison)
     {
         for (Size j = 0; j < s; ++j)
         {
-            EXPECT_NEAR(std::abs(hessRes._h(i, j)), std::abs(hEig(i, j)), 1e-4);
+            EXPECT_NEAR(std::abs(hessRes._h(i, j)), std::abs(hEig(i, j)),
+                        CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -121,7 +122,7 @@ TEST(hessenberg, hess)
     static constexpr Matrix<float, s, s> identityCheck{test._p *
                                                        transpose(test._p)};
 
-    static constexpr float thresh{3e-4F};
+    static constexpr float thresh{CONSTEIG_TEST_TOLERANCE};
 
     static_assert(compareFloatMat(test._p, pAnswer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test._p, pAnswer, thresh));

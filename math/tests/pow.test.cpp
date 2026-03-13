@@ -5,7 +5,7 @@
 
 using namespace consteig;
 
-static constexpr double kThresh{1e-9};
+static constexpr double kThresh{CONSTEIG_TEST_TOLERANCE};
 
 TEST(power_function, pow_basic)
 {
