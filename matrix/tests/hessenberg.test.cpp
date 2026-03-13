@@ -39,15 +39,18 @@ TEST(hessenberg, eigen_comparison)
     {
         for (Size j = 0; j < s; ++j)
         {
-            EXPECT_NEAR(std::abs(hessRes._h(i, j)), std::abs(hEig(i, j)), 1e-4);
+            EXPECT_NEAR(std::abs(hessRes._h(i, j)),
+                        std::abs(hEig(static_cast<Eigen::Index>(i),
+                                      static_cast<Eigen::Index>(j))),
+                        1e-4);
         }
     }
 }
 
 TEST(hessenberg, hess)
 {
-    static constexpr int s{10};
-    static constexpr Matrix<float, s, s> mat{{{
+    static constexpr Size s{10};
+    static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
         {-0.42729, -0.47479, -0.28187, -0.6335, -0.84281, -0.88644, -0.77489,
@@ -70,9 +73,9 @@ TEST(hessenberg, hess)
          -1.4584, 0.68517},
     }}};
 
-    static constexpr PHMatrix<float, s> test{hess(mat)};
+    static constexpr PHMatrix<double, s> test{hess(mat)};
 
-    static constexpr Matrix<float, s, s> pAnswer{{{
+    static constexpr Matrix<double, s, s> pAnswer{{{
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, -0.18117, 0.44375, -0.22824, -0.34168, 0.25395, -0.37373, 0.013938,
          -0.41826, 0.4713},
@@ -94,7 +97,7 @@ TEST(hessenberg, hess)
          -0.047875, -0.27747},
     }}};
 
-    static constexpr Matrix<float, s, s> hAnswer{{{
+    static constexpr Matrix<double, s, s> hAnswer{{{
         {-2.0114, 0.66518, -0.25342, -0.73737, 0.79638, -0.7923, 2.703,
          -0.15611, -0.71645, 1.5476},
         {2.3585, -1.2051, -0.75753, 1.228, 0.83358, 2.3645, 0.14301, -0.033031,
@@ -113,15 +116,15 @@ TEST(hessenberg, hess)
     }}};
 
     // P*H*P' = A where A is the input matrix
-    static constexpr Matrix<float, s, s> hessCheck{test._p * test._h *
-                                                   transpose(test._p)};
+    static constexpr Matrix<double, s, s> hessCheck{test._p * test._h *
+                                                    transpose(test._p)};
 
     // P*P' = Identity matrix
-    static constexpr Matrix<float, s, s> identity{eye<float, s>()};
-    static constexpr Matrix<float, s, s> identityCheck{test._p *
-                                                       transpose(test._p)};
+    static constexpr Matrix<double, s, s> identity{eye<double, s>()};
+    static constexpr Matrix<double, s, s> identityCheck{test._p *
+                                                        transpose(test._p)};
 
-    static constexpr float thresh{3e-4F};
+    static constexpr double thresh{3e-4};
 
     static_assert(compareFloatMat(test._p, pAnswer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test._p, pAnswer, thresh));

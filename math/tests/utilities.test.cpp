@@ -44,9 +44,9 @@ TEST(utilities, compare_floats_compare)
 
 TEST(utilities, value_type_check)
 {
-    static constexpr float x{9.4};
+    static constexpr float x{9.4f};
     static constexpr double y{45.6};
-    static constexpr long double z{-12.3};
+    static constexpr long double z{-12.3L};
 
     static constexpr Size a{9};
     static constexpr int b{45};

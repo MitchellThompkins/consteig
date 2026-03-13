@@ -32,17 +32,17 @@ TEST(qr_decomp, eigen_comparison)
     Eigen::MatrixXd rEig = qrEig.matrixQR().triangularView<Eigen::Upper>();
 
     // Runtime checks
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(recon(i, j), mat(i, j), kTol);
         }
     }
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(qtq(i, j), ident(i, j), kTol);
         }
@@ -51,7 +51,10 @@ TEST(qr_decomp, eigen_comparison)
     // Compare R diagonal absolute values (since signs can flip)
     for (Size i = 0; i < s; ++i)
     {
-        ASSERT_NEAR(std::abs(qrRes._r(i, i)), std::abs(rEig(i, i)), kTol);
+        ASSERT_NEAR(std::abs(qrRes._r(i, i)),
+                    std::abs(rEig(static_cast<Eigen::Index>(i),
+                                  static_cast<Eigen::Index>(i))),
+                    kTol);
     }
 }
 
@@ -65,9 +68,9 @@ TEST(qr_decomp, identity_matrix)
     static_assert(compareFloatMat(qrRes._q, mat, kTol), MSG);
     static_assert(compareFloatMat(qrRes._r, mat, kTol), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(qrRes._q(i, j), mat(i, j), kTol);
             ASSERT_NEAR(qrRes._r(i, j), mat(i, j), kTol);
@@ -87,9 +90,9 @@ TEST(qr_decomp, zero_matrix)
     static_assert(compareFloatMat(qrRes._q, ident, kTol), MSG);
     static_assert(compareFloatMat(qrRes._r, zeroMat, kTol), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(qrRes._q(i, j), ident(i, j), kTol);
             ASSERT_NEAR(qrRes._r(i, j), 0.0, kTol);
@@ -109,9 +112,9 @@ TEST(qr_decomp, diagonal_matrix)
     static_assert(compareFloatMat(qrRes._q, ident, kTol), MSG);
     static_assert(compareFloatMat(qrRes._r, mat, kTol), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(qrRes._q(i, j), (i == j ? 1.0 : 0.0), kTol);
             ASSERT_NEAR(qrRes._r(i, j), mat(i, j), kTol);
@@ -130,9 +133,9 @@ TEST(qr_decomp, singular_matrix)
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
     static_assert(compareFloatMat(recon, mat, kTol), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(recon(i, j), mat(i, j), kTol);
         }
@@ -157,7 +160,7 @@ TEST(qr_decomp, static_constexpr_even_mat)
 
 TEST(qr_decomp, static_constexpr_random)
 {
-    static constexpr int s{10};
+    static constexpr Size s{10};
     static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},

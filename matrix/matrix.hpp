@@ -180,9 +180,9 @@ template <typename T, Size R, Size C> class Matrix
 
         if (sizeX() > 1)
         {
-            for (unsigned int i{1}; i <= sizeX() - 1; i++)
+            for (Size i{1}; i <= sizeX() - 1; i++)
             {
-                for (unsigned int j{0}; j < i; j++)
+                for (Size j{0}; j < i; j++)
                 {
                     symmetric &= ((*this)(i, j) == (*this)(j, i));
                     if (!symmetric)

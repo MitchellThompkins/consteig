@@ -29,7 +29,7 @@ TEST(householder, eigen_comparison)
 
     for (Size i = 2; i < s; ++i)
     {
-        EXPECT_NEAR(result(i, 0), 0.0, 1e-4);
+        EXPECT_NEAR(result(static_cast<Eigen::Index>(i), 0), 0.0, 1e-4);
     }
 
     // 3. Does it leave row 0 affected?
@@ -46,8 +46,8 @@ TEST(householder, eigen_comparison)
 
 TEST(householder, house)
 {
-    static constexpr int s{10};
-    static constexpr Matrix<float, s, s> mat{{{
+    static constexpr Size s{10};
+    static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
         {-0.42729, -0.47479, -0.28187, -0.6335, -0.84281, -0.88644, -0.77489,
@@ -70,9 +70,9 @@ TEST(householder, house)
          -1.4584, 0.68517},
     }}};
 
-    static constexpr Matrix<float, s, s> test{house(mat)};
+    static constexpr Matrix<double, s, s> test{house(mat)};
 
-    static constexpr Matrix<float, s, s> answer{{{
+    static constexpr Matrix<double, s, s> answer{{{
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, -0.18117, 0.43379, 0.14474, 0.69232, 0.25308, 0.19807, 0.23195,
          0.056709, 0.34416},
@@ -94,34 +94,34 @@ TEST(householder, house)
          -0.067583, -0.016523, 0.89972},
     }}};
 
-    static constexpr float thresh{1e-4F};
+    static constexpr double thresh{1e-4};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }
 
 TEST(householder, house_single)
 {
-    static constexpr int s{2};
-    static constexpr Matrix<float, s, s> mat{{{
+    static constexpr Size s{2};
+    static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132},
         {-0.42729, -0.47479},
     }}};
 
-    static constexpr Matrix<float, s, s> test{house(mat)};
+    static constexpr Matrix<double, s, s> test{house(mat)};
 
-    static constexpr Matrix<float, s, s> answer{{{
+    static constexpr Matrix<double, s, s> answer{{{
         {1.0, 0.0},
         {0.0, -1.0},
     }}};
 
-    static constexpr float thresh{1e-4F};
+    static constexpr double thresh{1e-4};
     static_assert(compareFloatMat(test, answer, thresh), MSG);
     ASSERT_TRUE(compareFloatMat(test, answer, thresh));
 }
 
 TEST(householder, properties)
 {
-    static constexpr int s{4};
+    static constexpr Size s{4};
     static constexpr Matrix<double, s, s> mat = {
         {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
 
@@ -132,9 +132,9 @@ TEST(householder, properties)
 
     static_assert(compareFloatMat(P, PT, 1e-9), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(P(i, j), PT(i, j), 1e-9);
         }
@@ -146,9 +146,9 @@ TEST(householder, properties)
 
     static_assert(compareFloatMat(P2, I, 1e-9), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(P2(i, j), I(i, j), 1e-9);
         }

@@ -38,7 +38,7 @@ constexpr bool nearlyEqual(T a, T b, T epsilon = 128 * FLT_EPSILON,
 {
     static_assert(consteig::is_float<T>(), "Expects floating point number");
     assert(std::numeric_limits<T>::epsilon() <= epsilon);
-    assert(epsilon < 1.f);
+    assert(epsilon < T(1));
 
     if (a == b)
         return true;

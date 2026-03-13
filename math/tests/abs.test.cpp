@@ -14,11 +14,11 @@ TEST(absolute_value, abs_basic)
     static_assert(consteig::compareFloats(consteig::abs(0.0), 0.0, kThresh),
                   MSG);
 
-    ASSERT_FLOAT_EQ(consteig::abs(0.0), 0.0);
-    ASSERT_FLOAT_EQ(consteig::abs(-0.0), 0.0); // -0.0 abs is 0.0
+    ASSERT_DOUBLE_EQ(consteig::abs(0.0), 0.0);
+    ASSERT_DOUBLE_EQ(consteig::abs(-0.0), 0.0); // -0.0 abs is 0.0
 
-    ASSERT_FLOAT_EQ(consteig::abs(1.0), 1.0);
-    ASSERT_FLOAT_EQ(consteig::abs(-1.0), 1.0);
+    ASSERT_DOUBLE_EQ(consteig::abs(1.0), 1.0);
+    ASSERT_DOUBLE_EQ(consteig::abs(-1.0), 1.0);
 
     static_assert(consteig::abs(0U) == 0U, MSG);
     ASSERT_EQ(consteig::abs(0U), 0U);
@@ -41,17 +41,17 @@ TEST(absolute_value, abs_limits_double)
 
     static_assert(consteig::compareFloats(consteig::abs(max_d), max_d, kThresh),
                   MSG);
-    ASSERT_FLOAT_EQ(consteig::abs(max_d), max_d);
-    ASSERT_FLOAT_EQ(consteig::abs(-max_d), max_d);
+    ASSERT_DOUBLE_EQ(consteig::abs(max_d), max_d);
+    ASSERT_DOUBLE_EQ(consteig::abs(-max_d), max_d);
 
     static_assert(consteig::compareFloats(consteig::abs(min_d), min_d, kThresh),
                   MSG);
-    ASSERT_FLOAT_EQ(consteig::abs(min_d), min_d);
-    ASSERT_FLOAT_EQ(consteig::abs(-min_d), min_d);
+    ASSERT_DOUBLE_EQ(consteig::abs(min_d), min_d);
+    ASSERT_DOUBLE_EQ(consteig::abs(-min_d), min_d);
 
     static_assert(consteig::compareFloats(consteig::abs(low_d), max_d, kThresh),
                   MSG); // lowest is -max
-    ASSERT_FLOAT_EQ(consteig::abs(low_d), max_d);
+    ASSERT_DOUBLE_EQ(consteig::abs(low_d), max_d);
 }
 
 TEST(absolute_value, abs_limits_int)
