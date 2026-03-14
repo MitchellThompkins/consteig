@@ -189,3 +189,10 @@ TEST(sqrt_int, large_int)
     auto result = consteig::sqrt(val);
     EXPECT_EQ(result, 46340);
 }
+
+TEST(sqrt_int, large_int64)
+{
+    constexpr long long val = 4611686014132420609LL; // 2147483647^2
+    auto result = consteig::sqrt(val);
+    EXPECT_EQ(result, 2147483647);
+}

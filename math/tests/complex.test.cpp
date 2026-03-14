@@ -52,3 +52,11 @@ TEST(complex, csqrt_int_min)
     EXPECT_EQ(result.real, 0);
     EXPECT_EQ(result.imag, 46340);
 }
+
+TEST(complex, csqrt_int64_min)
+{
+    constexpr long long min_ll = std::numeric_limits<long long>::min();
+    auto result = consteig::csqrt(min_ll);
+    EXPECT_EQ(result.real, 0);
+    EXPECT_EQ(result.imag, 3037000499);
+}
