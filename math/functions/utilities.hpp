@@ -98,7 +98,8 @@ template <typename T> constexpr T epsilon()
 template <typename T> constexpr T poison_nan()
 {
     // We use -1.0 (or -1 for ints) as a poison value because constexpr NaN
-    // is not portably supported without built-ins or stdlib dependencies in C++17.
+    // is not portably supported without built-ins or stdlib dependencies in
+    // C++17.
     return static_cast<T>(-1);
 }
 
