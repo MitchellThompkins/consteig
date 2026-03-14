@@ -213,3 +213,25 @@ TEST(sqrt_function, sqrt_negative_int64)
     ASSERT_TRUE(consteig::is_poison_nan(result));
     ASSERT_EQ(result, -1LL);
 }
+
+TEST(sqrt_function, csqrt_int_min)
+{
+    const int min_i = std::numeric_limits<int>::min();
+    const int expected_imag =
+        static_cast<int>(std::sqrt(-static_cast<double>(min_i)));
+    auto result = consteig::csqrt(min_i);
+    EXPECT_EQ(result.real, 0);
+    EXPECT_EQ(result.imag, expected_imag);
+}
+
+TEST(sqrt_function, csqrt_int64_min)
+{
+    const long long min_ll = std::numeric_limits<long long>::min();
+    // 2^63 is perfectly representable in double's 53-bit mantissa, meaning
+    // std::sqrt won't suffer precision loss here
+    const long long expected_imag =
+        static_cast<long long>(std::sqrt(-static_cast<double>(min_ll)));
+    auto result = consteig::csqrt(min_ll);
+    EXPECT_EQ(result.real, 0);
+    EXPECT_EQ(result.imag, expected_imag);
+}
