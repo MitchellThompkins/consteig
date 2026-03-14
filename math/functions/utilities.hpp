@@ -98,12 +98,21 @@ template <typename T> constexpr T epsilon()
 // If a user attempts to evaluate a negative square root at compile-time
 // (e.g. `constexpr auto x = sqrt(-4);`), the compiler will hit this
 // non-constexpr function and halt the build with an error mentioning this
-// function's name. At runtime, it safely executes and returns the poison value
-// -1. We use -1 as a poison value because constexpr NaN is not portably
-// supported without built-ins or stdlib dependencies in C++17.
+// function's name. At runtime, it safely executes and returns a poison value.
+// For floating-point types, we return 0.0 / 0.0 to produce a true
+// self-poisoning NaN. For integer types, we use -1 as a poison value because
+// integer division by zero crashes at runtime, and constexpr NaN is not
+// portably supported in C++17.
 template <typename T> T force_compile_time_error_for_negative_sqrt()
 {
-    return static_cast<T>(-1);
+    if constexpr (is_float<T>())
+    {
+        return static_cast<T>(0.0) / static_cast<T>(0.0);
+    }
+    else
+    {
+        return static_cast<T>(-1);
+    }
 }
 
 // Get a poison value representing an invalid result (like NaN).
@@ -111,14 +120,22 @@ template <typename T> constexpr T poison_nan()
 {
     // We use a non-constexpr helper to guarantee that this function cannot be
     // evaluated at compile-time (triggering an error), but gracefully returns
-    // -1 at runtime. constexpr NaN is not portably supported in C++17.
+    // the poison value at runtime.
     return force_compile_time_error_for_negative_sqrt<T>();
 }
 
 // Check if a value is the poison NaN.
 template <typename T> constexpr bool is_poison_nan(const T x)
 {
-    return x == static_cast<T>(-1);
+    if constexpr (is_float<T>())
+    {
+        // In IEEE 754, NaN is the only value not equal to itself.
+        return x != x;
+    }
+    else
+    {
+        return x == static_cast<T>(-1);
+    }
 }
 
 } // namespace consteig
