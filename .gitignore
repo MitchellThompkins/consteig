@@ -3,6 +3,5 @@ build/
 compile_commands.json
 
 # development
-*.swp
-*.swo
+*.sw[op]
 tags
