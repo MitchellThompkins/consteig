@@ -1,3 +1,4 @@
+#include <cmath>
 #include <gtest/gtest.h>
 
 #include <limits>
@@ -185,14 +186,30 @@ TEST(sqrt_function, sqrt_large)
 
 TEST(sqrt_int, large_int)
 {
-    constexpr int val = 2147395600; // 46340^2
+    const int expected =
+        static_cast<int>(std::sqrt(std::numeric_limits<int>::max()));
+    const int val = expected * expected;
     auto result = consteig::sqrt(val);
-    EXPECT_EQ(result, 46340);
+    EXPECT_EQ(result, expected);
 }
 
 TEST(sqrt_int, large_int64)
 {
-    constexpr long long val = 4611686014132420609LL; // 2147483647^2
+    const long long expected = static_cast<long long>(
+        std::sqrt(std::numeric_limits<long long>::max()));
+    const long long val = expected * expected;
     auto result = consteig::sqrt(val);
-    EXPECT_EQ(result, 2147483647);
+    EXPECT_EQ(result, expected);
+}
+
+TEST(sqrt_function, sqrt_negative_int64)
+{
+    // Evaluated at runtime to avoid the intentional constexpr compilation
+    // failure
+    long long min_ll = std::numeric_limits<long long>::min();
+    long long result = consteig::sqrt(min_ll);
+
+    // Ensure it correctly triggers the non-constexpr poison_nan and returns -1
+    ASSERT_TRUE(consteig::is_poison_nan(result));
+    ASSERT_EQ(result, -1LL);
 }

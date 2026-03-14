@@ -1,3 +1,4 @@
+#include <cmath>
 #include <gtest/gtest.h>
 
 #include "constmath.hpp"
@@ -47,16 +48,22 @@ TEST(complex, scalar_ops)
 
 TEST(complex, csqrt_int_min)
 {
-    constexpr int min_i = std::numeric_limits<int>::min();
+    const int min_i = std::numeric_limits<int>::min();
+    const int expected_imag =
+        static_cast<int>(std::sqrt(-static_cast<double>(min_i)));
     auto result = consteig::csqrt(min_i);
     EXPECT_EQ(result.real, 0);
-    EXPECT_EQ(result.imag, 46340);
+    EXPECT_EQ(result.imag, expected_imag);
 }
 
 TEST(complex, csqrt_int64_min)
 {
-    constexpr long long min_ll = std::numeric_limits<long long>::min();
+    const long long min_ll = std::numeric_limits<long long>::min();
+    // 2^63 is perfectly representable in double's 53-bit mantissa, meaning
+    // std::sqrt won't suffer precision loss here
+    const long long expected_imag =
+        static_cast<long long>(std::sqrt(-static_cast<double>(min_ll)));
     auto result = consteig::csqrt(min_ll);
     EXPECT_EQ(result.real, 0);
-    EXPECT_EQ(result.imag, 3037000499);
+    EXPECT_EQ(result.imag, expected_imag);
 }
