@@ -9,7 +9,7 @@
 
 #define MSG "Not constexpr or wrong output"
 
-// Standard tolerance used to compare against double percistion iterative and
+// Standard tolerance used to compare against double precision iterative and
 // math operations
 #ifndef CONSTEIG_TEST_TOLERANCE
 #define CONSTEIG_TEST_TOLERANCE 1e-9
