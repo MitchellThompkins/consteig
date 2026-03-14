@@ -33,8 +33,12 @@ constexpr Matrix<T, R, C> operator+(const Matrix<T, R, C> &lhs,
     Matrix<T, R, C> result{};
 
     for (Size i{0}; i < R; ++i)
+    {
         for (Size j{0}; j < C; ++j)
+        {
             result(i, j) = lhs(i, j) + rhs(i, j);
+        }
+    }
 
     return result;
 }
@@ -46,8 +50,12 @@ constexpr Matrix<T, R, C> operator-(const Matrix<T, R, C> &lhs,
     Matrix<T, R, C> result{};
 
     for (Size i{0}; i < R; ++i)
+    {
         for (Size j{0}; j < C; ++j)
+        {
             result(i, j) = lhs(i, j) - rhs(i, j);
+        }
+    }
 
     return result;
 }
@@ -61,9 +69,15 @@ constexpr Matrix<T, R1, C2> operator*(const Matrix<T, R1, C1> &lhs,
     Matrix<T, R1, C2> result{};
 
     for (Size i{0}; i < R1; i++)
+    {
         for (Size j{0}; j < C2; j++)
+        {
             for (Size k{0}; k < C1; k++)
+            {
                 result(i, j) += lhs(i, k) * rhs(k, j);
+            }
+        }
+    }
 
     return result;
 }
@@ -77,8 +91,12 @@ constexpr Matrix<T, R, C> operator*(const T &lhs, const Matrix<T, R, C> &rhs)
     Matrix<T, R, C> result{};
 
     for (Size i{0}; i < R; i++)
+    {
         for (Size j{0}; j < C; j++)
+        {
             result(i, j) = lhs * rhs(i, j);
+        }
+    }
 
     return result;
 }
@@ -100,8 +118,12 @@ constexpr Matrix<T, C, R> transpose(const Matrix<T, R, C> &mat)
     Matrix<T, C, R> result{};
 
     for (Size i{0}; i < R; i++)
+    {
         for (Size j{0}; j < C; j++)
+        {
             result(j, i) = mat(i, j);
+        }
+    }
 
     return result;
 }
@@ -111,7 +133,9 @@ template <typename T, Size S> constexpr Matrix<T, S, S> diagonal(const T val)
     Matrix<T, S, S> result{};
 
     for (Size i{0}, j{0}; i < S; i++, j++)
+    {
         result(i, j) = val;
+    }
 
     return result;
 }
@@ -128,8 +152,12 @@ constexpr T normE(const Matrix<T, R, C> &mat)
     T result{};
 
     for (Size i{0}; i < R; i++)
+    {
         for (Size j{0}; j < C; j++)
+        {
             result += (mat(i, j) * mat(i, j));
+        }
+    }
 
     return consteig::sqrt(result);
 }
@@ -147,7 +175,9 @@ constexpr T norm1(const Matrix<T, R, C> &mat)
             col_sum += consteig::abs(mat(i, j));
         }
         if (col_sum > max_sum)
+        {
             max_sum = col_sum;
+        }
     }
     return max_sum;
 }
@@ -165,7 +195,9 @@ constexpr T normInf(const Matrix<T, R, C> &mat)
             row_sum += consteig::abs(mat(i, j));
         }
         if (row_sum > max_sum)
+        {
             max_sum = row_sum;
+        }
     }
     return max_sum;
 }
@@ -173,23 +205,18 @@ constexpr T normInf(const Matrix<T, R, C> &mat)
 template <typename T, Size R, Size C>
 constexpr Matrix<T, R, C> sqrt(const Matrix<T, R, C> &mat)
 {
-    T result{};
+    Matrix<T, R, C> result{};
 
     for (Size i{0}; i < R; i++)
+    {
         for (Size j{0}; j < C; j++)
+        {
             result(i, j) = consteig::sqrt(mat(i, j));
+        }
+    }
 
     return result;
 }
-
-// Forward declaration or include for eigvals if needed.
-// Since operations.hpp is usually included before eigen.hpp in consteig.hpp,
-// we might need to handle this carefully.
-// Actually, consteig.hpp includes eigen.hpp last.
-// Let's use a simpler approach for det() that doesn't depend on eigen.hpp if
-// possible, or just accept that it's O(n!) for now if it's not hurting anyone.
-// But wait, QR is in decompositions/qr.hpp which is included in
-// decompositions.hpp. Let's use the R diagonal product from QR.
 
 // Algorithm: Determinant (Laplace Expansion)
 // Currently implemented using Laplace expansion (cofactor expansion).
@@ -210,11 +237,6 @@ constexpr T det(const Matrix<T, R, C> &mat)
     }
     else
     {
-        // Use recursive expansion for now to avoid circular dependency with
-        // eigen.hpp but it's already there. Let's stick with the recursive one
-        // if it's not a bottleneck, or implement a simple Gaussian elimination
-        // based one.
-
         T result{static_cast<T>(0)};
         for (Size i{0}; i < R; i++)
         {
@@ -237,15 +259,11 @@ constexpr T det(const Matrix<T, R, C> &mat)
     }
 }
 
-template <typename T> constexpr T det(const Matrix<T, 2, 2> &mat)
-{
-    return (mat(0, 0) * mat(1, 1)) - (mat(0, 1) * mat(1, 0));
-}
-
 template <typename T, Size R, Size C>
 constexpr T trace(const Matrix<T, R, C> &mat)
 {
     static_assert(R == C, "Trace expects a square matrix");
+
     T result{static_cast<T>(0)};
     for (Size i{0}; i < R; ++i)
         result += mat(i, i);

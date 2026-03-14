@@ -1,8 +1,8 @@
-# created by Makefile
+# Makefile
 build/
-
-# linked by Makefile
 compile_commands.json
 
-# Created by vim
-*.swp
+# development
+*.sw[op]
+tags
+.DS_Store

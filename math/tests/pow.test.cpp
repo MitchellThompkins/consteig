@@ -5,23 +5,21 @@
 
 using namespace consteig;
 
-static constexpr double kThresh{1e-9};
-
 TEST(power_function, pow_basic)
 {
     static constexpr double a{consteig::pow(5.3, 6)};
     static constexpr double aAnswer{22164.361129};
-    static_assert(compareFloats(a, aAnswer, kThresh), MSG);
-    ASSERT_TRUE(compareFloats(a, aAnswer, kThresh));
+    static_assert(compareFloats(a, aAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(compareFloats(a, aAnswer, CONSTEIG_TEST_TOLERANCE));
 
     static constexpr double b{consteig::pow(2.0, 3)};
     static constexpr double bAnswer{8.0};
-    static_assert(compareFloats(b, bAnswer, kThresh), MSG);
+    static_assert(compareFloats(b, bAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
     ASSERT_EQ(b, bAnswer);
 
     static constexpr double c{consteig::pow(3.0, 2)};
     static constexpr double cAnswer{9.0};
-    static_assert(compareFloats(c, cAnswer, kThresh), MSG);
+    static_assert(compareFloats(c, cAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
     ASSERT_EQ(c, cAnswer);
 }
 
@@ -73,8 +71,8 @@ TEST(power_function, pow_negative_exponent)
 
     // 10^-3 = 0.001
     static constexpr double val2 = consteig::pow(10.0, -3);
-    static_assert(compareFloats(val2, 0.001, kThresh), MSG);
-    ASSERT_TRUE(compareFloats(val2, 0.001, kThresh));
+    static_assert(compareFloats(val2, 0.001, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(compareFloats(val2, 0.001, CONSTEIG_TEST_TOLERANCE));
 
     // (-2)^-3 = -0.125
     static constexpr double val3 = consteig::pow(-2.0, -3);

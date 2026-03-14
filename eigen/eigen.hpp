@@ -352,6 +352,10 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
 
     for (Size i = 0; i < S; ++i)
     {
+        // If subdiag is essentially zero (smaller than eps), we have a 1x1 *
+        // block.  If subdiag is significantly larger than zero, it means the
+        // current row and the next row are "tangled" together, forming a 2x2
+        // block (which means there should be complex conjugate eigen values.
         bool found_2x2 = false;
         if (i < S - 1)
         {
@@ -362,8 +366,18 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
             }
         }
 
+        // Found complex conjugate, use quadratic formula to extract
         if (found_2x2)
         {
+            // For a 2x2 matrix, the eigenvalues (L) are the roots of the
+            // characteristic equation: det(A - LI) = 0.
+            //
+            // Expanding this for a 2x2 matrix:
+            // (a00 - L)(a11 - L) - (a01 * a10) = 0
+            // L^2 - (a00 + a11)L + (a00*a11 - a01*a10) = 0
+            //
+            // This simplifies to: L^2 - tr(A)L + det(A) = 0.  Solving via
+            // quadratic formula: L = (tr +/- sqrt(tr^2 - 4*det)) / 2
             InternalScalar a00 = out(i, i);
             InternalScalar a01 = out(i, i + 1);
             InternalScalar a10 = out(i + 1, i);

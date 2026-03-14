@@ -6,7 +6,7 @@
 
 using namespace consteig;
 
-static constexpr double kTol = 1e-9;
+static constexpr double kTol = CONSTEIG_TEST_TOLERANCE;
 
 template <typename T, consteig::Size R, consteig::Size C>
 static constexpr bool compareComplexMat(consteig::Matrix<Complex<T>, R, C> a,
