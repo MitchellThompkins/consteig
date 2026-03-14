@@ -37,13 +37,12 @@ template <typename T> constexpr T sqrt_int(const T x)
     }
     else
     {
-        // Staring from 1, try all numbers until
-        // i*i is greater than or equal to val.
-        T i = 1, result = 1;
-        while (result <= x)
+        // Starting from 1, try all numbers until
+        // i is greater than x / i (avoids i*i overflow).
+        T i = 1;
+        while (i <= x / i)
         {
             i++;
-            result = i * i;
         }
         root = i - 1;
     }

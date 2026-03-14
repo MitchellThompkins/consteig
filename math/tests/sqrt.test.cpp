@@ -182,3 +182,10 @@ TEST(sqrt_function, sqrt_large)
     ASSERT_NEAR(lRes, 1e10,
                 LARGE_VAL_TOL); // Allow some error for large numbers
 }
+
+TEST(sqrt_int, large_int)
+{
+    constexpr int val = 2147395600; // 46340^2
+    auto result = consteig::sqrt(val);
+    EXPECT_EQ(result, 46340);
+}

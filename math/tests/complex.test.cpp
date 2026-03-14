@@ -44,3 +44,11 @@ TEST(complex, scalar_ops)
     static constexpr auto s2 = c * 3.0;
     static_assert(s2.real == 3.0 && s2.imag == 6.0, MSG);
 }
+
+TEST(complex, csqrt_int_min)
+{
+    constexpr int min_i = std::numeric_limits<int>::min();
+    auto result = consteig::csqrt(min_i);
+    EXPECT_EQ(result.real, 0);
+    EXPECT_EQ(result.imag, 46340);
+}
