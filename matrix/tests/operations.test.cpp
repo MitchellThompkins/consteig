@@ -236,3 +236,15 @@ TEST(matrix, static_constexpr_det)
     ASSERT_NEAR(n1, answer1, CONSTEIG_FLOAT_TEST_TOLERANCE);
     ASSERT_NEAR(n2, answer2, CONSTEIG_FLOAT_TEST_TOLERANCE);
 }
+
+TEST(matrix, static_constexpr_sqrt)
+{
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> mat{{{{4.0F, 9.0F}, {16.0F, 25.0F}}}};
+    static constexpr Matrix<float, s, s> answer{{{{2.0F, 3.0F}, {4.0F, 5.0F}}}};
+
+    static constexpr Matrix<float, s, s> result{sqrt(mat)};
+
+    static_assert(result == answer, MSG);
+    ASSERT_TRUE(result == answer);
+}

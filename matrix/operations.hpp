@@ -205,7 +205,7 @@ constexpr T normInf(const Matrix<T, R, C> &mat)
 template <typename T, Size R, Size C>
 constexpr Matrix<T, R, C> sqrt(const Matrix<T, R, C> &mat)
 {
-    T result{};
+    Matrix<T, R, C> result{};
 
     for (Size i{0}; i < R; i++)
     {
