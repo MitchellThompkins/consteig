@@ -5,24 +5,22 @@
 
 using namespace consteig;
 
-static constexpr double kThresh{CONSTEIG_TEST_TOLERANCE};
-
 TEST(sgn_function, sgn_test)
 {
     static constexpr double a{sgn(100.0)};
     static constexpr double aAnswer{1.0};
-    static_assert(compareFloats(a, aAnswer, kThresh), MSG);
-    ASSERT_TRUE(compareFloats(a, aAnswer, kThresh));
+    static_assert(compareFloats(a, aAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(compareFloats(a, aAnswer, CONSTEIG_TEST_TOLERANCE));
 
     static constexpr double b{sgn(-100.0)};
     static constexpr double bAnswer{-1.0};
-    static_assert(compareFloats(b, bAnswer, kThresh), MSG);
-    ASSERT_TRUE(compareFloats(b, bAnswer, kThresh));
+    static_assert(compareFloats(b, bAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(compareFloats(b, bAnswer, CONSTEIG_TEST_TOLERANCE));
 
     static constexpr double c{sgn(0.0)};
     static constexpr double cAnswer{0.0};
-    static_assert(compareFloats(c, cAnswer, kThresh), MSG);
-    ASSERT_TRUE(compareFloats(c, cAnswer, kThresh));
+    static_assert(compareFloats(c, cAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(compareFloats(c, cAnswer, CONSTEIG_TEST_TOLERANCE));
 
     static constexpr int d{sgn(100)};
     static constexpr int dAnswer{1};
