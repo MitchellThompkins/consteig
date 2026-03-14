@@ -53,18 +53,16 @@ template <typename T> constexpr T sqrt_int(const T x)
 
 template <typename T> constexpr T sqrt(const T x)
 {
-    // Note: static_assert(x >= 0) is not possible here as x is a function
     // argument. Users should call csqrt(x) if x might be negative.
     if (x < static_cast<T>(0))
     {
         // We return a poison value (-1) as constexpr NaN is not portably
         // supported in C++17 without built-ins. In the future, this could
-        // be replaced with a real NaN if a portable constexpr solution is
-        // found.
+        // be replaced with a real NaN if a portable constexpr solution is found.
         return poison_nan<T>();
     }
 
-    if (is_float<T>())
+    if constexpr (is_float<T>())
         return sqrt_check(x, static_cast<T>(1));
     else
         return sqrt_int(x);

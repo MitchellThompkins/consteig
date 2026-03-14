@@ -94,13 +94,25 @@ template <typename T> constexpr T epsilon()
     }
 }
 
+// This helper is intentionally NOT constexpr. 
+// If a user attempts to evaluate a negative square root at compile-time 
+// (e.g. `constexpr auto x = sqrt(-4);`), the compiler will hit this non-constexpr 
+// function and halt the build with an error mentioning this function's name.
+// At runtime, it safely executes and returns the poison value -1.
+// We use -1 as a poison value because constexpr NaN is not portably 
+// supported without built-ins or stdlib dependencies in C++17.
+template <typename T> T force_compile_time_error_for_negative_sqrt()
+{
+    return static_cast<T>(-1);
+}
+
 // Get a poison value representing an invalid result (like NaN).
 template <typename T> constexpr T poison_nan()
 {
-    // We use -1.0 (or -1 for ints) as a poison value because constexpr NaN
-    // is not portably supported without built-ins or stdlib dependencies in
-    // C++17.
-    return static_cast<T>(-1);
+    // We use a non-constexpr helper to guarantee that this function cannot be 
+    // evaluated at compile-time (triggering an error), but gracefully returns 
+    // -1 at runtime. constexpr NaN is not portably supported in C++17.
+    return force_compile_time_error_for_negative_sqrt<T>();
 }
 
 // Check if a value is the poison NaN.

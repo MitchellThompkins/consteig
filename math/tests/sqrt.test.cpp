@@ -107,9 +107,8 @@ TEST(sqrt_function, csqrt_negative_float)
 
 TEST(sqrt_function, sqrt_negative_float)
 {
-    static constexpr float g{-4.0f};
-    static constexpr float gConsteig{consteig::sqrt(g)};
-    static_assert(consteig::is_poison_nan(gConsteig), MSG);
+    float g{-4.0f};
+    float gConsteig{consteig::sqrt(g)};
     ASSERT_TRUE(consteig::is_poison_nan(gConsteig));
 }
 
@@ -139,17 +138,15 @@ TEST(sqrt_function, csqrt_negative_double)
 
 TEST(sqrt_function, sqrt_negative_double)
 {
-    static constexpr double g{-4.0};
-    static constexpr double gConsteig{consteig::sqrt(g)};
-    static_assert(consteig::is_poison_nan(gConsteig), MSG);
+    double g{-4.0};
+    double gConsteig{consteig::sqrt(g)};
     ASSERT_TRUE(consteig::is_poison_nan(gConsteig));
 }
 
 TEST(sqrt_function, sqrt_negative_int)
 {
-    static constexpr int h{-5};
-    static constexpr int hConsteig{consteig::sqrt(h)};
-    static_assert(consteig::is_poison_nan(hConsteig), MSG);
+    int h{-5};
+    int hConsteig{consteig::sqrt(h)};
     ASSERT_TRUE(consteig::is_poison_nan(hConsteig));
 }
 
