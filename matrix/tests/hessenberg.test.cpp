@@ -140,12 +140,6 @@ TEST(hessenberg, hess)
     ASSERT_TRUE(
         compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
-    static_assert(
-        compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
-        MSG);
-    ASSERT_TRUE(
-        compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
-
     static_assert(compareFloatMat(identity, identityCheck,
                                   CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
                   MSG);
