@@ -58,7 +58,8 @@ template <typename T> constexpr T sqrt(const T x)
     {
         // We return a poison value (-1) as constexpr NaN is not portably
         // supported in C++17 without built-ins. In the future, this could
-        // be replaced with a real NaN if a portable constexpr solution is found.
+        // be replaced with a real NaN if a portable constexpr solution is
+        // found.
         return poison_nan<T>();
     }
 
