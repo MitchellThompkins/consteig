@@ -94,16 +94,18 @@ template <typename T> constexpr T epsilon()
     }
 }
 
-// Get NaN. Fails to compile if T is not a floating point type.
-template <typename T> constexpr T nan()
+// Get a poison value representing an invalid result (like NaN).
+template <typename T> constexpr T poison_nan()
 {
-    static_assert(is_float<T>(),
-                  "NaN is only supported for floating point types.");
-    // Compiler-independent way to generate NaN in many environments.
-    // Note: Some strict compilers may warn about division by zero.
-    // If this causes issues, a poison value like -1.0 is the only
-    // alternative without <limits> or built-ins.
-    return static_cast<T>(0.0) / static_cast<T>(0.0);
+    // We use -1.0 (or -1 for ints) as a poison value because constexpr NaN
+    // is not portably supported without built-ins or stdlib dependencies in C++17.
+    return static_cast<T>(-1);
+}
+
+// Check if a value is the poison NaN.
+template <typename T> constexpr bool is_poison_nan(const T x)
+{
+    return x == static_cast<T>(-1);
 }
 
 } // namespace consteig
