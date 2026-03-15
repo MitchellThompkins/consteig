@@ -44,6 +44,7 @@ include_directories(SYSTEM ${CMAKE_BINARY_DIR}/_deps/eigen-src)
 # Aggressive warnings and errors - applied to everything added AFTER this point.
 # This prevents breaking third-party dependencies like GoogleTest.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    # Universal warnings (supported by GCC, Clang, and MSVC)
     add_compile_options(-Wall
                         -Wextra
                         -pedantic
@@ -56,10 +57,23 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
                         -Wdouble-promotion
                         -Wformat=2
                         -Wundef
-                        -Wduplicated-cond
-                        -Wduplicated-branches
-                        -Wlogical-op
                     )
+
+    # GCC-specific warnings
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        add_compile_options(
+            -Wduplicated-cond
+            -Wduplicated-branches
+            -Wlogical-op
+        )
+    endif()
+
+    # Clang-specific warnings
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(
+            -Wbitwise-instead-of-logical
+        )
+    endif()
 endif()
 
 # Enable testing AFTER test_dependencies so Eigen doesn't see it enabled
