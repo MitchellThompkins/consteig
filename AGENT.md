@@ -1,0 +1,221 @@
+# Agent Guide for Consteig
+
+## Project Overview
+
+Consteig is a **C++17 constexpr template library** for computing eigenvalues and eigenvectors of square matrices at compile time. The library is designed to be:
+- **Freestanding**: No dependency on the C++ standard library in the core
+- **Compile-time**: All computations can be done as `static constexpr`
+- **Header-only**: Just `#include "consteig.hpp"`
+
+## Directory Structure
+
+```
+consteig/
+├── consteig.hpp              # Main include file
+├── consteig_options.hpp      # User-configurable options
+├── consteig_types.hpp        # Core type definitions (Size, etc.)
+├── array/                    # Fixed-size array implementation
+├── eigen/                    # Eigenvalue/eigenvector solvers
+│   ├── eigen.hpp            # Core eigenvalue algorithms
+│   └── tests/               # Eigen-related tests
+├── math/                     # Constexpr math functions
+│   ├── complex.hpp          # Complex number support
+│   ├── constmath.hpp        # Math function includes
+│   ├── functions/           # Individual math functions (sqrt, exp, etc.)
+│   └── tests/               # Math function tests
+├── matrix/                   # Matrix operations
+│   ├── matrix.hpp           # Matrix class definition
+│   ├── operations.hpp       # Matrix arithmetic and operations
+│   ├── decompositions/      # QR, LU, Hessenberg decompositions
+│   │   └── decompositions.hpp
+│   └── tests/               # Matrix operation tests
+├── test_dependencies/        # Test utilities
+│   ├── test_tools.hpp       # Test tolerance constants and helpers
+│   ├── eigen_test_tools.hpp # Eigen library comparison utilities
+│   └── googletest/          # Google Test framework (submodule)
+├── examples/                 # Usage examples
+├── docs/                     # Documentation
+│   ├── methods.md           # Algorithm descriptions
+│   └── verification.md      # Testing methodology
+└── octave/                   # Octave scripts for test generation
+```
+
+## Build System
+
+### Build Commands
+
+All builds run inside a Docker container for reproducibility:
+
+```bash
+# Pull the development container
+make container.pull
+
+# Build the project (includes static_assert compile-time tests)
+make container.make.build
+
+# Run runtime tests (parallel via ctest -j)
+make container.make.test
+
+# Build examples
+make container.make.examples
+
+# Format code
+make format
+
+# Regenerate Octave test cases (rarely needed — only when intentionally updating test data)
+make generate-test-cases
+```
+
+### Key Build Notes
+
+- **`static_assert` IS a test**: The library uses `static_assert` extensively. Build failures ARE test failures.
+- Compiler limits are raised automatically via `CONSTEIG_RAISE_COMPILER_LIMITS=ON`
+- Tests are split into individual `.cpp` files to avoid exhausting compiler constexpr budgets
+
+## Type System
+
+### Core Types
+
+- `consteig::Size` - Used for matrix dimensions (typically `std::size_t`)
+- `consteig::Matrix<T, R, C>` - Fixed-size matrix template
+- `consteig::Complex<T>` - Constexpr complex number type
+
+### Type Consistency Rules
+
+The `compareFloatMat` template function requires **all three parameters to have the same type T**:
+```cpp
+template <typename T, Size R, Size C>
+constexpr bool compareFloatMat(Matrix<T, R, C> a, Matrix<T, R, C> b, const T thresh);
+```
+
+This means:
+- `Matrix<double, ...>` must use a `double` tolerance (e.g., `CONSTEIG_TEST_TOLERANCE`)
+- `Matrix<float, ...>` must use a `float` tolerance (e.g., `CONSTEIG_FLOAT_TEST_TOLERANCE`)
+
+## Test Tolerance Constants
+
+Defined in `test_dependencies/test_tools.hpp`:
+
+| Constant | Type | Value | Use Case |
+|----------|------|-------|----------|
+| `CONSTEIG_TEST_TOLERANCE` | double | `1e-9` | Standard double-precision comparisons |
+| `CONSTEIG_FLOAT_TEST_TOLERANCE` | float | `1e-7f` | Standard float-precision comparisons |
+| `CONSTEIG_ITERATIVE_FLOAT_TOLERANCE` | float | `3e-4f` | Iterative methods with float matrices |
+| `CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE` | double | `3e-4` | Iterative methods with double matrices |
+| `PATHOLOGICAL_TOL` | double | `0.03` | Defective/ill-conditioned matrices |
+| `LARGE_VAL_TOL` | double | `1.0` | Large magnitude value comparisons |
+
+### Choosing the Right Tolerance
+
+1. **Direct computation tests** (non-iterative): Use `CONSTEIG_TEST_TOLERANCE` or `CONSTEIG_FLOAT_TEST_TOLERANCE`
+2. **Iterative method tests** (Hessenberg, QR iteration): Use `CONSTEIG_ITERATIVE_*_TOLERANCE`
+3. **Defective matrices**: Use `PATHOLOGICAL_TOL`
+
+## Strict Build Mode
+
+The project enforces strict compiler warnings. When working with Eigen library comparisons:
+
+- Use explicit `static_cast<Eigen::Index>(i)` when indexing Eigen matrices with `Size` variables
+- This is required because `Size` (unsigned) to `Eigen::Index` (signed) is a narrowing conversion
+
+Example:
+```cpp
+// Correct - explicit cast for strict builds
+EXPECT_NEAR(sum(i, j),
+            eigSum(static_cast<Eigen::Index>(i),
+                   static_cast<Eigen::Index>(j)),
+            CONSTEIG_TEST_TOLERANCE);
+```
+
+## Test Patterns
+
+### Float vs Double Tests
+
+Some tests intentionally test `float` precision, others test `double`. Preserve this distinction:
+
+```cpp
+// Float test - uses Matrix<float, ...> and float tolerance
+TEST(householder, house_single)
+{
+    static constexpr Matrix<float, 2, 2> mat{...};
+    static constexpr Matrix<float, 2, 2> answer{...};
+    static_assert(compareFloatMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+}
+
+// Double test - uses Matrix<double, ...> and double tolerance
+TEST(householder, house)
+{
+    static constexpr Matrix<double, 10, 10> mat{...};
+    static constexpr Matrix<double, 10, 10> answer{...};
+    static_assert(compareFloatMat(test, answer, CONSTEIG_TEST_TOLERANCE), MSG);
+}
+```
+
+### Compile-Time vs Runtime Tests
+
+```cpp
+// Compile-time verification (fails build if wrong)
+static_assert(compareFloatMat(result, expected, TOLERANCE), MSG);
+
+// Runtime verification (for Eigen comparisons)
+ASSERT_TRUE(compareFloatMat(result, expected, TOLERANCE));
+EXPECT_NEAR(computed, reference, TOLERANCE);
+```
+
+## Common Pitfalls
+
+1. **Type mismatch in tolerances**: Using `CONSTEIG_FLOAT_TEST_TOLERANCE` (float) with `Matrix<double, ...>` will fail to compile
+
+2. **Missing explicit casts**: Forgetting `static_cast<Eigen::Index>()` when indexing Eigen matrices will fail strict builds
+
+3. **Wrong tolerance for iterative methods**: Hessenberg and QR tests accumulate error; use `ITERATIVE_*_TOLERANCE`
+
+4. **Modifying float/double test types**: Tests are intentionally typed; don't change `Matrix<float,...>` to `Matrix<double,...>`
+
+## Algorithm Overview
+
+The eigenvalue solver uses the **Francis QR algorithm**:
+
+1. **Balancing**: Scale matrix to improve conditioning
+2. **Hessenberg reduction**: Transform to upper Hessenberg form (O(n^3) speedup)
+3. **QR iteration**: Implicit double-shift with Wilkinson shifts
+4. **Deflation**: Split into smaller subproblems as eigenvalues converge
+
+Matrix decompositions use **Givens rotations** for numerical stability.
+
+## Accuracy Expectations
+
+- **Well-conditioned matrices**: ~`1e-9` accuracy
+- **Iterative methods**: ~`3e-4` accuracy (error accumulation)
+- **Defective matrices**: ~`0.03` accuracy (theoretical limit for 8x8 Jordan blocks in double precision)
+
+## Octave Scripts
+
+The `octave/` directory contains GNU Octave/MATLAB scripts used for two purposes:
+
+### Test Case Generation (`octave/generate_test_cases.m`)
+
+This script generates C++ test data (matrices and reference eigenvalues/eigenvectors) that are verified at compile time via `static_assert`. It produces:
+- `test_dependencies/generated_cases.hpp` — arrays of test matrices and expected results
+- `eigen/tests/generated_*.test.cpp` — individual test files (one per case to stay within constexpr budgets)
+
+Test categories generated include random symmetric/non-symmetric matrices plus robustness categories (defective, nearly defective, clustered eigenvalues, companion, Hamiltonian, etc.).
+
+**This script rarely needs to be re-run.** The generated files are checked into the repository. Only regenerate when intentionally changing test parameters (matrix size, number of cases, or categories).
+
+### Development Scripts (`octave/development_scripts/`)
+
+Reference implementations of the algorithms used in the library (Householder, Hessenberg reduction, QR iteration, balancing, etc.). These are for prototyping and validating algorithm behavior, not for routine use.
+
+### Example Script (`octave/dc_motor_control.m`)
+
+A DC motor position control example that demonstrates a real-world use case for eigenvalue analysis — used alongside the C++ `examples/dc_motor_control.cpp` example.
+
+## Merge Conflict Resolution Guidelines
+
+When resolving conflicts between strict-build branches and develop:
+
+1. **Keep explicit casts** from strict-build for Eigen indexing
+2. **Use tolerance constants** from develop (not hardcoded values)
+3. **Preserve float/double type distinctions** in tests
+4. **Add new tolerance constants** to `test_tools.hpp` if needed for type consistency
