@@ -42,8 +42,8 @@ build: $(BUILD_PREFIX)/$(BUILD_FILE)
 	export CTEST_OUTPUT_ON_FAILURE=1; \
 	cmake --build $(BUILD_PREFIX) --target all -- $(JOB_FLAG) ${a}; \
 
-.PHONY: h
-h:
+.PHONY: help
+help:
 	@echo 'make [OPTIONS...] [TARGETS...]'
 	@echo
 	@echo 'TARGETS:'
