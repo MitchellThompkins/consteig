@@ -43,9 +43,9 @@ template <Size S> void verify_symmetric_random(const int seed)
                 Av_i = Av_i + Complex<double>{mat(i, k)} * vecs(k, j);
             }
             Complex<double> lv_i = lam * vecs(i, j);
-            EXPECT_NEAR(Av_i.real, lv_i.real, 1e-9)
+            EXPECT_NEAR(Av_i.real, lv_i.real, CONSTEIG_TEST_TOLERANCE)
                 << "Symmetric eigenvector invariant (real) mismatch";
-            EXPECT_NEAR(Av_i.imag, lv_i.imag, 1e-9)
+            EXPECT_NEAR(Av_i.imag, lv_i.imag, CONSTEIG_TEST_TOLERANCE)
                 << "Symmetric eigenvector invariant (imag) mismatch";
         }
     }
@@ -62,7 +62,8 @@ template <Size S> void verify_symmetric_random(const int seed)
 
     for (Size i = 0; i < S; ++i)
     {
-        EXPECT_NEAR(calc[i], ref(static_cast<Eigen::Index>(i)), 1e-9)
+        EXPECT_NEAR(calc[i], ref(static_cast<Eigen::Index>(i)),
+                    CONSTEIG_TEST_TOLERANCE)
             << "Symmetric mismatch at index " << i;
     }
 }
@@ -98,9 +99,9 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
                 Av_i = Av_i + Complex<double>{mat(i, k)} * vecs(k, j);
             }
             Complex<double> lv_i = lam * vecs(i, j);
-            EXPECT_NEAR(Av_i.real, lv_i.real, 1e-9)
+            EXPECT_NEAR(Av_i.real, lv_i.real, CONSTEIG_TEST_TOLERANCE)
                 << "Nonsymmetric eigenvector invariant (real) mismatch";
-            EXPECT_NEAR(Av_i.imag, lv_i.imag, 1e-9)
+            EXPECT_NEAR(Av_i.imag, lv_i.imag, CONSTEIG_TEST_TOLERANCE)
                 << "Nonsymmetric eigenvector invariant (imag) mismatch";
         }
     }
@@ -120,7 +121,7 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
         double imag = res(i, 0).imag;
 
         bool found = false;
-        double min_dist = 1e9;
+        double min_dist = MAX_SENTINEL_VAL;
 
         for (Size j = 0; j < S; ++j)
         {
@@ -129,16 +130,16 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
 
             double d_real = real - ref(static_cast<Eigen::Index>(j)).real();
             double d_imag = imag - ref(static_cast<Eigen::Index>(j)).imag();
-            double err_dist = std::sqrt(d_real * d_real + d_imag * d_imag);
+            double dist = std::sqrt(d_real * d_real + d_imag * d_imag);
 
-            if (err_dist < 1e-9)
+            if (dist < CONSTEIG_TEST_TOLERANCE)
             { // Looser tolerance for iterative methods
                 matched[j] = true;
                 found = true;
                 break;
             }
-            if (err_dist < min_dist)
-                min_dist = err_dist;
+            if (dist < min_dist)
+                min_dist = dist;
         }
 
         EXPECT_TRUE(found) << "Failed to match eigenvalue " << real << "+"

@@ -117,7 +117,7 @@ TEST(consteig_eigen, symmetric_matrix)
     for (Size i = 0; i < s; ++i)
     {
         EXPECT_NEAR(eigenValueTest(i, 0).imag, 0.0,
-                    1e-9); // Symmetric -> real eigenvalues
+                    CONSTEIG_TEST_TOLERANCE); // Symmetric -> real eigenvalues
         myVals.push_back(eigenValueTest(i, 0).real);
     }
     std::sort(myVals.begin(), myVals.end());
@@ -142,11 +142,13 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
     // Compile-time check
     static constexpr auto sumEigs = sum(eigenValueTest);
     static constexpr double tr = trace(mat); // 0
-    static_assert(consteig::abs(sumEigs.real - tr) < 1e-9, "Trace mismatch");
+    static_assert(consteig::abs(sumEigs.real - tr) < CONSTEIG_TEST_TOLERANCE,
+                  "Trace mismatch");
 
     static constexpr auto prodEigs = prod(eigenValueTest); // i * -i = 1
     static constexpr double d = det(mat);                  // 0 - (-1) = 1
-    static_assert(consteig::abs(prodEigs.real - d) < 1e-9, "Det mismatch");
+    static_assert(consteig::abs(prodEigs.real - d) < CONSTEIG_TEST_TOLERANCE,
+                  "Det mismatch");
 
     // Static verify
     static constexpr Matrix<Complex<double>, s, 1> expected{
@@ -184,7 +186,8 @@ TEST(consteig_eigen, non_symmetric_general)
     static constexpr auto sumEigs =
         sum(eigenValueTest);                 // 1 + (1+3.16i) + (1-3.16i) = 3
     static constexpr double tr = trace(mat); // 1+1+1 = 3
-    static_assert(consteig::abs(sumEigs.real - tr) < 1e-9, "Trace mismatch");
+    static_assert(consteig::abs(sumEigs.real - tr) < CONSTEIG_TEST_TOLERANCE,
+                  "Trace mismatch");
 
     // Static verify
     // Eigenvalues are 1, 1 +/- sqrt(10)i  (approx 1 +/- 3.162277i)

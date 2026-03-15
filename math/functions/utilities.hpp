@@ -52,9 +52,10 @@ template <typename T> constexpr bool is_float()
 }
 
 // Compare Floats
-template <typename T> static constexpr bool compareFloats(T a, T b, T thresh)
+template <typename T, typename U>
+static constexpr bool compareFloats(T a, T b, U thresh)
 {
-    return consteig::abs(a - b) < thresh;
+    return consteig::abs(a - b) < static_cast<T>(thresh);
 }
 
 // Find machine epsilon
@@ -90,6 +91,50 @@ template <typename T> constexpr T epsilon()
         }
 
         return eps;
+    }
+}
+
+// This helper is intentionally NOT constexpr.
+// If a user attempts to evaluate a negative square root at compile-time
+// (e.g. `constexpr auto x = sqrt(-4);`), the compiler will hit this
+// non-constexpr function and halt the build with an error mentioning this
+// function's name. At runtime, it safely executes and returns a poison value.
+// For floating-point types, we return 0.0 / 0.0 to produce a true
+// self-poisoning NaN. For integer types, we use -1 as a poison value because
+// integer division by zero crashes at runtime, and constexpr NaN is not
+// portably supported in C++17.
+template <typename T> T force_compile_time_error_for_negative_sqrt()
+{
+    if constexpr (is_float<T>())
+    {
+        return static_cast<T>(0.0) / static_cast<T>(0.0);
+    }
+    else
+    {
+        return static_cast<T>(-1);
+    }
+}
+
+// Get a poison value representing an invalid result (like NaN).
+template <typename T> constexpr T poison_nan()
+{
+    // We use a non-constexpr helper to guarantee that this function cannot be
+    // evaluated at compile-time (triggering an error), but gracefully returns
+    // the poison value at runtime.
+    return force_compile_time_error_for_negative_sqrt<T>();
+}
+
+// Check if a value is the poison NaN.
+template <typename T> constexpr bool is_poison_nan(const T x)
+{
+    if constexpr (is_float<T>())
+    {
+        // In IEEE 754, NaN is the only value not equal to itself.
+        return x != x;
+    }
+    else
+    {
+        return x == static_cast<T>(-1);
     }
 }
 

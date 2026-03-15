@@ -6,7 +6,7 @@
 
 using namespace consteig;
 
-static constexpr double kTol = 1e-6;
+static constexpr double kTol = CONSTEIG_TEST_TOLERANCE;
 
 TEST(eigenvectors, simple_symmetric)
 {

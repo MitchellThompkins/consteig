@@ -5,8 +5,6 @@
 
 using namespace consteig;
 
-static constexpr float kThresh{0.0001F};
-
 TEST(matrix, eigen_comparison)
 {
     // Setup matrices
@@ -25,7 +23,7 @@ TEST(matrix, eigen_comparison)
             EXPECT_NEAR(sum(i, j),
                         eigSum(static_cast<Eigen::Index>(i),
                                static_cast<Eigen::Index>(j)),
-                        kThresh);
+                        CONSTEIG_TEST_TOLERANCE);
 
     // Subtraction
     Matrix<double, 3, 3> diff = mat1 - mat2;
@@ -35,7 +33,7 @@ TEST(matrix, eigen_comparison)
             EXPECT_NEAR(diff(i, j),
                         eigDiff(static_cast<Eigen::Index>(i),
                                 static_cast<Eigen::Index>(j)),
-                        kThresh);
+                        CONSTEIG_TEST_TOLERANCE);
 
     // Multiplication
     Matrix<double, 3, 3> prod = mat1 * mat2;
@@ -45,7 +43,7 @@ TEST(matrix, eigen_comparison)
             EXPECT_NEAR(prod(i, j),
                         eigProd(static_cast<Eigen::Index>(i),
                                 static_cast<Eigen::Index>(j)),
-                        kThresh);
+                        CONSTEIG_TEST_TOLERANCE);
 
     // Transpose
     Matrix<double, 3, 3> trans = transpose(mat1);
@@ -55,16 +53,16 @@ TEST(matrix, eigen_comparison)
             EXPECT_NEAR(trans(i, j),
                         eigTrans(static_cast<Eigen::Index>(i),
                                  static_cast<Eigen::Index>(j)),
-                        kThresh);
+                        CONSTEIG_TEST_TOLERANCE);
 
     // Determinant
     double d = det(mat1); // 0 for this specific matrix (singular)
     double eigDet = eigMat1.determinant();
-    EXPECT_NEAR(d, eigDet, kThresh);
+    EXPECT_NEAR(d, eigDet, CONSTEIG_TEST_TOLERANCE);
 
     Matrix<double, 2, 2> mat3 = {{{{1, 2}, {3, 4}}}};
     Eigen::Matrix2d eigMat3 = toEigen(mat3);
-    EXPECT_NEAR(det(mat3), eigMat3.determinant(), kThresh);
+    EXPECT_NEAR(det(mat3), eigMat3.determinant(), CONSTEIG_TEST_TOLERANCE);
 }
 
 TEST(matrix, static_constexpr_addition)
@@ -220,11 +218,11 @@ TEST(matrix, static_constexpr_norm_euclidean)
     static constexpr float n2{normE(mat2)};
 
     static constexpr float answer1 = 8.0F;
-    static constexpr float answer2 = 7.9373F;
+    static constexpr float answer2 = 7.937253933F;
 
     // ASSERT_FLOAT_EQ will fail in this case, as answer2 above was rounded
-    ASSERT_NEAR(n1, answer1, kThresh);
-    ASSERT_NEAR(n2, answer2, kThresh);
+    ASSERT_NEAR(n1, answer1, CONSTEIG_FLOAT_TEST_TOLERANCE);
+    ASSERT_NEAR(n2, answer2, CONSTEIG_FLOAT_TEST_TOLERANCE);
 }
 
 TEST(matrix, static_constexpr_det)
@@ -247,6 +245,18 @@ TEST(matrix, static_constexpr_det)
     static_assert(n2 == answer2, MSG);
 
     // ASSER_FLOAT_EQ will fail in this case, as answer2 above was rounded
-    ASSERT_NEAR(n1, answer1, kThresh);
-    ASSERT_NEAR(n2, answer2, kThresh);
+    ASSERT_NEAR(n1, answer1, CONSTEIG_FLOAT_TEST_TOLERANCE);
+    ASSERT_NEAR(n2, answer2, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, static_constexpr_sqrt)
+{
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> mat{{{{4.0F, 9.0F}, {16.0F, 25.0F}}}};
+    static constexpr Matrix<float, s, s> answer{{{{2.0F, 3.0F}, {4.0F, 5.0F}}}};
+
+    static constexpr Matrix<float, s, s> result{sqrt(mat)};
+
+    static_assert(result == answer, MSG);
+    ASSERT_TRUE(result == answer);
 }

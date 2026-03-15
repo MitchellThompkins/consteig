@@ -24,7 +24,7 @@ TEST(hessenberg, eigen_comparison)
     {
         for (Size j = 0; j < i - 1; ++j)
         {
-            EXPECT_NEAR(hessRes._h(i, j), 0.0, 1e-4);
+            EXPECT_NEAR(hessRes._h(i, j), 0.0, CONSTEIG_TEST_TOLERANCE);
         }
     }
 
@@ -42,7 +42,7 @@ TEST(hessenberg, eigen_comparison)
             EXPECT_NEAR(std::abs(hessRes._h(i, j)),
                         std::abs(hEig(static_cast<Eigen::Index>(i),
                                       static_cast<Eigen::Index>(j))),
-                        1e-4);
+                        CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -124,20 +124,99 @@ TEST(hessenberg, hess)
     static constexpr Matrix<double, s, s> identityCheck{test._p *
                                                         transpose(test._p)};
 
-    static constexpr double thresh{3e-4};
+    static_assert(
+        compareFloatMat(test._p, pAnswer, CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE),
+        MSG);
+    ASSERT_TRUE(
+        compareFloatMat(test._p, pAnswer, CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE));
 
-    static_assert(compareFloatMat(test._p, pAnswer, thresh), MSG);
-    ASSERT_TRUE(compareFloatMat(test._p, pAnswer, thresh));
+    static_assert(
+        compareFloatMat(test._h, hAnswer, CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE),
+        MSG);
+    ASSERT_TRUE(
+        compareFloatMat(test._h, hAnswer, CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE));
 
-    static_assert(compareFloatMat(test._h, hAnswer, thresh), MSG);
-    ASSERT_TRUE(compareFloatMat(test._h, hAnswer, thresh));
+    static_assert(
+        compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE),
+        MSG);
+    ASSERT_TRUE(
+        compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE));
 
-    static_assert(compareFloatMat(hessCheck, mat, thresh), MSG);
-    ASSERT_TRUE(compareFloatMat(hessCheck, mat, thresh));
+    static_assert(compareFloatMat(identity, identityCheck,
+                                  CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE),
+                  MSG);
+    ASSERT_TRUE(compareFloatMat(identity, identityCheck,
+                                CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE));
+}
 
-    static_assert(compareFloatMat(hessCheck, mat, thresh), MSG);
-    ASSERT_TRUE(compareFloatMat(hessCheck, mat, thresh));
+TEST(hessenberg, hess_double_10x10)
+{
+    static constexpr int s{10};
+    static constexpr Matrix<double, s, s> mat{{{
+        {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
+         0.027539, 0.2731, 0.60314},
+        {-0.42729, -0.47479, -0.28187, -0.6335, -0.84281, -0.88644, -0.77489,
+         -0.36081, 0.76563, 0.28955},
+        {1.0231, 0.76388, 0.37392, -1.5837, 0.22278, -1.9364, 0.54418, 0.19389,
+         -0.6478, 1.1075},
+        {0.34136, 1.764, -1.1581, 1.0057, 0.312, 0.87686, 0.31207, -0.45453,
+         -1.3822, -0.72451},
+        {1.6328, -1.7138, -0.4628, 0.76678, -0.85746, -1.0017, -1.0454, 0.31179,
+         -0.71718, -0.19216},
+        {0.59688, -0.4885, 1.3867, 1.8407, 0.076099, 0.33187, -0.86447, -0.2873,
+         -0.50884, -1.1118},
+        {0.46716, -0.62785, 0.6553, 0.8872, -0.9114, 0.91303, 0.45458, -0.43831,
+         -0.45411, -1.1096},
+        {0.54705, 1.7937, -0.7893, -0.11453, -1.3022, -0.4695, -0.48678,
+         -0.23694, -0.4487, 0.35993},
+        {0.13375, 1.4146, 0.03702, 0.29992, -0.27342, -1.1086, 0.6296, -1.4377,
+         1.4777, -3.0378},
+        {0.81169, 0.3244, 2.2287, -0.72454, -1.6842, -1.5909, -1.0693, 0.72293,
+         -1.4584, 0.68517},
+    }}};
 
-    static_assert(compareFloatMat(identity, identityCheck, thresh), MSG);
-    ASSERT_TRUE(compareFloatMat(identity, identityCheck, thresh));
+    static constexpr Matrix<double, s, s> hAnswer{{{
+        {-2.011400000, 0.665190682, -0.253405342, -0.737285848, 0.796410871,
+         -0.792480076, 2.702990155, -0.156257659, -0.716340054, 1.547604533},
+        {2.358467821, -1.205092504, -0.757545400, 1.227954465, 0.833655497,
+         2.364541973, 0.143043074, -0.033030817, -0.202888329, -0.217229851},
+        {0, -2.812863113, 1.066275038, -0.212704275, -0.039780865, -0.530047398,
+         -1.198301979, 0.741222572, -0.947515311, 0.264790391},
+        {0, 0, 1.504578493, -0.479100987, -1.988043671, 0.520594600,
+         -1.551621671, -0.059976648, 0.247582191, -1.574502039},
+        {0, 0, 0, -3.188728666, 0.340172221, -1.019228874, -0.417172337,
+         -1.195767566, -0.868722823, 1.154522534},
+        {0, 0, 0, 0, -2.769667369, 2.543073845, 0.831309021, -0.426091992,
+         1.130048622, -0.442093923},
+        {0, 0, 0, 0, 0, 1.256132812, -0.963659108, -0.003244195, -1.176083845,
+         1.783266178},
+        {0, 0, 0, 0, 0, 0, -2.058448681, 1.291875568, 0.137167182, 0.214147063},
+        {0, 0, 0, 0, 0, 0, 0, 0.771344211, 0.016916493, 0.961629657},
+        {0, 0, 0, 0, 0, 0, 0, 0, -0.942471265, 0.149289433},
+    }}};
+
+    static constexpr PHMatrix<double, s> test{hess(mat)};
+
+    // P*H*P' = A
+    static constexpr Matrix<double, s, s> hessCheck{test._p * test._h *
+                                                    transpose(test._p)};
+
+    // P*P' = I
+    static constexpr Matrix<double, s, s> identity{eye<double, s>()};
+    static constexpr Matrix<double, s, s> identityCheck{test._p *
+                                                        transpose(test._p)};
+
+    // Prove that double precision allows the 1e-9 tolerance to pass
+    static_assert(compareFloatMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    static_assert(
+        compareFloatMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE), MSG);
+
+    ASSERT_TRUE(compareFloatMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE));
+    ASSERT_TRUE(
+        compareFloatMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE));
+
+    static_assert(compareFloatMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_TRUE(compareFloatMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE));
 }

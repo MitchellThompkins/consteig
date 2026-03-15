@@ -7,8 +7,6 @@
 namespace consteig
 {
 
-namespace internal
-{
 template <typename T>
 constexpr T sqrt_recur(const T x, const T xn, const int count)
 {
@@ -39,13 +37,12 @@ template <typename T> constexpr T sqrt_int(const T x)
     }
     else
     {
-        // Staring from 1, try all numbers until
-        // i*i is greater than or equal to val.
-        T i = 1, result = 1;
-        while (result <= x)
+        // Starting from 1, try all numbers until
+        // i is greater than x / i (avoids i*i overflow).
+        T i = 1;
+        while (i <= x / i)
         {
             i++;
-            result = i * i;
         }
         root = i - 1;
     }
@@ -53,18 +50,22 @@ template <typename T> constexpr T sqrt_int(const T x)
     return root;
 }
 
-} // namespace internal
-
 template <typename T> constexpr T sqrt(const T x)
 {
-    // TODO(mthompkins): Need to return NaN for negative numbers. This
-    // implementation is really really ugly
+    // argument. Users should call csqrt(x) if x might be negative.
     if (x < static_cast<T>(0))
-        return static_cast<T>(-1);
-    else if (is_float<T>())
-        return internal::sqrt_check(x, static_cast<T>(1));
+    {
+        // We return a poison value (-1) as constexpr NaN is not portably
+        // supported in C++17 without built-ins. In the future, this could
+        // be replaced with a real NaN if a portable constexpr solution is
+        // found.
+        return poison_nan<T>();
+    }
+
+    if constexpr (is_float<T>())
+        return sqrt_check(x, static_cast<T>(1));
     else
-        return internal::sqrt_int(x);
+        return sqrt_int(x);
 }
 
 } // namespace consteig
