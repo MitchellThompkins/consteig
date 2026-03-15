@@ -58,7 +58,7 @@ h:
 	@echo '    runs clang-format on .h/.hpp and .c/.cpp files'
 	@echo
 	@echo 'test'
-	@echo '    runs unit tests in parallel with ctest -j$(getconf _NPROCESSORS_ONLN)'
+	@echo '    runs unit tests in parallel with ctest -j$$(getconf _NPROCESSORS_ONLN)'
 	@echo
 	@echo 'examples'
 	@echo '    builds all example executables'
