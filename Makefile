@@ -115,8 +115,9 @@ remove:
 .PHONY: run-examples
 run-examples:
 	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
-	@cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
-	set -e; for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
+	@set -e; \
+	cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
+	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
 		echo ""; \
 		echo "========================================"; \
 		echo "Running: $$ex"; \
