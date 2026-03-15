@@ -24,10 +24,9 @@ jobs:
             - name: Build and publish docker image
               run: |
                     docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    # docker run is unnecessary for just building/pushing
                     docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
 
-    build_and_test:
+    lint:
         needs: build_and_publish_container
         if: always() && (needs.build_and_publish_container.result == 'success' || needs.build_and_publish_container.result == 'skipped')
         runs-on: ubuntu-latest
@@ -37,7 +36,7 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v2
-            
+
             - name: Login to GitHub Container Registry
               uses: docker/login-action@v1
               with:
@@ -45,36 +44,141 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Lint
+            - name: Check formatting
               run: |
                     export MY_UID=$(id -u)
                     export MY_GID=$(id -g)
-                    # Ensure we pull the latest image
                     docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
                     make container.make.check-format
 
-            - name: gcc
+    gcc-test:
+        needs: build_and_publish_container
+        if: always() && (needs.build_and_publish_container.result == 'success' || needs.build_and_publish_container.result == 'skipped')
+        runs-on: ubuntu-latest
+        permissions:
+          packages: read
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v1
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build and test with gcc
               run: |
                     export MY_UID=$(id -u)
                     export MY_GID=$(id -g)
                     git submodule update --init --recursive
-                    # Ensure we pull the latest image
                     docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    make remove
                     make CC=gcc CXX=g++ container.make.build
                     make container.make.test
-                    make container.make.run-examples
-                    make container.make.test-dc-motor-fail
 
-            - name: clang
+    gcc-examples:
+        needs: build_and_publish_container
+        if: always() && (needs.build_and_publish_container.result == 'success' || needs.build_and_publish_container.result == 'skipped')
+        runs-on: ubuntu-latest
+        permissions:
+          packages: read
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v1
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build and run examples with gcc
               run: |
                     export MY_UID=$(id -u)
                     export MY_GID=$(id -g)
                     git submodule update --init --recursive
-                    # Ensure we pull the latest image
                     docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    make remove
+                    make CC=gcc CXX=g++ container.make.run-examples
+
+    clang-test:
+        needs: build_and_publish_container
+        if: always() && (needs.build_and_publish_container.result == 'success' || needs.build_and_publish_container.result == 'skipped')
+        runs-on: ubuntu-latest
+        permissions:
+          packages: read
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v1
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build and test with clang
+              run: |
+                    export MY_UID=$(id -u)
+                    export MY_GID=$(id -g)
+                    git submodule update --init --recursive
+                    docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
                     make CC=clang CXX=clang++ container.make.build
                     make container.make.test
-                    make container.make.run-examples
+
+    clang-examples:
+        needs: build_and_publish_container
+        if: always() && (needs.build_and_publish_container.result == 'success' || needs.build_and_publish_container.result == 'skipped')
+        runs-on: ubuntu-latest
+        permissions:
+          packages: read
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v1
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build and run examples with clang
+              run: |
+                    export MY_UID=$(id -u)
+                    export MY_GID=$(id -g)
+                    git submodule update --init --recursive
+                    docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
+                    make CC=clang CXX=clang++ container.make.run-examples
+
+    dc-motor-fail:
+        needs: build_and_publish_container
+        if: always() && (needs.build_and_publish_container.result == 'success' || needs.build_and_publish_container.result == 'skipped')
+        runs-on: ubuntu-latest
+        permissions:
+          packages: read
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v1
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Verify dc_motor_control build fails
+              run: |
+                    export MY_UID=$(id -u)
+                    export MY_GID=$(id -g)
+                    git submodule update --init --recursive
+                    docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
                     make container.make.test-dc-motor-fail

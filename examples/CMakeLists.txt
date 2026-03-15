@@ -24,10 +24,6 @@ add_executable(dc_motor_control.main EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR
 target_link_libraries(dc_motor_control.main matrix array)
 
 ################################################################################
-# Register examples as tests (build + run)
+# Custom target to build only examples (without test binaries)
 ################################################################################
-create_test(matrix.main)
-create_test(decomp.main)
-create_test(eigen.main)
-create_test(population.main)
-create_test(butterworth.main)
+add_custom_target(examples DEPENDS matrix.main decomp.main eigen.main population.main butterworth.main)

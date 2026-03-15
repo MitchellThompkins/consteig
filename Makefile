@@ -60,8 +60,8 @@ help:
 	@echo 'test'
 	@echo '    runs unit tests in parallel with ctest -j$$(getconf _NPROCESSORS_ONLN)'
 	@echo
-	@echo 'examples'
-	@echo '    builds all example executables'
+	@echo 'run-examples'
+	@echo '    builds and runs all example executables'
 	@echo
 	@echo 'OPTIONS:'
 	@echo
@@ -112,12 +112,10 @@ check-format:
 remove:
 	rm -rf build/
 
-.PHONY: examples
-examples: matrix.main decomp.main eigen.main population.main butterworth.main
-
 .PHONY: run-examples
-run-examples: build
-	@set -e; for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
+run-examples: $(BUILD_PREFIX)/$(BUILD_FILE)
+	@cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
+	set -e; for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
 		echo ""; \
 		echo "========================================"; \
 		echo "Running: $$ex"; \
