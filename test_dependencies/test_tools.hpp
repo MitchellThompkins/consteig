@@ -78,15 +78,15 @@ constexpr bool nearlyEqual(T a, T b, T epsilon = 128 * FLT_EPSILON,
 }
 
 template <typename T, consteig::Size R, consteig::Size C>
-static constexpr bool compareFloatMat(consteig::Matrix<T, R, C> a,
-                                      consteig::Matrix<T, R, C> b,
-                                      const T thresh)
+static constexpr bool approxEqualMat(consteig::Matrix<T, R, C> a,
+                                     consteig::Matrix<T, R, C> b,
+                                     const T thresh)
 {
     for (consteig::Size i{0}; i < R; i++)
     {
         for (consteig::Size j{0}; j < C; j++)
         {
-            if (!consteig::compareFloats(a(i, j), b(i, j), thresh))
+            if (!consteig::approxEqual(a(i, j), b(i, j), thresh))
             {
                 return false;
             }

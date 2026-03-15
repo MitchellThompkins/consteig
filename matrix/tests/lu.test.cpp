@@ -39,7 +39,7 @@ TEST(lu_decomp, simple_system)
     static constexpr Matrix<double, s, 1> x = lu_solve(luRes, b);
 
     static constexpr Matrix<double, s, 1> Ax = mat * x;
-    static_assert(compareFloatMat(Ax, b, kTol), MSG);
+    static_assert(approxEqualMat(Ax, b, kTol), MSG);
 
     // Runtime check
     for (Size i = 0; i < s; ++i)
@@ -59,7 +59,7 @@ TEST(lu_decomp, pivot_test)
     static constexpr Matrix<double, s, 1> x = lu_solve(luRes, b);
 
     static constexpr Matrix<double, s, 1> Ax = mat * x;
-    static_assert(compareFloatMat(Ax, b, kTol), MSG);
+    static_assert(approxEqualMat(Ax, b, kTol), MSG);
 
     static_assert(luRes._p[0] == 1, "Should have swapped rows");
 }

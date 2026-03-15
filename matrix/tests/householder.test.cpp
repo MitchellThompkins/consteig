@@ -95,8 +95,8 @@ TEST(householder, house)
          -0.057714180, -0.067584002, -0.016523828, 0.899721674},
     }}};
 
-    static_assert(compareFloatMat(test, answer, CONSTEIG_TEST_TOLERANCE), MSG);
-    ASSERT_TRUE(compareFloatMat(test, answer, CONSTEIG_TEST_TOLERANCE));
+    static_assert(approxEqualMat(test, answer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(approxEqualMat(test, answer, CONSTEIG_TEST_TOLERANCE));
 }
 
 TEST(householder, house_single)
@@ -114,9 +114,9 @@ TEST(householder, house_single)
         {0.0F, -1.0F},
     }}};
 
-    static_assert(compareFloatMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE),
+    static_assert(approxEqualMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE),
                   MSG);
-    ASSERT_TRUE(compareFloatMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE));
+    ASSERT_TRUE(approxEqualMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE));
 }
 
 TEST(householder, properties)
@@ -130,7 +130,7 @@ TEST(householder, properties)
     // Symmetric: P = P^T
     static constexpr Matrix<double, s, s> PT = transpose(P);
 
-    static_assert(compareFloatMat(P, PT, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(approxEqualMat(P, PT, CONSTEIG_TEST_TOLERANCE), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
@@ -144,7 +144,7 @@ TEST(householder, properties)
     static constexpr Matrix<double, s, s> P2 = P * P;
     static constexpr Matrix<double, s, s> I = eye<double, s>();
 
-    static_assert(compareFloatMat(P2, I, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(approxEqualMat(P2, I, CONSTEIG_TEST_TOLERANCE), MSG);
 
     for (Size i = 0; i < s; ++i)
     {

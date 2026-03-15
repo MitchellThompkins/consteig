@@ -125,28 +125,28 @@ TEST(hessenberg, hess)
                                                        transpose(test._p)};
 
     static_assert(
-        compareFloatMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        approxEqualMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        compareFloatMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        approxEqualMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
     static_assert(
-        compareFloatMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        approxEqualMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        compareFloatMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        approxEqualMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
     static_assert(
-        compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        approxEqualMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        approxEqualMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
-    static_assert(compareFloatMat(identity, identityCheck,
-                                  CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+    static_assert(approxEqualMat(identity, identityCheck,
+                                 CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
                   MSG);
-    ASSERT_TRUE(compareFloatMat(identity, identityCheck,
-                                CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+    ASSERT_TRUE(approxEqualMat(identity, identityCheck,
+                               CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 }
 
 TEST(hessenberg, hess_double_10x10)
@@ -207,16 +207,15 @@ TEST(hessenberg, hess_double_10x10)
                                                         transpose(test._p)};
 
     // Prove that double precision allows the 1e-9 tolerance to pass
-    static_assert(compareFloatMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE),
-                  MSG);
+    static_assert(approxEqualMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE), MSG);
     static_assert(
-        compareFloatMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE), MSG);
+        approxEqualMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE), MSG);
 
-    ASSERT_TRUE(compareFloatMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE));
+    ASSERT_TRUE(approxEqualMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE));
     ASSERT_TRUE(
-        compareFloatMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE));
+        approxEqualMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE));
 
-    static_assert(compareFloatMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE),
+    static_assert(approxEqualMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE),
                   MSG);
-    ASSERT_TRUE(compareFloatMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE));
+    ASSERT_TRUE(approxEqualMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE));
 }
