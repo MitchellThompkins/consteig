@@ -11,7 +11,7 @@ set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
   eigen
   GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
-  GIT_TAG        3.4.0
+  GIT_TAG        3.4.1
 )
 FetchContent_MakeAvailable(eigen)
 

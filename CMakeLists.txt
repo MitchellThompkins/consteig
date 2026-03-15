@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 3.13)
-set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+cmake_minimum_required(VERSION 3.20)
 
 project(eigenvalue_solver)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CXX_STANDARD_REQUIRED)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Note: The following limits are applied to allow for deeper constexpr functionality, 
@@ -12,7 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # For GCC, -fconstexpr-ops-limit is increased from the default 33M to 1B.
 # For Clang, -fconstexpr-steps is used for the same purpose.
 macro(consteig_raise_compiler_limits)
-    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compile_options(-fconstexpr-ops-limit=1000000000)
     endif()
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
