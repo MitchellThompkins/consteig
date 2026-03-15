@@ -7,12 +7,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Only apply aggressive warnings and errors if we are the top-level project.
-# This prevents breaking a parent project's build if they include this via add_subdirectory 
-# and their compiler triggers a warning in this code.
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
-endif()
+# Strict warnings are added after test_dependencies (below) so that
+# third-party code (GoogleTest, Eigen) is not compiled with -Werror.
 
 # Note: The following limits are applied to allow for deeper constexpr functionality, 
 # such as complex eigenvalue calculations which exceed default compiler limits.
@@ -52,6 +48,14 @@ if(CONSTEIG_BUILD_TESTS)
 
     # Enable testing AFTER test_dependencies so Eigen doesn't see it enabled
     enable_testing()
+endif()
+
+# Only apply aggressive warnings and errors if we are the top-level project.
+# This prevents breaking a parent project's build if they include this via add_subdirectory
+# and their compiler triggers a warning in this code.
+# Placed after test_dependencies so third-party code is not compiled with -Werror.
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
 add_subdirectory(array)
