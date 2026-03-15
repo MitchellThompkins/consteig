@@ -45,10 +45,15 @@ macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
 
-add_subdirectory(test_dependencies)
+option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" ON)
 
-# Enable testing AFTER test_dependencies so Eigen doesn't see it enabled
-enable_testing()
+if(CONSTEIG_BUILD_TESTS)
+    add_subdirectory(test_dependencies)
+
+    # Enable testing AFTER test_dependencies so Eigen doesn't see it enabled
+    enable_testing()
+endif()
+
 add_subdirectory(array)
 add_subdirectory(math)
 add_subdirectory(matrix)

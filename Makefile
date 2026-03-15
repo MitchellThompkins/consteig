@@ -113,7 +113,9 @@ remove:
 	rm -rf build/
 
 .PHONY: run-examples
-run-examples: $(BUILD_PREFIX)/$(BUILD_FILE)
+run-examples:
+	mkdir -p $(BUILD_PREFIX)
+	cd $(BUILD_PREFIX) && cmake .. $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
 	@cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
 	set -e; for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
 		echo ""; \

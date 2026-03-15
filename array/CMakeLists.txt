@@ -7,4 +7,6 @@ target_include_directories(array INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 ################################################################################
 # Test
 ################################################################################
-add_subdirectory(tests)
+if(CONSTEIG_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
