@@ -53,7 +53,7 @@ make container.pull
 # Build the project (includes static_assert compile-time tests)
 make container.make.build
 
-# Run runtime tests
+# Run runtime tests (parallel via ctest -j)
 make container.make.test
 
 # Build examples
@@ -61,6 +61,9 @@ make container.make.examples
 
 # Format code
 make format
+
+# Regenerate Octave test cases (rarely needed — only when intentionally updating test data)
+make generate-test-cases
 ```
 
 ### Key Build Notes
@@ -185,6 +188,28 @@ Matrix decompositions use **Givens rotations** for numerical stability.
 - **Well-conditioned matrices**: ~`1e-9` accuracy
 - **Iterative methods**: ~`3e-4` accuracy (error accumulation)
 - **Defective matrices**: ~`0.03` accuracy (theoretical limit for 8x8 Jordan blocks in double precision)
+
+## Octave Scripts
+
+The `octave/` directory contains GNU Octave/MATLAB scripts used for two purposes:
+
+### Test Case Generation (`octave/generate_test_cases.m`)
+
+This script generates C++ test data (matrices and reference eigenvalues/eigenvectors) that are verified at compile time via `static_assert`. It produces:
+- `test_dependencies/generated_cases.hpp` — arrays of test matrices and expected results
+- `eigen/tests/generated_*.test.cpp` — individual test files (one per case to stay within constexpr budgets)
+
+Test categories generated include random symmetric/non-symmetric matrices plus robustness categories (defective, nearly defective, clustered eigenvalues, companion, Hamiltonian, etc.).
+
+**This script rarely needs to be re-run.** The generated files are checked into the repository. Only regenerate when intentionally changing test parameters (matrix size, number of cases, or categories).
+
+### Development Scripts (`octave/development_scripts/`)
+
+Reference implementations of the algorithms used in the library (Householder, Hessenberg reduction, QR iteration, balancing, etc.). These are for prototyping and validating algorithm behavior, not for routine use.
+
+### Example Script (`octave/dc_motor_control.m`)
+
+A DC motor position control example that demonstrates a real-world use case for eigenvalue analysis — used alongside the C++ `examples/dc_motor_control.cpp` example.
 
 ## Merge Conflict Resolution Guidelines
 
