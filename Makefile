@@ -185,4 +185,4 @@ container.start:
 	docker compose -f docker-compose.yml run --rm dev_env 'sh -x'
 
 container.make.%:
-	docker compose -f docker-compose.yml run --rm dev_env 'make $*'
+	docker compose -f docker-compose.yml run --rm dev_env 'make CC=$(CC) CXX=$(CXX) $*'
