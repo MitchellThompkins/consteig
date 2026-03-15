@@ -2,13 +2,10 @@ name: docker_image_ci
 
 on:
   push:
+    branches: [develop, main]
   pull_request:
     branches:
         - develop
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
 
 jobs:
     build-and-publish-container:
@@ -27,17 +24,11 @@ jobs:
                     if [ "${{ github.event_name }}" = "pull_request" ]; then
                       git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
                       BASE="${{ github.event.pull_request.base.sha }}"
-                    else
-                      if [ "${{ github.ref_name }}" = "develop" ]; then
-                        git fetch origin main --depth=1
-                        BASE="origin/main"
+                      if git diff --name-only "$BASE" HEAD | grep -q '^Dockerfile$'; then
+                        echo "changed=true" >> "$GITHUB_OUTPUT"
                       else
-                        git fetch origin develop --depth=1
-                        BASE="origin/develop"
+                        echo "changed=false" >> "$GITHUB_OUTPUT"
                       fi
-                    fi
-                    if git diff --name-only "$BASE" HEAD | grep -q '^Dockerfile$'; then
-                      echo "changed=true" >> "$GITHUB_OUTPUT"
                     else
                       echo "changed=false" >> "$GITHUB_OUTPUT"
                     fi
