@@ -63,6 +63,8 @@ jobs:
                     make remove
                     make CC=gcc CXX=g++ container.make.build
                     make container.make.test
+                    make container.make.run-examples
+                    make container.make.test-dc-motor-fail
 
             - name: clang
               run: |
@@ -74,3 +76,5 @@ jobs:
                     make remove
                     make CC=clang CXX=clang++ container.make.build
                     make container.make.test
+                    make container.make.run-examples
+                    make container.make.test-dc-motor-fail

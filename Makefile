@@ -115,6 +115,31 @@ remove:
 .PHONY: examples
 examples: matrix.main decomp.main eigen.main population.main butterworth.main
 
+.PHONY: run-examples
+run-examples: build
+	@for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
+		echo ""; \
+		echo "========================================"; \
+		echo "Running: $$ex"; \
+		echo "========================================"; \
+		$(BUILD_PREFIX)/bin/$$ex; \
+	done
+
+.PHONY: test-dc-motor-fail
+test-dc-motor-fail: $(BUILD_PREFIX)/$(BUILD_FILE)
+	@echo "========================================"; \
+	echo "Building dc_motor_control.main (expected to fail)"; \
+	echo "========================================"; \
+	if cmake --build $(BUILD_PREFIX) --target dc_motor_control.main -- $(JOB_FLAG) 2>&1; then \
+		echo "ERROR: dc_motor_control.main built successfully but should have failed!"; \
+		exit 1; \
+	else \
+		echo ""; \
+		echo "========================================"; \
+		echo "Build failed as expected (static_assert rejected bad PID gains)"; \
+		echo "========================================"; \
+	fi
+
 .PHONY: generate-test-cases
 generate-test-cases:
 	octave octave/generate_test_cases.m
