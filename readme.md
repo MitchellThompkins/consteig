@@ -3,7 +3,7 @@
 ## What Is This 
 Consteig is a constexpr template library which uses both constexpr functions and
 template meta-programming to calculate the eigenvalues and corresponding eigen
-vectors of a square matrix at compile time. That is, the eigenvalues and
+vectors of a square matrix at compile-time. That is, the eigenvalues and
 eigenvectors can be saved as `static constexpr` values and no processor
 execution time is spent calculating them at run-time. Consteig also allows for
 compile time static matrix manipulation. To remove any external dependences
@@ -11,8 +11,8 @@ several constexpr math functions are implemented as well.
 
 This is particularly powerful if there is information that would normally
 require an offline tool (MATLAB, Python/scipy, etc...) to verify or compute, but
-which you could express directly in your source code and have verified or
-computed automatically at every build.
+which could be expressed directly in source code and be verified or computed
+automatically at every build.
 
 All at compile time, consteig supports:
 
@@ -24,10 +24,10 @@ All at compile time, consteig supports:
 
 ## How To Use Consteig
 Consteig is a templated library and as such a user does not need to compile
-anything separately. Simply `#include “consteig.hpp”` into your project. The
+anything separately. Simply `#include “consteig.hpp”` into the project. The
 cmake files here are only to facilitate testing and development.
 
-You will also need a C++ compiler which supports **C++17**.
+`consteig` also requires a C++ compiler which supports **C++17**.
 
 Here are some examples to help get started:
 * [Declaring a matrix](examples/matrix.cpp)
@@ -38,7 +38,7 @@ Here are some examples to help get started:
 
 ### Build Options
 
-consteig has a few options which can be modified. However, these defaults are
+`consteig` has a few options which can be modified. However, these defaults are
 well tested and modifying them may have non-desirable results such as increased
 compile times or numerical instability.
 
@@ -95,14 +95,14 @@ Compiler flags:
 ## Examples
 ### Population Flow
 
-Let's say that we take the example from [Using Eigenvectors to Find Steady State
-Population
+Take the example from [Using Eigenvectors to Find Steady State Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
-and apply it using `consteig`. All of this information is static, so we can find
-the solution at compile-time and if we wanted, use it for something later in the
-program.
+and apply it using `consteig`. The transition matrix is fixed at compile time, so
+the steady-state fractions can be stored as `static constexpr` values. At runtime,
+computing the distribution for any total population is then a single multiply —
+there is no need to iterate the transition matrix until it converges.
 
-The [`population.cpp`](examples/population.cpp) example demonstrates finding the eigenvalues of the population transition matrix:
+The [`population.cpp`](examples/population.cpp) example demonstrates this:
 
 ```
 Population Transition Matrix (A)
@@ -123,7 +123,13 @@ that corresponds to the eigenvalue of 1 by solving (A - lambda*I)v = 0.
 Steady-State Population Flow (Total: 1000000):
 Seattle:  800000 (80.00%)
 Portland: 200000 (20.00%)
+
+Steady-State Population Flow (Total: 2500000):
+Seattle:  2000000 (80.00%)
+Portland: 500000 (20.00%)
 ```
+
+The same compile-time eigenvectors drive both outputs — no matrix iteration happens at runtime.
 
 ### Digital Filter Design
 

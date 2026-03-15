@@ -78,21 +78,26 @@ int main()
         sum += consteig::abs(pop_eig_vec(i, steady_state_idx).real);
     }
 
-    std::cout << "\nSteady-State Population Flow (Total: " << total_population
-              << "):" << std::endl;
-    for (consteig::Size i = 0; i < pop_size; ++i)
-    {
-        // Normalize the Euclidean eigenvector into a population distribution
-        // (sum = 1)
-        double proportion =
-            consteig::abs(pop_eig_vec(i, steady_state_idx).real) / sum;
-        double absolute = proportion * total_population;
+    // The compile-time fractions can be applied to any total population at
+    // runtime without recomputing the eigensystem.
+    auto print_distribution = [&](double total_pop) {
+        std::cout << "\nSteady-State Population Flow (Total: " << std::fixed
+                  << std::setprecision(0) << total_pop << "):" << std::endl;
+        for (consteig::Size i = 0; i < pop_size; ++i)
+        {
+            double proportion =
+                consteig::abs(pop_eig_vec(i, steady_state_idx).real) / sum;
+            double absolute = proportion * total_pop;
 
-        std::cout << (i == 0 ? "Seattle:  " : "Portland: ") << std::fixed
-                  << std::setprecision(0) << absolute << " ("
-                  << std::setprecision(2) << (proportion * 100.0) << "%)"
-                  << std::endl;
-    }
+            std::cout << (i == 0 ? "Seattle:  " : "Portland: ") << std::fixed
+                      << std::setprecision(0) << absolute << " ("
+                      << std::setprecision(2) << (proportion * 100.0) << "%)"
+                      << std::endl;
+        }
+    };
+
+    print_distribution(total_population);
+    print_distribution(2500000.0);
 
     return 0;
 }
