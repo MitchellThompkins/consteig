@@ -26,12 +26,6 @@
 #define CONSTEIG_ITERATIVE_FLOAT_TOLERANCE 3e-4f
 #endif
 
-// Tolerance for iterative methods using 64-bit doubles
-// (e.g., Hessenberg reduction) where error accumulation is significant.
-#ifndef CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE
-#define CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE 3e-4
-#endif
-
 // It's possible that some of the more difficult matrices require looser test
 // tolerances. Observationally, that has only shown to be the case for highly
 // defective matrices.
