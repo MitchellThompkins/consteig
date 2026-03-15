@@ -148,7 +148,7 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	touch -c $@
 	# run CMake to generate and configure the build scripts
 	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json && \
-	git config core.hooksPath .githooks && \
+	git config core.hooksPath .githooks 2>/dev/null || true; \
 	cd $(BUILD_PREFIX) && \
 	cmake .. $(CMAKE_OPTIONS); \
 
