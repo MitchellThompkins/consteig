@@ -1,0 +1,94 @@
+name: Extended Compiler Tests
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Embedded cross-compilation (build-only — static_assert is the test)
+  # ---------------------------------------------------------------------------
+  cross_compile:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: arm-gcc
+            cc: arm-none-eabi-gcc
+            cxx: arm-none-eabi-g++
+            toolchain: arm-none-eabi-gcc
+            packages: gcc-arm-none-eabi newlib-arm-none-eabi
+          - name: arm-clang
+            cc: clang
+            cxx: clang++
+            toolchain: arm-none-eabi-clang
+            packages: clang lld gcc-arm-none-eabi newlib-arm-none-eabi
+    name: cross / ${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install cross-compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ${{ matrix.packages }}
+
+      - name: Build (cross-compile)
+        run: |
+          cmake -B build \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/${{ matrix.toolchain }}.cmake \
+            -DCONSTEIG_COMPILE_ONLY=ON \
+            -Dgtest_disable_pthreads=ON \
+            -DCONSTEIG_RAISE_COMPILER_LIMITS=ON
+          cmake --build build -j $(nproc)
+
+  # ---------------------------------------------------------------------------
+  # Multi-platform native builds (build + test)
+  # ---------------------------------------------------------------------------
+  multi_platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu-gcc
+            os: ubuntu-latest
+            cc: gcc
+            cxx: g++
+          - name: ubuntu-clang
+            os: ubuntu-latest
+            cc: clang
+            cxx: clang++
+          - name: macos-appleclang
+            os: macos-latest
+            cc: clang
+            cxx: clang++
+          - name: macos-gcc
+            os: macos-latest
+            cc: gcc-14
+            cxx: g++-14
+    name: native / ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies (macOS GCC)
+        if: matrix.name == 'macos-gcc'
+        run: brew install gcc@14
+
+      - name: Build
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          cmake -B build \
+            -DCONSTEIG_RAISE_COMPILER_LIMITS=ON
+          cmake --build build -j $(nproc 2>/dev/null || sysctl -n hw.ncpu)
+
+      - name: Test
+        run: ctest --test-dir build -j $(nproc 2>/dev/null || sysctl -n hw.ncpu) --output-on-failure

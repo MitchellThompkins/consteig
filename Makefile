@@ -161,5 +161,37 @@ container.pull:
 container.start:
 	docker compose -f docker-compose.yml run --rm dev_env 'sh -x'
 
+################################################################################
+# Cross-compilation targets
+################################################################################
+
+# Build with ARM GCC cross-compiler (compile-only — static_assert is the test)
+.PHONY: cross.arm-gcc
+cross.arm-gcc:
+	mkdir -p $(BUILD_PREFIX)-arm-gcc
+	cd $(BUILD_PREFIX)-arm-gcc && \
+	cmake .. -G $(CMAKE_GENERATOR) \
+		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-gcc.cmake \
+		-DCONSTEIG_COMPILE_ONLY=ON \
+		-Dgtest_disable_pthreads=ON \
+		-DCONSTEIG_RAISE_COMPILER_LIMITS=ON
+	cmake --build $(BUILD_PREFIX)-arm-gcc --target all -- $(JOB_FLAG)
+
+# Build with ARM Clang cross-compiler (compile-only — static_assert is the test)
+.PHONY: cross.arm-clang
+cross.arm-clang:
+	mkdir -p $(BUILD_PREFIX)-arm-clang
+	cd $(BUILD_PREFIX)-arm-clang && \
+	cmake .. -G $(CMAKE_GENERATOR) \
+		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-clang.cmake \
+		-DCONSTEIG_COMPILE_ONLY=ON \
+		-Dgtest_disable_pthreads=ON \
+		-DCONSTEIG_RAISE_COMPILER_LIMITS=ON
+	cmake --build $(BUILD_PREFIX)-arm-clang --target all -- $(JOB_FLAG)
+
+# Build with all cross-compilers
+.PHONY: cross
+cross: cross.arm-gcc cross.arm-clang
+
 container.make.%:
 	docker compose -f docker-compose.yml run --rm dev_env 'make $*'
