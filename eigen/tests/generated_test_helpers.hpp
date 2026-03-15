@@ -16,14 +16,20 @@ using namespace consteig;
     {                                                                          \
         auto eigs = eigvals(mat_var[INDEX]);                                   \
         if (!checkEigenValues(mat_var[INDEX], eigs, static_cast<double>(tol))) \
+        {                                                                      \
             return false;                                                      \
+        }                                                                      \
         if (!compareEigenValues(eigs, eig_var[INDEX],                          \
                                 static_cast<double>(tol)))                     \
+        {                                                                      \
             return false;                                                      \
+        }                                                                      \
         auto vecs = eigvecs(mat_var[INDEX], eigs);                             \
         if (!checkEigenVectorsInvariant(mat_var[INDEX], eigs, vecs,            \
                                         static_cast<double>(tol)))             \
+        {                                                                      \
             return false;                                                      \
+        }                                                                      \
         return true;                                                           \
     }
 

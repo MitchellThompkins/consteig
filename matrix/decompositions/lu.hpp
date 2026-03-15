@@ -24,7 +24,9 @@ constexpr LUMatrix<T, S> lu(const Matrix<T, S, S> &a)
     res._u = a;
     res._l = eye<T, S>();
     for (Size i = 0; i < S; ++i)
+    {
         res._p[i] = i;
+    }
 
     for (Size i = 0; i < S; ++i)
     {
