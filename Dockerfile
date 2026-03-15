@@ -12,4 +12,5 @@ RUN apk --no-cache add\
     linux-headers\
     git\
     octave\
+    tree\
     python3
