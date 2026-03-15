@@ -117,7 +117,7 @@ examples: matrix.main decomp.main eigen.main population.main butterworth.main
 
 .PHONY: run-examples
 run-examples: build
-	@for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
+	@set -e; for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
 		echo ""; \
 		echo "========================================"; \
 		echo "Running: $$ex"; \
