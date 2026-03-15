@@ -114,8 +114,7 @@ remove:
 
 .PHONY: run-examples
 run-examples:
-	mkdir -p $(BUILD_PREFIX)
-	cd $(BUILD_PREFIX) && cmake .. $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
 	@cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
 	set -e; for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
 		echo ""; \
@@ -126,7 +125,8 @@ run-examples:
 	done
 
 .PHONY: test-dc-motor-fail
-test-dc-motor-fail: $(BUILD_PREFIX)/$(BUILD_FILE)
+test-dc-motor-fail:
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
 	@echo "========================================"; \
 	echo "Building dc_motor_control.main (expected to fail)"; \
 	echo "========================================"; \
