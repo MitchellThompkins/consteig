@@ -58,7 +58,7 @@ h:
 	@echo '    runs clang-format on .h/.hpp and .c/.cpp files'
 	@echo
 	@echo 'test'
-	@echo '    runs unit tests with gtest'
+	@echo '    runs unit tests in parallel with ctest -j$(getconf _NPROCESSORS_ONLN)'
 	@echo
 	@echo 'examples'
 	@echo '    builds all example executables'
@@ -77,6 +77,23 @@ h:
 	@echo
 	@echo 'CXX=<compiler>'
 	@echo '    C++ compiler to use (e.g. clang++)'
+
+# Each generated test is its own executable, and ctest launches a separate
+# process per test. On macOS, per-process launch overhead (~0.05s) dominates
+# and causes ~800 tests to take ~1 minute sequentially. On Linux the same
+# overhead is <0.01s per test. Running ctest in parallel hides this latency.
+#
+# Example (macOS, single test via ctest):
+#   time ctest -R generated_sym_6
+#   Total Test time (real) = 0.02 sec
+#   ctest -R generated_sym_6  0.03s user 0.01s system 85% cpu 0.049 total
+#
+# getconf _NPROCESSORS_ONLN is portable across macOS and Linux.
+.PHONY: test
+test: $(BUILD_PREFIX)/$(BUILD_FILE)
+	@set -o xtrace; \
+	export CTEST_OUTPUT_ON_FAILURE=1; \
+	ctest --test-dir $(BUILD_PREFIX) -j$$(getconf _NPROCESSORS_ONLN); \
 
 .PHONY: format
 format:
