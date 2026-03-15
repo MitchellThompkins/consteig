@@ -83,6 +83,11 @@ h:
 # and causes ~800 tests to take ~1 minute sequentially. On Linux the same
 # overhead is <0.01s per test. Running ctest in parallel hides this latency.
 #
+# The naive `cmake --build --target test` (used by the %: catch-all below)
+# invokes ctest sequentially. The test binaries themselves run in 0ms on both
+# platforms -- the entire difference is macOS costing ~0.05s per process
+# launch vs <0.01s on Linux, multiplied across 800 tests.
+#
 # Example (macOS, single test via ctest):
 #   time ctest -R generated_sym_6
 #   Total Test time (real) = 0.02 sec
