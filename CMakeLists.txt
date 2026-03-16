@@ -16,9 +16,9 @@ project(consteig)
 #    add_compile_options(-fconstexpr-depth=1024)
 #endmacro()
 #
-#macro(create_test target)
-#    add_test(NAME ${target} COMMAND ${target})
-#endmacro()
+macro(create_test target)
+    add_test(NAME ${target} COMMAND ${target})
+endmacro()
 
 ################################################################################
 # Top-level-only settings (skipped when consumed via add_subdirectory/FetchContent)
