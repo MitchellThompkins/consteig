@@ -90,7 +90,10 @@ help:
 #
 # getconf _NPROCESSORS_ONLN is portable across macOS and Linux.
 # Note: on macOS, the first `make test` after a build may be slow (~1-2s/test).
-# Subsequent runs are fast (~0.1s/test). Possibly amfid/codesign verification overhead.
+# Subsequent runs are fast (~0.1s/test). Root cause unknown. Suspected amfid/codesign
+# verification overhead; tested by ad-hoc signing all binaries after build with:
+#   find $(BUILD_PREFIX)/bin -type f -perm +111 -exec codesign --sign - --force {} \;
+# but this had no effect.
 .PHONY: test
 test: $(BUILD_PREFIX)/$(BUILD_FILE)
 	@set -o xtrace; \
