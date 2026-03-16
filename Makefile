@@ -131,14 +131,20 @@ test-dc-motor-fail:
 	@echo "========================================"; \
 	echo "Building dc_motor_control.main (expected to fail)"; \
 	echo "========================================"; \
-	if cmake --build $(BUILD_PREFIX) --target dc_motor_control.main -- $(JOB_FLAG) 2>&1; then \
+	build_output=$$(cmake --build $(BUILD_PREFIX) --target dc_motor_control.main -- $(JOB_FLAG) 2>&1); \
+	build_rc=$$?; \
+	if [ $$build_rc -eq 0 ]; then \
 		echo "ERROR: dc_motor_control.main built successfully but should have failed!"; \
 		exit 1; \
-	else \
+	elif echo "$$build_output" | grep -q "static assertion failed\|static_assert failed"; then \
 		echo ""; \
 		echo "========================================"; \
 		echo "Build failed as expected (static_assert rejected bad PID gains)"; \
 		echo "========================================"; \
+	else \
+		echo "ERROR: Build failed but not due to expected static_assert:"; \
+		echo "$$build_output"; \
+		exit 1; \
 	fi
 
 .PHONY: generate-test-cases
