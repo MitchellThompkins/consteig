@@ -1,7 +1,7 @@
 ################################################################################
 # Executables
 ################################################################################
-consteig_raise_compiler_limits()
+#consteig_raise_compiler_limits()
 
 add_executable(matrix.main ${CMAKE_CURRENT_SOURCE_DIR}/matrix.cpp)
 target_link_libraries(matrix.main matrix array)
