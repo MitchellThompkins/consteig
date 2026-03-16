@@ -190,6 +190,7 @@ container.pull:
 
 .PHONY: container.start
 container.start:
+	touch $(HOME)/.consteig_ash_history
 	docker compose -f docker-compose.yml run --rm dev_env 'sh -x'
 
 container.make.%:
