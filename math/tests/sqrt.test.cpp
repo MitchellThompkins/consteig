@@ -193,6 +193,9 @@ TEST(sqrt_int, large_int)
     EXPECT_EQ(result, expected);
 }
 
+// Note: this test is why sqrt.test runs ~10x slower than other tests. sqrt_int
+// uses a linear search loop, so sqrt(val) near INT64_MAX iterates ~3 billion
+// times.
 TEST(sqrt_int, large_int64)
 {
     const long long expected = static_cast<long long>(

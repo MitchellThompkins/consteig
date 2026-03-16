@@ -64,8 +64,11 @@ consistent with the theoretical limit.
 
 ## Compile-Time Verification Limits
 Iterative algorithms like the QR iteration used here are computationally
-expensive for a compiler's `constexpr` evaluator. To reliably verify 100+ test
-cases without crashing the compiler or hitting operation limits.
+expensive for a compiler's `constexpr` evaluator. The library's deflation
+criterion — which adds an absolute check against machine epsilon alongside the
+standard relative check — allows near-zero sub-diagonal elements to deflate
+early. This dramatically reduces iteration counts, keeping the constexpr
+operation budget within default compiler limits for the test suite.
 
 ## Robustness Test Suite
 In addition to random matrix tests, a dedicated robustness test suite exercises
@@ -119,20 +122,19 @@ make container.make.build
   `.cpp` files. This ensures each `static_assert` gets a fresh "budget" of
   compiler operations and limits the memory overhead to a single matrix solve
   at a time.
-* **Compiler Flags**: Unit test targets automatically raise limits like
-  `-fconstexpr-ops-limit` locally to accommodate the depth of these
-  calculations. For other targets, these limits are not modified by default to
-  avoid unexpected side effects on user compiler configurations. Users can
-  explicitly enable these raised limits globally by setting the
-  `CONSTEIG_RAISE_COMPILER_LIMITS` CMake option to `ON`.
+* **Compiler Flags**: Thanks to the deflation criterion, default
+  compiler constexpr limits are sufficient for the test suite. For very large
+  or pathological matrices, users may need to raise limits like
+  `-fconstexpr-ops-limit` (GCC) or `-fconstexpr-steps` (Clang) on their own
+  targets.
 * **Spectral Limits & Matrix Size Constraints**: While the algorithm is
   algebraically sound for higher orders, random matrices of orders higher than
   8x8 (and larger) frequently encounter particular arrangement, spacing, or
   clustering of eigenvalues in the matrix configurations. They thusly fail to
   converge within even an expanded `constexpr` operation budget (1BM+ steps).
-  These limits are applied automatically to library tests, but users may need
-  to explicitly enable them for their own targets using
-  `CONSTEIG_RAISE_COMPILER_LIMITS=ON`.
+  Users working with matrices beyond 8x8 may need to raise compiler constexpr
+  limits (e.g., `-fconstexpr-ops-limit` for GCC, `-fconstexpr-steps` for
+  Clang) on their own targets.
 * From a numerical analysis perspective, the following factors have a
   significant impact:
     * **Spectral Separation and Convergence Rate**: The convergence rate of
