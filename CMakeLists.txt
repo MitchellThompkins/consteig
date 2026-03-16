@@ -25,7 +25,7 @@ endmacro()
 ################################################################################
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_STANDARD 17)
-    set(CXX_STANDARD_REQUIRED)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -58,6 +58,11 @@ add_subdirectory(array)
 add_subdirectory(math)
 add_subdirectory(matrix)
 add_subdirectory(eigen)
+
+# Require C++17 minimum from consumers without overriding their standard
+foreach(lib array math matrix consteig_eigen)
+    target_compile_features(${lib} INTERFACE cxx_std_17)
+endforeach()
 
 ################################################################################
 # Examples and tests (top-level only)
