@@ -7,7 +7,7 @@ services:
             - MY_GID=${MY_GID:? Error -> need GID.}
         volumes:
             - "${PWD}:${PWD}"
-            - "${HOME}/.consteig_ash_history:/home/${USER}/.ash_history"
+            - "${PWD}/.ash_history:/home/${USER}/.ash_history"
         network_mode: host
         tty: True
         working_dir: ${PWD}
