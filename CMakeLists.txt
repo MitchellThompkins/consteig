@@ -15,7 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # For GCC, -fconstexpr-ops-limit is increased from the default 33M to 1B.
 # For Clang, -fconstexpr-steps is used for the same purpose.
 macro(consteig_raise_compiler_limits)
-    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         add_compile_options(-fconstexpr-ops-limit=1000000000)
     endif()
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
