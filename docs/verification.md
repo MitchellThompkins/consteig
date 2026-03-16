@@ -122,7 +122,7 @@ make container.make.build
   `.cpp` files. This ensures each `static_assert` gets a fresh "budget" of
   compiler operations and limits the memory overhead to a single matrix solve
   at a time.
-* **Compiler Flags**: Thanks to the robust deflation criterion, default
+* **Compiler Flags**: Thanks to the deflation criterion, default
   compiler constexpr limits are sufficient for the test suite. For very large
   or pathological matrices, users may need to raise limits like
   `-fconstexpr-ops-limit` (GCC) or `-fconstexpr-steps` (Clang) on their own

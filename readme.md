@@ -42,6 +42,16 @@ consteig has a few options which can be modified. However, these defaults are
 well tested and modifying them may have non-desirable results such as increased
 compile times or numerical instability.
 
+CMake Macros:
+
+* `consteig_raise_compiler_limits()` - A convenience macro that raises
+  `-fconstexpr-ops-limit` (GCC), `-fconstexpr-steps` (Clang), and
+  `-fconstexpr-depth` to accommodate heavy constexpr workloads. The library
+  itself does not call this macro — its deflation criterion keeps iteration
+  counts within default compiler limits. However, users working with very large
+  or pathological matrices may find it useful to call this macro on their own
+  targets.
+
 User Macros:
 
 * `CONSTEIG_MAX_ITER` - Controls the maximum number of iterations allowed for
@@ -64,7 +74,7 @@ Compiler flags:
 
 * `-fconstexpr-steps` (clang) or `-fconstexpr-ops-limit` (gcc) - These flags
   increase the maximum number of steps the compiler will execute during
-  constexpr evaluation. The library's robust deflation criterion (which includes
+  constexpr evaluation. The library's deflation criterion (which includes
   an absolute check against machine epsilon in addition to the standard relative
   check) keeps iteration counts low enough that default compiler limits are
   sufficient for the test suite. However, very large or pathological matrices

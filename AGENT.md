@@ -69,7 +69,7 @@ make generate-test-cases
 ### Key Build Notes
 
 - **`static_assert` IS a test**: The library uses `static_assert` extensively. Build failures ARE test failures.
-- Default compiler constexpr limits are sufficient thanks to the robust deflation criterion in the eigenvalue solver
+- Default compiler constexpr limits are sufficient thanks to the deflation criterion in the eigenvalue solver
 - Tests are split into individual `.cpp` files to avoid exhausting compiler constexpr budgets
 
 ## Type System
