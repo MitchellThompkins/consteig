@@ -2,75 +2,142 @@ name: docker_image_ci
 
 on:
   push:
+    branches: [develop, main]
   pull_request:
     branches:
         - develop
 
 jobs:
-    build_and_publish_container:
+    build-and-publish-container:
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+        outputs:
+          image_tag: ${{ steps.set-tag.outputs.image_tag }}
         permissions:
           packages: write
           contents: read
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v6
+
+            - name: Detect Dockerfile changes
+              id: dockerfile-changed
+              run: |
+                    if [ "${{ github.event_name }}" = "pull_request" ]; then
+                      git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
+                      BASE="${{ github.event.pull_request.base.sha }}"
+                      if git diff --name-only "$BASE" HEAD | grep -q '^Dockerfile$'; then
+                        echo "changed=true" >> "$GITHUB_OUTPUT"
+                      else
+                        echo "changed=false" >> "$GITHUB_OUTPUT"
+                      fi
+                    else
+                      echo "changed=false" >> "$GITHUB_OUTPUT"
+                    fi
+
+            - name: Set image tag
+              id: set-tag
+              run: |
+                    if [ "${{ steps.dockerfile-changed.outputs.changed }}" = "true" ]; then
+                      echo "image_tag=sha-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+                    else
+                      echo "image_tag=latest" >> "$GITHUB_OUTPUT"
+                    fi
+
             - name: Login to GitHub Container Registry
-              uses: docker/login-action@v1
+              if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || steps.dockerfile-changed.outputs.changed == 'true'
+              uses: docker/login-action@v4
               with:
                   registry: ghcr.io
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Build and publish docker image
+              if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || steps.dockerfile-changed.outputs.changed == 'true'
               run: |
-                    docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    # docker run is unnecessary for just building/pushing
+                    docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:sha-${{ github.sha }}
+                    docker push ghcr.io/mitchellthompkins/consteig_dev_image:sha-${{ github.sha }}
+
+            - name: Tag as latest
+              if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+              run: |
+                    docker tag ghcr.io/mitchellthompkins/consteig_dev_image:sha-${{ github.sha }} ghcr.io/mitchellthompkins/consteig_dev_image:latest
                     docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
 
-    build_and_test:
-        needs: build_and_publish_container
-        if: always() && (needs.build_and_publish_container.result == 'success' || needs.build_and_publish_container.result == 'skipped')
+    lint:
+        needs: build-and-publish-container
+        if: needs.build-and-publish-container.result == 'success'
         runs-on: ubuntu-latest
+        container:
+          image: ghcr.io/mitchellthompkins/consteig_dev_image:${{ needs.build-and-publish-container.outputs.image_tag }}
+          credentials:
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
         permissions:
           packages: read
           contents: read
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
-            
-            - name: Login to GitHub Container Registry
-              uses: docker/login-action@v1
+              uses: actions/checkout@v6
+
+            - name: Check formatting
+              run: make check-format
+
+    build-and-test:
+        name: ${{ matrix.compiler }}-${{ matrix.mode }}
+        needs: build-and-publish-container
+        if: needs.build-and-publish-container.result == 'success'
+        runs-on: ubuntu-latest
+        container:
+          image: ghcr.io/mitchellthompkins/consteig_dev_image:${{ needs.build-and-publish-container.outputs.image_tag }}
+          credentials:
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+        permissions:
+          packages: read
+          contents: read
+        strategy:
+          matrix:
+            compiler: [gcc, clang]
+            mode: [test, examples]
+            include:
+              - compiler: gcc
+                cc: gcc
+                cxx: g++
+              - compiler: clang
+                cc: clang
+                cxx: clang++
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
               with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
+                submodules: recursive
 
-            - name: Lint
+            - name: Build and test
+              if: matrix.mode == 'test'
               run: |
-                    export MY_UID=$(id -u)
-                    export MY_GID=$(id -g)
-                    # Ensure we pull the latest image
-                    docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    make container.make.check-format
+                    make CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} build
+                    make test
 
-            - name: gcc
-              run: |
-                    export MY_UID=$(id -u)
-                    export MY_GID=$(id -g)
-                    git submodule update --init --recursive
-                    # Ensure we pull the latest image
-                    docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    make remove
-                    make CC=gcc CXX=g++ container.make.build
-                    make container.make.test
+            - name: Build and run examples
+              if: matrix.mode == 'examples'
+              run: make CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} run-examples
 
-            - name: clang
-              run: |
-                    export MY_UID=$(id -u)
-                    export MY_GID=$(id -g)
-                    git submodule update --init --recursive
-                    # Ensure we pull the latest image
-                    docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    make remove
-                    make CC=clang CXX=clang++ container.make.build
-                    make container.make.test
+    dc-motor-fail:
+        needs: build-and-publish-container
+        if: needs.build-and-publish-container.result == 'success'
+        runs-on: ubuntu-latest
+        container:
+          image: ghcr.io/mitchellthompkins/consteig_dev_image:${{ needs.build-and-publish-container.outputs.image_tag }}
+          credentials:
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+        permissions:
+          packages: read
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+
+            - name: Verify dc_motor_control build fails
+              run: make test-dc-motor-fail
