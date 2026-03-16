@@ -8,23 +8,23 @@ using namespace consteig;
 // These helper functions allow us to call templated constexpr functions
 template <typename T, Size R, Size C>
 static constexpr Matrix<T, R, C> setRowsTest(const Matrix<T, 1, C> mat[],
-                                             const Size val)
+                                             const Size row)
 {
     Matrix<T, R, C> out{};
-    out.setRow(mat[0], val);
-    out.setRow(mat[1], val + 1);
-    out.setRow(mat[2], val + 2);
+    out.setRow(mat[0], row);
+    out.setRow(mat[1], row + 1);
+    out.setRow(mat[2], row + 2);
     return out;
 }
 
 template <typename T, Size R, Size C>
 static constexpr Matrix<T, R, C> setColsTest(const Matrix<T, R, 1> mat[],
-                                             const Size val)
+                                             const Size col)
 {
     Matrix<T, R, C> out{};
-    out.setCol(mat[0], val);
-    out.setCol(mat[1], val + 1);
-    out.setCol(mat[2], val + 2);
+    out.setCol(mat[0], col);
+    out.setCol(mat[1], col + 1);
+    out.setCol(mat[2], col + 2);
     return out;
 }
 
