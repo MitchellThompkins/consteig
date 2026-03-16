@@ -41,7 +41,12 @@ macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
 
-option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" ON)
+# Tests default ON when top-level, OFF when consumed via add_subdirectory/FetchContent
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" ON)
+else()
+    option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" OFF)
+endif()
 
 if(CONSTEIG_BUILD_TESTS)
     add_subdirectory(test_dependencies)
