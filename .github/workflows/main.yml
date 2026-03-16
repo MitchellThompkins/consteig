@@ -121,6 +121,53 @@ jobs:
               if: matrix.mode == 'examples'
               run: make CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} run-examples
 
+    cross-compile:
+        name: cross-${{ matrix.target }}
+        needs: build-and-publish-container
+        if: needs.build-and-publish-container.result == 'success'
+        runs-on: ubuntu-latest
+        container:
+          image: ghcr.io/mitchellthompkins/consteig_dev_image:${{ needs.build-and-publish-container.outputs.image_tag }}
+          credentials:
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+        permissions:
+          packages: read
+          contents: read
+        strategy:
+          matrix:
+            target: [arm-gcc, arm-clang]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+
+            - name: Cross-compile (static_assert is the test)
+              run: make cross.${{ matrix.target }}
+
+    macos:
+        name: macos-appleclang-${{ matrix.mode }}
+        runs-on: macos-latest
+        strategy:
+          matrix:
+            mode: [test, examples]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+
+            - name: Build and test
+              if: matrix.mode == 'test'
+              run: |
+                    make build
+                    make test
+
+            - name: Build and run examples
+              if: matrix.mode == 'examples'
+              run: make run-examples
+
     dc-motor-fail:
         needs: build-and-publish-container
         if: needs.build-and-publish-container.result == 'success'
