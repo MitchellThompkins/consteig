@@ -2,19 +2,21 @@ cmake_minimum_required(VERSION 3.13)
 
 project(consteig)
 
-# Convenience macro for raising constexpr limits. Not used by default — the
-# library's deflation criterion keeps iteration counts within default compiler
-# limits. Users may call this macro on their own targets if needed for very
-# large or pathological matrices.
-macro(consteig_raise_compiler_limits)
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-        add_compile_options(-fconstexpr-ops-limit=1000000000)
-    endif()
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        add_compile_options(-fconstexpr-steps=1000000000)
-    endif()
-    add_compile_options(-fconstexpr-depth=1024)
-endmacro()
+# Convenience function for raising constexpr limits on a specific target. Not
+# used by default — the library's deflation criterion keeps iteration counts
+# within default compiler limits. Users may call this on their own targets if
+# needed for very large or pathological matrices.
+function(consteig_raise_compiler_limits)
+    foreach(target IN LISTS ARGN)
+        if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+            target_compile_options(${target} PRIVATE -fconstexpr-ops-limit=1000000000)
+        endif()
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            target_compile_options(${target} PRIVATE -fconstexpr-steps=1000000000)
+        endif()
+        target_compile_options(${target} PRIVATE -fconstexpr-depth=1024)
+    endforeach()
+endfunction()
 
 macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})

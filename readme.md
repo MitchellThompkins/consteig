@@ -44,13 +44,13 @@ compile times or numerical instability.
 
 CMake Macros:
 
-* `consteig_raise_compiler_limits()` - A convenience macro that raises
-  `-fconstexpr-ops-limit` (GCC), `-fconstexpr-steps` (Clang), and
-  `-fconstexpr-depth` to accommodate heavy constexpr workloads. The library
-  itself does not call this macro — its deflation criterion keeps iteration
-  counts within default compiler limits. However, users working with very large
-  or pathological matrices may find it useful to call this macro on their own
-  targets.
+* `consteig_raise_compiler_limits(target1 target2 ...)` - A convenience
+  function that raises `-fconstexpr-ops-limit` (GCC), `-fconstexpr-steps`
+  (Clang), and `-fconstexpr-depth` on one or more specific targets to
+  accommodate heavy constexpr workloads. The library itself does not call this
+  function — its deflation criterion keeps iteration counts within default
+  compiler limits. However, users working with very large or pathological
+  matrices may find it useful to call this on their own targets.
 
 User Macros:
 
