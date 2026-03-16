@@ -43,6 +43,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # compiled with strict warnings.
     if(CONSTEIG_BUILD_TESTS)
         add_subdirectory(test_dependencies)
+        include_directories(SYSTEM ${CMAKE_BINARY_DIR}/_deps/eigen-src)
         enable_testing()
     endif()
 
