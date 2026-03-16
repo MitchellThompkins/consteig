@@ -42,14 +42,15 @@ consteig has a few options which can be modified. However, these defaults are
 well tested and modifying them may have non-desirable results such as increased
 compile times or numerical instability.
 
-CMake Macros:
+CMake Functions:
 
 * `consteig_raise_compiler_limits(target1 target2 ...)` - A convenience
-  function that raises `-fconstexpr-ops-limit` (GCC), `-fconstexpr-steps`
-  (Clang), and `-fconstexpr-depth` on one or more specific targets to
-  accommodate heavy constexpr workloads. The library itself does not call this
-  function — its deflation criterion keeps iteration counts within default
-  compiler limits. However, users working with very large or pathological
+  CMake function (implemented with `function()`, not `macro()`, for proper
+  variable scoping) that raises `-fconstexpr-ops-limit` (GCC),
+  `-fconstexpr-steps` (Clang), and `-fconstexpr-depth` on one or more specific
+  targets to accommodate heavy constexpr workloads. The library itself does not
+  call this function — its deflation criterion keeps iteration counts within
+  default compiler limits. However, users working with very large or pathological
   matrices may find it useful to call this on their own targets.
 
 User Macros:
