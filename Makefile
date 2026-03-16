@@ -60,8 +60,8 @@ help:
 	@echo 'test'
 	@echo '    runs unit tests in parallel with ctest -j$$(getconf _NPROCESSORS_ONLN)'
 	@echo
-	@echo 'examples'
-	@echo '    builds all example executables'
+	@echo 'run-examples'
+	@echo '    builds and runs all example executables'
 	@echo
 	@echo 'OPTIONS:'
 	@echo
@@ -112,8 +112,40 @@ check-format:
 remove:
 	rm -rf build/
 
-.PHONY: examples
-examples: matrix.main decomp.main eigen.main population.main butterworth.main
+.PHONY: run-examples
+run-examples:
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	@set -e; \
+	cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
+	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
+		echo ""; \
+		echo "========================================"; \
+		echo "Running: $$ex"; \
+		echo "========================================"; \
+		$(BUILD_PREFIX)/bin/$$ex; \
+	done
+
+.PHONY: test-dc-motor-fail
+test-dc-motor-fail:
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	@echo "========================================"; \
+	echo "Building dc_motor_control.main (expected to fail)"; \
+	echo "========================================"; \
+	build_output=$$(cmake --build $(BUILD_PREFIX) --target dc_motor_control.main -- $(JOB_FLAG) 2>&1); \
+	build_rc=$$?; \
+	if [ $$build_rc -eq 0 ]; then \
+		echo "ERROR: dc_motor_control.main built successfully but should have failed!"; \
+		exit 1; \
+	elif echo "$$build_output" | grep -q "static assertion failed\|static_assert failed"; then \
+		echo ""; \
+		echo "========================================"; \
+		echo "Build failed as expected (static_assert rejected bad PID gains)"; \
+		echo "========================================"; \
+	else \
+		echo "ERROR: Build failed but not due to expected static_assert:"; \
+		echo "$$build_output"; \
+		exit 1; \
+	fi
 
 .PHONY: generate-test-cases
 generate-test-cases:
@@ -125,7 +157,6 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	touch -c $@
 	# run CMake to generate and configure the build scripts
 	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json && \
-	git config core.hooksPath .githooks && \
 	cd $(BUILD_PREFIX) && \
 	cmake .. $(CMAKE_OPTIONS); \
 
@@ -162,4 +193,4 @@ container.start:
 	docker compose -f docker-compose.yml run --rm dev_env 'sh -x'
 
 container.make.%:
-	docker compose -f docker-compose.yml run --rm dev_env 'make $*'
+	docker compose -f docker-compose.yml run --rm dev_env 'make CC=$(CC) CXX=$(CXX) $*'
