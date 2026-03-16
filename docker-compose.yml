@@ -12,4 +12,4 @@ services:
         tty: True
         working_dir: ${PWD}
         entrypoint: ${PWD}/entrypoint.sh
-        command: /bin/bash
+        command: /bin/sh
