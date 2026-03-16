@@ -1,7 +1,6 @@
 ################################################################################
 # Test
 ################################################################################
-#consteig_raise_compiler_limits()
 
 add_executable(consteig_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen.test.cpp)
 target_include_directories(consteig_eigen.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
