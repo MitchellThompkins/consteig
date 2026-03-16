@@ -64,11 +64,11 @@ consistent with the theoretical limit.
 
 ## Compile-Time Verification Limits
 Iterative algorithms like the QR iteration used here are computationally
-expensive for a compiler's `constexpr` evaluator. The library's robust
-deflation criterion — which adds an absolute check against machine epsilon
-alongside the standard relative check — allows near-zero sub-diagonal elements
-to deflate early. This dramatically reduces iteration counts, keeping the
-constexpr operation budget within default compiler limits for the test suite.
+expensive for a compiler's `constexpr` evaluator. The library's deflation
+criterion — which adds an absolute check against machine epsilon alongside the
+standard relative check — allows near-zero sub-diagonal elements to deflate
+early. This dramatically reduces iteration counts, keeping the constexpr
+operation budget within default compiler limits for the test suite.
 
 ## Robustness Test Suite
 In addition to random matrix tests, a dedicated robustness test suite exercises
