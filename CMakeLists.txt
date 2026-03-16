@@ -6,19 +6,19 @@ project(consteig)
 # such as complex eigenvalue calculations which exceed default compiler limits.
 # For GCC, -fconstexpr-ops-limit is increased from the default 33M to 1B.
 # For Clang, -fconstexpr-steps is used for the same purpose.
-macro(consteig_raise_compiler_limits)
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-        add_compile_options(-fconstexpr-ops-limit=1000000000)
-    endif()
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        add_compile_options(-fconstexpr-steps=1000000000)
-    endif()
-    add_compile_options(-fconstexpr-depth=1024)
-endmacro()
-
-macro(create_test target)
-    add_test(NAME ${target} COMMAND ${target})
-endmacro()
+#macro(consteig_raise_compiler_limits)
+#    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+#        add_compile_options(-fconstexpr-ops-limit=1000000000)
+#    endif()
+#    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#        add_compile_options(-fconstexpr-steps=1000000000)
+#    endif()
+#    add_compile_options(-fconstexpr-depth=1024)
+#endmacro()
+#
+#macro(create_test target)
+#    add_test(NAME ${target} COMMAND ${target})
+#endmacro()
 
 ################################################################################
 # Top-level-only settings (skipped when consumed via add_subdirectory/FetchContent)
@@ -32,10 +32,10 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-    option(CONSTEIG_RAISE_COMPILER_LIMITS "Raise constexpr limits for all targets" OFF)
-    if(CONSTEIG_RAISE_COMPILER_LIMITS)
-        consteig_raise_compiler_limits()
-    endif()
+    #option(CONSTEIG_RAISE_COMPILER_LIMITS "Raise constexpr limits for all targets" OFF)
+    #if(CONSTEIG_RAISE_COMPILER_LIMITS)
+    #    consteig_raise_compiler_limits()
+    #endif()
 
     option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" ON)
 
