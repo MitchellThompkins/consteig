@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.13)
-set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 project(consteig)
 
@@ -64,7 +63,7 @@ add_subdirectory(eigen)
 # Examples and tests (top-level only)
 ################################################################################
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_subdirectory(examples)
+    add_subdirectory(examples EXCLUDE_FROM_ALL)
 
     if(CONSTEIG_BUILD_TESTS)
         add_subdirectory(array/tests)
