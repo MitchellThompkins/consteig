@@ -16,11 +16,6 @@ JOB_FLAG := -j 4
 
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build )
 
-RAISE_COMPILER_LIMITS ?= 1
-ifeq "$(RAISE_COMPILER_LIMITS)" "1"
-    CMAKE_OPTIONS += -DCONSTEIG_RAISE_COMPILER_LIMITS=ON
-endif
-
 # If CC/CXX are set, pass them to CMake
 ifneq "$(CC)" ""
     CMAKE_OPTIONS += -DCMAKE_C_COMPILER=$(CC)
@@ -94,6 +89,11 @@ help:
 #   ctest -R generated_sym_6  0.03s user 0.01s system 85% cpu 0.049 total
 #
 # getconf _NPROCESSORS_ONLN is portable across macOS and Linux.
+# Note: on macOS, the first `make test` after a build may be slow (~1-2s/test).
+# Subsequent runs are fast (~0.1s/test). Root cause unknown. Suspected amfid/codesign
+# verification overhead; tested by ad-hoc signing all binaries after build with:
+#   find $(BUILD_PREFIX)/bin -type f -perm +111 -exec codesign --sign - --force {} \;
+# but this had no effect.
 .PHONY: test
 test: $(BUILD_PREFIX)/$(BUILD_FILE)
 	@set -o xtrace; \
