@@ -3,10 +3,3 @@
 ################################################################################
 add_library(matrix INTERFACE)
 target_include_directories(matrix INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-
-################################################################################
-# Test
-################################################################################
-if(CONSTEIG_BUILD_TESTS)
-    add_subdirectory(tests)
-endif()

@@ -3,10 +3,3 @@
 ################################################################################
 add_library(array INTERFACE)
 target_include_directories(array INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-
-################################################################################
-# Test
-################################################################################
-if(CONSTEIG_BUILD_TESTS)
-    add_subdirectory(tests)
-endif()

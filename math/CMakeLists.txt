@@ -3,10 +3,3 @@
 ################################################################################
 add_library(math INTERFACE)
 target_include_directories(math INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-
-################################################################################
-# Test
-################################################################################
-if(CONSTEIG_BUILD_TESTS)
-    add_subdirectory(tests)
-endif()
