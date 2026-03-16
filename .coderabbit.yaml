@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+early_access: false
+reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  review_details: true
+  auto_review:
+    enabled: true
+    drafts: false
+  path_instructions:
+    - path: "**/*.hpp"
+      instructions: |
+        This is a constexpr C++17 header-only library. Focus on:
+        - Correctness of constexpr computations and static_assert usage
+        - Type consistency (Matrix<float,...> must use float tolerances, Matrix<double,...> must use double)
+        - Explicit casts when indexing Eigen matrices with consteig::Size (unsigned → signed narrowing)
+        - Tolerance constants are defined in test_dependencies/test_tools.hpp — never hardcode tolerance values, and use the constant appropriate for the method type (direct, iterative, pathological, large magnitude)
+        - No standard library dependencies in core library code (freestanding constraint)
+    - path: "**/tests/**"
+      instructions: |
+        These are compile-time and runtime tests. Check:
+        - static_assert failures = build failures = test failures (treat equally)
+        - Tests are split into individual .cpp files intentionally to avoid constexpr budget exhaustion
+        - Do not suggest merging test files
+        - Tolerance constants should come from test_tools.hpp, never hardcoded
+    - path: "octave/**"
+      instructions: |
+        GNU Octave/MATLAB scripts for test generation and algorithm prototyping.
+        generate_test_cases.m output is checked in — do not suggest regenerating unless test parameters change.
+chat:
+  auto_reply: true
