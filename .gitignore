@@ -2,6 +2,9 @@
 build/
 compile_commands.json
 
+# container
+.ash_history
+
 # development
 *.sw[op]
 tags
