@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: "en-US"
+tone_instructions: "Post all suggestions as inline review comments that can be resolved, not as nits embedded in the walkthrough summary."
 early_access: false
 reviews:
   profile: "assertive"
@@ -10,6 +11,7 @@ reviews:
   review_details: true
   auto_review:
     enabled: true
+    auto_incremental_review: true
     drafts: false
   path_instructions:
     - path: "**/*.hpp"
