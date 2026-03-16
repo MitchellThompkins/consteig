@@ -55,8 +55,9 @@
 
 // https://stackoverflow.com/a/32334103/3527182
 template <typename T>
-constexpr bool nearlyEqual(T a, T b, T epsilon = 128 * FLT_EPSILON,
-                           T relth = FLT_MIN)
+constexpr bool nearlyEqual(T a, T b,
+                           T epsilon = 128 * std::numeric_limits<T>::epsilon(),
+                           T relth = std::numeric_limits<T>::min())
 // those defaults are arbitrary and could be removed
 {
     static_assert(consteig::is_float<T>(), "Expects floating point number");
