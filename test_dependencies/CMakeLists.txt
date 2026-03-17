@@ -1,4 +1,23 @@
-add_subdirectory(googletest)
+if(CONSTEIG_COMPILE_ONLY)
+    # Bare-metal cross-compilers can't build GoogleTest (needs POSIX).
+    # Provide header-only stubs so test TUs compile without linking.
+    set(_gtest_inc ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include)
+    set(_gmock_inc ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googlemock/include)
+
+    add_library(gtest INTERFACE)
+    target_include_directories(gtest SYSTEM INTERFACE ${_gtest_inc})
+
+    add_library(gtest_main INTERFACE)
+    target_include_directories(gtest_main SYSTEM INTERFACE ${_gtest_inc})
+
+    add_library(gmock INTERFACE)
+    target_include_directories(gmock SYSTEM INTERFACE ${_gmock_inc} ${_gtest_inc})
+
+    add_library(gmock_main INTERFACE)
+    target_include_directories(gmock_main SYSTEM INTERFACE ${_gmock_inc} ${_gtest_inc})
+else()
+    add_subdirectory(googletest)
+endif()
 
 if(NOT CONSTEIG_COMPILE_ONLY)
     include(FetchContent)

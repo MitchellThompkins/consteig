@@ -203,8 +203,7 @@ cross.arm-gcc:
 	cd $(BUILD_PREFIX)-arm-gcc && \
 	cmake .. -G $(CMAKE_GENERATOR) \
 		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-gcc.cmake \
-		-DCONSTEIG_COMPILE_ONLY=ON \
-		-Dgtest_disable_pthreads=ON
+		-DCONSTEIG_COMPILE_ONLY=ON
 	cmake --build $(BUILD_PREFIX)-arm-gcc --target all -- $(JOB_FLAG)
 
 # Build with ARM Clang cross-compiler (compile-only — static_assert is the test)
@@ -214,8 +213,7 @@ cross.arm-clang:
 	cd $(BUILD_PREFIX)-arm-clang && \
 	cmake .. -G $(CMAKE_GENERATOR) \
 		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-clang.cmake \
-		-DCONSTEIG_COMPILE_ONLY=ON \
-		-Dgtest_disable_pthreads=ON
+		-DCONSTEIG_COMPILE_ONLY=ON
 	cmake --build $(BUILD_PREFIX)-arm-clang --target all -- $(JOB_FLAG)
 
 # Build with all cross-compilers
