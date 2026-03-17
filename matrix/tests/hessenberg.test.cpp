@@ -151,7 +151,7 @@ TEST(hessenberg, hess)
 
 TEST(hessenberg, hess_double_10x10)
 {
-    static constexpr int s{10};
+    static constexpr Size s{10};
     static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
