@@ -243,25 +243,21 @@ template <typename T, Size R, Size C> class Matrix
                 floating point values");
         static_assert(R == C, "Symmetric matrices should be square.");
 
-        bool symmetric{true};
-
         if (sizeX() > 1)
         {
             for (Size i{1}; i <= sizeX() - 1; i++)
             {
                 for (Size j{0}; j < i; j++)
                 {
-                    symmetric &=
-                        equalWithin((*this)(i, j), (*this)(j, i), thresh);
-                    if (!symmetric)
+                    if (!equalWithin((*this)(i, j), (*this)(j, i), thresh))
                     {
-                        break;
+                        return false;
                     }
                 }
             }
         }
 
-        return symmetric;
+        return true;
     }
 
     constexpr Size sizeX() const
