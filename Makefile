@@ -190,6 +190,7 @@ container.pull:
 
 .PHONY: container.start
 container.start:
+	touch $(THIS_DIR)/.ash_history
 	docker compose -f docker-compose.yml run --rm dev_env 'sh -x'
 
 ################################################################################

@@ -6,8 +6,6 @@
 
 using namespace consteig;
 
-static constexpr double kTol = CONSTEIG_TEST_TOLERANCE;
-
 TEST(qr_decomp, eigen_comparison)
 {
     static constexpr Size s{4};
@@ -19,11 +17,11 @@ TEST(qr_decomp, eigen_comparison)
 
     // Verify reconstruction and orthogonality at compile time
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
-    static_assert(compareFloatMat(recon, mat, kTol), MSG);
+    static_assert(equalWithinMat(recon, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
     static constexpr Matrix<double, s, s> qtq = transpose(qrRes._q) * qrRes._q;
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
-    static_assert(compareFloatMat(qtq, ident, kTol), MSG);
+    static_assert(equalWithinMat(qtq, ident, CONSTEIG_TEST_TOLERANCE), MSG);
 
     // Eigen QR (Calculate at runtime for comparison)
     Eigen::MatrixXd eigMat = toEigen(mat);
@@ -32,26 +30,57 @@ TEST(qr_decomp, eigen_comparison)
     Eigen::MatrixXd rEig = qrEig.matrixQR().triangularView<Eigen::Upper>();
 
     // Runtime checks
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(recon(i, j), mat(i, j), kTol);
+            ASSERT_NEAR(recon(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(qtq(i, j), ident(i, j), kTol);
+            ASSERT_NEAR(qtq(i, j), ident(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 
     // Compare R diagonal absolute values (since signs can flip)
     for (Size i = 0; i < s; ++i)
     {
-        ASSERT_NEAR(std::abs(qrRes._r(i, i)), std::abs(rEig(i, i)), kTol);
+        ASSERT_NEAR(std::abs(qrRes._r(i, i)),
+                    std::abs(rEig(static_cast<Eigen::Index>(i),
+                                  static_cast<Eigen::Index>(i))),
+                    CONSTEIG_TEST_TOLERANCE);
+    }
+
+    // Compare Q column-by-column using absolute values to handle sign
+    // ambiguity. QR decomposition is only unique up to column sign: both
+    // consteig and Eigen may negate an entire Q column (paired with the same
+    // negation in the corresponding R row) and still produce a valid
+    // factorization. Taking abs() of each element neutralizes that.
+    //
+    // Additionally, the test matrix {1..4; 5..8; 9..12; 13..16} is rank-2
+    // (each row is an arithmetic progression, so rows 3 and 4 are linear
+    // combinations of rows 1 and 2). This means two of the four Q columns
+    // span the null space. For null-space columns, the Householder process
+    // has no unique answer — any orthonormal completion of the column space
+    // is valid — so consteig and Eigen will freely disagree. We detect these
+    // columns by checking whether the matching R diagonal entry is
+    // effectively zero (< QR_RANK_CUTOFF) and skip them.
+    for (Size j = 0; j < s; ++j)
+    {
+        if (std::abs(rEig(static_cast<Eigen::Index>(j),
+                          static_cast<Eigen::Index>(j))) < QR_RANK_CUTOFF)
+            continue;
+        for (Size i = 0; i < s; ++i)
+        {
+            ASSERT_NEAR(std::abs(qrRes._q(i, j)),
+                        std::abs(qEig(static_cast<Eigen::Index>(i),
+                                      static_cast<Eigen::Index>(j))),
+                        CONSTEIG_TEST_TOLERANCE);
+        }
     }
 }
 
@@ -62,15 +91,15 @@ TEST(qr_decomp, identity_matrix)
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
     // Checks
-    static_assert(compareFloatMat(qrRes._q, mat, kTol), MSG);
-    static_assert(compareFloatMat(qrRes._r, mat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, mat, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(qrRes._r, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(qrRes._q(i, j), mat(i, j), kTol);
-            ASSERT_NEAR(qrRes._r(i, j), mat(i, j), kTol);
+            ASSERT_NEAR(qrRes._q(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
+            ASSERT_NEAR(qrRes._r(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -84,15 +113,17 @@ TEST(qr_decomp, zero_matrix)
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
     static constexpr Matrix<double, s, s> zeroMat{};
 
-    static_assert(compareFloatMat(qrRes._q, ident, kTol), MSG);
-    static_assert(compareFloatMat(qrRes._r, zeroMat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, ident, CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    static_assert(equalWithinMat(qrRes._r, zeroMat, CONSTEIG_TEST_TOLERANCE),
+                  MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(qrRes._q(i, j), ident(i, j), kTol);
-            ASSERT_NEAR(qrRes._r(i, j), 0.0, kTol);
+            ASSERT_NEAR(qrRes._q(i, j), ident(i, j), CONSTEIG_TEST_TOLERANCE);
+            ASSERT_NEAR(qrRes._r(i, j), 0.0, CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -106,15 +137,17 @@ TEST(qr_decomp, diagonal_matrix)
 
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
 
-    static_assert(compareFloatMat(qrRes._q, ident, kTol), MSG);
-    static_assert(compareFloatMat(qrRes._r, mat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, ident, CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    static_assert(equalWithinMat(qrRes._r, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(qrRes._q(i, j), (i == j ? 1.0 : 0.0), kTol);
-            ASSERT_NEAR(qrRes._r(i, j), mat(i, j), kTol);
+            ASSERT_NEAR(qrRes._q(i, j), (i == j ? 1.0 : 0.0),
+                        CONSTEIG_TEST_TOLERANCE);
+            ASSERT_NEAR(qrRes._r(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -128,13 +161,13 @@ TEST(qr_decomp, singular_matrix)
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
-    static_assert(compareFloatMat(recon, mat, kTol), MSG);
+    static_assert(equalWithinMat(recon, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(recon(i, j), mat(i, j), kTol);
+            ASSERT_NEAR(recon(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -149,15 +182,17 @@ TEST(qr_decomp, static_constexpr_even_mat)
     static constexpr QRMatrix<double, x> test{qr(mat)};
 
     // Test Static Assertion
-    static_assert(compareFloatMat(test._q * test._r, mat, kTol), MSG);
+    static_assert(
+        equalWithinMat(test._q * test._r, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
     // Runtime checks
-    ASSERT_TRUE(compareFloatMat(test._q * test._r, mat, kTol));
+    ASSERT_TRUE(
+        equalWithinMat(test._q * test._r, mat, CONSTEIG_TEST_TOLERANCE));
 }
 
 TEST(qr_decomp, static_constexpr_random)
 {
-    static constexpr int s{10};
+    static constexpr Size s{10};
     static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
@@ -186,13 +221,14 @@ TEST(qr_decomp, static_constexpr_random)
     static constexpr Matrix<double, s, s> qrCheck{test._q * test._r};
 
     // Verify properties
-    static_assert(compareFloatMat(qrCheck, mat, kTol), MSG);
-    ASSERT_TRUE(compareFloatMat(qrCheck, mat, kTol));
+    static_assert(equalWithinMat(qrCheck, mat, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithinMat(qrCheck, mat, CONSTEIG_TEST_TOLERANCE));
 
     // Check Q unitary
     static constexpr Matrix<double, s, s> qUnitary{test._q *
                                                    transpose(test._q)};
     static constexpr Matrix<double, s, s> identity{eye<double, s>()};
-    static_assert(compareFloatMat(qUnitary, identity, kTol), MSG);
-    ASSERT_TRUE(compareFloatMat(qUnitary, identity, kTol));
+    static_assert(equalWithinMat(qUnitary, identity, CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_TRUE(equalWithinMat(qUnitary, identity, CONSTEIG_TEST_TOLERANCE));
 }

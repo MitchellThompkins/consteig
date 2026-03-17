@@ -13,7 +13,7 @@ fid = fopen(output_cases_file, 'w');
 fprintf(fid, '#ifndef GENERATED_CASES_HPP\n');
 fprintf(fid, '#define GENERATED_CASES_HPP\n\n');
 fprintf(fid, '#include "../consteig.hpp"\n\n');
-fprintf(fid, 'namespace consteig {\n\n');
+fprintf(fid, 'namespace consteig\n{\n\n');
 
 NUM_RANDOM_CASES = 50;
 NUM_ROBUST_CASES = 50;
@@ -138,7 +138,7 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             end
         end
         if n < num_cases
-            fprintf(fid, '    }}},\n');
+            fprintf(fid, '    }}},\n\n');
         else
             fprintf(fid, '    }}}\n');
         end
@@ -158,7 +158,7 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             end
         end
         if n < num_cases
-            fprintf(fid, '    }}},\n');
+            fprintf(fid, '    }}},\n\n');
         else
             fprintf(fid, '    }}}\n');
         end
@@ -185,7 +185,7 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             end
         end
         if n < num_cases
-            fprintf(fid, '    }}},\n');
+            fprintf(fid, '    }}},\n\n');
         else
             fprintf(fid, '    }}}\n');
         end
@@ -238,7 +238,7 @@ function write_test_file(filename, category, type, index, S)
     test_name  = [category '_' size_str '_' num2str(index)];
     test_check = ['check_single_' category '_' type '_' size_str '<' num2str(index) '>'];
 
-    fprintf(fid, 'TEST(generated_tests, %s) { static_assert(%s(), "Test %s failed"); SUCCEED(); }\n', ...
+    fprintf(fid, 'TEST(generated_tests, %s)\n{\n    static_assert(%s(), "Test %s failed");\n    SUCCEED();\n}\n', ...
             test_name, test_check, test_name);
 
     fclose(fid);

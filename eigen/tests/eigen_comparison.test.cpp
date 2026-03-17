@@ -13,15 +13,15 @@ using namespace consteig;
 template <Size S> void verify_symmetric_random(const int seed)
 {
     // Generate random symmetric matrix
-    std::mt19937 gen(seed); // Fixed seed
-    std::uniform_real_distribution<double> dist(-10.0, 10.0);
+    std::mt19937 gen(static_cast<unsigned int>(seed)); // Fixed seed
+    std::uniform_real_distribution<double> value_dist(-10.0, 10.0);
 
     Matrix<double, S, S> mat;
     for (Size i = 0; i < S; ++i)
     {
         for (Size j = i; j < S; ++j)
         {
-            double val = dist(gen);
+            double val = value_dist(gen);
             mat(i, j) = val;
             mat(j, i) = val;
         }
@@ -62,7 +62,8 @@ template <Size S> void verify_symmetric_random(const int seed)
 
     for (Size i = 0; i < S; ++i)
     {
-        EXPECT_NEAR(calc[i], ref(i), CONSTEIG_TEST_TOLERANCE)
+        EXPECT_NEAR(calc[i], ref(static_cast<Eigen::Index>(i)),
+                    CONSTEIG_TEST_TOLERANCE)
             << "Symmetric mismatch at index " << i;
     }
 }
@@ -70,15 +71,15 @@ template <Size S> void verify_symmetric_random(const int seed)
 template <Size S> void verify_nonsymmetric_random(const int seed)
 {
     // Generate random matrix
-    std::mt19937 gen(seed);
-    std::uniform_real_distribution<double> dist(-5.0, 5.0);
+    std::mt19937 gen(static_cast<unsigned int>(seed));
+    std::uniform_real_distribution<double> value_dist(-5.0, 5.0);
 
     Matrix<double, S, S> mat;
     for (Size i = 0; i < S; ++i)
     {
-        for (Size j = i; j < S; ++j)
+        for (Size j = 0; j < S; ++j)
         {
-            mat(i, j) = dist(gen);
+            mat(i, j) = value_dist(gen);
         }
     }
 
@@ -127,8 +128,8 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
             if (matched[j])
                 continue;
 
-            double d_real = real - ref(j).real();
-            double d_imag = imag - ref(j).imag();
+            double d_real = real - ref(static_cast<Eigen::Index>(j)).real();
+            double d_imag = imag - ref(static_cast<Eigen::Index>(j)).imag();
             double dist = std::sqrt(d_real * d_real + d_imag * d_imag);
 
             if (dist < CONSTEIG_TEST_TOLERANCE)

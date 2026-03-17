@@ -125,7 +125,8 @@ TEST(consteig_eigen, symmetric_matrix)
     // Compare
     for (Size i = 0; i < s; ++i)
     {
-        EXPECT_NEAR(myVals[i], eigenValsRef[i], CONSTEIG_TEST_TOLERANCE)
+        EXPECT_NEAR(myVals[i], eigenValsRef[static_cast<Eigen::Index>(i)],
+                    CONSTEIG_TEST_TOLERANCE)
             << "Mismatch at index " << i;
     }
 }
