@@ -68,11 +68,11 @@ TEST(qr_decomp, eigen_comparison)
     // has no unique answer — any orthonormal completion of the column space
     // is valid — so consteig and Eigen will freely disagree. We detect these
     // columns by checking whether the matching R diagonal entry is
-    // effectively zero (< 1e-6) and skip them.
+    // effectively zero (< QR_RANK_CUTOFF) and skip them.
     for (Size j = 0; j < s; ++j)
     {
         if (std::abs(rEig(static_cast<Eigen::Index>(j),
-                          static_cast<Eigen::Index>(j))) < 1e-6)
+                          static_cast<Eigen::Index>(j))) < QR_RANK_CUTOFF)
             continue;
         for (Size i = 0; i < s; ++i)
         {

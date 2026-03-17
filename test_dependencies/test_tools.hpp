@@ -41,6 +41,13 @@
 #define PATHOLOGICAL_TOL 0.03
 #endif
 
+// Threshold for treating an R diagonal entry as zero when detecting null-space
+// columns in a rank-deficient QR decomposition. Values below this are
+// considered numerically zero relative to typical matrix entries (~1).
+#ifndef QR_RANK_CUTOFF
+#define QR_RANK_CUTOFF 1e-6
+#endif
+
 // Specific tolerance for very large value comparisons (e.g., 1e10).
 // While 1.0 seems large, it represents high precision (~1e-10 relative error)
 // for high-magnitude numbers.
