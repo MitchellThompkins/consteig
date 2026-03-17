@@ -36,14 +36,40 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" ON)
 
-    # Test dependencies are fetched before -Werror so third-party code is not
-    # compiled with strict warnings.
+    # Test dependencies are fetched before consteig_warnings is defined so
+    # third-party code is not compiled with strict warnings.
     if(CONSTEIG_BUILD_TESTS)
         add_subdirectory(test_dependencies)
+        include_directories(SYSTEM ${CMAKE_BINARY_DIR}/_deps/eigen-src)
         enable_testing()
     endif()
 
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    # Aggressive warnings and errors — linked explicitly to project targets so
+    # flags do not propagate to external consumers via INTERFACE libraries.
+    add_library(consteig_warnings INTERFACE)
+    target_compile_options(consteig_warnings INTERFACE
+        -Wall
+        -Wextra
+        -pedantic
+        -Werror
+        -Wmisleading-indentation
+        -Wshadow
+        -Wconversion
+        -Wsign-conversion
+        -Wnull-dereference
+        -Wdouble-promotion
+        -Wformat=2
+        -Wundef
+    )
+
+    # GCC-specific warnings
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        target_compile_options(consteig_warnings INTERFACE
+            -Wduplicated-cond
+            -Wduplicated-branches
+            -Wlogical-op
+        )
+    endif()
 else()
     option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" OFF)
 endif()

@@ -25,9 +25,15 @@ template <typename T, Size R, Size C> class Matrix
     constexpr bool operator==(const Matrix<U, R, C> &rhs) const
     {
         for (Size i{0}; i < R; i++)
+        {
             for (Size j{0}; j < C; j++)
+            {
                 if ((*this)(i, j) != rhs(i, j))
+                {
                     return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -42,7 +48,9 @@ template <typename T, Size R, Size C> class Matrix
         Matrix<T, 1, C> result{};
 
         for (Size j{0}; j < C; j++)
+        {
             result(0, j) = (*this)(n, j);
+        }
 
         return result;
     }
@@ -59,7 +67,9 @@ template <typename T, Size R, Size C> class Matrix
         Matrix<T, 1, endIndex - startIndex + 1> result{};
 
         for (Size i{startIndex}; i <= endIndex; i++)
+        {
             result(0, i - startIndex) = (*this)(n, i);
+        }
 
         return result;
     }
@@ -68,8 +78,10 @@ template <typename T, Size R, Size C> class Matrix
     {
         Matrix<T, R, 1> result{};
 
-        for (Size i{0}; i < C; i++)
+        for (Size i{0}; i < R; i++)
+        {
             result(i, 0) = (*this)(i, n);
+        }
 
         return result;
     }
@@ -86,7 +98,9 @@ template <typename T, Size R, Size C> class Matrix
         Matrix<T, endIndex - startIndex + 1, 1> result{};
 
         for (Size i{startIndex}; i <= endIndex; i++)
+        {
             result(i - startIndex, 0) = (*this)(i, n);
+        }
 
         return result;
     }
@@ -103,8 +117,12 @@ template <typename T, Size R, Size C> class Matrix
         Matrix<T, x2 - x1 + 1, y2 - y1 + 1> result{};
 
         for (Size i{x1}; i <= x2; i++)
+        {
             for (Size j{y1}; j <= y2; j++)
+            {
                 result(i - x1, j - y1) = (*this)(i, j);
+            }
+        }
 
         return result;
     }
@@ -118,7 +136,9 @@ template <typename T, Size R, Size C> class Matrix
     constexpr void setRow(const Matrix<T, 1, C> &mat, const Size n)
     {
         for (Size i{0}; i < C; i++)
+        {
             (*this)(n, i) = mat(0, i);
+        }
     }
 
     template <Size startIndex, Size endIndex>
@@ -131,13 +151,17 @@ template <typename T, Size R, Size C> class Matrix
                       "startIndex cannot be larger than endIndex");
 
         for (Size i{startIndex}; i <= endIndex; i++)
+        {
             (*this)(n, i) = mat(0, i - startIndex);
+        }
     }
 
     constexpr void setCol(const Matrix<T, R, 1> &mat, const Size n)
     {
         for (Size j{0}; j < R; j++)
+        {
             (*this)(j, n) = mat(j, 0);
+        }
     }
 
     template <Size startIndex, Size endIndex>
@@ -150,7 +174,9 @@ template <typename T, Size R, Size C> class Matrix
                       "startIndex cannot be larger than endIndex");
 
         for (Size i{startIndex}; i <= endIndex; i++)
+        {
             (*this)(i, n) = mat(i - startIndex, 0);
+        }
     }
 
     // x1,y1,x2,y2 are indexes
@@ -163,8 +189,12 @@ template <typename T, Size R, Size C> class Matrix
                       "Second y index must be bigger than the first.");
 
         for (Size i{x1}; i <= x2; i++)
+        {
             for (Size j{y1}; j <= y2; j++)
+            {
                 (*this)(i, j) = mat(i - x1, j - y1);
+            }
+        }
     }
 
     constexpr bool isSquare() const
@@ -176,47 +206,58 @@ template <typename T, Size R, Size C> class Matrix
     {
         static_assert(R == C, "Symmetric matrices should be square.");
 
-        bool symmetric{true};
-
         if (sizeX() > 1)
         {
-            for (unsigned int i{1}; i <= sizeX() - 1; i++)
+            for (Size i{1}; i <= sizeX() - 1; i++)
             {
-                for (unsigned int j{0}; j < i; j++)
+                for (Size j{0}; j < i; j++)
                 {
-                    symmetric &= ((*this)(i, j) == (*this)(j, i));
-                    if (!symmetric)
-                        break;
+                    bool eq{false};
+                    if constexpr (is_float<T>())
+                    {
+                        eq = equalWithin((*this)(i, j), (*this)(j, i),
+                                         epsilon<T>());
+                    }
+                    else
+                    {
+                        eq = ((*this)(i, j) == (*this)(j, i));
+                    }
+
+                    if (!eq)
+                    {
+                        return false;
+                    }
                 }
             }
         }
 
-        return symmetric;
+        return true;
     }
 
     template <typename U> constexpr bool isSymmetric(const U thresh) const
     {
+        static_assert(is_float<T>(),
+                      "isSymmetric with threshold requires floating-point "
+                      "matrix elements; integer T would truncate thresh");
         static_assert(is_float<U>(), "isSymmetric with arg expects to compare\
                 floating point values");
         static_assert(R == C, "Symmetric matrices should be square.");
 
-        bool symmetric{true};
-
         if (sizeX() > 1)
         {
-            for (unsigned int i{1}; i <= sizeX() - 1; i++)
+            for (Size i{1}; i <= sizeX() - 1; i++)
             {
-                for (unsigned int j{0}; j < i; j++)
+                for (Size j{0}; j < i; j++)
                 {
-                    symmetric &=
-                        compareFloats((*this)(i, j), (*this)(j, i), thresh);
-                    if (!symmetric)
-                        break;
+                    if (!equalWithin((*this)(i, j), (*this)(j, i), thresh))
+                    {
+                        return false;
+                    }
                 }
             }
         }
 
-        return symmetric;
+        return true;
     }
 
     constexpr Size sizeX() const
