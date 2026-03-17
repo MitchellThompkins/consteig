@@ -79,7 +79,7 @@ constexpr bool nearlyEqual(
 {
     static_assert(consteig::is_float<T>(), "Expects floating point number");
     assert(std::numeric_limits<T>::epsilon() <= epsilon);
-    assert(epsilon < T(1));
+    assert(epsilon < static_cast<T>(1));
 
     if (a == b)
     {
