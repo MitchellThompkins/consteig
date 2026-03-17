@@ -85,6 +85,7 @@ make generate-test-cases
 ### Type Consistency Rules
 
 The `approxEqualMat` template function requires **all three parameters to have the same type T**:
+
 ```cpp
 template <typename T, Size R, Size C>
 constexpr bool approxEqualMat(Matrix<T, R, C> a, Matrix<T, R, C> b, const T thresh);
