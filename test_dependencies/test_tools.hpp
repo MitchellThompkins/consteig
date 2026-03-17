@@ -72,10 +72,10 @@
 //
 // Source: https://stackoverflow.com/a/32334103/3527182
 template <typename T>
-constexpr bool nearlyEqual(
-    T a, T b,
-    T epsilon = NEARLY_EQUAL_ULP_TOLERANCE * std::numeric_limits<T>::epsilon(),
-    T relth = std::numeric_limits<T>::min())
+constexpr bool nearlyEqual(T a, T b,
+                           T epsilon = NEARLY_EQUAL_ULP_TOLERANCE *
+                                       std::numeric_limits<T>::epsilon(),
+                           T relth = std::numeric_limits<T>::min())
 {
     static_assert(consteig::is_float<T>(), "Expects floating point number");
     assert(std::numeric_limits<T>::epsilon() <= epsilon);
