@@ -1,6 +1,10 @@
 #ifndef TEST_TOOLS_HPP
 #define TEST_TOOLS_HPP
 
+#include <algorithm>
+#include <cassert>
+#include <cfloat>
+#include <cmath>
 #include <limits>
 
 #include "../consteig.hpp"
@@ -54,19 +58,21 @@
 
 // https://stackoverflow.com/a/32334103/3527182
 template <typename T>
-constexpr bool nearlyEqual(T a, T b,
-                           T epsilon = consteig::epsilon<T>() * 128,
-                           T relth = consteig::epsilon<T>())
+bool nearlyEqual(T a, T b, T epsilon = std::numeric_limits<T>::epsilon() * 128,
+                 T relth = std::numeric_limits<T>::min())
 {
-    static_assert(consteig::is_float<T>(), "Expects floating point number");
+    assert(std::numeric_limits<T>::is_iec559);
+    assert(epsilon >= T{0});
+    assert(epsilon < T{1});
+    assert(relth >= T{0});
 
     if (a == b)
         return true;
 
-    auto diff = consteig::abs(a - b);
-    auto sum = consteig::abs(a) + consteig::abs(b);
-    auto norm = sum < consteig::epsilon<T>() ? consteig::epsilon<T>() : sum;
-    return diff < (relth > epsilon * norm ? relth : epsilon * norm);
+    auto diff = std::abs(a - b);
+    auto norm =
+        std::min(std::abs(a) + std::abs(b), std::numeric_limits<T>::max());
+    return diff < std::max(relth, epsilon * norm);
 }
 
 template <typename T, consteig::Size R, consteig::Size C>

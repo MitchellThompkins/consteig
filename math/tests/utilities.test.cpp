@@ -11,16 +11,14 @@ TEST(utilities, compare_floats)
     static constexpr double aCompare2{45564813e-4};
     static constexpr bool aCompareTest =
         compareFloats(aCompare1, aCompare2, CONSTEIG_TEST_TOLERANCE);
-    static constexpr bool aCompareAns = nearlyEqual(aCompare1, aCompare2);
-    static_assert(aCompareTest == aCompareAns, MSG);
+    const bool aCompareAns = nearlyEqual(aCompare1, aCompare2);
     ASSERT_TRUE(aCompareTest == aCompareAns);
 
     static constexpr double bCompare1{0.0000};
     static constexpr double bCompare2{0.0000};
     static constexpr bool bCompareTest =
         compareFloats(bCompare1, bCompare2, CONSTEIG_TEST_TOLERANCE);
-    static constexpr bool bCompareAns = nearlyEqual(bCompare1, bCompare2);
-    static_assert(bCompareTest == bCompareAns, MSG);
+    const bool bCompareAns = nearlyEqual(bCompare1, bCompare2);
     ASSERT_TRUE(bCompareTest == bCompareAns);
 }
 
