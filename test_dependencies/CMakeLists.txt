@@ -1,20 +1,20 @@
 if(CONSTEIG_COMPILE_ONLY)
     # Bare-metal cross-compilers can't build GoogleTest (needs POSIX).
-    # Provide header-only stubs so test TUs compile without linking.
-    set(_gtest_inc ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include)
-    set(_gmock_inc ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googlemock/include)
+    # Provide no-op stub headers so test TUs compile (exercising static_assert)
+    # without requiring the hosted C++ standard library.
+    set(_stub_inc ${CMAKE_CURRENT_SOURCE_DIR}/gtest_stubs)
 
     add_library(gtest INTERFACE)
-    target_include_directories(gtest SYSTEM INTERFACE ${_gtest_inc})
+    target_include_directories(gtest SYSTEM INTERFACE ${_stub_inc})
 
     add_library(gtest_main INTERFACE)
-    target_include_directories(gtest_main SYSTEM INTERFACE ${_gtest_inc})
+    target_include_directories(gtest_main SYSTEM INTERFACE ${_stub_inc})
 
     add_library(gmock INTERFACE)
-    target_include_directories(gmock SYSTEM INTERFACE ${_gmock_inc} ${_gtest_inc})
+    target_include_directories(gmock SYSTEM INTERFACE ${_stub_inc})
 
     add_library(gmock_main INTERFACE)
-    target_include_directories(gmock_main SYSTEM INTERFACE ${_gmock_inc} ${_gtest_inc})
+    target_include_directories(gmock_main SYSTEM INTERFACE ${_stub_inc})
 else()
     add_subdirectory(googletest)
 endif()
