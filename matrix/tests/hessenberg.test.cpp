@@ -125,27 +125,27 @@ TEST(hessenberg, hess)
                                                        transpose(test._p)};
 
     static_assert(
-        approxEqualMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        equalWithinMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        approxEqualMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        equalWithinMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
     static_assert(
-        approxEqualMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        equalWithinMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        approxEqualMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        equalWithinMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
     static_assert(
-        approxEqualMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        equalWithinMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        approxEqualMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        equalWithinMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
-    static_assert(approxEqualMat(identity, identityCheck,
+    static_assert(equalWithinMat(identity, identityCheck,
                                  CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
                   MSG);
-    ASSERT_TRUE(approxEqualMat(identity, identityCheck,
+    ASSERT_TRUE(equalWithinMat(identity, identityCheck,
                                CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 }
 
@@ -207,15 +207,15 @@ TEST(hessenberg, hess_double_10x10)
                                                         transpose(test._p)};
 
     // Prove that double precision allows the 1e-9 tolerance to pass
-    static_assert(approxEqualMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE), MSG);
     static_assert(
-        approxEqualMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE), MSG);
+        equalWithinMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE), MSG);
 
-    ASSERT_TRUE(approxEqualMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE));
+    ASSERT_TRUE(equalWithinMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE));
     ASSERT_TRUE(
-        approxEqualMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE));
+        equalWithinMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE));
 
-    static_assert(approxEqualMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE),
+    static_assert(equalWithinMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE),
                   MSG);
-    ASSERT_TRUE(approxEqualMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE));
+    ASSERT_TRUE(equalWithinMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE));
 }

@@ -93,7 +93,7 @@ constexpr bool nearlyEqual(T a, T b,
 }
 
 template <typename T, consteig::Size R, consteig::Size C>
-static constexpr bool approxEqualMat(consteig::Matrix<T, R, C> a,
+static constexpr bool equalWithinMat(consteig::Matrix<T, R, C> a,
                                      consteig::Matrix<T, R, C> b,
                                      const T thresh)
 {
@@ -101,7 +101,7 @@ static constexpr bool approxEqualMat(consteig::Matrix<T, R, C> a,
     {
         for (consteig::Size j{0}; j < C; j++)
         {
-            if (!consteig::approxEqual(a(i, j), b(i, j), thresh))
+            if (!consteig::equalWithin(a(i, j), b(i, j), thresh))
             {
                 return false;
             }

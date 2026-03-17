@@ -19,11 +19,11 @@ TEST(qr_decomp, eigen_comparison)
 
     // Verify reconstruction and orthogonality at compile time
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
-    static_assert(approxEqualMat(recon, mat, kTol), MSG);
+    static_assert(equalWithinMat(recon, mat, kTol), MSG);
 
     static constexpr Matrix<double, s, s> qtq = transpose(qrRes._q) * qrRes._q;
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
-    static_assert(approxEqualMat(qtq, ident, kTol), MSG);
+    static_assert(equalWithinMat(qtq, ident, kTol), MSG);
 
     // Eigen QR (Calculate at runtime for comparison)
     Eigen::MatrixXd eigMat = toEigen(mat);
@@ -65,8 +65,8 @@ TEST(qr_decomp, identity_matrix)
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
     // Checks
-    static_assert(approxEqualMat(qrRes._q, mat, kTol), MSG);
-    static_assert(approxEqualMat(qrRes._r, mat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, mat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._r, mat, kTol), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
@@ -87,8 +87,8 @@ TEST(qr_decomp, zero_matrix)
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
     static constexpr Matrix<double, s, s> zeroMat{};
 
-    static_assert(approxEqualMat(qrRes._q, ident, kTol), MSG);
-    static_assert(approxEqualMat(qrRes._r, zeroMat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, ident, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._r, zeroMat, kTol), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
@@ -109,8 +109,8 @@ TEST(qr_decomp, diagonal_matrix)
 
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
 
-    static_assert(approxEqualMat(qrRes._q, ident, kTol), MSG);
-    static_assert(approxEqualMat(qrRes._r, mat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, ident, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._r, mat, kTol), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
@@ -131,7 +131,7 @@ TEST(qr_decomp, singular_matrix)
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
-    static_assert(approxEqualMat(recon, mat, kTol), MSG);
+    static_assert(equalWithinMat(recon, mat, kTol), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
@@ -152,10 +152,10 @@ TEST(qr_decomp, static_constexpr_even_mat)
     static constexpr QRMatrix<double, x> test{qr(mat)};
 
     // Test Static Assertion
-    static_assert(approxEqualMat(test._q * test._r, mat, kTol), MSG);
+    static_assert(equalWithinMat(test._q * test._r, mat, kTol), MSG);
 
     // Runtime checks
-    ASSERT_TRUE(approxEqualMat(test._q * test._r, mat, kTol));
+    ASSERT_TRUE(equalWithinMat(test._q * test._r, mat, kTol));
 }
 
 TEST(qr_decomp, static_constexpr_random)
@@ -189,13 +189,13 @@ TEST(qr_decomp, static_constexpr_random)
     static constexpr Matrix<double, s, s> qrCheck{test._q * test._r};
 
     // Verify properties
-    static_assert(approxEqualMat(qrCheck, mat, kTol), MSG);
-    ASSERT_TRUE(approxEqualMat(qrCheck, mat, kTol));
+    static_assert(equalWithinMat(qrCheck, mat, kTol), MSG);
+    ASSERT_TRUE(equalWithinMat(qrCheck, mat, kTol));
 
     // Check Q unitary
     static constexpr Matrix<double, s, s> qUnitary{test._q *
                                                    transpose(test._q)};
     static constexpr Matrix<double, s, s> identity{eye<double, s>()};
-    static_assert(approxEqualMat(qUnitary, identity, kTol), MSG);
-    ASSERT_TRUE(approxEqualMat(qUnitary, identity, kTol));
+    static_assert(equalWithinMat(qUnitary, identity, kTol), MSG);
+    ASSERT_TRUE(equalWithinMat(qUnitary, identity, kTol));
 }

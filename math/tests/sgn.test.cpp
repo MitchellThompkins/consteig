@@ -9,18 +9,18 @@ TEST(sgn_function, sgn_test)
 {
     static constexpr double a{sgn(100.0)};
     static constexpr double aAnswer{1.0};
-    static_assert(approxEqual(a, aAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
-    ASSERT_TRUE(approxEqual(a, aAnswer, CONSTEIG_TEST_TOLERANCE));
+    static_assert(equalWithin(a, aAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithin(a, aAnswer, CONSTEIG_TEST_TOLERANCE));
 
     static constexpr double b{sgn(-100.0)};
     static constexpr double bAnswer{-1.0};
-    static_assert(approxEqual(b, bAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
-    ASSERT_TRUE(approxEqual(b, bAnswer, CONSTEIG_TEST_TOLERANCE));
+    static_assert(equalWithin(b, bAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithin(b, bAnswer, CONSTEIG_TEST_TOLERANCE));
 
     static constexpr double c{sgn(0.0)};
     static constexpr double cAnswer{0.0};
-    static_assert(approxEqual(c, cAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
-    ASSERT_TRUE(approxEqual(c, cAnswer, CONSTEIG_TEST_TOLERANCE));
+    static_assert(equalWithin(c, cAnswer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithin(c, cAnswer, CONSTEIG_TEST_TOLERANCE));
 
     static constexpr int d{sgn(100)};
     static constexpr int dAnswer{1};

@@ -241,7 +241,7 @@ template <typename T, Size R, Size C> class Matrix
                 for (Size j{0}; j < i; j++)
                 {
                     symmetric &=
-                        approxEqual((*this)(i, j), (*this)(j, i), thresh);
+                        equalWithin((*this)(i, j), (*this)(j, i), thresh);
                     if (!symmetric)
                     {
                         break;
