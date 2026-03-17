@@ -53,12 +53,29 @@
 #define MAX_SENTINEL_VAL 1e12
 #endif
 
-// https://stackoverflow.com/a/32334103/3527182
+// Number of ULPs (units in the last place) of accumulated floating-point
+// rounding error to tolerate. Each operation contributes ~0.5 ULP, so this
+// gives headroom for roughly 2x this many chained operations.
+#ifndef NEARLY_EQUAL_ULP_TOLERANCE
+#define NEARLY_EQUAL_ULP_TOLERANCE 128
+#endif
+
+// Relative-error floating point comparison.
+// Rather than checking |a - b| < epsilon (absolute), this scales the tolerance
+// by the magnitude of a and b: |a - b| < epsilon * |a + b|. This means numbers
+// near 1000 get a wider absolute tolerance than numbers near 0.001, which
+// matches how floating-point rounding error actually behaves.
+//
+// epsilon is expressed in ULPs (machine_epsilon * NEARLY_EQUAL_ULP_TOLERANCE).
+// relth is an absolute floor for near-zero comparisons, where the relative
+// norm collapses and epsilon * norm would underflow.
+//
+// Source: https://stackoverflow.com/a/32334103/3527182
 template <typename T>
-constexpr bool nearlyEqual(T a, T b,
-                           T epsilon = 128 * std::numeric_limits<T>::epsilon(),
-                           T relth = std::numeric_limits<T>::min())
-// those defaults are arbitrary and could be removed
+constexpr bool nearlyEqual(
+    T a, T b,
+    T epsilon = NEARLY_EQUAL_ULP_TOLERANCE * std::numeric_limits<T>::epsilon(),
+    T relth = std::numeric_limits<T>::min())
 {
     static_assert(consteig::is_float<T>(), "Expects floating point number");
     assert(std::numeric_limits<T>::epsilon() <= epsilon);
@@ -72,9 +89,6 @@ constexpr bool nearlyEqual(T a, T b,
     auto diff = std::abs(a - b);
     auto norm =
         std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
-    // or even faster: std::min(std::abs(a + b),
-    // std::numeric_limits<float>::max()); keeping this commented out until I
-    // update figures below
     return diff < std::max(relth, epsilon * norm);
 }
 
