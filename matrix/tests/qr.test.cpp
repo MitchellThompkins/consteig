@@ -54,6 +54,34 @@ TEST(qr_decomp, eigen_comparison)
                                   static_cast<Eigen::Index>(i))),
                     CONSTEIG_TEST_TOLERANCE);
     }
+
+    // Compare Q column-by-column using absolute values to handle sign
+    // ambiguity. QR decomposition is only unique up to column sign: both
+    // consteig and Eigen may negate an entire Q column (paired with the same
+    // negation in the corresponding R row) and still produce a valid
+    // factorization. Taking abs() of each element neutralizes that.
+    //
+    // Additionally, the test matrix {1..4; 5..8; 9..12; 13..16} is rank-2
+    // (each row is an arithmetic progression, so rows 3 and 4 are linear
+    // combinations of rows 1 and 2). This means two of the four Q columns
+    // span the null space. For null-space columns, the Householder process
+    // has no unique answer — any orthonormal completion of the column space
+    // is valid — so consteig and Eigen will freely disagree. We detect these
+    // columns by checking whether the matching R diagonal entry is
+    // effectively zero (< 1e-6) and skip them.
+    for (Size j = 0; j < s; ++j)
+    {
+        if (std::abs(rEig(static_cast<Eigen::Index>(j),
+                          static_cast<Eigen::Index>(j))) < 1e-6)
+            continue;
+        for (Size i = 0; i < s; ++i)
+        {
+            ASSERT_NEAR(std::abs(qrRes._q(i, j)),
+                        std::abs(qEig(static_cast<Eigen::Index>(i),
+                                      static_cast<Eigen::Index>(j))),
+                        CONSTEIG_TEST_TOLERANCE);
+        }
+    }
 }
 
 TEST(qr_decomp, identity_matrix)
