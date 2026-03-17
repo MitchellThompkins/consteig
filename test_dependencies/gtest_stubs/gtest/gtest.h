@@ -12,11 +12,15 @@
 #define ASSERT_EQ(a, b)     ((void)(a), (void)(b))
 #define ASSERT_NE(a, b)     ((void)(a), (void)(b))
 #define ASSERT_NEAR(a, b, t) ((void)(a), (void)(b), (void)(t))
+#define ASSERT_FLOAT_EQ(a, b) ((void)(a), (void)(b))
+#define ASSERT_DOUBLE_EQ(a, b) ((void)(a), (void)(b))
 
 #define EXPECT_TRUE(x)      ((void)(x))
 #define EXPECT_FALSE(x)     ((void)(x))
 #define EXPECT_EQ(a, b)     ((void)(a), (void)(b))
 #define EXPECT_NE(a, b)     ((void)(a), (void)(b))
 #define EXPECT_NEAR(a, b, t) ((void)(a), (void)(b), (void)(t))
+
+#define SUCCEED() ((void)0)
 
 #endif // GTEST_STUB_H
