@@ -6,25 +6,27 @@
 using namespace consteig;
 
 // These helper functions allow us to call templated constexpr functions
-template <typename T, Size R, Size C>
-static constexpr Matrix<T, R, C> setRowsTest(const Matrix<T, 1, C> mat[],
+template <typename T, Size R, Size C, Size N>
+static constexpr Matrix<T, R, C> setRowsTest(const Matrix<T, 1, C> (&mat)[N],
                                              const Size row)
 {
     Matrix<T, R, C> out{};
-    out.setRow(mat[0], row);
-    out.setRow(mat[1], row + 1);
-    out.setRow(mat[2], row + 2);
+    for (Size i{0}; i < N; i++)
+    {
+        out.setRow(mat[i], row + i);
+    }
     return out;
 }
 
-template <typename T, Size R, Size C>
-static constexpr Matrix<T, R, C> setColsTest(const Matrix<T, R, 1> mat[],
+template <typename T, Size R, Size C, Size N>
+static constexpr Matrix<T, R, C> setColsTest(const Matrix<T, R, 1> (&mat)[N],
                                              const Size col)
 {
     Matrix<T, R, C> out{};
-    out.setCol(mat[0], col);
-    out.setCol(mat[1], col + 1);
-    out.setCol(mat[2], col + 2);
+    for (Size i{0}; i < N; i++)
+    {
+        out.setCol(mat[i], col + i);
+    }
     return out;
 }
 
