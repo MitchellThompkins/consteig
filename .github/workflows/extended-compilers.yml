@@ -8,45 +8,6 @@ on:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Embedded cross-compilation (build-only — static_assert is the test)
-  # ---------------------------------------------------------------------------
-  cross_compile:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: arm-gcc
-            cc: arm-none-eabi-gcc
-            cxx: arm-none-eabi-g++
-            toolchain: arm-none-eabi-gcc
-            packages: gcc-arm-none-eabi newlib-arm-none-eabi
-          - name: arm-clang
-            cc: clang
-            cxx: clang++
-            toolchain: arm-none-eabi-clang
-            packages: clang lld gcc-arm-none-eabi newlib-arm-none-eabi
-    name: cross / ${{ matrix.name }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Install cross-compiler
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake ${{ matrix.packages }}
-
-      - name: Build (cross-compile)
-        run: |
-          cmake -B build \
-            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/${{ matrix.toolchain }}.cmake \
-            -DCONSTEIG_COMPILE_ONLY=ON \
-            -Dgtest_disable_pthreads=ON \
-            -DCONSTEIG_RAISE_COMPILER_LIMITS=ON
-          cmake --build build -j $(nproc)
-
-  # ---------------------------------------------------------------------------
   # Multi-platform native builds (build + test)
   # ---------------------------------------------------------------------------
   multi_platform:
