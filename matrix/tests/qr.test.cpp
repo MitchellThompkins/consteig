@@ -6,8 +6,6 @@
 
 using namespace consteig;
 
-static constexpr double kTol = CONSTEIG_TEST_TOLERANCE;
-
 TEST(qr_decomp, eigen_comparison)
 {
     static constexpr Size s{4};
@@ -19,11 +17,11 @@ TEST(qr_decomp, eigen_comparison)
 
     // Verify reconstruction and orthogonality at compile time
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
-    static_assert(equalWithinMat(recon, mat, kTol), MSG);
+    static_assert(equalWithinMat(recon, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
     static constexpr Matrix<double, s, s> qtq = transpose(qrRes._q) * qrRes._q;
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
-    static_assert(equalWithinMat(qtq, ident, kTol), MSG);
+    static_assert(equalWithinMat(qtq, ident, CONSTEIG_TEST_TOLERANCE), MSG);
 
     // Eigen QR (Calculate at runtime for comparison)
     Eigen::MatrixXd eigMat = toEigen(mat);
@@ -36,7 +34,7 @@ TEST(qr_decomp, eigen_comparison)
     {
         for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(recon(i, j), mat(i, j), kTol);
+            ASSERT_NEAR(recon(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 
@@ -44,7 +42,7 @@ TEST(qr_decomp, eigen_comparison)
     {
         for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(qtq(i, j), ident(i, j), kTol);
+            ASSERT_NEAR(qtq(i, j), ident(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 
@@ -54,7 +52,7 @@ TEST(qr_decomp, eigen_comparison)
         ASSERT_NEAR(std::abs(qrRes._r(i, i)),
                     std::abs(rEig(static_cast<Eigen::Index>(i),
                                   static_cast<Eigen::Index>(i))),
-                    kTol);
+                    CONSTEIG_TEST_TOLERANCE);
     }
 }
 
@@ -65,15 +63,15 @@ TEST(qr_decomp, identity_matrix)
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
     // Checks
-    static_assert(equalWithinMat(qrRes._q, mat, kTol), MSG);
-    static_assert(equalWithinMat(qrRes._r, mat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, mat, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(qrRes._r, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
         for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(qrRes._q(i, j), mat(i, j), kTol);
-            ASSERT_NEAR(qrRes._r(i, j), mat(i, j), kTol);
+            ASSERT_NEAR(qrRes._q(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
+            ASSERT_NEAR(qrRes._r(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -87,15 +85,15 @@ TEST(qr_decomp, zero_matrix)
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
     static constexpr Matrix<double, s, s> zeroMat{};
 
-    static_assert(equalWithinMat(qrRes._q, ident, kTol), MSG);
-    static_assert(equalWithinMat(qrRes._r, zeroMat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, ident, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(qrRes._r, zeroMat, CONSTEIG_TEST_TOLERANCE), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
         for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(qrRes._q(i, j), ident(i, j), kTol);
-            ASSERT_NEAR(qrRes._r(i, j), 0.0, kTol);
+            ASSERT_NEAR(qrRes._q(i, j), ident(i, j), CONSTEIG_TEST_TOLERANCE);
+            ASSERT_NEAR(qrRes._r(i, j), 0.0, CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -109,15 +107,15 @@ TEST(qr_decomp, diagonal_matrix)
 
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
 
-    static_assert(equalWithinMat(qrRes._q, ident, kTol), MSG);
-    static_assert(equalWithinMat(qrRes._r, mat, kTol), MSG);
+    static_assert(equalWithinMat(qrRes._q, ident, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(qrRes._r, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
         for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(qrRes._q(i, j), (i == j ? 1.0 : 0.0), kTol);
-            ASSERT_NEAR(qrRes._r(i, j), mat(i, j), kTol);
+            ASSERT_NEAR(qrRes._q(i, j), (i == j ? 1.0 : 0.0), CONSTEIG_TEST_TOLERANCE);
+            ASSERT_NEAR(qrRes._r(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -131,13 +129,13 @@ TEST(qr_decomp, singular_matrix)
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
-    static_assert(equalWithinMat(recon, mat, kTol), MSG);
+    static_assert(equalWithinMat(recon, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
     for (Size i = 0; i < s; ++i)
     {
         for (Size j = 0; j < s; ++j)
         {
-            ASSERT_NEAR(recon(i, j), mat(i, j), kTol);
+            ASSERT_NEAR(recon(i, j), mat(i, j), CONSTEIG_TEST_TOLERANCE);
         }
     }
 }
@@ -152,10 +150,10 @@ TEST(qr_decomp, static_constexpr_even_mat)
     static constexpr QRMatrix<double, x> test{qr(mat)};
 
     // Test Static Assertion
-    static_assert(equalWithinMat(test._q * test._r, mat, kTol), MSG);
+    static_assert(equalWithinMat(test._q * test._r, mat, CONSTEIG_TEST_TOLERANCE), MSG);
 
     // Runtime checks
-    ASSERT_TRUE(equalWithinMat(test._q * test._r, mat, kTol));
+    ASSERT_TRUE(equalWithinMat(test._q * test._r, mat, CONSTEIG_TEST_TOLERANCE));
 }
 
 TEST(qr_decomp, static_constexpr_random)
@@ -189,13 +187,13 @@ TEST(qr_decomp, static_constexpr_random)
     static constexpr Matrix<double, s, s> qrCheck{test._q * test._r};
 
     // Verify properties
-    static_assert(equalWithinMat(qrCheck, mat, kTol), MSG);
-    ASSERT_TRUE(equalWithinMat(qrCheck, mat, kTol));
+    static_assert(equalWithinMat(qrCheck, mat, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithinMat(qrCheck, mat, CONSTEIG_TEST_TOLERANCE));
 
     // Check Q unitary
     static constexpr Matrix<double, s, s> qUnitary{test._q *
                                                    transpose(test._q)};
     static constexpr Matrix<double, s, s> identity{eye<double, s>()};
-    static_assert(equalWithinMat(qUnitary, identity, kTol), MSG);
-    ASSERT_TRUE(equalWithinMat(qUnitary, identity, kTol));
+    static_assert(equalWithinMat(qUnitary, identity, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithinMat(qUnitary, identity, CONSTEIG_TEST_TOLERANCE));
 }
