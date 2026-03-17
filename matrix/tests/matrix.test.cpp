@@ -174,6 +174,25 @@ TEST(matrix, static_constexpr_col)
     ASSERT_TRUE(colExtractLimit == answerLimit);
 }
 
+TEST(matrix, static_constexpr_row_col_nonsquare)
+{
+    // 3 rows, 2 cols
+    static constexpr Matrix<float, 3, 2> mat{
+        {{{1.0F, 2.0F}, {3.0F, 4.0F}, {5.0F, 6.0F}}}};
+
+    // row(1) should be [3, 4]
+    static constexpr Matrix<float, 1, 2> rowExtract{mat.row(1)};
+    static constexpr Matrix<float, 1, 2> rowAnswer{{{{3.0F, 4.0F}}}};
+    static_assert(rowExtract == rowAnswer, MSG);
+    ASSERT_TRUE(rowExtract == rowAnswer);
+
+    // col(0) should be [1, 3, 5]
+    static constexpr Matrix<float, 3, 1> colExtract{mat.col(0)};
+    static constexpr Matrix<float, 3, 1> colAnswer{{{{1.0F}, {3.0F}, {5.0F}}}};
+    static_assert(colExtract == colAnswer, MSG);
+    ASSERT_TRUE(colExtract == colAnswer);
+}
+
 TEST(matrix, static_constexpr_subMatrix)
 {
     static constexpr int x{3};

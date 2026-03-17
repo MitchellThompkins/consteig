@@ -78,7 +78,7 @@ template <typename T, Size R, Size C> class Matrix
     {
         Matrix<T, R, 1> result{};
 
-        for (Size i{0}; i < C; i++)
+        for (Size i{0}; i < R; i++)
         {
             result(i, 0) = (*this)(i, n);
         }
