@@ -85,7 +85,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
 
     if(CONSTEIG_COMPILE_ONLY)
-        add_executable(cross_compile_verify ${CMAKE_SOURCE_DIR}/cross_compile_verify.cpp)
+        add_executable(cross_compile_verify ${PROJECT_SOURCE_DIR}/cross_compile_verify.cpp)
         target_link_libraries(cross_compile_verify matrix array consteig_eigen)
     endif()
 endif()
