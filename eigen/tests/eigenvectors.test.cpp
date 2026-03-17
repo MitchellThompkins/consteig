@@ -6,8 +6,6 @@
 
 using namespace consteig;
 
-static constexpr double kTol = CONSTEIG_TEST_TOLERANCE;
-
 TEST(eigenvectors, simple_symmetric)
 {
     static constexpr Size s{2};
@@ -35,12 +33,12 @@ TEST(eigenvectors, simple_symmetric)
 
     for (Size i = 0; i < s; ++i)
     {
-        if (consteig::abs(evals(i, 0).real - 3.0) < kTol)
+        if (consteig::abs(evals(i, 0).real - 3.0) < CONSTEIG_TEST_TOLERANCE)
         {
             found_3 = true;
             idx_3 = i;
         }
-        if (consteig::abs(evals(i, 0).real - 1.0) < kTol)
+        if (consteig::abs(evals(i, 0).real - 1.0) < CONSTEIG_TEST_TOLERANCE)
         {
             found_1 = true;
             idx_1 = i;
@@ -54,7 +52,7 @@ TEST(eigenvectors, simple_symmetric)
     double v3_0 = V(0, idx_3).real;
     double v3_1 = V(1, idx_3).real;
     // They should be equal in magnitude and sign
-    EXPECT_NEAR(consteig::abs(v3_0), consteig::abs(v3_1), kTol)
+    EXPECT_NEAR(consteig::abs(v3_0), consteig::abs(v3_1), CONSTEIG_TEST_TOLERANCE)
         << "V3 elements magnitude mismatch";
     EXPECT_TRUE(v3_0 * v3_1 > 0) << "V3 elements should have same sign";
 
@@ -62,7 +60,7 @@ TEST(eigenvectors, simple_symmetric)
     double v1_0 = V(0, idx_1).real;
     double v1_1 = V(1, idx_1).real;
     // They should be equal in magnitude but opposite in sign
-    EXPECT_NEAR(consteig::abs(v1_0), consteig::abs(v1_1), kTol)
+    EXPECT_NEAR(consteig::abs(v1_0), consteig::abs(v1_1), CONSTEIG_TEST_TOLERANCE)
         << "V1 elements magnitude mismatch";
     EXPECT_TRUE(v1_0 * v1_1 < 0) << "V1 elements should have opposite sign";
 
@@ -76,10 +74,10 @@ TEST(eigenvectors, simple_symmetric)
     Complex<double> lv0 = lam * V(0, 0);
     Complex<double> lv1 = lam * V(1, 0);
 
-    EXPECT_NEAR(Av0.real, lv0.real, kTol) << "A*v = lambda*v mismatch (real)";
-    EXPECT_NEAR(Av0.imag, lv0.imag, kTol) << "A*v = lambda*v mismatch (imag)";
-    EXPECT_NEAR(Av1.real, lv1.real, kTol) << "A*v = lambda*v mismatch (real)";
-    EXPECT_NEAR(Av1.imag, lv1.imag, kTol) << "A*v = lambda*v mismatch (imag)";
+    EXPECT_NEAR(Av0.real, lv0.real, CONSTEIG_TEST_TOLERANCE) << "A*v = lambda*v mismatch (real)";
+    EXPECT_NEAR(Av0.imag, lv0.imag, CONSTEIG_TEST_TOLERANCE) << "A*v = lambda*v mismatch (imag)";
+    EXPECT_NEAR(Av1.real, lv1.real, CONSTEIG_TEST_TOLERANCE) << "A*v = lambda*v mismatch (real)";
+    EXPECT_NEAR(Av1.imag, lv1.imag, CONSTEIG_TEST_TOLERANCE) << "A*v = lambda*v mismatch (imag)";
 }
 
 TEST(eigenvectors, complex_rotation)
@@ -113,13 +111,13 @@ TEST(eigenvectors, complex_rotation)
         Complex<double> lv0 = lam * V(0, j);
         Complex<double> lv1 = lam * V(1, j);
 
-        EXPECT_NEAR(Av0.real, lv0.real, kTol)
+        EXPECT_NEAR(Av0.real, lv0.real, CONSTEIG_TEST_TOLERANCE)
             << "Av = lv mismatch for eval " << j << " (row 0, real)";
-        EXPECT_NEAR(Av0.imag, lv0.imag, kTol)
+        EXPECT_NEAR(Av0.imag, lv0.imag, CONSTEIG_TEST_TOLERANCE)
             << "Av = lv mismatch for eval " << j << " (row 0, imag)";
-        EXPECT_NEAR(Av1.real, lv1.real, kTol)
+        EXPECT_NEAR(Av1.real, lv1.real, CONSTEIG_TEST_TOLERANCE)
             << "Av = lv mismatch for eval " << j << " (row 1, real)";
-        EXPECT_NEAR(Av1.imag, lv1.imag, kTol)
+        EXPECT_NEAR(Av1.imag, lv1.imag, CONSTEIG_TEST_TOLERANCE)
             << "Av = lv mismatch for eval " << j << " (row 1, imag)";
     }
 }
