@@ -165,6 +165,10 @@ ASSERT_TRUE(equalWithinMat(result, expected, TOLERANCE));
 EXPECT_NEAR(computed, reference, TOLERANCE);
 ```
 
+## Coding Style
+
+- **Always use braces** for all control flow bodies (`if`, `else`, `for`, `while`), even single-line ones. No braceless statements.
+
 ## Common Pitfalls
 
 1. **Type mismatch in tolerances**: Using `CONSTEIG_FLOAT_TEST_TOLERANCE` (float) with `Matrix<double, ...>` will fail to compile
