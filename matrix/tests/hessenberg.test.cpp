@@ -125,33 +125,33 @@ TEST(hessenberg, hess)
                                                        transpose(test._p)};
 
     static_assert(
-        compareFloatMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        equalWithinMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        compareFloatMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        equalWithinMat(test._p, pAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
     static_assert(
-        compareFloatMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        equalWithinMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        compareFloatMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        equalWithinMat(test._h, hAnswer, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
     static_assert(
-        compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+        equalWithinMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
         MSG);
     ASSERT_TRUE(
-        compareFloatMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+        equalWithinMat(hessCheck, mat, CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 
-    static_assert(compareFloatMat(identity, identityCheck,
-                                  CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
+    static_assert(equalWithinMat(identity, identityCheck,
+                                 CONSTEIG_ITERATIVE_FLOAT_TOLERANCE),
                   MSG);
-    ASSERT_TRUE(compareFloatMat(identity, identityCheck,
-                                CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
+    ASSERT_TRUE(equalWithinMat(identity, identityCheck,
+                               CONSTEIG_ITERATIVE_FLOAT_TOLERANCE));
 }
 
 TEST(hessenberg, hess_double_10x10)
 {
-    static constexpr int s{10};
+    static constexpr Size s{10};
     static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
@@ -207,16 +207,15 @@ TEST(hessenberg, hess_double_10x10)
                                                         transpose(test._p)};
 
     // Prove that double precision allows the 1e-9 tolerance to pass
-    static_assert(compareFloatMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE),
-                  MSG);
+    static_assert(equalWithinMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE), MSG);
     static_assert(
-        compareFloatMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE), MSG);
+        equalWithinMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE), MSG);
 
-    ASSERT_TRUE(compareFloatMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE));
+    ASSERT_TRUE(equalWithinMat(hessCheck, mat, CONSTEIG_TEST_TOLERANCE));
     ASSERT_TRUE(
-        compareFloatMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE));
+        equalWithinMat(identity, identityCheck, CONSTEIG_TEST_TOLERANCE));
 
-    static_assert(compareFloatMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE),
+    static_assert(equalWithinMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE),
                   MSG);
-    ASSERT_TRUE(compareFloatMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE));
+    ASSERT_TRUE(equalWithinMat(test._h, hAnswer, CONSTEIG_TEST_TOLERANCE));
 }

@@ -16,11 +16,6 @@ JOB_FLAG := -j 4
 
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build )
 
-RAISE_COMPILER_LIMITS ?= 1
-ifeq "$(RAISE_COMPILER_LIMITS)" "1"
-    CMAKE_OPTIONS += -DCONSTEIG_RAISE_COMPILER_LIMITS=ON
-endif
-
 # If CC/CXX are set, pass them to CMake
 ifneq "$(CC)" ""
     CMAKE_OPTIONS += -DCMAKE_C_COMPILER=$(CC)
@@ -42,8 +37,8 @@ build: $(BUILD_PREFIX)/$(BUILD_FILE)
 	export CTEST_OUTPUT_ON_FAILURE=1; \
 	cmake --build $(BUILD_PREFIX) --target all -- $(JOB_FLAG) ${a}; \
 
-.PHONY: h
-h:
+.PHONY: help
+help:
 	@echo 'make [OPTIONS...] [TARGETS...]'
 	@echo
 	@echo 'TARGETS:'
@@ -58,10 +53,10 @@ h:
 	@echo '    runs clang-format on .h/.hpp and .c/.cpp files'
 	@echo
 	@echo 'test'
-	@echo '    runs unit tests with gtest'
+	@echo '    runs unit tests in parallel with ctest -j$$(getconf _NPROCESSORS_ONLN)'
 	@echo
-	@echo 'examples'
-	@echo '    builds all example executables'
+	@echo 'run-examples'
+	@echo '    builds and runs all example executables'
 	@echo
 	@echo 'OPTIONS:'
 	@echo
@@ -78,6 +73,33 @@ h:
 	@echo 'CXX=<compiler>'
 	@echo '    C++ compiler to use (e.g. clang++)'
 
+# Each generated test is its own executable, and ctest launches a separate
+# process per test. On macOS, per-process launch overhead (~0.05s) dominates
+# and causes ~800 tests to take ~1 minute sequentially. On Linux the same
+# overhead is <0.01s per test. Running ctest in parallel hides this latency.
+#
+# The naive `cmake --build --target test` (used by the %: catch-all below)
+# invokes ctest sequentially. The test binaries themselves run in 0ms on both
+# platforms -- the entire difference is macOS costing ~0.05s per process
+# launch vs <0.01s on Linux, multiplied across 800 tests.
+#
+# Example (macOS, single test via ctest):
+#   time ctest -R generated_sym_6
+#   Total Test time (real) = 0.02 sec
+#   ctest -R generated_sym_6  0.03s user 0.01s system 85% cpu 0.049 total
+#
+# getconf _NPROCESSORS_ONLN is portable across macOS and Linux.
+# Note: on macOS, the first `make test` after a build may be slow (~1-2s/test).
+# Subsequent runs are fast (~0.1s/test). Root cause unknown. Suspected amfid/codesign
+# verification overhead; tested by ad-hoc signing all binaries after build with:
+#   find $(BUILD_PREFIX)/bin -type f -perm +111 -exec codesign --sign - --force {} \;
+# but this had no effect.
+.PHONY: test
+test: $(BUILD_PREFIX)/$(BUILD_FILE)
+	@set -o xtrace; \
+	export CTEST_OUTPUT_ON_FAILURE=1; \
+	ctest --test-dir $(BUILD_PREFIX) -j$$(getconf _NPROCESSORS_ONLN); \
+
 .PHONY: format
 format:
 	find . \( -path "./test_dependencies/googletest" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format -i
@@ -90,8 +112,40 @@ check-format:
 remove:
 	rm -rf build/
 
-.PHONY: examples
-examples: matrix.main decomp.main eigen.main population.main butterworth.main
+.PHONY: run-examples
+run-examples:
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	@set -e; \
+	cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
+	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
+		echo ""; \
+		echo "========================================"; \
+		echo "Running: $$ex"; \
+		echo "========================================"; \
+		$(BUILD_PREFIX)/bin/$$ex; \
+	done
+
+.PHONY: test-dc-motor-fail
+test-dc-motor-fail:
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	@echo "========================================"; \
+	echo "Building dc_motor_control.main (expected to fail)"; \
+	echo "========================================"; \
+	build_output=$$(cmake --build $(BUILD_PREFIX) --target dc_motor_control.main -- $(JOB_FLAG) 2>&1); \
+	build_rc=$$?; \
+	if [ $$build_rc -eq 0 ]; then \
+		echo "ERROR: dc_motor_control.main built successfully but should have failed!"; \
+		exit 1; \
+	elif echo "$$build_output" | grep -q "static assertion failed\|static_assert failed"; then \
+		echo ""; \
+		echo "========================================"; \
+		echo "Build failed as expected (static_assert rejected bad PID gains)"; \
+		echo "========================================"; \
+	else \
+		echo "ERROR: Build failed but not due to expected static_assert:"; \
+		echo "$$build_output"; \
+		exit 1; \
+	fi
 
 .PHONY: generate-test-cases
 generate-test-cases:
@@ -103,7 +157,6 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	touch -c $@
 	# run CMake to generate and configure the build scripts
 	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json && \
-	git config core.hooksPath .githooks && \
 	cd $(BUILD_PREFIX) && \
 	cmake .. $(CMAKE_OPTIONS); \
 
@@ -137,7 +190,8 @@ container.pull:
 
 .PHONY: container.start
 container.start:
+	touch $(THIS_DIR)/.ash_history
 	docker compose -f docker-compose.yml run --rm dev_env 'sh -x'
 
 container.make.%:
-	docker compose -f docker-compose.yml run --rm dev_env 'make $*'
+	docker compose -f docker-compose.yml run --rm dev_env 'make CC=$(CC) CXX=$(CXX) $*'

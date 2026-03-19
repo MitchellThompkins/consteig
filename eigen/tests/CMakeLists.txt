@@ -1,21 +1,20 @@
 ################################################################################
 # Test
 ################################################################################
-consteig_raise_compiler_limits()
 
 add_executable(consteig_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen.test.cpp)
 target_include_directories(consteig_eigen.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(consteig_eigen.test matrix array gtest_main Eigen3::Eigen consteig_eigen)
+target_link_libraries(consteig_eigen.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
 create_test(consteig_eigen.test)
 
 add_executable(eigen_comparison.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen_comparison.test.cpp)
 target_include_directories(eigen_comparison.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(eigen_comparison.test matrix array gtest_main Eigen3::Eigen consteig_eigen)
+target_link_libraries(eigen_comparison.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
 create_test(eigen_comparison.test)
 
 add_executable(eigenvectors.test ${CMAKE_CURRENT_SOURCE_DIR}/eigenvectors.test.cpp)
 target_include_directories(eigenvectors.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(eigenvectors.test matrix array gtest_main Eigen3::Eigen consteig_eigen)
+target_link_libraries(eigenvectors.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
 create_test(eigenvectors.test)
 
 # Helper function to add generated tests
@@ -23,7 +22,7 @@ function(add_gen_test target_name source_file)
     add_executable(${target_name}.test ${CMAKE_CURRENT_SOURCE_DIR}/${source_file})
     target_compile_definitions(${target_name}.test PRIVATE CONSTEIG_MAX_ITER=2000)
     target_include_directories(${target_name}.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
-    target_link_libraries(${target_name}.test matrix array gtest_main consteig_eigen)
+    target_link_libraries(${target_name}.test matrix array gtest_main consteig_eigen consteig_warnings)
     create_test(${target_name}.test)
 endfunction()
 

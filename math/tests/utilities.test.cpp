@@ -10,7 +10,7 @@ TEST(utilities, compare_floats)
     static constexpr double aCompare1{45564813e-4};
     static constexpr double aCompare2{45564813e-4};
     static constexpr bool aCompareTest =
-        compareFloats(aCompare1, aCompare2, CONSTEIG_TEST_TOLERANCE);
+        equalWithin(aCompare1, aCompare2, CONSTEIG_TEST_TOLERANCE);
     static constexpr bool aCompareAns = nearlyEqual(aCompare1, aCompare2);
     static_assert(aCompareTest == aCompareAns, MSG);
     ASSERT_TRUE(aCompareTest == aCompareAns);
@@ -18,7 +18,7 @@ TEST(utilities, compare_floats)
     static constexpr double bCompare1{0.0000};
     static constexpr double bCompare2{0.0000};
     static constexpr bool bCompareTest =
-        compareFloats(bCompare1, bCompare2, CONSTEIG_TEST_TOLERANCE);
+        equalWithin(bCompare1, bCompare2, CONSTEIG_TEST_TOLERANCE);
     static constexpr bool bCompareAns = nearlyEqual(bCompare1, bCompare2);
     static_assert(bCompareTest == bCompareAns, MSG);
     ASSERT_TRUE(bCompareTest == bCompareAns);
@@ -30,9 +30,9 @@ TEST(utilities, compare_floats_compare)
     static constexpr double compare2{1834.2422436};
 
     static constexpr bool compareTest1 =
-        compareFloats(compare1, compare2, 1e-6); // Design-intent: Expect true
+        equalWithin(compare1, compare2, 1e-6); // Design-intent: Expect true
     static constexpr bool compareTest2 =
-        compareFloats(compare1, compare2, 1e-8); // Design-intent: Expect false
+        equalWithin(compare1, compare2, 1e-8); // Design-intent: Expect false
 
     static_assert(compareTest1 == true, MSG);
     static_assert(compareTest2 == false, MSG);

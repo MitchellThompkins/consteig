@@ -7,8 +7,9 @@ services:
             - MY_GID=${MY_GID:? Error -> need GID.}
         volumes:
             - "${PWD}:${PWD}"
+            - "${PWD}/.ash_history:/home/${USER}/.ash_history"
         network_mode: host
         tty: True
         working_dir: ${PWD}
         entrypoint: ${PWD}/entrypoint.sh
-        command: /bin/bash
+        command: /bin/sh

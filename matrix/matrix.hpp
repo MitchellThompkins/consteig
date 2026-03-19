@@ -78,7 +78,7 @@ template <typename T, Size R, Size C> class Matrix
     {
         Matrix<T, R, 1> result{};
 
-        for (Size i{0}; i < C; i++)
+        for (Size i{0}; i < R; i++)
         {
             result(i, 0) = (*this)(i, n);
         }
@@ -206,7 +206,42 @@ template <typename T, Size R, Size C> class Matrix
     {
         static_assert(R == C, "Symmetric matrices should be square.");
 
-        bool symmetric{true};
+        if (sizeX() > 1)
+        {
+            for (Size i{1}; i <= sizeX() - 1; i++)
+            {
+                for (Size j{0}; j < i; j++)
+                {
+                    bool eq{false};
+                    if constexpr (is_float<T>())
+                    {
+                        eq = equalWithin((*this)(i, j), (*this)(j, i),
+                                         epsilon<T>());
+                    }
+                    else
+                    {
+                        eq = ((*this)(i, j) == (*this)(j, i));
+                    }
+
+                    if (!eq)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    template <typename U> constexpr bool isSymmetric(const U thresh) const
+    {
+        static_assert(is_float<T>(),
+                      "isSymmetric with threshold requires floating-point "
+                      "matrix elements; integer T would truncate thresh");
+        static_assert(is_float<U>(), "isSymmetric with arg expects to compare\
+                floating point values");
+        static_assert(R == C, "Symmetric matrices should be square.");
 
         if (sizeX() > 1)
         {
@@ -214,43 +249,15 @@ template <typename T, Size R, Size C> class Matrix
             {
                 for (Size j{0}; j < i; j++)
                 {
-                    symmetric &= ((*this)(i, j) == (*this)(j, i));
-                    if (!symmetric)
+                    if (!equalWithin((*this)(i, j), (*this)(j, i), thresh))
                     {
-                        break;
+                        return false;
                     }
                 }
             }
         }
 
-        return symmetric;
-    }
-
-    template <typename U> constexpr bool isSymmetric(const U thresh) const
-    {
-        static_assert(is_float<U>(), "isSymmetric with arg expects to compare\
-                floating point values");
-        static_assert(R == C, "Symmetric matrices should be square.");
-
-        bool symmetric{true};
-
-        if (sizeX() > 1)
-        {
-            for (unsigned int i{1}; i <= sizeX() - 1; i++)
-            {
-                for (unsigned int j{0}; j < i; j++)
-                {
-                    symmetric &=
-                        compareFloats((*this)(i, j), (*this)(j, i), thresh);
-                    if (!symmetric)
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return symmetric;
+        return true;
     }
 
     constexpr Size sizeX() const

@@ -9,9 +9,9 @@ using namespace consteig;
 
 TEST(absolute_value, abs_basic)
 {
-    static_assert(consteig::compareFloats(consteig::abs(0.0), 0.0,
-                                          CONSTEIG_TEST_TOLERANCE),
-                  MSG);
+    static_assert(
+        consteig::equalWithin(consteig::abs(0.0), 0.0, CONSTEIG_TEST_TOLERANCE),
+        MSG);
 
     ASSERT_DOUBLE_EQ(consteig::abs(0.0), 0.0);
     ASSERT_DOUBLE_EQ(consteig::abs(-0.0), 0.0); // -0.0 abs is 0.0
@@ -38,20 +38,20 @@ TEST(absolute_value, abs_limits_double)
     constexpr double min_d = std::numeric_limits<double>::min();
     constexpr double low_d = std::numeric_limits<double>::lowest();
 
-    static_assert(consteig::compareFloats(consteig::abs(max_d), max_d,
-                                          CONSTEIG_TEST_TOLERANCE),
+    static_assert(consteig::equalWithin(consteig::abs(max_d), max_d,
+                                        CONSTEIG_TEST_TOLERANCE),
                   MSG);
     ASSERT_DOUBLE_EQ(consteig::abs(max_d), max_d);
     ASSERT_DOUBLE_EQ(consteig::abs(-max_d), max_d);
 
-    static_assert(consteig::compareFloats(consteig::abs(min_d), min_d,
-                                          CONSTEIG_TEST_TOLERANCE),
+    static_assert(consteig::equalWithin(consteig::abs(min_d), min_d,
+                                        CONSTEIG_TEST_TOLERANCE),
                   MSG);
     ASSERT_DOUBLE_EQ(consteig::abs(min_d), min_d);
     ASSERT_DOUBLE_EQ(consteig::abs(-min_d), min_d);
 
-    static_assert(consteig::compareFloats(consteig::abs(low_d), max_d,
-                                          CONSTEIG_TEST_TOLERANCE),
+    static_assert(consteig::equalWithin(consteig::abs(low_d), max_d,
+                                        CONSTEIG_TEST_TOLERANCE),
                   MSG); // lowest is -max
     ASSERT_DOUBLE_EQ(consteig::abs(low_d), max_d);
 }
@@ -78,8 +78,8 @@ TEST(absolute_value, abs_long_double)
     // Using a slightly looser threshold for long double just in case, or same
     // one if precision allows
     static_assert(consteig::abs(val) > 0, "abs should be positive");
-    static_assert(consteig::compareFloats(consteig::abs(val), expected,
-                                          CONSTEIG_TEST_TOLERANCE),
+    static_assert(consteig::equalWithin(consteig::abs(val), expected,
+                                        CONSTEIG_TEST_TOLERANCE),
                   MSG);
 
     ASSERT_NEAR(static_cast<double>(consteig::abs(val)),
