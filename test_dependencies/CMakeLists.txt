@@ -10,11 +10,6 @@ if(CONSTEIG_COMPILE_ONLY)
     add_library(gtest_main INTERFACE)
     target_include_directories(gtest_main SYSTEM INTERFACE ${_stub_inc})
 
-    add_library(gmock INTERFACE)
-    target_include_directories(gmock SYSTEM INTERFACE ${_stub_inc})
-
-    add_library(gmock_main INTERFACE)
-    target_include_directories(gmock_main SYSTEM INTERFACE ${_stub_inc})
 else()
     add_subdirectory(googletest)
 endif()
