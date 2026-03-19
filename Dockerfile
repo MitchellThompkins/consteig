@@ -31,6 +31,8 @@ RUN apk --no-cache add gcompat libstdc++ wget xz && \
     cd /tmp && sha256sum -c ${ARM_GNU_TOOLCHAIN_FILE}.sha256asc && \
     mkdir -p /opt/arm-gnu-toolchain && \
     tar xf /tmp/${ARM_GNU_TOOLCHAIN_FILE} -C /opt/arm-gnu-toolchain --strip-components=1 && \
-    rm /tmp/${ARM_GNU_TOOLCHAIN_FILE} /tmp/${ARM_GNU_TOOLCHAIN_FILE}.sha256asc
+    rm /tmp/${ARM_GNU_TOOLCHAIN_FILE} /tmp/${ARM_GNU_TOOLCHAIN_FILE}.sha256asc && \
+    ln -s /opt/arm-gnu-toolchain/arm-none-eabi/include/c++/* /opt/arm-gnu-toolchain/cxx-include && \
+    ln -s /opt/arm-gnu-toolchain/lib/gcc/arm-none-eabi/*/include /opt/arm-gnu-toolchain/gcc-include
 
 ENV PATH="/opt/arm-gnu-toolchain/bin:${PATH}"
