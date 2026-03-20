@@ -32,6 +32,12 @@ RUN apk --no-cache add gcompat libstdc++ wget xz && \
     mkdir -p /opt/arm-gnu-toolchain && \
     tar xf /tmp/${ARM_GNU_TOOLCHAIN_FILE} -C /opt/arm-gnu-toolchain --strip-components=1 && \
     rm /tmp/${ARM_GNU_TOOLCHAIN_FILE} /tmp/${ARM_GNU_TOOLCHAIN_FILE}.sha256asc && \
+    # Clang doesn't ship its own C++ standard library for bare-metal ARM targets.
+    # Symlink GCC's libstdc++ and compiler-provided headers to stable paths so the
+    # clang toolchain file can add them via -isystem without embedding the GCC
+    # version number. We only compile to .o files (no linking), but the headers
+    # are still needed because the tests include standard library headers like
+    # <cstddef> for types such as std::size_t.
     ln -s /opt/arm-gnu-toolchain/arm-none-eabi/include/c++/* /opt/arm-gnu-toolchain/cxx-include && \
     ln -s /opt/arm-gnu-toolchain/lib/gcc/arm-none-eabi/*/include /opt/arm-gnu-toolchain/gcc-include
 
