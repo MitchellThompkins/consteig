@@ -73,7 +73,9 @@ TEST(qr_decomp, eigen_comparison)
     {
         if (std::abs(rEig(static_cast<Eigen::Index>(j),
                           static_cast<Eigen::Index>(j))) < QR_RANK_CUTOFF)
+        {
             continue;
+        }
         for (Size i = 0; i < s; ++i)
         {
             ASSERT_NEAR(std::abs(qrRes._q(i, j)),

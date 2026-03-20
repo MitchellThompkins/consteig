@@ -7,6 +7,7 @@ target_include_directories(eigenvectors.test PRIVATE ${PROJECT_SOURCE_DIR}/test_
 target_link_libraries(eigenvectors.test matrix array gtest_main consteig_eigen consteig_warnings)
 create_test(eigenvectors.test)
 
+# These tests link against Eigen3 which is unavailable in cross-compilation
 if(NOT CONSTEIG_COMPILE_ONLY)
     add_executable(consteig_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen.test.cpp)
     target_include_directories(consteig_eigen.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)

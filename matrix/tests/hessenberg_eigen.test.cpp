@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <complex>
+
 #include "decompositions.hpp"
 #include "eigen_test_tools.hpp"
 
@@ -28,11 +31,33 @@ TEST(hessenberg, eigen_comparison)
         }
     }
 
-    // Check eigenvalues of H match eigenvalues of A (using Eigen to compute
-    // eigenvalues of H)
+    // Check eigenvalues of H match eigenvalues of A (Hessenberg reduction
+    // preserves the spectrum)
     Eigen::MatrixXd hConstEig = toEigen(hessRes._h);
     Eigen::VectorXcd eigValsH = hConstEig.eigenvalues();
     Eigen::VectorXcd eigValsA = eigMat.eigenvalues();
+
+    // Sort by real part, then imaginary part for stable comparison
+    auto cmpComplex = [](const std::complex<double> &a,
+                         const std::complex<double> &b) {
+        if (a.real() != b.real())
+        {
+            return a.real() < b.real();
+        }
+        return a.imag() < b.imag();
+    };
+    std::sort(eigValsH.data(), eigValsH.data() + s, cmpComplex);
+    std::sort(eigValsA.data(), eigValsA.data() + s, cmpComplex);
+
+    for (Size i = 0; i < s; ++i)
+    {
+        EXPECT_NEAR(eigValsH(static_cast<Eigen::Index>(i)).real(),
+                    eigValsA(static_cast<Eigen::Index>(i)).real(),
+                    CONSTEIG_TEST_TOLERANCE);
+        EXPECT_NEAR(eigValsH(static_cast<Eigen::Index>(i)).imag(),
+                    eigValsA(static_cast<Eigen::Index>(i)).imag(),
+                    CONSTEIG_TEST_TOLERANCE);
+    }
 
     // Compare H elements roughly (signs might differ)
     for (Size i = 0; i < s; ++i)
