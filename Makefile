@@ -204,9 +204,7 @@ container.start:
 # Native GCC
 .PHONY: build.gcc
 build.gcc:
-	mkdir -p $(BUILD_PREFIX)-gcc
-	cd $(BUILD_PREFIX)-gcc && \
-	cmake .. -G $(CMAKE_GENERATOR) \
+	cmake -S . -B $(BUILD_PREFIX)-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++
 	cmake --build $(BUILD_PREFIX)-gcc --target all -- $(JOB_FLAG)
@@ -217,9 +215,7 @@ test.gcc: build.gcc
 
 .PHONY: examples.gcc
 examples.gcc:
-	mkdir -p $(BUILD_PREFIX)-gcc
-	cd $(BUILD_PREFIX)-gcc && \
-	cmake .. -G $(CMAKE_GENERATOR) \
+	cmake -S . -B $(BUILD_PREFIX)-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++ \
 		-DCONSTEIG_BUILD_TESTS=OFF
@@ -236,9 +232,7 @@ examples.gcc:
 # Native Clang
 .PHONY: build.clang
 build.clang:
-	mkdir -p $(BUILD_PREFIX)-clang
-	cd $(BUILD_PREFIX)-clang && \
-	cmake .. -G $(CMAKE_GENERATOR) \
+	cmake -S . -B $(BUILD_PREFIX)-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
 		-DCMAKE_CXX_COMPILER=clang++
 	cmake --build $(BUILD_PREFIX)-clang --target all -- $(JOB_FLAG)
@@ -249,9 +243,7 @@ test.clang: build.clang
 
 .PHONY: examples.clang
 examples.clang:
-	mkdir -p $(BUILD_PREFIX)-clang
-	cd $(BUILD_PREFIX)-clang && \
-	cmake .. -G $(CMAKE_GENERATOR) \
+	cmake -S . -B $(BUILD_PREFIX)-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
 		-DCMAKE_CXX_COMPILER=clang++ \
 		-DCONSTEIG_BUILD_TESTS=OFF
@@ -268,9 +260,7 @@ examples.clang:
 # ARM GCC cross-compiler (compile-only — static_assert is the test)
 .PHONY: cross.arm-gcc
 cross.arm-gcc:
-	mkdir -p $(BUILD_PREFIX)-arm-gcc
-	cd $(BUILD_PREFIX)-arm-gcc && \
-	cmake .. -G $(CMAKE_GENERATOR) \
+	cmake -S . -B $(BUILD_PREFIX)-arm-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-gcc.cmake \
 		-DCONSTEIG_COMPILE_ONLY=ON
 	cmake --build $(BUILD_PREFIX)-arm-gcc --target all -- $(JOB_FLAG)
@@ -278,9 +268,7 @@ cross.arm-gcc:
 # ARM Clang cross-compiler (compile-only — static_assert is the test)
 .PHONY: cross.arm-clang
 cross.arm-clang:
-	mkdir -p $(BUILD_PREFIX)-arm-clang
-	cd $(BUILD_PREFIX)-arm-clang && \
-	cmake .. -G $(CMAKE_GENERATOR) \
+	cmake -S . -B $(BUILD_PREFIX)-arm-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-clang.cmake \
 		-DCONSTEIG_COMPILE_ONLY=ON
 	cmake --build $(BUILD_PREFIX)-arm-clang --target all -- $(JOB_FLAG)
