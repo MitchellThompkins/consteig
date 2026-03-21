@@ -210,6 +210,7 @@ test.gcc: build.gcc
 
 .PHONY: examples.gcc
 examples.gcc:
+	mkdir -p $(BUILD_PREFIX)-gcc
 	cd $(BUILD_PREFIX)-gcc && \
 	cmake .. -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
@@ -241,6 +242,7 @@ test.clang: build.clang
 
 .PHONY: examples.clang
 examples.clang:
+	mkdir -p $(BUILD_PREFIX)-clang
 	cd $(BUILD_PREFIX)-clang && \
 	cmake .. -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
