@@ -2,15 +2,15 @@
 # Test
 ################################################################################
 
-add_executable(eigenvectors.test ${CMAKE_CURRENT_SOURCE_DIR}/eigenvectors.test.cpp)
-target_include_directories(eigenvectors.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(eigenvectors.test matrix array gtest_main consteig_eigen consteig_warnings)
-create_test(eigenvectors.test)
+add_executable(eigvecs_constexpr.test ${CMAKE_CURRENT_SOURCE_DIR}/eigvecs_constexpr.test.cpp)
+target_include_directories(eigvecs_constexpr.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(eigvecs_constexpr.test matrix array gtest_main consteig_eigen consteig_warnings)
+create_test(eigvecs_constexpr.test)
 
-add_executable(eigen_constexpr.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen_constexpr.test.cpp)
-target_include_directories(eigen_constexpr.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(eigen_constexpr.test matrix array gtest_main consteig_eigen consteig_warnings)
-create_test(eigen_constexpr.test)
+add_executable(eigvals_constexpr.test ${CMAKE_CURRENT_SOURCE_DIR}/eigvals_constexpr.test.cpp)
+target_include_directories(eigvals_constexpr.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(eigvals_constexpr.test matrix array gtest_main consteig_eigen consteig_warnings)
+create_test(eigvals_constexpr.test)
 
 # These tests link against Eigen3 which is unavailable in cross-compilation
 if(NOT CONSTEIG_COMPILE_ONLY)
