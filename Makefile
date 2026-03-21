@@ -58,11 +58,23 @@ help:
 	@echo 'build / test'
 	@echo '    build or test using the default compiler'
 	@echo
+	@echo 'test-dc-motor-fail'
+	@echo '    verify dc_motor_control example fails with bad PID gains'
+	@echo
 	@echo 'remove'
 	@echo '    delete the build directory'
 	@echo
-	@echo 'format'
-	@echo '    runs clang-format on .h/.hpp and .c/.cpp files'
+	@echo 'format / check-format'
+	@echo '    format code / check formatting without modifying'
+	@echo
+	@echo 'generate-test-cases'
+	@echo '    regenerate Octave test cases (rarely needed)'
+	@echo
+	@echo 'container.build / container.pull / container.start'
+	@echo '    build, pull, or start the dev container'
+	@echo
+	@echo 'container.make.<target>'
+	@echo '    run any make target inside the dev container'
 	@echo
 	@echo 'OPTIONS:'
 	@echo
@@ -138,6 +150,7 @@ test-dc-motor-fail:
 		echo "========================================"; \
 		echo "Build failed as expected (static_assert rejected bad PID gains)"; \
 		echo "========================================"; \
+		echo "$$build_output" | grep "static assertion failed\|static_assert failed"; \
 	else \
 		echo "ERROR: Build failed but not due to expected static_assert:"; \
 		echo "$$build_output"; \
@@ -170,12 +183,6 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 # to prevent the %: Match-anything target from matching, and do nothing.
 Makefile:
 	;
-
-.PHONY: cmd
-cmd: $(BUILD_PREFIX)/$(BUILD_FILE)
-	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cd $(BUILD_PREFIX); \
-	${a};
 
 .PHONY: container.build
 container.build:
