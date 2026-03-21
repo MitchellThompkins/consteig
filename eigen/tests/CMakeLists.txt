@@ -14,15 +14,10 @@ create_test(eigvals_constexpr.test)
 
 # These tests link against Eigen3 which is unavailable in cross-compilation
 if(NOT CONSTEIG_COMPILE_ONLY)
-    add_executable(consteig_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen.test.cpp)
-    target_include_directories(consteig_eigen.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
-    target_link_libraries(consteig_eigen.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
-    create_test(consteig_eigen.test)
-
-    add_executable(eigen_comparison.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen_comparison.test.cpp)
-    target_include_directories(eigen_comparison.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
-    target_link_libraries(eigen_comparison.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
-    create_test(eigen_comparison.test)
+    add_executable(comparison_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/comparison_eigen.test.cpp)
+    target_include_directories(comparison_eigen.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+    target_link_libraries(comparison_eigen.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
+    create_test(comparison_eigen.test)
 endif()
 
 # Helper function to add generated tests

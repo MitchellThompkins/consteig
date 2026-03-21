@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <random>
+#include <vector>
 
 #include "../consteig.hpp"
 #include "eigen_test_tools.hpp"
@@ -144,6 +146,39 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
 
         EXPECT_TRUE(found) << "Failed to match eigenvalue " << real << "+"
                            << imag << "i. Closest dist: " << min_dist;
+    }
+}
+
+TEST(eigen_comparison, hardcoded_symmetric_5x5)
+{
+    static constexpr Size s{5};
+
+    static constexpr consteig::Matrix<double, s, s> mat{{{
+        {-5, -4, 2, 1, 77.1},
+        {-4, 5, 7, 8, 9.2},
+        {2, 7, 0, -83, 2},
+        {1, 8, -83, 3, 4},
+        {77.1, 9.2, 2, 4, 2},
+    }}};
+
+    static constexpr auto eigenValueTest{eigvals(mat)};
+
+    auto eigenMat = toEigen(mat);
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, s, s>> es(eigenMat);
+    auto eigenValsRef = es.eigenvalues();
+
+    std::vector<double> myVals;
+    for (Size i = 0; i < s; ++i)
+    {
+        EXPECT_NEAR(eigenValueTest(i, 0).imag, 0.0, CONSTEIG_TEST_TOLERANCE);
+        myVals.push_back(eigenValueTest(i, 0).real);
+    }
+    std::sort(myVals.begin(), myVals.end());
+
+    for (Size i = 0; i < s; ++i)
+    {
+        EXPECT_NEAR(myVals[i], eigenValsRef[static_cast<Eigen::Index>(i)],
+                    CONSTEIG_TEST_TOLERANCE);
     }
 }
 
