@@ -120,8 +120,10 @@ check-format:
 .PHONY: remove
 remove:
 	rm -rf build/
-	rm -rf build-arm-clang/
+	rm -rf build-gcc/
+	rm -rf build-clang/
 	rm -rf build-arm-gcc/
+	rm -rf build-arm-clang/
 
 .PHONY: run-examples
 run-examples:
