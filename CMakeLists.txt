@@ -34,6 +34,20 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+    # For bare-metal cross-compilation there is no C runtime to link against,
+    # so override add_executable to produce .o files only. Compilation still
+    # exercises all static_assert checks. add_test is a no-op since there are
+    # no executables for ctest to run.
+    option(CONSTEIG_COMPILE_ONLY "Compile all targets without linking (for cross-compilation)" OFF)
+    if(CONSTEIG_COMPILE_ONLY)
+        macro(add_executable target)
+            add_library(${target} OBJECT ${ARGN})
+        endmacro()
+        macro(add_test)
+        endmacro()
+    endif()
+
+
     option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" ON)
 
     # Test dependencies are fetched before consteig_warnings is defined so
@@ -99,4 +113,5 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         add_subdirectory(matrix/tests)
         add_subdirectory(eigen/tests)
     endif()
+
 endif()

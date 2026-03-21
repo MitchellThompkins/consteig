@@ -2,26 +2,29 @@
 # Test
 ################################################################################
 
-add_executable(consteig_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen.test.cpp)
-target_include_directories(consteig_eigen.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(consteig_eigen.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
-create_test(consteig_eigen.test)
+add_executable(eigvecs_constexpr.test ${CMAKE_CURRENT_SOURCE_DIR}/eigvecs_constexpr.test.cpp)
+target_include_directories(eigvecs_constexpr.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(eigvecs_constexpr.test matrix array gtest_main consteig_eigen consteig_warnings)
+create_test(eigvecs_constexpr.test)
 
-add_executable(eigen_comparison.test ${CMAKE_CURRENT_SOURCE_DIR}/eigen_comparison.test.cpp)
-target_include_directories(eigen_comparison.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(eigen_comparison.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
-create_test(eigen_comparison.test)
+add_executable(eigvals_constexpr.test ${CMAKE_CURRENT_SOURCE_DIR}/eigvals_constexpr.test.cpp)
+target_include_directories(eigvals_constexpr.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(eigvals_constexpr.test matrix array gtest_main consteig_eigen consteig_warnings)
+create_test(eigvals_constexpr.test)
 
-add_executable(eigenvectors.test ${CMAKE_CURRENT_SOURCE_DIR}/eigenvectors.test.cpp)
-target_include_directories(eigenvectors.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(eigenvectors.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
-create_test(eigenvectors.test)
+# These tests link against Eigen3 which is unavailable in cross-compilation
+if(NOT CONSTEIG_COMPILE_ONLY)
+    add_executable(comparison_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/comparison_eigen.test.cpp)
+    target_include_directories(comparison_eigen.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+    target_link_libraries(comparison_eigen.test matrix array gtest_main Eigen3::Eigen consteig_eigen consteig_warnings)
+    create_test(comparison_eigen.test)
+endif()
 
 # Helper function to add generated tests
 function(add_gen_test target_name source_file)
     add_executable(${target_name}.test ${CMAKE_CURRENT_SOURCE_DIR}/${source_file})
     target_compile_definitions(${target_name}.test PRIVATE CONSTEIG_MAX_ITER=2000)
-    target_include_directories(${target_name}.test INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
+    target_include_directories(${target_name}.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
     target_link_libraries(${target_name}.test matrix array gtest_main consteig_eigen consteig_warnings)
     create_test(${target_name}.test)
 endfunction()

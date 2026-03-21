@@ -1,6 +1,10 @@
+# To use a locally built image instead of the registry image, either:
+#   export CONSTEIG_IMAGE=consteig_dev_image:latest
+# or add to a .env file in the project root:
+#   CONSTEIG_IMAGE=consteig_dev_image:latest
 services:
     dev_env:
-        image: ghcr.io/mitchellthompkins/consteig_dev_image:latest
+        image: ${CONSTEIG_IMAGE:-ghcr.io/mitchellthompkins/consteig_dev_image:latest}
         environment:
             - USER=${USER}
             - MY_UID=${MY_UID:? Error -> need UID.}

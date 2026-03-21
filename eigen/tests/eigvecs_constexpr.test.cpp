@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "../eigen.hpp"
-#include "eigen_test_tools.hpp"
 #include "test_tools.hpp"
 
 using namespace consteig;
@@ -45,7 +44,7 @@ TEST(eigenvectors, simple_symmetric)
         }
     }
 
-    EXPECT_TRUE(found_3 && found_1) << "Expected eigenvalues 3 and 1";
+    EXPECT_TRUE(found_3 && found_1);
 
     // Eigenvector for 3 should be roughly [1/sqrt(2), 1/sqrt(2)] -> [0.707,
     // 0.707] or [-0.707, -0.707]
@@ -53,18 +52,16 @@ TEST(eigenvectors, simple_symmetric)
     double v3_1 = V(1, idx_3).real;
     // They should be equal in magnitude and sign
     EXPECT_NEAR(consteig::abs(v3_0), consteig::abs(v3_1),
-                CONSTEIG_TEST_TOLERANCE)
-        << "V3 elements magnitude mismatch";
-    EXPECT_TRUE(v3_0 * v3_1 > 0) << "V3 elements should have same sign";
+                CONSTEIG_TEST_TOLERANCE);
+    EXPECT_TRUE(v3_0 * v3_1 > 0);
 
     // Eigenvector for 1 should be roughly [1/sqrt(2), -1/sqrt(2)]
     double v1_0 = V(0, idx_1).real;
     double v1_1 = V(1, idx_1).real;
     // They should be equal in magnitude but opposite in sign
     EXPECT_NEAR(consteig::abs(v1_0), consteig::abs(v1_1),
-                CONSTEIG_TEST_TOLERANCE)
-        << "V1 elements magnitude mismatch";
-    EXPECT_TRUE(v1_0 * v1_1 < 0) << "V1 elements should have opposite sign";
+                CONSTEIG_TEST_TOLERANCE);
+    EXPECT_TRUE(v1_0 * v1_1 < 0);
 
     // Let's explicitly check Av = lambda * v for the first eigenvalue
     Complex<double> lam = evals(0, 0);
@@ -76,14 +73,10 @@ TEST(eigenvectors, simple_symmetric)
     Complex<double> lv0 = lam * V(0, 0);
     Complex<double> lv1 = lam * V(1, 0);
 
-    EXPECT_NEAR(Av0.real, lv0.real, CONSTEIG_TEST_TOLERANCE)
-        << "A*v = lambda*v mismatch (real)";
-    EXPECT_NEAR(Av0.imag, lv0.imag, CONSTEIG_TEST_TOLERANCE)
-        << "A*v = lambda*v mismatch (imag)";
-    EXPECT_NEAR(Av1.real, lv1.real, CONSTEIG_TEST_TOLERANCE)
-        << "A*v = lambda*v mismatch (real)";
-    EXPECT_NEAR(Av1.imag, lv1.imag, CONSTEIG_TEST_TOLERANCE)
-        << "A*v = lambda*v mismatch (imag)";
+    EXPECT_NEAR(Av0.real, lv0.real, CONSTEIG_TEST_TOLERANCE);
+    EXPECT_NEAR(Av0.imag, lv0.imag, CONSTEIG_TEST_TOLERANCE);
+    EXPECT_NEAR(Av1.real, lv1.real, CONSTEIG_TEST_TOLERANCE);
+    EXPECT_NEAR(Av1.imag, lv1.imag, CONSTEIG_TEST_TOLERANCE);
 }
 
 TEST(eigenvectors, complex_rotation)
@@ -117,13 +110,9 @@ TEST(eigenvectors, complex_rotation)
         Complex<double> lv0 = lam * V(0, j);
         Complex<double> lv1 = lam * V(1, j);
 
-        EXPECT_NEAR(Av0.real, lv0.real, CONSTEIG_TEST_TOLERANCE)
-            << "Av = lv mismatch for eval " << j << " (row 0, real)";
-        EXPECT_NEAR(Av0.imag, lv0.imag, CONSTEIG_TEST_TOLERANCE)
-            << "Av = lv mismatch for eval " << j << " (row 0, imag)";
-        EXPECT_NEAR(Av1.real, lv1.real, CONSTEIG_TEST_TOLERANCE)
-            << "Av = lv mismatch for eval " << j << " (row 1, real)";
-        EXPECT_NEAR(Av1.imag, lv1.imag, CONSTEIG_TEST_TOLERANCE)
-            << "Av = lv mismatch for eval " << j << " (row 1, imag)";
+        EXPECT_NEAR(Av0.real, lv0.real, CONSTEIG_TEST_TOLERANCE);
+        EXPECT_NEAR(Av0.imag, lv0.imag, CONSTEIG_TEST_TOLERANCE);
+        EXPECT_NEAR(Av1.real, lv1.real, CONSTEIG_TEST_TOLERANCE);
+        EXPECT_NEAR(Av1.imag, lv1.imag, CONSTEIG_TEST_TOLERANCE);
     }
 }

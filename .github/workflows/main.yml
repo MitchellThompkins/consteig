@@ -98,13 +98,6 @@ jobs:
           matrix:
             compiler: [gcc, clang]
             mode: [test, examples]
-            include:
-              - compiler: gcc
-                cc: gcc
-                cxx: g++
-              - compiler: clang
-                cc: clang
-                cxx: clang++
         steps:
             - name: Checkout
               uses: actions/checkout@v6
@@ -113,13 +106,36 @@ jobs:
 
             - name: Build and test
               if: matrix.mode == 'test'
-              run: |
-                    make CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} build
-                    make test
+              run: make test.${{ matrix.compiler }}
 
             - name: Build and run examples
               if: matrix.mode == 'examples'
-              run: make CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} run-examples
+              run: make examples.${{ matrix.compiler }}
+
+    cross-compile:
+        name: cross-${{ matrix.target }}
+        needs: build-and-publish-container
+        if: needs.build-and-publish-container.result == 'success'
+        runs-on: ubuntu-latest
+        container:
+          image: ghcr.io/mitchellthompkins/consteig_dev_image:${{ needs.build-and-publish-container.outputs.image_tag }}
+          credentials:
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+        permissions:
+          packages: read
+          contents: read
+        strategy:
+          matrix:
+            target: [arm-gcc, arm-clang]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+
+            - name: Cross-compile (static_assert is the test)
+              run: make cross.${{ matrix.target }}
 
     dc-motor-fail:
         needs: build-and-publish-container

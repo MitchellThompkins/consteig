@@ -1,7 +1,10 @@
 #ifndef TEST_TOOLS_HPP
 #define TEST_TOOLS_HPP
 
+#include <algorithm>
+#include <cassert>
 #include <cfloat>
+#include <cmath>
 #include <limits>
 
 #include "../consteig.hpp"

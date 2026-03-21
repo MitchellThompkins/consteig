@@ -1,10 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <algorithm>
-#include <vector>
+#include <cmath>
 
 #include "../consteig.hpp"
-#include "eigen_test_tools.hpp"
+#include "test_tools.hpp"
 
 using namespace consteig;
 
@@ -14,7 +13,9 @@ constexpr Complex<T> sum(const Matrix<Complex<T>, S, 1> &vec)
 {
     Complex<T> s{};
     for (Size i = 0; i < S; ++i)
+    {
         s = s + vec(i, 0);
+    }
     return s;
 }
 
@@ -24,7 +25,9 @@ constexpr Complex<T> prod(const Matrix<Complex<T>, S, 1> &vec)
 {
     Complex<T> p{1, 0};
     for (Size i = 0; i < S; ++i)
+    {
         p = p * vec(i, 0);
+    }
     return p;
 }
 
@@ -35,7 +38,9 @@ constexpr bool verify_values(const Matrix<Complex<T>, S, 1> &computed,
 {
     bool matched[S] = {};
     for (Size i = 0; i < S; ++i)
+    {
         matched[i] = false;
+    }
 
     for (Size i = 0; i < S; ++i)
     {
@@ -53,7 +58,9 @@ constexpr bool verify_values(const Matrix<Complex<T>, S, 1> &computed,
             }
         }
         if (!found)
+        {
             return false;
+        }
     }
     return true;
 }
@@ -80,11 +87,10 @@ TEST(consteig_eigen, constexpr_eigenValues)
                       static_cast<double>(CONSTEIG_TEST_TOLERANCE),
                   "Trace imag mismatch");
 
-    // Runtime verification
     ASSERT_NEAR(sumEigs.real, tr, CONSTEIG_TEST_TOLERANCE);
 }
 
-TEST(consteig_eigen, symmetric_matrix)
+TEST(consteig_eigen, symmetric_trace)
 {
     static constexpr Size s{5};
 
@@ -96,7 +102,6 @@ TEST(consteig_eigen, symmetric_matrix)
         {77.1, 9.2, 2, 4, 2},
     }}};
 
-    // Calculate using consteig (returns Complex<double>)
     static constexpr auto eigenValueTest{eigvals(mat)};
 
     // Compile-time verification: Sum of eigenvalues = Trace(A)
@@ -106,29 +111,7 @@ TEST(consteig_eigen, symmetric_matrix)
                       static_cast<double>(CONSTEIG_TEST_TOLERANCE),
                   "Trace mismatch");
 
-    // Calculate using Eigen (Reference)
-    auto eigenMat = toEigen(mat);
-    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, s, s>> es(eigenMat);
-    auto eigenValsRef = es.eigenvalues(); // Returns sorted vector
-
-    // Copy consteig results to std::vector for sorting (extract real part since
-    // symmetric)
-    std::vector<double> myVals;
-    for (Size i = 0; i < s; ++i)
-    {
-        EXPECT_NEAR(eigenValueTest(i, 0).imag, 0.0,
-                    CONSTEIG_TEST_TOLERANCE); // Symmetric -> real eigenvalues
-        myVals.push_back(eigenValueTest(i, 0).real);
-    }
-    std::sort(myVals.begin(), myVals.end());
-
-    // Compare
-    for (Size i = 0; i < s; ++i)
-    {
-        EXPECT_NEAR(myVals[i], eigenValsRef[static_cast<Eigen::Index>(i)],
-                    CONSTEIG_TEST_TOLERANCE)
-            << "Mismatch at index " << i;
-    }
+    ASSERT_NEAR(sumEigs.real, tr, CONSTEIG_TEST_TOLERANCE);
 }
 
 TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
@@ -157,7 +140,7 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
                                 static_cast<double>(CONSTEIG_TEST_TOLERANCE)),
                   "Eigenvalue mismatch (constexpr)");
 
-    // Check results
+    // Runtime check
     bool found_i = false;
     bool found_neg_i = false;
 
@@ -166,9 +149,13 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
         Complex<double> val = eigenValueTest(i, 0);
         EXPECT_NEAR(val.real, 0.0, CONSTEIG_TEST_TOLERANCE);
         if (std::abs(val.imag - 1.0) < CONSTEIG_TEST_TOLERANCE)
+        {
             found_i = true;
+        }
         if (std::abs(val.imag + 1.0) < CONSTEIG_TEST_TOLERANCE)
+        {
             found_neg_i = true;
+        }
     }
     EXPECT_TRUE(found_i);
     EXPECT_TRUE(found_neg_i);
@@ -197,26 +184,29 @@ TEST(consteig_eigen, non_symmetric_general)
                                 static_cast<double>(CONSTEIG_TEST_TOLERANCE)),
                   "Eigenvalue mismatch (constexpr)");
 
-    std::vector<Complex<double>> vals;
-    for (Size i = 0; i < s; ++i)
-        vals.push_back(eigenValueTest(i, 0));
-
     bool found_1 = false;
     bool found_c1 = false;
     bool found_c2 = false;
 
-    for (const auto &v : vals)
+    for (Size i = 0; i < s; ++i)
     {
-        if (std::abs(v.real - 1.0) < CONSTEIG_TEST_TOLERANCE)
+        Complex<double> val = eigenValueTest(i, 0);
+        if (std::abs(val.real - 1.0) < CONSTEIG_TEST_TOLERANCE)
         {
-            if (std::abs(v.imag) < CONSTEIG_TEST_TOLERANCE)
+            if (std::abs(val.imag) < CONSTEIG_TEST_TOLERANCE)
+            {
                 found_1 = true;
-            else if (std::abs(v.imag - std::sqrt(10.0)) <
+            }
+            else if (std::abs(val.imag - std::sqrt(10.0)) <
                      CONSTEIG_TEST_TOLERANCE)
+            {
                 found_c1 = true;
-            else if (std::abs(v.imag + std::sqrt(10.0)) <
+            }
+            else if (std::abs(val.imag + std::sqrt(10.0)) <
                      CONSTEIG_TEST_TOLERANCE)
+            {
                 found_c2 = true;
+            }
         }
     }
 
