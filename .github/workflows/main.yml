@@ -98,13 +98,6 @@ jobs:
           matrix:
             compiler: [gcc, clang]
             mode: [test, examples]
-            include:
-              - compiler: gcc
-                cc: gcc
-                cxx: g++
-              - compiler: clang
-                cc: clang
-                cxx: clang++
         steps:
             - name: Checkout
               uses: actions/checkout@v6
@@ -113,13 +106,11 @@ jobs:
 
             - name: Build and test
               if: matrix.mode == 'test'
-              run: |
-                    make CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} build
-                    make test
+              run: make test.${{ matrix.compiler }}
 
             - name: Build and run examples
               if: matrix.mode == 'examples'
-              run: make CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} run-examples
+              run: make examples.${{ matrix.compiler }}
 
     cross-compile:
         name: cross-${{ matrix.target }}
