@@ -1,18 +1,18 @@
 FROM alpine:3.23
 
 RUN apk --no-cache add\
-    cmake\
-    clang\
-    clang-dev\
-    clang-extra-tools\
-    make\
-    gcc\
-    g++\
-    libc-dev\
-    linux-headers\
-    git\
-    octave\
-    python3
+    cmake=4.1.3-r0\
+    clang21=21.1.2-r2\
+    clang21-dev=21.1.2-r2\
+    clang21-extra-tools=21.1.2-r2\
+    make=4.4.1-r3\
+    gcc=15.2.0-r2\
+    g++=15.2.0-r2\
+    musl-dev=1.2.5-r21\
+    linux-headers=6.16.12-r0\
+    git=2.52.0-r0\
+    octave=10.3.0-r1\
+    python3=3.12.12-r0
 
 ARG ARM_GNU_VERSION="15.2"
 ARG ARM_GNU_RELEASE="rel1"
@@ -24,7 +24,7 @@ ARG ARM_GNU_TOOLCHAIN_URL="${ARM_GNU_BASE_URL}/${ARM_GNU_FULL}/binrel/${ARM_GNU_
 # ARM bare-metal cross-compilation toolchain (arm-none-eabi).
 # The pre-built ARM GNU Toolchain targets glibc; gcompat provides compatibility
 # on Alpine (musl).
-RUN apk --no-cache add gcompat libstdc++ wget xz && \
+RUN apk --no-cache add gcompat=1.1.0-r4 libstdc++=15.2.0-r2 wget=1.25.0-r2 xz=5.8.2-r0 && \
     echo "Downloading ARM GNU Toolchain: ${ARM_GNU_TOOLCHAIN_URL}" && \
     wget -qO /tmp/${ARM_GNU_TOOLCHAIN_FILE} "${ARM_GNU_TOOLCHAIN_URL}" && \
     wget -qO /tmp/${ARM_GNU_TOOLCHAIN_FILE}.sha256asc "${ARM_GNU_TOOLCHAIN_URL}.sha256asc" && \
