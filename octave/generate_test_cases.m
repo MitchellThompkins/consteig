@@ -1,5 +1,5 @@
 % Script to generate C++ test cases for consteig
-% Run this in Octave/Matlab to generate 'test_dependencies/generated_cases.hpp'
+% Run this in Octave/Matlab to generate 'eigen/tests/generated_cases.hpp'
 % and individual test files in 'eigen/tests/'
 
 % Fix seed for reproducibility, removing this will produce truly (well _mostly_)
@@ -7,12 +7,12 @@
 rand('seed', 42);
 randn('seed', 42);
 
-output_cases_file = 'test_dependencies/generated_cases.hpp';
+output_cases_file = 'eigen/tests/generated_cases.hpp';
 fid = fopen(output_cases_file, 'w');
 
 fprintf(fid, '#ifndef GENERATED_CASES_HPP\n');
 fprintf(fid, '#define GENERATED_CASES_HPP\n\n');
-fprintf(fid, '#include "../consteig.hpp"\n\n');
+fprintf(fid, '#include "../../consteig.hpp"\n\n');
 fprintf(fid, 'namespace consteig\n{\n\n');
 
 NUM_RANDOM_CASES = 50;
