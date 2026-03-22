@@ -42,6 +42,8 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
     
     for n = 1:num_cases
         if strcmp(category, 'random')
+            % Plain random matrix. Symmetric variant ensures all-real eigenvalues
+            % (A + A' is symmetric by construction).
             if strcmp(type_str, 'sym')
                 A = rand(S);
                 A = A + A';
@@ -49,6 +51,11 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
                 A = rand(S);
             end
         elseif strcmp(category, 'defective')
+            % Defective matrix: a Jordan block with a single repeated eigenvalue and
+            % ones on the superdiagonal. A defective matrix cannot be diagonalized
+            % (it has fewer linearly independent eigenvectors than eigenvalues).
+            % Rotated by a random orthogonal Q so it doesn't look trivially like a
+            % Jordan block.
             A = zeros(S);
             val = randn();
             for i = 1:S
@@ -58,6 +65,11 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             [Q, R] = qr(randn(S));
             A = Q * A * Q';
         elseif strcmp(category, 'nearly_defective')
+            % Nearly defective: a Jordan-like block where the diagonal entries are
+            % slightly perturbed (spacing 1e-6) so the matrix is technically
+            % diagonalizable but is extremely ill-conditioned. Eigenvalues are
+            % almost-repeated, stressing deflation and shift selection.
+            % Rotated by a random orthogonal Q.
             A = zeros(S);
             val = randn();
             eps_val = 1e-6;
@@ -68,25 +80,47 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             [Q, R] = qr(randn(S));
             A = Q * A * Q';
         elseif strcmp(category, 'non_normal')
+            % Non-normal matrix: strictly upper triangular random part plus evenly
+            % spaced diagonal (eigenvalues 1..S). Non-normal matrices have
+            % non-orthogonal eigenvectors, making them harder to solve than symmetric
+            % ones. Rotated by a random orthogonal Q.
             A = triu(randn(S), 1) + diag(linspace(1, S, S));
             [Q, R] = qr(randn(S));
             A = Q * A * Q';
         elseif strcmp(category, 'clustered')
+            % Clustered eigenvalues: S-1 eigenvalues at 1.0 and one at 1+1e-5.
+            % Built eigenvalue-first: place the desired eigenvalues on the diagonal
+            % of a trivial diagonal matrix, then apply a similarity transform
+            % Q*diag(e)*Q' using a random orthogonal Q (extracted via QR of a random
+            % matrix) to produce a dense matrix with those eigenvalues hidden inside.
+            % Clustered eigenvalues stress the deflation criterion and shift strategy.
             e = [ones(1, S-1), 1 + 1e-5];
             A = diag(e);
             [Q, R] = qr(randn(S));
             A = Q * A * Q';
         elseif strcmp(category, 'repeated')
+            % Exactly repeated eigenvalues: all S eigenvalues equal to 1.
+            % The worst-case limit of clustering. Built eigenvalue-first like
+            % 'clustered': diag(e) has the desired eigenvalues; Q*diag(e)*Q'
+            % scrambles it into a dense matrix via a random orthogonal Q.
             e = ones(1, S);
             A = diag(e);
             [Q, R] = qr(randn(S));
             A = Q * A * Q';
         elseif strcmp(category, 'companion')
+            % Companion matrix of a random polynomial. Companion matrices arise in
+            % polynomial root-finding and tend to be ill-conditioned with eigenvalues
+            % spread across the complex plane.
             p = randn(1, S+1);
             A = compan(p);
         elseif strcmp(category, 'graded')
+            % Graded matrix: entries scaled by random powers of 10 in [-1, 1].
+            % Produces wide variation in entry magnitude, stressing balancing.
             A = randn(S) .* 10.^(rand(S)*2 - 1);
         elseif strcmp(category, 'large_jordan')
+            % Large Jordan block at eigenvalue 2: a pure Jordan block with no
+            % rotation applied. The largest possible defective structure for size S,
+            % used to measure the hard accuracy floor for defective matrices.
             A = zeros(S);
             val = 2.0;
             for i = 1:S
@@ -94,14 +128,26 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
                 if i < S, A(i, i+1) = 1.0; end
             end
         elseif strcmp(category, 'toeplitz')
+            % Toeplitz matrix: constant diagonals (each diagonal has the same value).
+            % Arises in signal processing and time-series problems. Random first row
+            % gives a non-symmetric Toeplitz matrix.
             A = toeplitz(randn(1, S));
         elseif strcmp(category, 'nearly_reducible')
+            % Nearly block-triangular matrix: the lower-left block is scaled by 1e-5,
+            % making the matrix almost block upper-triangular. Stresses the coupling
+            % detection between subproblems during deflation.
             A = randn(S);
             A(floor(S/2)+1:end, 1:floor(S/2)) *= 1e-5;
         elseif strcmp(category, 'random_non_normal')
+            % Random non-normal matrix with extra weight on the upper triangle.
+            % Adding an independent random upper triangle biases the matrix away from
+            % normality without any special structure.
             A = randn(S);
             A = A + triu(randn(S), 1);
         elseif strcmp(category, 'hamiltonian')
+            % Hamiltonian matrix: block structure [M G; H -M'] where G and H are
+            % symmetric. Eigenvalues come in +/- pairs by construction, arising in
+            % optimal control and Riccati equation problems.
             n_half = floor(S/2);
             if n_half * 2 == S
                 M = randn(n_half);
@@ -112,6 +158,8 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
                 A = randn(S);
             end
         elseif strcmp(category, 'sparse_interior')
+            % Sparse random matrix with ~50% fill. Tests that the solver handles
+            % matrices with many zeros without special treatment.
             A = full(sprand(S, S, 0.5));
         else
             A = rand(S);
