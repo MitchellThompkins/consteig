@@ -126,3 +126,51 @@ TEST(cos_function, cos_float)
     static_assert(equalWithin(val, -1.0f, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
     ASSERT_TRUE(equalWithin(val, -1.0f, CONSTEIG_FLOAT_TEST_TOLERANCE));
 }
+
+// ---- tan tests ----
+
+TEST(tan_function, tan_zero)
+{
+    static constexpr double val = consteig::tan(0.0);
+    static_assert(val == 0.0, MSG);
+    ASSERT_EQ(val, 0.0);
+}
+
+TEST(tan_function, tan_pi_over_4)
+{
+    static constexpr double val = consteig::tan(PI_CONST / 4.0);
+    static_assert(equalWithin(val, 1.0, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithin(val, 1.0, CONSTEIG_TEST_TOLERANCE));
+}
+
+TEST(tan_function, tan_pi_over_6)
+{
+    // tan(pi/6) = 1/sqrt(3) ~= 0.577350269189
+    static constexpr double val = consteig::tan(PI_CONST / 6.0);
+    static_assert(equalWithin(val, 0.577350269189, CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_TRUE(equalWithin(val, 0.577350269189, CONSTEIG_TEST_TOLERANCE));
+}
+
+TEST(tan_function, tan_negative)
+{
+    static constexpr double val = consteig::tan(-PI_CONST / 4.0);
+    static_assert(equalWithin(val, -1.0, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithin(val, -1.0, CONSTEIG_TEST_TOLERANCE));
+}
+
+TEST(tan_function, tan_integer)
+{
+    static constexpr double val = consteig::tan(1);
+    static_assert(equalWithin(val, 1.557407724655, CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_TRUE(equalWithin(val, 1.557407724655, CONSTEIG_TEST_TOLERANCE));
+}
+
+TEST(tan_function, tan_float)
+{
+    static constexpr float val =
+        consteig::tan(static_cast<float>(PI_CONST) / 4.0f);
+    static_assert(equalWithin(val, 1.0f, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithin(val, 1.0f, CONSTEIG_FLOAT_TEST_TOLERANCE));
+}

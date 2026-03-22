@@ -90,6 +90,24 @@ constexpr auto cos(const T x) noexcept
     }
 }
 
+/**
+ * @brief Computes the tangent of x (in radians).
+ */
+template <typename T>
+constexpr auto tan(const T x) noexcept
+{
+    if constexpr (!is_float<T>())
+    {
+        const double r = trig_reduce(static_cast<double>(x));
+        return sin_series(r) / cos_series(r);
+    }
+    else
+    {
+        const T r = trig_reduce(x);
+        return sin_series(r) / cos_series(r);
+    }
+}
+
 } // namespace consteig
 
 #endif
