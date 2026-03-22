@@ -61,7 +61,8 @@ TEST(sin_function, sin_integer)
 
 TEST(sin_function, sin_float)
 {
-    static constexpr float val = consteig::sin(static_cast<float>(PI_CONST) / 2.0f);
+    static constexpr float val =
+        consteig::sin(static_cast<float>(PI_CONST) / 2.0f);
     static_assert(equalWithin(val, 1.0f, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
     ASSERT_TRUE(equalWithin(val, 1.0f, CONSTEIG_FLOAT_TEST_TOLERANCE));
 }

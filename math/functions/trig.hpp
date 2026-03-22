@@ -1,6 +1,7 @@
 #ifndef CONSTMATH_TRIG_HPP
 #define CONSTMATH_TRIG_HPP
-// Reference: https://en.wikipedia.org/wiki/Taylor_series#Trigonometric_functions
+// Reference:
+// https://en.wikipedia.org/wiki/Taylor_series#Trigonometric_functions
 
 #include "../../consteig_options.hpp"
 #include "utilities.hpp"
@@ -9,8 +10,7 @@ namespace consteig
 {
 
 // Reduce x to (-pi, pi] by removing integer multiples of 2*pi
-template <typename T>
-constexpr T trig_reduce(const T x) noexcept
+template <typename T> constexpr T trig_reduce(const T x) noexcept
 {
     constexpr T two_pi = static_cast<T>(2.0 * PI_CONST);
     T k = static_cast<T>(static_cast<long long>(x / two_pi));
@@ -26,8 +26,7 @@ constexpr T trig_reduce(const T x) noexcept
     return r;
 }
 
-template <typename T>
-constexpr T sin_series(const T x) noexcept
+template <typename T> constexpr T sin_series(const T x) noexcept
 {
     // sin(x) = x - x^3/3! + x^5/5! - ...
     T result = x;
@@ -42,8 +41,7 @@ constexpr T sin_series(const T x) noexcept
     return result;
 }
 
-template <typename T>
-constexpr T cos_series(const T x) noexcept
+template <typename T> constexpr T cos_series(const T x) noexcept
 {
     // cos(x) = 1 - x^2/2! + x^4/4! - ...
     T result = static_cast<T>(1);
@@ -61,8 +59,7 @@ constexpr T cos_series(const T x) noexcept
 /**
  * @brief Computes the sine of x (in radians).
  */
-template <typename T>
-constexpr auto sin(const T x) noexcept
+template <typename T> constexpr auto sin(const T x) noexcept
 {
     if constexpr (!is_float<T>())
     {
@@ -77,8 +74,7 @@ constexpr auto sin(const T x) noexcept
 /**
  * @brief Computes the cosine of x (in radians).
  */
-template <typename T>
-constexpr auto cos(const T x) noexcept
+template <typename T> constexpr auto cos(const T x) noexcept
 {
     if constexpr (!is_float<T>())
     {
@@ -93,8 +89,7 @@ constexpr auto cos(const T x) noexcept
 /**
  * @brief Computes the tangent of x (in radians).
  */
-template <typename T>
-constexpr auto tan(const T x) noexcept
+template <typename T> constexpr auto tan(const T x) noexcept
 {
     if constexpr (!is_float<T>())
     {
