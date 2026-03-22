@@ -88,13 +88,14 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             [Q, R] = qr(randn(S));
             A = Q * A * Q';
         elseif strcmp(category, 'clustered')
-            % Clustered eigenvalues: S-1 eigenvalues at 1.0 and one at 1+1e-5.
-            % Built eigenvalue-first: place the desired eigenvalues on the diagonal
-            % of a trivial diagonal matrix, then apply a similarity transform
-            % Q*diag(e)*Q' using a random orthogonal Q (extracted via QR of a random
-            % matrix) to produce a dense matrix with those eigenvalues hidden inside.
-            % Clustered eigenvalues stress the deflation criterion and shift strategy.
-            e = [ones(1, S-1), 1 + 1e-5];
+            % Clustered eigenvalues: all S eigenvalues distinct but packed into a
+            % tiny interval [1, 1+1e-5] via linspace. No eigenvalue is clearly
+            % separated from its neighbours, which stresses shift selection and
+            % deflation throughout the entire iteration (unlike 'repeated' where
+            % the solver can at least detect exact equality).
+            % Built eigenvalue-first: diag(e) is trivial; Q*diag(e)*Q' scrambles
+            % it into a dense matrix via a random orthogonal Q.
+            e = linspace(1, 1 + 1e-5, S);
             A = diag(e);
             [Q, R] = qr(randn(S));
             A = Q * A * Q';
