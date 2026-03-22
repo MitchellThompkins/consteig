@@ -167,11 +167,12 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
                 A = randn(S);
             end
         elseif strcmp(category, 'sparse_interior')
-            % Sparse random matrix with ~50% fill. Tests that the solver handles
-            % matrices with many zeros without special treatment.
-            A = full(sprand(S, S, 0.5));
+            % Matrix with ~20% fill: most entries are zero, scattered randomly
+            % across all positions including the diagonal. Tests that the solver
+            % handles matrices with many structural zeros without special treatment.
+            A = full(sprand(S, S, 0.2));
         else
-            A = rand(S);
+            error('Unknown category: %s', category);
         end
 
         [V, D] = eig(A);
@@ -265,7 +266,7 @@ for c = 1:length(ROBUST_CATEGORIES)
 end
 
 % 3. QR Decomposition Test Case
-A_qr = rand(MATRIX_SIZE);
+A_qr = randn(MATRIX_SIZE);
 [Q, R] = qr(A_qr);
 fprintf(fid, '// QR Decomposition Test Case\n');
 fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_qr\n{{{\n', MATRIX_SIZE, MATRIX_SIZE);
