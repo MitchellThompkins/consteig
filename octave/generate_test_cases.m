@@ -170,7 +170,7 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             % Matrix with ~20% fill: most entries are zero, scattered randomly
             % across all positions including the diagonal. Tests that the solver
             % handles matrices with many structural zeros without special treatment.
-            A = full(sprand(S, S, 0.2));
+            A = full(sprandn(S, S, 0.2));
         else
             error('Unknown category: %s', category);
         end
