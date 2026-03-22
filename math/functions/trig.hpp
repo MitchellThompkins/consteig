@@ -1,5 +1,6 @@
 #ifndef CONSTMATH_TRIG_HPP
 #define CONSTMATH_TRIG_HPP
+// Reference: https://en.wikipedia.org/wiki/Taylor_series#Trigonometric_functions
 
 #include "../../consteig_options.hpp"
 #include "utilities.hpp"
