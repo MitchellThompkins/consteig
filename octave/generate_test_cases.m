@@ -42,13 +42,14 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
     
     for n = 1:num_cases
         if strcmp(category, 'random')
-            % Plain random matrix. Symmetric variant ensures all-real eigenvalues
-            % (A + A' is symmetric by construction).
+            % Plain random matrix with normally distributed entries (mean 0, unit
+            % variance), giving both positive and negative values. Symmetric variant
+            % ensures all-real eigenvalues (A + A' is symmetric by construction).
             if strcmp(type_str, 'sym')
-                A = rand(S);
+                A = randn(S);
                 A = A + A';
             else
-                A = rand(S);
+                A = randn(S);
             end
         elseif strcmp(category, 'defective')
             % Defective matrix: a Jordan block with a single repeated eigenvalue and
@@ -115,9 +116,11 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             p = randn(1, S+1);
             A = compan(p);
         elseif strcmp(category, 'graded')
-            % Graded matrix: entries scaled by random powers of 10 in [-1, 1].
-            % Produces wide variation in entry magnitude, stressing balancing.
-            A = randn(S) .* 10.^(rand(S)*2 - 1);
+            % Graded matrix: entries scaled by random powers of 10 spanning [-3, 3],
+            % giving a 10^6 dynamic range. The wide magnitude spread is the whole
+            % point of this case — it stresses the balancing step which must rescale
+            % the matrix before iteration to avoid floating-point over/underflow.
+            A = randn(S) .* 10.^(rand(S)*6 - 3);
         elseif strcmp(category, 'large_jordan')
             % Large Jordan block at eigenvalue 2: a pure Jordan block with no
             % rotation applied. The largest possible defective structure for size S,
@@ -140,11 +143,16 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             A = randn(S);
             A(floor(S/2)+1:end, 1:floor(S/2)) *= 1e-5;
         elseif strcmp(category, 'random_non_normal')
-            % Random non-normal matrix with extra weight on the upper triangle.
-            % Adding an independent random upper triangle biases the matrix away from
-            % normality without any special structure.
-            A = randn(S);
-            A = A + triu(randn(S), 1);
+            % Explicitly non-normal matrix: built as A = L + U where L is strictly
+            % lower triangular and U is upper triangular with a well-spread diagonal
+            % (linspace(1,S,S)). This guarantees AA' != A'A (non-normality) while
+            % keeping the eigenvalues known and spread (they are the diagonal of U).
+            % Rotated by a random orthogonal Q to hide the triangular structure.
+            L = tril(randn(S), -1);
+            U = triu(randn(S), 1) + diag(linspace(1, S, S));
+            A = L + U;
+            [Q, R] = qr(randn(S));
+            A = Q * A * Q';
         elseif strcmp(category, 'hamiltonian')
             % Hamiltonian matrix: block structure [M G; H -M'] where G and H are
             % symmetric. Eigenvalues come in +/- pairs by construction, arising in
