@@ -34,7 +34,7 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a);
 // Householder reflectors. H has zeros below the first subdiagonal.
 //
 // Reducing to Hessenberg form before QR iteration cuts the cost of each
-// QR step from O(n^4) to O(n^2), making the overall solver O(n^3).
+// QR step from O(n^3) to O(n^2), making the overall solver O(n^3).
 //
 // The reduction is implemented recursively. At each level, a Householder
 // reflector P is computed from the trailing submatrix and applied as a
