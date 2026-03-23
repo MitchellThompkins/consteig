@@ -11,9 +11,10 @@ namespace consteig
 
 // Reduce x to (-pi, pi] by removing integer multiples of 2*pi.
 // NOTE: the cast of (x / two_pi) to long long is undefined behavior for
-// |x| > ~5.8e19 (where x / two_pi exceeds LLONG_MAX). A stdlib-free constexpr
-// alternative does not exist in C++17, so this limitation is accepted for the
-// expected input range of this library.
+// |x| > ~5.8e19 (where x / two_pi exceeds LLONG_MAX), and also for non-finite
+// inputs (NaN or Inf). A stdlib-free constexpr alternative does not exist in
+// C++17, so these limitations are accepted for the expected input range of this
+// library.
 template <typename T> constexpr T trig_reduce(const T x) noexcept
 {
     constexpr T two_pi = static_cast<T>(2.0 * PI_CONST);
