@@ -67,7 +67,12 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
                     col_norm *= factor;
                 }
 
-                if ((row_norm + col_norm) < 0.95 * s)
+                // Stopping criterion from Parlett & Reinsch (1969); see also
+                // James, Langou & Lowery, "On Matrix Balancing and Eigenvector
+                // Computation" (2014), https://arxiv.org/pdf/1401.5766,
+                // Algorithm 2 line 12.
+                if ((row_norm + col_norm) <
+                    CONSTEIG_BALANCE_CONVERGENCE_THRESHOLD * s)
                 {
                     converged = false;
                     for (Size j = 0; j < S; ++j)
