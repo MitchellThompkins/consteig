@@ -1,52 +1,13 @@
 #include <gtest/gtest.h>
 
 #include "decompositions.hpp"
-#include "eigen_test_tools.hpp"
 #include "test_tools.hpp"
 
 using namespace consteig;
 
-TEST(householder, eigen_comparison)
-{
-    static constexpr Size s{4};
-    static constexpr Matrix<double, s, s> mat = {
-        {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
-
-    // Consteig Householder (Calculate at compile time)
-    static constexpr Matrix<double, s, s> houseMat = house(mat);
-
-    // Check properties using Eigen (Runtime)
-    Eigen::MatrixXd eigHouse = toEigen(houseMat);
-    Eigen::MatrixXd eigMat = toEigen(mat);
-
-    // 1. Is unitary?
-    EXPECT_TRUE(eigHouse.isUnitary(CONSTEIG_TEST_TOLERANCE));
-
-    // 2. Does it zero out elements below a(1,0)? (indices 2, 3...)
-    // house() is designed for Hessenberg reduction, preserving row 0 and
-    // creating zeros in col 0 below row 1.
-    Eigen::MatrixXd result = eigHouse * eigMat;
-
-    for (Size i = 2; i < s; ++i)
-    {
-        EXPECT_NEAR(result(i, 0), 0.0, CONSTEIG_TEST_TOLERANCE);
-    }
-
-    // 3. Does it leave row 0 affected?
-    // Actually P = diag(1, P') where P' acts on subvector.
-    // So (P*A).row(0) == A.row(0) if P is block diag(1, ...).
-    // Let's check P structure.
-    EXPECT_NEAR(houseMat(0, 0), 1.0, CONSTEIG_TEST_TOLERANCE);
-    for (Size i = 1; i < s; ++i)
-    {
-        EXPECT_NEAR(houseMat(0, i), 0.0, CONSTEIG_TEST_TOLERANCE);
-        EXPECT_NEAR(houseMat(i, 0), 0.0, CONSTEIG_TEST_TOLERANCE);
-    }
-}
-
 TEST(householder, house)
 {
-    static constexpr int s{10};
+    static constexpr Size s{10};
     static constexpr Matrix<double, s, s> mat{{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
@@ -94,33 +55,33 @@ TEST(householder, house)
          -0.057714180, -0.067584002, -0.016523828, 0.899721674},
     }}};
 
-    static_assert(compareFloatMat(test, answer, CONSTEIG_TEST_TOLERANCE), MSG);
-    ASSERT_TRUE(compareFloatMat(test, answer, CONSTEIG_TEST_TOLERANCE));
+    static_assert(equalWithinMat(test, answer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithinMat(test, answer, CONSTEIG_TEST_TOLERANCE));
 }
 
 TEST(householder, house_single)
 {
-    static constexpr int s{2};
+    static constexpr Size s{2};
     static constexpr Matrix<float, s, s> mat{{{
-        {-2.0114, -0.52132},
-        {-0.42729, -0.47479},
+        {-2.0114F, -0.52132F},
+        {-0.42729F, -0.47479F},
     }}};
 
     static constexpr Matrix<float, s, s> test{house(mat)};
 
     static constexpr Matrix<float, s, s> answer{{{
-        {1.0, 0.0},
-        {0.0, -1.0},
+        {1.0F, 0.0F},
+        {0.0F, -1.0F},
     }}};
 
-    static_assert(compareFloatMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE),
+    static_assert(equalWithinMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE),
                   MSG);
-    ASSERT_TRUE(compareFloatMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE));
+    ASSERT_TRUE(equalWithinMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE));
 }
 
 TEST(householder, properties)
 {
-    static constexpr int s{4};
+    static constexpr Size s{4};
     static constexpr Matrix<double, s, s> mat = {
         {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
 
@@ -129,11 +90,11 @@ TEST(householder, properties)
     // Symmetric: P = P^T
     static constexpr Matrix<double, s, s> PT = transpose(P);
 
-    static_assert(compareFloatMat(P, PT, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(P, PT, CONSTEIG_TEST_TOLERANCE), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(P(i, j), PT(i, j), CONSTEIG_TEST_TOLERANCE);
         }
@@ -143,11 +104,11 @@ TEST(householder, properties)
     static constexpr Matrix<double, s, s> P2 = P * P;
     static constexpr Matrix<double, s, s> I = eye<double, s>();
 
-    static_assert(compareFloatMat(P2, I, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(P2, I, CONSTEIG_TEST_TOLERANCE), MSG);
 
-    for (size_t i = 0; i < s; ++i)
+    for (Size i = 0; i < s; ++i)
     {
-        for (size_t j = 0; j < s; ++j)
+        for (Size j = 0; j < s; ++j)
         {
             ASSERT_NEAR(P2(i, j), I(i, j), CONSTEIG_TEST_TOLERANCE);
         }

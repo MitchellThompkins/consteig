@@ -1,5 +1,7 @@
 # Agent Guide for Consteig
 
+> **Note:** `CLAUDE.md` and `GEMINI.md` are symlinks to this file (`AGENT.md`). Always edit `AGENT.md` directly — editing the symlinks will break them.
+
 ## Project Overview
 
 Consteig is a **C++17 constexpr template library** for computing eigenvalues and eigenvectors of square matrices at compile time. The library is designed to be:
@@ -69,7 +71,7 @@ make generate-test-cases
 ### Key Build Notes
 
 - **`static_assert` IS a test**: The library uses `static_assert` extensively. Build failures ARE test failures.
-- Compiler limits are raised automatically via `CONSTEIG_RAISE_COMPILER_LIMITS=ON`
+- Default compiler constexpr limits are sufficient thanks to the deflation criterion in the eigenvalue solver
 - Tests are split into individual `.cpp` files to avoid exhausting compiler constexpr budgets
 
 ## Type System
@@ -82,10 +84,11 @@ make generate-test-cases
 
 ### Type Consistency Rules
 
-The `compareFloatMat` template function requires **all three parameters to have the same type T**:
+The `equalWithinMat` template function requires **all three parameters to have the same type T**:
+
 ```cpp
 template <typename T, Size R, Size C>
-constexpr bool compareFloatMat(Matrix<T, R, C> a, Matrix<T, R, C> b, const T thresh);
+constexpr bool equalWithinMat(Matrix<T, R, C> a, Matrix<T, R, C> b, const T thresh);
 ```
 
 This means:
@@ -139,7 +142,7 @@ TEST(householder, house_single)
 {
     static constexpr Matrix<float, 2, 2> mat{...};
     static constexpr Matrix<float, 2, 2> answer{...};
-    static_assert(compareFloatMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
 }
 
 // Double test - uses Matrix<double, ...> and double tolerance
@@ -147,7 +150,7 @@ TEST(householder, house)
 {
     static constexpr Matrix<double, 10, 10> mat{...};
     static constexpr Matrix<double, 10, 10> answer{...};
-    static_assert(compareFloatMat(test, answer, CONSTEIG_TEST_TOLERANCE), MSG);
+    static_assert(equalWithinMat(test, answer, CONSTEIG_TEST_TOLERANCE), MSG);
 }
 ```
 
@@ -155,12 +158,16 @@ TEST(householder, house)
 
 ```cpp
 // Compile-time verification (fails build if wrong)
-static_assert(compareFloatMat(result, expected, TOLERANCE), MSG);
+static_assert(equalWithinMat(result, expected, TOLERANCE), MSG);
 
 // Runtime verification (for Eigen comparisons)
-ASSERT_TRUE(compareFloatMat(result, expected, TOLERANCE));
+ASSERT_TRUE(equalWithinMat(result, expected, TOLERANCE));
 EXPECT_NEAR(computed, reference, TOLERANCE);
 ```
+
+## Coding Style
+
+- **Always use braces** for all control flow bodies (`if`, `else`, `for`, `while`), even single-line ones. No braceless statements.
 
 ## Common Pitfalls
 

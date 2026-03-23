@@ -1,7 +1,10 @@
 #ifndef TEST_TOOLS_HPP
 #define TEST_TOOLS_HPP
 
+#include <algorithm>
+#include <cassert>
 #include <cfloat>
+#include <cmath>
 #include <limits>
 
 #include "../consteig.hpp"
@@ -41,6 +44,13 @@
 #define PATHOLOGICAL_TOL 0.03
 #endif
 
+// Threshold for treating an R diagonal entry as zero when detecting null-space
+// columns in a rank-deficient QR decomposition. Values below this are
+// considered numerically zero relative to typical matrix entries (~1).
+#ifndef QR_RANK_CUTOFF
+#define QR_RANK_CUTOFF 1e-6
+#endif
+
 // Specific tolerance for very large value comparisons (e.g., 1e10).
 // While 1.0 seems large, it represents high precision (~1e-10 relative error)
 // for high-magnitude numbers.
@@ -53,39 +63,58 @@
 #define MAX_SENTINEL_VAL 1e12
 #endif
 
-// https://stackoverflow.com/a/32334103/3527182
+// Number of ULPs (units in the last place) of accumulated floating-point
+// rounding error to tolerate. Each operation contributes ~0.5 ULP, so this
+// gives headroom for roughly 2x this many chained operations.
+#ifndef NEARLY_EQUAL_ULP_TOLERANCE
+#define NEARLY_EQUAL_ULP_TOLERANCE 128
+#endif
+
+// Relative-error floating point comparison.
+// Rather than checking |a - b| < epsilon (absolute), this scales the tolerance
+// by the magnitude of a and b: |a - b| < epsilon * |a + b|. This means numbers
+// near 1000 get a wider absolute tolerance than numbers near 0.001, which
+// matches how floating-point rounding error actually behaves.
+//
+// epsilon is expressed in ULPs (machine_epsilon * NEARLY_EQUAL_ULP_TOLERANCE).
+// relth is an absolute floor for near-zero comparisons, where the relative
+// norm collapses and epsilon * norm would underflow.
+//
+// Source: https://stackoverflow.com/a/32334103/3527182
 template <typename T>
-constexpr bool nearlyEqual(T a, T b, T epsilon = 128 * FLT_EPSILON,
-                           T relth = FLT_MIN)
-// those defaults are arbitrary and could be removed
+constexpr bool nearlyEqual(T a, T b,
+                           T epsilon = NEARLY_EQUAL_ULP_TOLERANCE *
+                                       std::numeric_limits<T>::epsilon(),
+                           T relth = std::numeric_limits<T>::min())
 {
     static_assert(consteig::is_float<T>(), "Expects floating point number");
     assert(std::numeric_limits<T>::epsilon() <= epsilon);
-    assert(epsilon < 1.f);
+    assert(epsilon < static_cast<T>(1));
 
     if (a == b)
+    {
         return true;
+    }
 
     auto diff = std::abs(a - b);
     auto norm =
         std::min((std::abs(a) + std::abs(b)), std::numeric_limits<T>::max());
-    // or even faster: std::min(std::abs(a + b),
-    // std::numeric_limits<float>::max()); keeping this commented out until I
-    // update figures below
     return diff < std::max(relth, epsilon * norm);
 }
 
 template <typename T, consteig::Size R, consteig::Size C>
-static constexpr bool compareFloatMat(consteig::Matrix<T, R, C> a,
-                                      consteig::Matrix<T, R, C> b,
-                                      const T thresh)
+static constexpr bool equalWithinMat(consteig::Matrix<T, R, C> a,
+                                     consteig::Matrix<T, R, C> b,
+                                     const T thresh)
 {
     for (consteig::Size i{0}; i < R; i++)
     {
         for (consteig::Size j{0}; j < C; j++)
         {
-            if (!consteig::compareFloats(a(i, j), b(i, j), thresh))
+            if (!consteig::equalWithin(a(i, j), b(i, j), thresh))
+            {
                 return false;
+            }
         }
     }
     return true;
@@ -100,7 +129,9 @@ static constexpr bool compareEigenValues(
     // Set matching algorithm (O(N^2)) - robust against permutations and jitter.
     bool used[S] = {};
     for (consteig::Size i = 0; i < S; ++i)
+    {
         used[i] = false;
+    }
 
     for (consteig::Size i = 0; i < S; ++i)
     { // for each reference eigenvalue b[i]
@@ -120,7 +151,9 @@ static constexpr bool compareEigenValues(
             }
         }
         if (!found)
+        {
             return false;
+        }
     }
     return true;
 }

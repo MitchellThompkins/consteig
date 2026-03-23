@@ -1,12 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "decompositions.hpp"
-#include "eigen_test_tools.hpp"
 #include "test_tools.hpp"
 
 using namespace consteig;
-
-static constexpr double kTol = CONSTEIG_TEST_TOLERANCE;
 
 template <typename T, consteig::Size R, consteig::Size C>
 static constexpr bool compareComplexMat(consteig::Matrix<Complex<T>, R, C> a,
@@ -39,12 +36,12 @@ TEST(lu_decomp, simple_system)
     static constexpr Matrix<double, s, 1> x = lu_solve(luRes, b);
 
     static constexpr Matrix<double, s, 1> Ax = mat * x;
-    static_assert(compareFloatMat(Ax, b, kTol), MSG);
+    static_assert(equalWithinMat(Ax, b, CONSTEIG_TEST_TOLERANCE), MSG);
 
     // Runtime check
     for (Size i = 0; i < s; ++i)
     {
-        EXPECT_NEAR(Ax(i, 0), b(i, 0), kTol);
+        EXPECT_NEAR(Ax(i, 0), b(i, 0), CONSTEIG_TEST_TOLERANCE);
     }
 }
 
@@ -59,7 +56,7 @@ TEST(lu_decomp, pivot_test)
     static constexpr Matrix<double, s, 1> x = lu_solve(luRes, b);
 
     static constexpr Matrix<double, s, 1> Ax = mat * x;
-    static_assert(compareFloatMat(Ax, b, kTol), MSG);
+    static_assert(equalWithinMat(Ax, b, CONSTEIG_TEST_TOLERANCE), MSG);
 
     static_assert(luRes._p[0] == 1, "Should have swapped rows");
 }
@@ -89,13 +86,13 @@ TEST(lu_decomp, complex_system)
 
     static constexpr Matrix<Complex<double>, s, 1> Ax = mat * x;
 
-    static_assert(compareComplexMat(Ax, b, kTol), MSG);
+    static_assert(compareComplexMat(Ax, b, CONSTEIG_TEST_TOLERANCE), MSG);
 
     // Manual check at runtime
     for (Size i = 0; i < s; ++i)
     {
-        EXPECT_NEAR(Ax(i, 0).real, b(i, 0).real, kTol);
-        EXPECT_NEAR(Ax(i, 0).imag, b(i, 0).imag, kTol);
+        EXPECT_NEAR(Ax(i, 0).real, b(i, 0).real, CONSTEIG_TEST_TOLERANCE);
+        EXPECT_NEAR(Ax(i, 0).imag, b(i, 0).imag, CONSTEIG_TEST_TOLERANCE);
     }
 }
 
@@ -120,5 +117,5 @@ TEST(lu_decomp, complex_identity)
     static constexpr LUMatrix<Complex<double>, s> luRes = lu(mat);
     static constexpr Matrix<Complex<double>, s, 1> x = lu_solve(luRes, b);
 
-    static_assert(compareComplexMat(x, b, kTol), MSG);
+    static_assert(compareComplexMat(x, b, CONSTEIG_TEST_TOLERANCE), MSG);
 }

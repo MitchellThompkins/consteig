@@ -14,10 +14,16 @@ template <typename T, Size S> struct QRMatrix
     Matrix<T, S, S> _r;
 };
 
-// Optimized QR for Upper Hessenberg Matrix
 // Algorithm: QR Decomposition (Hessenberg Optimized)
-// Uses Givens rotations optimized for the Hessenberg structure for excellent
-// numerical stability.
+// Factors an upper Hessenberg matrix A = QR using a sequence of Givens
+// rotations. Because A is Hessenberg, each column has at most one subdiagonal
+// nonzero, so each rotation only needs to update two adjacent rows of R and
+// two adjacent columns of Q.
+//
+// The rotation angle is chosen (Golub & Van Loan, sec. 5) so that the
+// subdiagonal entry r(i+1, i) is zeroed:
+//   c = x / mag,  s = y / mag,  mag = sqrt(x^2 + y^2)
+// where x = r(i,i) and y = r(i+1,i).
 template <typename T, Size R, Size C>
 constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a)
 {
@@ -28,7 +34,7 @@ constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a)
 
     for (Size i = 0; i < R - 1; ++i)
     {
-        // Use Givens rotation to zero a(i+1, i)
+        // Compute Givens rotation to zero r(i+1, i)
         T x = r(i, i);
         T y = r(i + 1, i);
 
@@ -65,11 +71,13 @@ constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a)
     return res;
 }
 
-// Modified Gram-Schmidt QR Decomposition (Kept as alternative or for reference)
-// Actually, let's replace it with a more stable Householder or Givens for all
-// matrices. Algorithm: QR Decomposition Implemented using a series of Givens
-// rotations for excellent numerical stability over alternatives like the
-// Gram-Schmidt process.
+// Algorithm: QR Decomposition (General)
+// Factors a square matrix A = QR using a sequence of Givens rotations, working
+// column by column from bottom to top to zero all subdiagonal entries. Givens
+// rotations are preferred over Gram-Schmidt here because they avoid the loss of
+// orthogonality that Gram-Schmidt can suffer from floating-point cancellation.
+//
+// Reference: Golub & Van Loan, "Matrix Computations" (4th ed.), sec. 5
 template <typename T, Size R, Size C>
 constexpr QRMatrix<T, R> qr(const Matrix<T, R, C> a)
 {
@@ -82,7 +90,7 @@ constexpr QRMatrix<T, R> qr(const Matrix<T, R, C> a)
     {
         for (Size i = R - 1; i > j; --i)
         {
-            // Use Givens rotation to zero a(i, j) using a(i-1, j)
+            // Compute Givens rotation to zero r(i, j) using r(i-1, j)
             T x = r(i - 1, j);
             T y = r(i, j);
 
