@@ -39,10 +39,9 @@ jobs:
             - name: Require tag bump when Dockerfile changes
               if: steps.dockerfile-changed.outputs.changed == 'true'
               run: |
-                    OLD_TAG=$(git show ${{ github.event.pull_request.base.sha }}:.env | grep ^CONTAINER_TAG | cut -d= -f2)
-                    NEW_TAG=$(grep ^CONTAINER_TAG .env | cut -d= -f2)
-                    if [ "$OLD_TAG" = "$NEW_TAG" ]; then
-                      echo "ERROR: Dockerfile changed but CONTAINER_TAG in .env was not updated"
+                    BASE="${{ github.event.pull_request.base.sha }}"
+                    if ! git diff --name-only "$BASE" HEAD | grep -q '^\.env$'; then
+                      echo "ERROR: Dockerfile changed but .env was not updated (CONTAINER_TAG must be bumped)"
                       exit 1
                     fi
 
