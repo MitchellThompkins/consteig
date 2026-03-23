@@ -51,7 +51,7 @@ CMake Functions:
   variable scoping) that raises `-fconstexpr-ops-limit` (GCC),
   `-fconstexpr-steps` (Clang), and `-fconstexpr-depth` on one or more specific
   targets to accommodate heavy constexpr workloads. The library itself does not
-  call this function — its deflation criterion keeps iteration counts within
+  call this function. Its deflation criterion keeps iteration counts within
   default compiler limits. However, users working with very large or pathological
   matrices may find it useful to call this on their own targets.
 
@@ -72,7 +72,7 @@ User Macros:
   for the matrix balancing step. A scaling is applied to a row/column only if
   it reduces the sum of the row and column norms by more than this factor.
   The default value of `0.95` is taken from Algorithm 2 of James, Langou &
-  Lowery [^4]. Increasing it toward `1.0` runs more balancing iterations;
+  Lowery [^2]. Increasing it toward `1.0` runs more balancing iterations;
   decreasing it stops earlier.
 
 * `CONSTEIG_USE_LONG_DOUBLE` - Forces all internal constexpr eigenvalue
@@ -337,6 +337,12 @@ the accuracy and verification methods implemented to test this library.
 * Eigenvalues (real or complex) need to be known at compile time.
 * Eigenvalues need to be known and the standard library is unavailable.
 * You need to manipulate static matrices at compile time.
+
+## Constraints
+
+* Matrix dimensions are template parameters and must be compile-time constants.
+* Input matrices must be real-valued. Eigenvalue output may be complex, but `Matrix<consteig::Complex<T>, ...>` is not supported as input.
+* Only square matrices are supported for eigenvalue computation and decompositions.
 
 ## Development
 
