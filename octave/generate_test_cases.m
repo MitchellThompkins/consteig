@@ -145,8 +145,9 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
         elseif strcmp(category, 'random_non_normal')
             % Explicitly non-normal matrix: built as A = L + U where L is strictly
             % lower triangular and U is upper triangular with a well-spread diagonal
-            % (linspace(1,S,S)). This guarantees AA' != A'A (non-normality) while
-            % keeping the eigenvalues known and spread (they are the diagonal of U).
+            % (linspace(1,S,S)). The combination produces a full matrix that
+            % guarantees AA' != A'A (non-normality). Eigenvalues are computed by
+            % eig() since L+U is not triangular.
             % Rotated by a random orthogonal Q to hide the triangular structure.
             L = tril(randn(S), -1);
             U = triu(randn(S), 1) + diag(linspace(1, S, S));
