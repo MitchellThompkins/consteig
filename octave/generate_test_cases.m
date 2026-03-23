@@ -167,10 +167,13 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
                 A = randn(S);
             end
         elseif strcmp(category, 'sparse_interior')
-            % Matrix with ~20% fill: most entries are zero, scattered randomly
+            % Matrix with ~40% fill: most entries are zero, scattered randomly
             % across all positions including the diagonal. Tests that the solver
             % handles matrices with many structural zeros without special treatment.
-            A = full(sprandn(S, S, 0.2));
+            % 40% is sparse enough to be meaningfully different from a dense random
+            % matrix, while avoiding the near-singular matrices that lower fill rates
+            % produce for an 8x8 matrix with normally distributed entries.
+            A = full(sprandn(S, S, 0.4));
         else
             error('Unknown category: %s', category);
         end
