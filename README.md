@@ -1,11 +1,11 @@
 ![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
 
 ## What Is This 
-Consteig is a constexpr template library which uses both constexpr functions and
+consteig is a constexpr template library which uses both constexpr functions and
 template meta-programming to calculate the eigenvalues and corresponding eigen
 vectors of a square matrix at compile-time. That is, the eigenvalues and
 eigenvectors can be saved as `static constexpr` values and no processor
-execution time is spent calculating them at run-time. Consteig also allows for
+execution time is spent calculating them at run-time. consteig also allows for
 compile time static matrix manipulation. To remove any external dependences
 several constexpr math functions are implemented as well.
 
@@ -22,12 +22,12 @@ All at compile time, consteig supports:
 * A selection of mathematical functions, including complex arithmetic. [^1]
 * A strictly freestanding core with no dependence on the C++ standard library.
 
-## How To Use Consteig
-Consteig is a templated library and as such a user does not need to compile
+## How To Use consteig
+consteig is a templated library and as such a user does not need to compile
 anything separately. Simply `#include “consteig.hpp”` into the project. The
 cmake files here are only to facilitate testing and development.
 
-`consteig` also requires a C++ compiler which supports **C++17**.
+consteig also requires a C++ compiler which supports **C++17**.
 
 Here are some examples to help get started:
 * [Declaring a matrix](examples/matrix.cpp)
@@ -38,7 +38,7 @@ Here are some examples to help get started:
 
 ### Build Options
 
-`consteig` has a few options which can be modified. However, these defaults are
+consteig has a few options which can be modified. However, these defaults are
 well tested and modifying them may have non-desirable results such as increased
 compile times or numerical instability.
 
@@ -107,7 +107,7 @@ Compiler flags:
 
 Take the example from [Using Eigenvectors to Find Steady State Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
-and apply it using `consteig`. The transition matrix is fixed at compile time, so
+and apply it using consteig. The transition matrix is fixed at compile time, so
 the steady-state fractions can be stored as `static constexpr` values. At runtime,
 computing the distribution for any total population is then a single multiply.
 There is no need to iterate the transition matrix until it converges.
@@ -143,7 +143,7 @@ The same compile-time eigenvectors drive both outputs; no matrix iteration happe
 
 ### Digital Filter Design
 
-Consteig can be used to automatically generate the IIR digital filter
+consteig can be used to automatically generate the IIR digital filter
 coefficents from a time domain transfer function. They are derived at
 compile-time and can be saved for use in the filter step when the actual
 filtering takes place. Consider the 2nd-order Butterworth low-pass transfer
@@ -154,7 +154,7 @@ $$H(s) = \frac{\omega_c^2}{s^2 + \sqrt{2}\,\omega_c\,s + \omega_c^2}$$
 Instead of symbolically transforming $H(s)$ to $H(z)$ with the Z-transform, we
 use the Zero-Order Hold (ZOH) method:
 1.  Read the denominator coefficients of $H(s)$ directly into the companion-form state-space matrix $A_c$.
-2.  Use `consteig` to find the continuous-time poles (eigenvalues of $A_c$).
+2.  Use consteig to find the continuous-time poles (eigenvalues of $A_c$).
 3.  Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
 4.  Reconstruct the digital filter's characteristic polynomial from the mapped poles.
 
@@ -313,7 +313,7 @@ addresses both constraints.
 ## Algorithmic Approach and Optimizations [^3]
 
 See [docs/methods.md](docs/methods.md) for a discussion on the implementation
-specifics for the numerical solvers implemented by `consteig`.
+specifics for the numerical solvers implemented by consteig.
 
 ## Verification, Accuracy and Performance
 
@@ -324,13 +324,13 @@ case for Jordan blocks, it uses `0.03` [^4]. `0.03` approaches the numerical lim
 of verification accuracy for 64-bit types.
 
 Note that unit testing _does_ leverage components of the standard
-library and Eigen, but the `consteig` library core does not.
+library and Eigen, but the consteig library core does not.
 
 See [docs/verification.md](docs/verification.md) for a detailed discussion on
 the accuracy and verification methods implemented to test this library.
 
 
-## When To Use Consteig
+## When To Use consteig
 
 * Eigenvalues (real or complex) need to be known at compile time.
 * Eigenvalues need to be known and the standard library is unavailable.
