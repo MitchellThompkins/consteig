@@ -1,7 +1,7 @@
 # get the normalized current directory
 THIS_DIR := $(shell pwd)
 
-include .env
+CONTAINER_TAG := $(shell grep ^CONTAINER_TAG .env | cut -d= -f2)
 
 UID=$(shell id -u)
 GID=$(shell id -g)
