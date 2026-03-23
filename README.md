@@ -66,6 +66,13 @@ User Macros:
   library falls back to the more robust but heavier non-symmetric solver
   (`eig_double_shifted_qr`).
 
+* `CONSTEIG_BALANCE_CONVERGENCE_THRESHOLD` - Controls the stopping criterion
+  for the matrix balancing step. A scaling is applied to a row/column only if
+  it reduces the sum of the row and column norms by more than this factor.
+  The default value of `0.95` is taken from Algorithm 2 of James, Langou &
+  Lowery [^4]. Increasing it toward `1.0` runs more balancing iterations;
+  decreasing it stops earlier.
+
 * `CONSTEIG_USE_LONG_DOUBLE` - Forces all internal constexpr eigenvalue
   calculations to use `long double`. This dramatically improves numerical
   stability for large or pathological matrices but is very resource-intensive
@@ -358,3 +365,4 @@ make container.make.test
 [^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
 [^2]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
 [^3]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
+[^4]: James, R., Langou, J., & Lowery, B. R. (2014). [On matrix balancing and eigenvector computation](https://arxiv.org/pdf/1401.5766)
