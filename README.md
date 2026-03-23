@@ -143,16 +143,17 @@ The same compile-time eigenvectors drive both outputs — no matrix iteration ha
 
 ### Digital Filter Design
 
-This example demonstrates how to design a 2nd-order IIR Butterworth digital
-filter using the Zero-Order Hold (ZOH) method by directly computing the roots
-of the polynomial of the transfer functions but without algebraically
-performing a Z-transform nor by performing a bilinear transform.
+Consteig can be used to automatically generate the IIR digital filter
+coefficents from a time domain transfer function. The are derived at
+compile-time and can be saved for use in the filter step when the actual
+filtering takes place. Consider the 2nd-order Butterworth low-pass transfer
+function in the continuous time domain:
 
-The digital filter coefficients are derived at compile-time and can be saved
-for use in the filter step when the actual filtering takes place.
+$$H(s) = \frac{\omega_c^2}{s^2 + \sqrt{2}\,\omega_c\,s + \omega_c^2}$$
 
-Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
-1.  Define the continuous-time state-space matrix $A_c$.
+Instead of symbolically transforming $H(s)$ to $H(z)$ with the Z-transform, we
+use the Zero-Order Hold (ZOH) method:
+1.  Read the denominator coefficients of $H(s)$ directly into the companion-form state-space matrix $A_c$.
 2.  Use `consteig` to find the continuous-time poles (eigenvalues of $A_c$).
 3.  Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
 4.  Reconstruct the digital filter's characteristic polynomial from the mapped poles.
@@ -240,7 +241,8 @@ K            d727 1cf8 5734 d03f  0.253194801611810
 
 ### Control Theory
 
-These techniques are also applicable for control theory. Consider the [DC Motor
+At compile time, consteig can validate that the chosen gains for a PID loop meet
+the required performance requirements for a system. Consider the [DC Motor
 Position: PID Controller
 Design](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlPID)
 , along with the [state space
@@ -251,8 +253,8 @@ from the University of Michigan. The information known at compile time is:
 * Chosen gains
 * System performance requirements
 
-When building the system with gains that do not meet the system requirements,
-`static_assert`s can validate system gains by preventing compilation:
+When building the system with gains that do not meet the performance requirements,
+`static_assert` can validate system gains by preventing compilation:
 
 ```
 > make container.make.dc_motor_control.main
@@ -266,7 +268,7 @@ When building the system with gains that do not meet the system requirements,
 
 ```
 
-which aligns with the output produced by octave:
+This aligns with the output produced by octave:
 
 ```
 > octave octave/dc_motor_control.m
@@ -291,27 +293,24 @@ Validation:
 
 
 ## Why Does This Exist
-Originally this library was developed to support a generic digital filter
-library targeted at embedded systems in which the digital filter coefficients
-could be calculated at compile time. In order to find the filter coefficients
-it’s required to solve a multi order polynomial. Implementing a root finder
-natively is tedious and error prone. Finding the roots of a polynomial can be
-reframed as an eigenvalue problem which makes life easier. The matlab and octave
-root finding functions actually operate in this way.
+
+This library was originally developed to support a generic digital filter
+library for embedded systems, where filter coefficients are calculated at
+compile time. Computing those coefficients requires solving a high-order
+polynomial, which can be reframed as an eigenvalue problem, making it far more
+manageable. This is the same approach used by
+[LAPACK](https://netlib.org/lapack/), and by extension MATLAB and Octave's
+root-finding functions.
 
 ## How Is This Different
-There are powerful open source C++ eigenvalues solvers already in existence
-which are more robust, better optimized, and better tested. The caveat is that
-they cannot currently calculate Eigenvalues at compile time.
 
-Another key component to most eigenvalues solvers is the reliance on the
-standard library. This is for good reason as the standard library, in particular
-the STL containers, are powerful and solve many problems.  Unfortunately in some
-systems, particularly for embedded systems the standard library is not available.
+Powerful open source C++ eigenvalue solvers already exist that are more robust,
+optimized, and tested than anything here. However, they share two limitations:
+they cannot compute eigenvalues at compile time, and they depend on the
+standard library, which is unavailable on some embedded systems. This library
+addresses both constraints.
 
-This provides a compile-time alternative.
-
-## Algorithmic Approach and Optimizations [^2]
+## Algorithmic Approach and Optimizations [^3]
 
 See [docs/methods.md](docs/methods.md) for a discussion on the implementation
 specifics for the numerical solvers implemented by `consteig`.
@@ -321,7 +320,7 @@ specifics for the numerical solvers implemented by `consteig`.
 consteig uses `8x8` matrices as its test basis and leverages 2 tolerances for
 verification. For all non-defective matrices it uses `1e-9` as an expectation
 when comparing against a reference.  For highly defective matrices, as is the
-case for Jordan blocks, it uses `0.03` [^3]. `0.03` approaches the numerical limit
+case for Jordan blocks, it uses `0.03` [^4]. `0.03` approaches the numerical limit
 of verification accuracy for 64-bit types.
 
 Note that unit testing _does_ leverage components of the standard
@@ -332,24 +331,13 @@ the accuracy and verification methods implemented to test this library.
 
 
 ## When To Use Consteig
+
 * Eigenvalues (real or complex) need to be known at compile time.
 * Eigenvalues need to be known and the standard library is unavailable.
 * You need to manipulate static matrices at compile time.
 
-## Limitations
-* Declaring matrices can be initializer bracket hell. Refer to
-[examples/matrix.cpp](examples/matrix.cpp) for help.
-
-* For large matrices compilation may be slow due to the inherent cost of
-`constexpr` evaluation.
-
-* The matrix decompositions, as see in
-[examples/decomp.cpp](examples/decomp.cpp) require square matrices.
-
-* Support for non-square QR decomposition and optimized determinant/inverse
-  calculations.
-
 ## Development
+
 Build dependencies rely on:
 * gcc/g++ (C++17 support)
 * cmake (>= 3.11)
@@ -369,6 +357,6 @@ make container.make.test
 ## References
 
 [^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
-[^2]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
-[^3]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
-[^4]: James, R., Langou, J., & Lowery, B. R. (2014). [On matrix balancing and eigenvector computation](https://arxiv.org/pdf/1401.5766)
+[^2]: James, R., Langou, J., & Lowery, B. R. (2014). [On matrix balancing and eigenvector computation](https://arxiv.org/pdf/1401.5766)
+[^3]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
+[^4]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
