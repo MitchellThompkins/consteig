@@ -1,9 +1,10 @@
 ![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
 
-## What Is This 
-consteig is a constexpr template library which uses both constexpr functions and
-template meta-programming to calculate the eigenvalues and corresponding eigen
-vectors of a square matrix at compile-time. That is, the eigenvalues and
+## What Is This
+
+consteig is a constexpr template library which uses both constexpr functions
+and template meta-programming to calculate the eigenvalues and corresponding
+eigenvectors of a square matrix at compile-time. That is, the eigenvalues and
 eigenvectors can be saved as `static constexpr` values and no processor
 execution time is spent calculating them at run-time. consteig also allows for
 compile time static matrix manipulation. To remove any external dependences
@@ -23,11 +24,12 @@ All at compile time, consteig supports:
 * A strictly freestanding core with no dependence on the C++ standard library.
 
 ## How To Use consteig
-consteig is a templated library and as such a user does not need to compile
-anything separately. Simply `#include “consteig.hpp”` into the project. The
-cmake files here are only to facilitate testing and development.
 
-consteig also requires a C++ compiler which supports **C++17**.
+consteig is a templated library and as such a user does not need to compile
+anything separately. Simply `#include “consteig.hpp”` into the project, or
+consume it via CMake with `add_subdirectory` or `FetchContent`.
+
+consteig also requires a C++ compiler which supports C++17.
 
 Here are some examples to help get started:
 * [Declaring a matrix](examples/matrix.cpp)
