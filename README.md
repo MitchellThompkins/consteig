@@ -11,8 +11,8 @@ several constexpr math functions are implemented as well.
 
 This is particularly powerful if there is information that would normally
 require an offline tool (MATLAB, Python/scipy, etc...) to verify or compute, but
-which could be expressed directly in source code and be verified or computed
-automatically at every build.
+which could instead be expressed directly in source code and be verified or
+computed automatically at every build.
 
 All at compile time, consteig supports:
 
@@ -34,7 +34,7 @@ Here are some examples to help get started:
 * [Matrix Arithmetic](examples/matrix.cpp)
 * [Finding eigenvalues](examples/eigen.cpp)
 * [Population flow](examples/population.cpp)
-* [Butterworth Filter Design](examples/butterworth_core.hpp)
+* [Butterworth Filter Design](examples/butterworth/butterworth_core.hpp)
 
 ### Build Options
 
@@ -157,7 +157,7 @@ Instead of symbolically transforming the transfer function $H(s)$ to $H(z)$, we:
 3.  Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
 4.  Reconstruct the digital filter's characteristic polynomial from the mapped poles.
 
-The [`butterworth_core.hpp`](examples/butterworth_core.hpp) example generates
+The [`butterworth_core.hpp`](examples/butterworth/butterworth_core.hpp) example generates
 the following design for a 100Hz cutoff at 1kHz sampling:
 
 ```
@@ -193,7 +193,7 @@ coefficients are indeed calculated completely at compile time.
 
 ```
 > make butterworth.main
-> objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth_values.cpp.o filter_data.bin
+> objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth/butterworth_values.cpp.o filter_data.bin
 
 > xxd -c 8 filter_data.bin
 
@@ -215,7 +215,7 @@ coefficients are indeed calculated completely at compile time.
 00000078: afc5 de84 c451 da3f  .....Q.?
 00000080: d727 1cf8 5734 d03f  .'..W4.?
 
-> python3 examples/print_butterworth_binary.py
+> python3 examples/butterworth/print_butterworth_binary.py
 
 Name         Double (64-bit)      Decimal
 ----------------------------------------------------------------------
