@@ -72,11 +72,12 @@ TEST(matrix, eigen_comparison)
     }
 
     // Determinant
-    double d = det(mat1); // 0 for this specific matrix (singular)
+    double d = determinant(mat1); // 0 for this specific matrix (singular)
     double eigDet = eigMat1.determinant();
     EXPECT_NEAR(d, eigDet, CONSTEIG_TEST_TOLERANCE);
 
     Matrix<double, 2, 2> mat3 = {{{{1, 2}, {3, 4}}}};
     Eigen::Matrix2d eigMat3 = toEigen(mat3);
-    EXPECT_NEAR(det(mat3), eigMat3.determinant(), CONSTEIG_TEST_TOLERANCE);
+    EXPECT_NEAR(determinant(mat3), eigMat3.determinant(),
+                CONSTEIG_TEST_TOLERANCE);
 }

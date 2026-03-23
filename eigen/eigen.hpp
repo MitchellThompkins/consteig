@@ -467,7 +467,7 @@ static inline constexpr bool checkEigenValues(
 
     if constexpr (R <= 4)
     {
-        T d = det(a);
+        T d = determinant(a);
         Complex<T> prod_lambda{1, 0};
         for (Size i = 0; i < R; ++i)
         {

@@ -129,7 +129,7 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
                   "Trace mismatch");
 
     static constexpr auto prodEigs = prod(eigenValueTest); // i * -i = 1
-    static constexpr double d = det(mat);                  // 0 - (-1) = 1
+    static constexpr double d = determinant(mat);          // 0 - (-1) = 1
     static_assert(consteig::abs(prodEigs.real - d) < CONSTEIG_TEST_TOLERANCE,
                   "Det mismatch");
 

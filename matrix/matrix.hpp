@@ -105,22 +105,16 @@ template <typename T, Size R, Size C> class Matrix
         return result;
     }
 
-    // x1,y1,x2,y2 are indexes
-    template <Size x1, Size y1, Size x2, Size y2>
-    constexpr Matrix<T, x2 - x1 + 1, y2 - y1 + 1> sub() const
+    template <Size startRow, Size startCol, Size numRows, Size numCols>
+    constexpr Matrix<T, numRows, numCols> block() const
     {
-        static_assert(x2 >= x1,
-                      "Second x index must be bigger than the first.");
-        static_assert(y2 >= y1,
-                      "Second y index must be bigger than the first.");
+        Matrix<T, numRows, numCols> result{};
 
-        Matrix<T, x2 - x1 + 1, y2 - y1 + 1> result{};
-
-        for (Size i{x1}; i <= x2; i++)
+        for (Size i{startRow}; i < startRow + numRows; i++)
         {
-            for (Size j{y1}; j <= y2; j++)
+            for (Size j{startCol}; j < startCol + numCols; j++)
             {
-                result(i - x1, j - y1) = (*this)(i, j);
+                result(i - startRow, j - startCol) = (*this)(i, j);
             }
         }
 
@@ -179,36 +173,30 @@ template <typename T, Size R, Size C> class Matrix
         }
     }
 
-    // x1,y1,x2,y2 are indexes
-    template <Size x1, Size y1, Size x2, Size y2>
-    constexpr void setSub(const Matrix<T, y2 - y1 + 1, x2 - x1 + 1> &mat)
+    template <Size startRow, Size startCol, Size numRows, Size numCols>
+    constexpr void setBlock(const Matrix<T, numRows, numCols> &mat)
     {
-        static_assert(x2 >= x1,
-                      "Second x index must be bigger than the first.");
-        static_assert(y2 >= y1,
-                      "Second y index must be bigger than the first.");
-
-        for (Size i{x1}; i <= x2; i++)
+        for (Size i{startRow}; i < startRow + numRows; i++)
         {
-            for (Size j{y1}; j <= y2; j++)
+            for (Size j{startCol}; j < startCol + numCols; j++)
             {
-                (*this)(i, j) = mat(i - x1, j - y1);
+                (*this)(i, j) = mat(i - startRow, j - startCol);
             }
         }
     }
 
     constexpr bool isSquare() const
     {
-        return sizeX() == sizeY();
+        return rows() == cols();
     }
 
     constexpr bool isSymmetric() const
     {
         static_assert(R == C, "Symmetric matrices should be square.");
 
-        if (sizeX() > 1)
+        if (rows() > 1)
         {
-            for (Size i{1}; i <= sizeX() - 1; i++)
+            for (Size i{1}; i <= rows() - 1; i++)
             {
                 for (Size j{0}; j < i; j++)
                 {
@@ -243,9 +231,9 @@ template <typename T, Size R, Size C> class Matrix
                 floating point values");
         static_assert(R == C, "Symmetric matrices should be square.");
 
-        if (sizeX() > 1)
+        if (rows() > 1)
         {
-            for (Size i{1}; i <= sizeX() - 1; i++)
+            for (Size i{1}; i <= rows() - 1; i++)
             {
                 for (Size j{0}; j < i; j++)
                 {
@@ -260,11 +248,11 @@ template <typename T, Size R, Size C> class Matrix
         return true;
     }
 
-    constexpr Size sizeX() const
+    constexpr Size rows() const
     {
         return R;
     }
-    constexpr Size sizeY() const
+    constexpr Size cols() const
     {
         return C;
     }

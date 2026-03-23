@@ -48,11 +48,12 @@ static constexpr Matrix<T, R, C> setSubColTest(
     return original;
 }
 
-template <typename T, Size R, Size C, Size x1, Size y1, Size x2, Size y2>
-static constexpr Matrix<T, R, C> setSubTest(
-    Matrix<T, R, C> original, const Matrix<T, x2 - x1 + 1, y2 - y1 + 1> mat)
+template <typename T, Size R, Size C, Size startRow, Size startCol,
+          Size numRows, Size numCols>
+static constexpr Matrix<T, R, C> setBlockTest(
+    Matrix<T, R, C> original, const Matrix<T, numRows, numCols> mat)
 {
-    original.template setSub<x1, y1, x2, y2>(mat);
+    original.template setBlock<startRow, startCol, numRows, numCols>(mat);
     return original;
 }
 
@@ -85,8 +86,8 @@ TEST(matrix, checkSize)
 
     static constexpr Matrix<int, x, y> matrix{{{{5, -1, -2}, {-4, -2, 1}}}};
 
-    static constexpr Size len{matrix.sizeX()};
-    static constexpr Size height{matrix.sizeY()};
+    static constexpr Size len{matrix.rows()};
+    static constexpr Size height{matrix.cols()};
 
     // Check sizes
     static_assert(len == x, MSG);
@@ -202,7 +203,8 @@ TEST(matrix, static_constexpr_subMatrix)
     static constexpr Matrix<float, x, x> mat{
         {{{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}}};
 
-    static constexpr Matrix<float, x - 1, x - 1> subMat{mat.sub<1, 1, 2, 2>()};
+    static constexpr Matrix<float, x - 1, x - 1> subMat{
+        mat.block<1, 1, 2, 2>()};
 
     static constexpr Matrix<float, x - 1, x - 1> answer{
         {{{2.0F, 3.0F}, {1.0F, 0.0F}}}};
@@ -219,7 +221,7 @@ TEST(matrix, static_constexpr_subMatrixSameSize)
 
     static constexpr Matrix<float, x, x> mat{{{{5.0F}}}};
 
-    static constexpr Matrix<float, x, x> subMat{mat.sub<0, 0, 0, 0>()};
+    static constexpr Matrix<float, x, x> subMat{mat.block<0, 0, 1, 1>()};
 
     static constexpr Matrix<float, x, x> answer{{{{5.0F}}}};
 
@@ -335,7 +337,8 @@ TEST(matrix, static_constexpr_set_sub_mat_square)
         {{{5, -1, -2}, {-4, 381, -39}, {2, 33, 15}}}};
 
     static constexpr Matrix<int, x, x> mat{
-        setSubTest<int, x, x, x1, y1, x2, y2>(original, sub)};
+        setBlockTest<int, x, x, x1, y1, x2 - x1 + 1, y2 - y1 + 1>(original,
+                                                                  sub)};
 
     // Check that created objects are constexpr
     static_assert(mat == answer, MSG);

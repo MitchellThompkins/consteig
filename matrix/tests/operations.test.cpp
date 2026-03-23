@@ -154,8 +154,8 @@ TEST(matrix, static_constexpr_norm_euclidean)
 
     static constexpr Matrix<float, r, r> mat2{{{{1.0F, -7.0F}, {-2.0F, 3.0F}}}};
 
-    static constexpr float n1{normE(mat1)};
-    static constexpr float n2{normE(mat2)};
+    static constexpr float n1{norm(mat1)};
+    static constexpr float n2{norm(mat2)};
 
     static constexpr float answer1 = 8.0F;
     static constexpr float answer2 = 7.937253933F;
@@ -175,8 +175,8 @@ TEST(matrix, static_constexpr_det)
 
     static constexpr Matrix<float, r, r> mat2{{{{1.0F, -7.0F}, {-2.0F, 3.0F}}}};
 
-    static constexpr float n1{det(mat1)};
-    static constexpr float n2{det(mat2)};
+    static constexpr float n1{determinant(mat1)};
+    static constexpr float n2{determinant(mat2)};
 
     static constexpr float answer1 = 15.0F;
     static constexpr float answer2 = -11.0F;
