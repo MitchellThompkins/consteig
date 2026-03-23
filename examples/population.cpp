@@ -8,15 +8,15 @@ int main()
     static constexpr consteig::Size pop_size{2};
     // The matrix must be left-stochastic (columns sum to 1) for
     // right-multiplication (A*v).
-    static constexpr consteig::Matrix<double, pop_size, pop_size> pop_mat{{{
+    static constexpr consteig::Matrix<double, pop_size, pop_size> pop_mat{{
         {0.95, 0.20},
         {0.05, 0.80},
-    }}};
+    }};
 
-    static constexpr consteig::Matrix<double, pop_size, 1> u0{{{
+    static constexpr consteig::Matrix<double, pop_size, 1> u0{{
         {500000.0},
         {500000.0},
-    }}};
+    }};
 
     static constexpr auto pop_eigs{consteig::eig(pop_mat)};
     static_assert(pop_eigs.rows() == pop_size,

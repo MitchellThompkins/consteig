@@ -79,13 +79,13 @@ int main()
     // The addition of the integral_error state ensures:
     // "No steady-state error, even in the presence of a step disturbance input"
     static constexpr consteig::Matrix<double, s, s> A{
-        {{{0.0, 1.0, 0.0, 0.0},
+        {{0.0, 1.0, 0.0, 0.0},
           {0.0, -b / J, K_m / J, 0.0},
           {0.0, -K_m / L, -R / L, 0.0},
-          {-1.0, 0.0, 0.0, 0.0}}}};
+          {-1.0, 0.0, 0.0, 0.0}}};
 
     static constexpr consteig::Matrix<double, s, 1> B{
-        {{{0.0}, {0.0}, {1.0 / L}, {0.0}}}};
+        {{0.0}, {0.0}, {1.0 / L}, {0.0}}};
 
     // --- Control Constraints ---
     static constexpr double POLE_LIMIT_FOR_SETTLING = -30.0;
@@ -100,7 +100,7 @@ int main()
     static constexpr double K4_good = -500.0;
 
     static constexpr consteig::Matrix<double, 1, s> K_good{
-        {{{K1_good, K2_good, K3_good, K4_good}}}};
+        {{K1_good, K2_good, K3_good, K4_good}}};
 
     static constexpr consteig::Matrix<double, s, s> A_cl_good{A - B * K_good};
     static constexpr auto eigs_good = consteig::eigvals(A_cl_good);
@@ -133,7 +133,7 @@ int main()
     static constexpr double K4_bad = -200.0;
 
     static constexpr consteig::Matrix<double, 1, s> K_bad{
-        {{{K1_bad, K2_bad, K3_bad, K4_bad}}}};
+        {{K1_bad, K2_bad, K3_bad, K4_bad}}};
 
     static constexpr consteig::Matrix<double, s, s> A_cl_bad{A - B * K_bad};
     static constexpr auto eigs_bad = consteig::eigvals(A_cl_bad);

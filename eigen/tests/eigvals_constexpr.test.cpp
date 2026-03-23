@@ -70,10 +70,10 @@ TEST(consteig_eigen, constexpr_eigenValues)
     static constexpr Size s{4};
 
     static constexpr Matrix<double, s, s> mat{
-        {{{-4.4529e-01, 4.9063e+00, -8.7871e-01, 6.3036e+00},
+        {{-4.4529e-01, 4.9063e+00, -8.7871e-01, 6.3036e+00},
           {-6.3941e+00, 1.3354e+01, 1.6668e+00, 1.1945e+01},
           {3.6842e+00, -6.6617e+00, -6.0021e-02, -7.0043e+00},
-          {3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}}}};
+          {3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}}};
 
     static constexpr auto eigenValueTest{eigvals(mat)};
 
@@ -94,13 +94,13 @@ TEST(consteig_eigen, symmetric_trace)
 {
     static constexpr Size s{5};
 
-    static constexpr consteig::Matrix<double, s, s> mat{{{
+    static constexpr consteig::Matrix<double, s, s> mat{{
         {-5, -4, 2, 1, 77.1},
         {-4, 5, 7, 8, 9.2},
         {2, 7, 0, -83, 2},
         {1, 8, -83, 3, 4},
         {77.1, 9.2, 2, 4, 2},
-    }}};
+    }};
 
     static constexpr auto eigenValueTest{eigvals(mat)};
 
@@ -118,7 +118,7 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
 {
     static constexpr Size s{2};
     // Matrix with complex eigenvalues: [0, 1; -1, 0] -> +/- i
-    static constexpr Matrix<double, s, s> mat{{{{0.0, 1.0}, {-1.0, 0.0}}}};
+    static constexpr Matrix<double, s, s> mat{{{0.0, 1.0}, {-1.0, 0.0}}};
 
     static constexpr auto eigenValueTest{eigvals(mat)};
 
@@ -135,7 +135,7 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
 
     // Static verify
     static constexpr Matrix<Complex<double>, s, 1> expected{
-        {{{{{0.0, 1.0}}}, {{{0.0, -1.0}}}}}};
+        {{{0.0, 1.0}}, {{0.0, -1.0}}}};
     static_assert(verify_values(eigenValueTest, expected,
                                 static_cast<double>(CONSTEIG_TEST_TOLERANCE)),
                   "Eigenvalue mismatch (constexpr)");
@@ -165,7 +165,7 @@ TEST(consteig_eigen, non_symmetric_general)
 {
     static constexpr Size s{3};
     static constexpr Matrix<double, s, s> mat{
-        {{{1.0, 2.0, 3.0}, {0.0, 1.0, 5.0}, {0.0, -2.0, 1.0}}}};
+        {{1.0, 2.0, 3.0}, {0.0, 1.0, 5.0}, {0.0, -2.0, 1.0}}};
 
     static constexpr auto eigenValueTest{eigvals(mat)};
 
@@ -179,7 +179,7 @@ TEST(consteig_eigen, non_symmetric_general)
     // Static verify
     // Eigenvalues are 1, 1 +/- sqrt(10)i  (approx 1 +/- 3.162277i)
     static constexpr Matrix<Complex<double>, s, 1> expected{
-        {{{{{1.0, 0.0}}}, {{{1.0, 3.16227766}}}, {{{1.0, -3.16227766}}}}}};
+        {{{1.0, 0.0}}, {{1.0, 3.16227766}}, {{1.0, -3.16227766}}}};
     static_assert(verify_values(eigenValueTest, expected,
                                 static_cast<double>(CONSTEIG_TEST_TOLERANCE)),
                   "Eigenvalue mismatch (constexpr)");

@@ -30,7 +30,7 @@ constexpr Constants design()
     double sqrt2_wc = consteig::sqrt(2.0) * wc;
     double wc_sq = wc * wc;
 
-    consteig::Matrix<double, 2, 2> A_c{{{{0.0, 1.0}, {-wc_sq, -sqrt2_wc}}}};
+    consteig::Matrix<double, 2, 2> A_c{{{0.0, 1.0}, {-wc_sq, -sqrt2_wc}}};
 
     auto poles_c = consteig::eigvals(A_c);
     auto p1_c = poles_c(0, 0);

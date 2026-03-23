@@ -1,7 +1,7 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
-#include "../array/array.hpp"
+#include "../consteig_types.hpp"
 #include "../math/functions/utilities.hpp"
 
 namespace consteig
@@ -122,9 +122,6 @@ template <typename T, Size R, Size C> class Matrix
     }
 
     constexpr Matrix() = default;
-    constexpr Matrix(const Array<Array<T, C>, R> &data) : _data(data)
-    {
-    }
     constexpr Matrix(const Matrix &) = default;
     constexpr Matrix(Matrix &&) = default;
     constexpr Matrix &operator=(const Matrix &) = default;
@@ -270,8 +267,7 @@ template <typename T, Size R, Size C> class Matrix
         return &_data[0][0];
     }
 
-  private:
-    Array<Array<T, C>, R> _data{};
+    T _data[R][C]{};
 };
 
 } // namespace consteig

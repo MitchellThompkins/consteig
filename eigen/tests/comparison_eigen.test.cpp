@@ -153,13 +153,13 @@ TEST(eigen_comparison, hardcoded_symmetric_5x5)
 {
     static constexpr Size s{5};
 
-    static constexpr consteig::Matrix<double, s, s> mat{{{
+    static constexpr consteig::Matrix<double, s, s> mat{{
         {-5, -4, 2, 1, 77.1},
         {-4, 5, 7, 8, 9.2},
         {2, 7, 0, -83, 2},
         {1, 8, -83, 3, 4},
         {77.1, 9.2, 2, 4, 2},
-    }}};
+    }};
 
     static constexpr auto eigenValueTest{eigvals(mat)};
 
