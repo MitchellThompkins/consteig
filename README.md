@@ -26,12 +26,12 @@ All at compile time, consteig supports:
 ## How To Use consteig
 
 consteig is a templated library and as such a user does not need to compile
-anything separately. Simply `#include “consteig.hpp”` into the project, or
+anything separately. Simply `#include "consteig.hpp"` into the project, or
 consume it via CMake with `add_subdirectory` or `FetchContent`.
 
 consteig also requires a C++ compiler which supports C++17.
 
-Here are some examples to help get started:
+Quick reference examples:
 * [Declaring a matrix](examples/matrix.cpp)
 * [Matrix Arithmetic](examples/matrix.cpp)
 * [Finding eigenvalues](examples/eigen.cpp)
@@ -105,9 +105,10 @@ Compiler flags:
   stability of operations like QR decomposition at compile time.
 
 ## Examples
+
 ### Population Flow
 
-Take the example from [Using Eigenvectors to Find Steady State Population
+If a system's transition matrix is fixed at compile time, its steady-state behavior never needs to be recomputed at runtime. Take the example from [Using Eigenvectors to Find Steady State Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
 and apply it using consteig. The transition matrix is fixed at compile time, so
 the steady-state fractions can be stored as `static constexpr` values. At runtime,
@@ -145,8 +146,8 @@ The same compile-time eigenvectors drive both outputs; no matrix iteration happe
 
 ### Digital Filter Design
 
-consteig can be used to automatically generate the IIR digital filter
-coefficents from a time domain transfer function. They are derived at
+Embedded filter design typically requires an offline tool like MATLAB or Python to compute coefficients, which then get hardcoded into source. With consteig, the transfer function lives in source and the compiler derives the coefficients directly. consteig can automatically generate IIR digital filter
+coefficients from a time-domain transfer function. They are derived at
 compile-time and can be saved for use in the filter step when the actual
 filtering takes place. Consider the 2nd-order Butterworth low-pass transfer
 function in the continuous time domain:
@@ -243,7 +244,7 @@ K            d727 1cf8 5734 d03f  0.253194801611810
 
 ### Control Theory
 
-At compile time, consteig can validate that the chosen gains for a PID loop meet
+When system parameters and controller gains are known at compile time, consteig can verify that the closed-loop poles meet performance requirements, turning a runtime failure into a build failure. At compile time, consteig can validate that the chosen gains for a PID loop meet
 the required performance requirements for a system. Consider the [DC Motor
 Position: PID Controller
 Design](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlPID)
@@ -306,7 +307,7 @@ root-finding functions.
 
 ## How Is This Different
 
-Powerful open source C++ eigenvalue solvers already exist that are more robust,
+Powerful open-source C++ eigenvalue solvers already exist that are more robust,
 optimized, and tested than anything here. However, they share two limitations:
 they cannot compute eigenvalues at compile time, and they depend on the
 standard library, which is unavailable on some embedded systems. This library
@@ -371,7 +372,7 @@ Required:
 Optional:
 * Octave (for regenerating test cases via `make generate-test-cases`)
 
-```
+```bash
 make build
 make test
 ```
