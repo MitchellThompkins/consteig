@@ -122,6 +122,9 @@ template <typename T, Size R, Size C> class Matrix
     }
 
     constexpr Matrix() = default;
+    constexpr Matrix(const Array<Array<T, C>, R> &data) : _data(data)
+    {
+    }
     constexpr Matrix(const Matrix &) = default;
     constexpr Matrix(Matrix &&) = default;
     constexpr Matrix &operator=(const Matrix &) = default;
@@ -257,6 +260,17 @@ template <typename T, Size R, Size C> class Matrix
         return C;
     }
 
+    constexpr T *data()
+    {
+        return &_data[0][0];
+    }
+
+    constexpr const T *data() const
+    {
+        return &_data[0][0];
+    }
+
+  private:
     Array<Array<T, C>, R> _data{};
 };
 
