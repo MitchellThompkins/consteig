@@ -38,7 +38,7 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a);
 //
 // The reduction is implemented recursively. At each level, a Householder
 // reflector P is computed from the trailing submatrix and applied as a
-// similarity transformation P * A * P, preserving eigenvalues. The template
+// similarity transformation P^T * A * P, preserving eigenvalues. The template
 // parameter L tracks the remaining submatrix size, bottoming out at L <= 2
 // when no further reduction is needed.
 //
