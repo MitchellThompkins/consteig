@@ -9,7 +9,11 @@
 namespace consteig
 {
 
-// Reduce x to (-pi, pi] by removing integer multiples of 2*pi
+// Reduce x to (-pi, pi] by removing integer multiples of 2*pi.
+// NOTE: the cast of (x / two_pi) to long long is undefined behavior for
+// |x| > ~5.8e19 (where x / two_pi exceeds LLONG_MAX). A stdlib-free constexpr
+// alternative does not exist in C++17, so this limitation is accepted for the
+// expected input range of this library.
 template <typename T> constexpr T trig_reduce(const T x) noexcept
 {
     constexpr T two_pi = static_cast<T>(2.0 * PI_CONST);
@@ -87,7 +91,12 @@ template <typename T> constexpr auto cos(const T x) noexcept
 }
 
 /**
- * @brief Computes the tangent of x (in radians).
+ * @brief Computes the tangent of x (in radians) as sin_series(r) /
+ * cos_series(r), where r = trig_reduce(x).
+ *
+ * NOTE: tan has singularities where cos_series(r) == 0 (x = pi/2 + k*pi for
+ * integer k). Near these points the result can be very large, +/-infinity, or
+ * NaN. This function does not clamp or guard against those cases.
  */
 template <typename T> constexpr auto tan(const T x) noexcept
 {
