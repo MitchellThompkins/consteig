@@ -3,10 +3,6 @@
 
 #include "../consteig.hpp"
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
 namespace butterworth
 {
 
@@ -29,7 +25,7 @@ constexpr Constants design()
     double fs = 1000.0;
     double fc = 100.0;
     double T = 1.0 / fs;
-    double wc = 2.0 * M_PI * fc;
+    double wc = 2.0 * PI_CONST * fc;
 
     double sqrt2_wc = consteig::sqrt(2.0) * wc;
     double wc_sq = wc * wc;

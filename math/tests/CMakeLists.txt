@@ -35,3 +35,8 @@ add_executable(complex.test ${CMAKE_CURRENT_SOURCE_DIR}/complex.test.cpp)
 target_include_directories(math INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
 target_link_libraries(complex.test math gtest_main consteig_warnings)
 create_test(complex.test)
+
+add_executable(trig.test ${CMAKE_CURRENT_SOURCE_DIR}/trig.test.cpp)
+target_include_directories(math INTERFACE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(trig.test math gtest_main consteig_warnings)
+create_test(trig.test)

@@ -1,5 +1,9 @@
 # Makefile
 build/
+build-clang/
+build-gcc/
+build-arm-clang/
+build-arm-gcc/
 compile_commands.json
 
 # container
