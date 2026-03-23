@@ -109,8 +109,8 @@ Take the example from [Using Eigenvectors to Find Steady State Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
 and apply it using `consteig`. The transition matrix is fixed at compile time, so
 the steady-state fractions can be stored as `static constexpr` values. At runtime,
-computing the distribution for any total population is then a single multiply —
-there is no need to iterate the transition matrix until it converges.
+computing the distribution for any total population is then a single multiply.
+There is no need to iterate the transition matrix until it converges.
 
 The [`population.cpp`](examples/population.cpp) example demonstrates this:
 
@@ -139,12 +139,12 @@ Seattle:  2000000 (80.00%)
 Portland: 500000 (20.00%)
 ```
 
-The same compile-time eigenvectors drive both outputs — no matrix iteration happens at runtime.
+The same compile-time eigenvectors drive both outputs; no matrix iteration happens at runtime.
 
 ### Digital Filter Design
 
 Consteig can be used to automatically generate the IIR digital filter
-coefficents from a time domain transfer function. The are derived at
+coefficents from a time domain transfer function. They are derived at
 compile-time and can be saved for use in the filter step when the actual
 filtering takes place. Consider the 2nd-order Butterworth low-pass transfer
 function in the continuous time domain:
@@ -338,13 +338,9 @@ the accuracy and verification methods implemented to test this library.
 
 ## Development
 
-Build dependencies rely on:
-* gcc/g++ (C++17 support)
-* cmake (>= 3.11)
-* make
-* Octave (optional, for test generation)
+### With Docker (recommended)
 
-These are all packaged into a docker container. To build and test:
+The only local dependency is Docker. All build tools are packaged in the dev container:
 
 ```
 make container.pull
@@ -352,6 +348,24 @@ export MY_UID=$(id -u)
 export MY_GID=$(id -g)
 make container.make.build
 make container.make.test
+```
+
+Any make target can be run inside the container via `container.make.<target>`.
+
+### Without Docker (native)
+
+Required:
+* gcc and/or clang (C++17 support)
+* cmake (>= 3.13)
+* make
+* clang-format (for `make format`)
+
+Optional:
+* Octave (for regenerating test cases via `make generate-test-cases`)
+
+```
+make build
+make test
 ```
 
 ## References
