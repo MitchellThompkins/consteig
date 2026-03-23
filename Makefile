@@ -1,6 +1,8 @@
 # get the normalized current directory
 THIS_DIR := $(shell pwd)
 
+include .env
+
 UID=$(shell id -u)
 GID=$(shell id -g)
 
@@ -190,11 +192,11 @@ Makefile:
 
 .PHONY: container.build
 container.build:
-	docker build --file Dockerfile --tag consteig_dev_image .
+	docker build --file Dockerfile --tag consteig_dev_image:$(CONTAINER_TAG) .
 
 .PHONY: container.pull
 container.pull:
-	docker pull ghcr.io/mitchellthompkins/consteig_dev_image:latest
+	docker pull ghcr.io/mitchellthompkins/consteig_dev_image:$(CONTAINER_TAG)
 
 .PHONY: container.start
 container.start:

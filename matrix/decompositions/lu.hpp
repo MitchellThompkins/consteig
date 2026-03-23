@@ -16,7 +16,12 @@ template <typename T, Size S> struct LUMatrix
 };
 
 // Algorithm: LU Decomposition with Partial Pivoting
-// Factors a square matrix A such that PA = LU.
+// Factors a square matrix A such that PA = LU, where P is a permutation matrix,
+// L is unit lower triangular, and U is upper triangular. Partial pivoting
+// selects the largest magnitude entry in each column as the pivot, which
+// controls the growth of rounding errors during elimination.
+//
+// Reference: Golub & Van Loan, "Matrix Computations" (4th ed.), sec. 3.4
 template <typename T, Size S>
 constexpr LUMatrix<T, S> lu(const Matrix<T, S, S> &a)
 {

@@ -29,9 +29,20 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a);
 ///////////// IMPLEMENTATIONS /////////////
 
 // Algorithm: Hessenberg Reduction
-// Reduces a matrix to upper Hessenberg form using a series of Householder
-// transformations. This critical optimization reduces the computational cost of
-// QR iterations from O(n^4) to O(n^2).
+// Reduces a square matrix A to upper Hessenberg form H via orthogonal
+// similarity: H = P^T * A * P, where P is the accumulated product of
+// Householder reflectors. H has zeros below the first subdiagonal.
+//
+// Reducing to Hessenberg form before QR iteration cuts the cost of each
+// QR step from O(n^4) to O(n^2), making the overall solver O(n^3).
+//
+// The reduction is implemented recursively. At each level, a Householder
+// reflector P is computed from the trailing submatrix and applied as a
+// similarity transformation P * A * P, preserving eigenvalues. The template
+// parameter L tracks the remaining submatrix size, bottoming out at L <= 2
+// when no further reduction is needed.
+//
+// Reference: Golub & Van Loan, "Matrix Computations" (4th ed.), sec. 7.4
 template <typename T, Size R, Size C, Size L>
 constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a)
 {
@@ -40,6 +51,7 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a)
 
     if constexpr (L <= 2)
     {
+        // Base case: submatrix is 2x2 or smaller, already Hessenberg
         PHMatrix<T, R> result{};
         result._h = a;
         return result;
@@ -50,16 +62,20 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a)
         constexpr Size houseSize{L};
         constexpr Size end{R - 1};
 
+        // Extract the trailing submatrix and compute its Householder reflector
         Matrix<T, L, L> subA{
             a.template sub<R - houseSize, R - houseSize, end, end>()};
         Matrix<T, L, L> m{house(subA)};
 
+        // Embed the reflector into a full-size identity matrix
         Matrix<T, size, size> p{eye<T, R>()};
         p.template setSub<R - houseSize + 1, R - houseSize + 1, end, end>(
             m.template sub<1, 1, houseSize - 1, houseSize - 1>());
 
+        // Apply the similarity transformation P * A * P and recurse
         PHMatrix<T, R> out = hess<T, R, R, houseSize - 1>(p * a * p);
 
+        // Accumulate the orthogonal factor P
         Matrix<T, size, size> pRtn = (houseSize > 3) ? p * out._p : p;
 
         return {pRtn, out._h};

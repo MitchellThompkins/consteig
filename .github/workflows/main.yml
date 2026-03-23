@@ -18,6 +18,9 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
+            - name: Load container tag from .env
+              run: grep ^CONTAINER_TAG .env >> $GITHUB_ENV
+
             - name: Detect Dockerfile changes
               id: dockerfile-changed
               run: |
@@ -39,7 +42,7 @@ jobs:
                     if [ "${{ steps.dockerfile-changed.outputs.changed }}" = "true" ]; then
                       echo "image_tag=sha-${{ github.sha }}" >> "$GITHUB_OUTPUT"
                     else
-                      echo "image_tag=latest" >> "$GITHUB_OUTPUT"
+                      echo "image_tag=${{ env.CONTAINER_TAG }}" >> "$GITHUB_OUTPUT"
                     fi
 
             - name: Login to GitHub Container Registry
@@ -56,11 +59,11 @@ jobs:
                     docker build . --file Dockerfile --tag ghcr.io/mitchellthompkins/consteig_dev_image:sha-${{ github.sha }}
                     docker push ghcr.io/mitchellthompkins/consteig_dev_image:sha-${{ github.sha }}
 
-            - name: Tag as latest
+            - name: Tag and push date tag
               if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
               run: |
-                    docker tag ghcr.io/mitchellthompkins/consteig_dev_image:sha-${{ github.sha }} ghcr.io/mitchellthompkins/consteig_dev_image:latest
-                    docker push ghcr.io/mitchellthompkins/consteig_dev_image:latest
+                    docker tag ghcr.io/mitchellthompkins/consteig_dev_image:sha-${{ github.sha }} ghcr.io/mitchellthompkins/consteig_dev_image:${{ env.CONTAINER_TAG }}
+                    docker push ghcr.io/mitchellthompkins/consteig_dev_image:${{ env.CONTAINER_TAG }}
 
     lint:
         needs: build-and-publish-container
