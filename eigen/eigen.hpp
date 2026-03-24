@@ -373,8 +373,9 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
 }
 
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
+constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
 {
+    static_assert(is_float<T>(), "eigenvalues expects floating point type");
     Matrix<InternalScalar, S, S> a_internal{};
     for (Size i = 0; i < S; ++i)
     {
@@ -454,7 +455,7 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
 // determinant) invariants.
 template <typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(
-    const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
+    const Matrix<T, R, C> &a, const Matrix<Complex<T>, R, 1> &lambda,
     const T thresh)
 {
     T tr = trace(a);
@@ -475,7 +476,7 @@ static inline constexpr bool checkEigenValues(
 
     if constexpr (R <= 4)
     {
-        T d = det(a);
+        T d = determinant(a);
         Complex<T> prod_lambda{1, 0};
         for (Size i = 0; i < R; ++i)
         {
@@ -499,9 +500,10 @@ static inline constexpr bool checkEigenValues(
 // Computes the eigenvectors of a matrix A given its eigenvalues.
 // Solves (A - \lambda I)v = b iteratively to find the eigenvector v.
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, S> eigvecs(
+constexpr Matrix<Complex<T>, S, S> eigenvectors(
     const Matrix<T, S, S> &A, const Matrix<Complex<T>, S, 1> &eigenvalues)
 {
+    static_assert(is_float<T>(), "eigenvectors expects floating point type");
     Matrix<Complex<T>, S, S> V{};
 
     for (Size i = 0; i < S; ++i)
@@ -594,6 +596,30 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
 
     return V;
 }
+
+template <typename T, Size S> class EigenSolver
+{
+  public:
+    constexpr EigenSolver(const Matrix<T, S, S> &mat)
+        : _evals(consteig::eigenvalues(mat)),
+          _evecs(consteig::eigenvectors(mat, _evals))
+    {
+    }
+
+    constexpr const Matrix<Complex<T>, S, 1> &eigenvalues() const
+    {
+        return _evals;
+    }
+
+    constexpr const Matrix<Complex<T>, S, S> &eigenvectors() const
+    {
+        return _evecs;
+    }
+
+  private:
+    Matrix<Complex<T>, S, 1> _evals;
+    Matrix<Complex<T>, S, S> _evecs;
+};
 
 } // namespace consteig
 
