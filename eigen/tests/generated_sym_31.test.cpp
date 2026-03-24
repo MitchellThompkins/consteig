@@ -1,6 +1,7 @@
 #include "generated_test_helpers.hpp"
 TEST(generated_tests, random_8x8_31)
 {
-    static_assert(check_single_random_sym_8x8<31>(), "Test random_8x8_31 failed");
+    static_assert(check_single_random_sym_8x8<31>(),
+                  "Test random_8x8_31 failed");
     SUCCEED();
 }

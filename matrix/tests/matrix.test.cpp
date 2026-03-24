@@ -163,8 +163,7 @@ TEST(matrix, static_constexpr_col)
     static constexpr Matrix<float, x - limit, 1> colExtractLimit{
         mat.col<limit, x - 1>(0)};
 
-    static constexpr Matrix<float, x, 1> answerFull{
-        {{5.0F}, {-1.0F}, {-2.0F}}};
+    static constexpr Matrix<float, x, 1> answerFull{{{5.0F}, {-1.0F}, {-2.0F}}};
 
     static constexpr Matrix<float, x - limit, 1> answerLimit{
         {{-1.0F}, {-2.0F}}};

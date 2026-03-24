@@ -91,8 +91,7 @@ TEST(matrix, static_constexpr_trans)
     static constexpr int c{2};
 
     static constexpr Matrix<int, r, c> mat1{{{3, 4}, {5, 6}, {3, 9}}};
-    static constexpr Matrix<int, r, r> mat2{
-        {{3, 4, 8}, {5, 6, 7}, {3, 9, 8}}};
+    static constexpr Matrix<int, r, r> mat2{{{3, 4, 8}, {5, 6, 7}, {3, 9, 8}}};
 
     static constexpr Matrix<int, c, r> answer1{{{3, 5, 3}, {4, 6, 9}}};
     static constexpr Matrix<int, r, r> answer2{

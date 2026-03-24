@@ -80,9 +80,9 @@ int main()
     // "No steady-state error, even in the presence of a step disturbance input"
     static constexpr consteig::Matrix<double, s, s> A{
         {{0.0, 1.0, 0.0, 0.0},
-          {0.0, -b / J, K_m / J, 0.0},
-          {0.0, -K_m / L, -R / L, 0.0},
-          {-1.0, 0.0, 0.0, 0.0}}};
+         {0.0, -b / J, K_m / J, 0.0},
+         {0.0, -K_m / L, -R / L, 0.0},
+         {-1.0, 0.0, 0.0, 0.0}}};
 
     static constexpr consteig::Matrix<double, s, 1> B{
         {{0.0}, {0.0}, {1.0 / L}, {0.0}}};
