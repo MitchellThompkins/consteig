@@ -73,9 +73,13 @@ matrices. This difference stems from several factors:
     Parlett & Reinsch 1969)[^2]. Standard libraries also perform permutation to
     isolate eigenvalues, which significantly improves conditioning for reducible
     matrices[^3].
-2.  Arithmetic: This library uses real arithmetic with implicit double shifts to
-    maintain `constexpr` compatibility and performance. Full complex arithmetic
-    solvers can sometimes resolve clustered eigenvalues more cleanly.
+2.  Arithmetic: To avoid complex arithmetic in the iteration loop, this library
+    uses the implicit double-shift strategy, which tracks complex conjugate pairs
+    together as a single 2x2 step. When conjugate pairs are clustered close to
+    other eigenvalues, this coupling makes the solver more sensitive to
+    perturbations. A complex arithmetic solver would track each eigenvalue
+    independently, sidestepping this issue at the cost of roughly 4x more
+    arithmetic per iteration.
 3.  Floating Point Environment: `constexpr` evaluation is performed by the
     compiler's abstract machine, which does not use extended precision
     intermediate registers (80-bit/128-bit) that a runtime hardware FPU might
