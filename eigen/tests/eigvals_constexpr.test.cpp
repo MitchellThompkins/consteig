@@ -253,6 +253,35 @@ TEST(consteig_eigen, member_eigenvalues)
                   "Member eigenvalues trace mismatch");
 }
 
+template <typename T, Size S>
+constexpr bool verify_eigenpairs_constexpr(
+    const Matrix<T, S, S> &A, const Matrix<Complex<T>, S, 1> &evals,
+    const Matrix<Complex<T>, S, S> &V, T tol)
+{
+    for (Size j = 0; j < S; ++j)
+    {
+        Complex<T> lam = evals(j, 0);
+        for (Size i = 0; i < S; ++i)
+        {
+            Complex<T> Av_i{0, 0};
+            for (Size k = 0; k < S; ++k)
+            {
+                Av_i = Av_i + Complex<T>{A(i, k)} * V(k, j);
+            }
+            Complex<T> lv_i = lam * V(i, j);
+            if (consteig::abs(Av_i.real - lv_i.real) > tol)
+            {
+                return false;
+            }
+            if (consteig::abs(Av_i.imag - lv_i.imag) > tol)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 TEST(consteig_eigen, member_eigenvectors)
 {
     static constexpr Size s{2};
@@ -262,20 +291,7 @@ TEST(consteig_eigen, member_eigenvectors)
     static constexpr auto evals{A.eigenvalues()};
     static constexpr auto V{A.eigenvectors(evals)};
 
-    // Verify Av = lambda * v for each eigenpair
-    for (Size j = 0; j < s; ++j)
-    {
-        Complex<double> lam = evals(j, 0);
-        for (Size i = 0; i < s; ++i)
-        {
-            Complex<double> Av_i{0, 0};
-            for (Size k = 0; k < s; ++k)
-            {
-                Av_i = Av_i + Complex<double>{A(i, k)} * V(k, j);
-            }
-            Complex<double> lv_i = lam * V(i, j);
-            EXPECT_NEAR(Av_i.real, lv_i.real, CONSTEIG_TEST_TOLERANCE);
-            EXPECT_NEAR(Av_i.imag, lv_i.imag, CONSTEIG_TEST_TOLERANCE);
-        }
-    }
+    static_assert(verify_eigenpairs_constexpr(A, evals, V,
+                                              CONSTEIG_TEST_TOLERANCE),
+                  "Av = lambda*v relation failed at compile time");
 }
