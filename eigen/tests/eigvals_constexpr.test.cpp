@@ -215,44 +215,6 @@ TEST(consteig_eigen, non_symmetric_general)
     EXPECT_TRUE(found_c2);
 }
 
-// ---- Member wrapper tests ----
-
-TEST(consteig_eigen, member_eigenvalues)
-{
-    static constexpr Size s{4};
-
-    static constexpr Matrix<double, s, s> mat{
-        {{-4.4529e-01, 4.9063e+00, -8.7871e-01, 6.3036e+00},
-         {-6.3941e+00, 1.3354e+01, 1.6668e+00, 1.1945e+01},
-         {3.6842e+00, -6.6617e+00, -6.0021e-02, -7.0043e+00},
-         {3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}}};
-
-    static constexpr auto fromFree{eigenvalues(mat)};
-    static constexpr auto fromMember{mat.eigenvalues()};
-
-    // Member wrapper delegates to the same free function — results must be
-    // bitwise identical, verified at compile time.
-    static_assert(fromMember(0, 0).real == fromFree(0, 0).real &&
-                      fromMember(0, 0).imag == fromFree(0, 0).imag,
-                  "member/free mismatch at index 0");
-    static_assert(fromMember(1, 0).real == fromFree(1, 0).real &&
-                      fromMember(1, 0).imag == fromFree(1, 0).imag,
-                  "member/free mismatch at index 1");
-    static_assert(fromMember(2, 0).real == fromFree(2, 0).real &&
-                      fromMember(2, 0).imag == fromFree(2, 0).imag,
-                  "member/free mismatch at index 2");
-    static_assert(fromMember(3, 0).real == fromFree(3, 0).real &&
-                      fromMember(3, 0).imag == fromFree(3, 0).imag,
-                  "member/free mismatch at index 3");
-
-    // Compile-time verification: Sum of member eigenvalues = Trace(A)
-    static constexpr double tr = trace(mat);
-    static constexpr auto sumEigs = sum(fromMember);
-    static_assert(consteig::abs(sumEigs.real - tr) <
-                      static_cast<double>(CONSTEIG_TEST_TOLERANCE),
-                  "Member eigenvalues trace mismatch");
-}
-
 template <typename T, Size S>
 constexpr bool verify_eigenpairs_constexpr(
     const Matrix<T, S, S> &A, const Matrix<Complex<T>, S, 1> &evals,
@@ -297,16 +259,16 @@ constexpr bool verify_eigenpairs_constexpr(
     return true;
 }
 
-TEST(consteig_eigen, member_eigenvectors)
+TEST(consteig_eigen, eigen_solver)
 {
     static constexpr Size s{2};
 
     static constexpr Matrix<double, s, s> A{{{2.0, 1.0}, {1.0, 2.0}}};
 
-    static constexpr auto evals{A.eigenvalues()};
-    static constexpr auto V{A.eigenvectors(evals)};
+    static constexpr EigenSolver<double, s> solver{A};
 
-    static_assert(
-        verify_eigenpairs_constexpr(A, evals, V, CONSTEIG_TEST_TOLERANCE),
-        "Av = lambda*v relation failed at compile time");
+    static_assert(verify_eigenpairs_constexpr(A, solver.eigenvalues(),
+                                              solver.eigenvectors(),
+                                              CONSTEIG_TEST_TOLERANCE),
+                  "Av = lambda*v relation failed at compile time");
 }

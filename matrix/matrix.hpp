@@ -7,8 +7,6 @@
 namespace consteig
 {
 
-// Forward declarations needed by member wrappers below.
-template <typename T> struct Complex;
 template <typename T, Size R, Size C> class Matrix;
 
 template <typename T, Size R, Size C>
@@ -25,14 +23,6 @@ constexpr T norm(const Matrix<T, R, C> &mat);
 
 template <typename T, Size R, Size C>
 constexpr T dot(const Matrix<T, R, C> &lhs, const Matrix<T, R, C> &rhs);
-
-// Forward declarations of eigen functions (defined in eigen/eigen.hpp)
-template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> a);
-
-template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, S> eigenvectors(
-    const Matrix<T, S, S> &A, const Matrix<Complex<T>, S, 1> &eigenvalues);
 
 template <typename T, Size R, Size C> class Matrix
 {
@@ -321,12 +311,6 @@ template <typename T, Size R, Size C> class Matrix
     {
         return consteig::dot(*this, other);
     }
-
-    // Declared here, defined in matrix/matrix_eigen.hpp (included after
-    // eigen/eigen.hpp to avoid circular dependency).
-    constexpr Matrix<Complex<T>, R, 1> eigenvalues() const;
-    constexpr Matrix<Complex<T>, R, R> eigenvectors(
-        const Matrix<Complex<T>, R, 1> &evals) const;
 
     T _data[R][C]{};
 };

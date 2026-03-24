@@ -595,6 +595,29 @@ constexpr Matrix<Complex<T>, S, S> eigenvectors(
     return V;
 }
 
+template <typename T, Size S> class EigenSolver
+{
+  public:
+    constexpr EigenSolver(const Matrix<T, S, S> &mat)
+        : _evals(eigenvalues(mat)), _evecs(eigenvectors(mat, _evals))
+    {
+    }
+
+    constexpr const Matrix<Complex<T>, S, 1> &eigenvalues() const
+    {
+        return _evals;
+    }
+
+    constexpr const Matrix<Complex<T>, S, S> &eigenvectors() const
+    {
+        return _evecs;
+    }
+
+  private:
+    Matrix<Complex<T>, S, 1> _evals;
+    Matrix<Complex<T>, S, S> _evecs;
+};
+
 } // namespace consteig
 
 #endif
