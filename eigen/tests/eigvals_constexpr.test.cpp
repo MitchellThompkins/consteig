@@ -260,6 +260,21 @@ constexpr bool verify_eigenpairs_constexpr(
 {
     for (Size j = 0; j < S; ++j)
     {
+        // Reject zero eigenvectors. The zero vector satisfies A*v == λ*v
+        // trivially for any A and λ, so without this check a solver bug that
+        // produces a zero column would pass the Av == λv test below undetected.
+        T maxNorm{0};
+        for (Size i = 0; i < S; ++i)
+        {
+            T r = consteig::abs(V(i, j).real);
+            T im = consteig::abs(V(i, j).imag);
+            maxNorm = (r > maxNorm) ? r : maxNorm;
+            maxNorm = (im > maxNorm) ? im : maxNorm;
+        }
+        if (maxNorm <= tol)
+        {
+            return false;
+        }
         Complex<T> lam = evals(j, 0);
         for (Size i = 0; i < S; ++i)
         {
