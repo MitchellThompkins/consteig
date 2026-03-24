@@ -11,7 +11,7 @@ compile time static matrix manipulation. To remove any external dependences
 several constexpr math functions are implemented as well.
 
 This is particularly powerful if there is information that would normally
-require an offline tool (MATLAB, Python/scipy, etc...) to verify or compute, but
+require an offline tool (MATLAB, Python/SciPy, etc...) to verify or compute, but
 which could instead be expressed directly in source code and be verified or
 computed automatically at every build.
 
@@ -155,7 +155,7 @@ function in the continuous time domain:
 $$H(s) = \frac{\omega_c^2}{s^2 + \sqrt{2}\,\omega_c\,s + \omega_c^2}$$
 
 Instead of symbolically transforming $H(s)$ to $H(z)$ with the Z-transform, we
-use the Zero-Order Hold (ZOH) method:
+use the Matched Z-Transform (matched-pole mapping):
 1.  Read the denominator coefficients of $H(s)$ directly into the companion-form state-space matrix $A_c$.
 2.  Use consteig to find the continuous-time poles (eigenvalues of $A_c$).
 3.  Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
@@ -245,7 +245,7 @@ K            d727 1cf8 5734 d03f  0.253194801611810
 ## Control Theory
 
 When system parameters and controller gains are known at compile time, consteig can verify that the closed-loop poles meet performance requirements, turning a runtime failure into a build failure. At compile time, consteig can validate that the chosen gains for a PID loop meet
-the required performance requirements for a system. Consider the [DC Motor
+the performance requirements for a system. Consider the [DC Motor
 Position: PID Controller
 Design](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlPID)
 , along with the [state space
