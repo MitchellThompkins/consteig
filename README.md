@@ -1,6 +1,6 @@
 ![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
 
-## What Is This
+# consteig
 
 consteig is a constexpr template library which uses both constexpr functions
 and template meta-programming to calculate the eigenvalues and corresponding
@@ -23,7 +23,7 @@ All at compile time, consteig supports:
 * A selection of mathematical functions, including complex arithmetic. [^1]
 * A strictly freestanding core with no dependence on the C++ standard library.
 
-## How To Use consteig
+# How To Use consteig
 
 consteig is a templated library and as such a user does not need to compile
 anything separately. Simply `#include "consteig.hpp"` into the project, or
@@ -104,9 +104,9 @@ Compiler flags:
   precision to the constexpr algorithms, which is often crucial for the
   stability of operations like QR decomposition at compile time.
 
-## Examples
+# Examples
 
-### Population Flow
+## Population Flow
 
 If a system's transition matrix is fixed at compile time, its steady-state behavior never needs to be recomputed at runtime. Take the example from [Using Eigenvectors to Find Steady State Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
@@ -144,7 +144,7 @@ Portland: 500000 (20.00%)
 
 The same compile-time eigenvectors drive both outputs; no matrix iteration happens at runtime.
 
-### Digital Filter Design
+## Digital Filter Design
 
 Embedded filter design typically requires an offline tool like MATLAB or Python to compute coefficients, which then get hardcoded into source. With consteig, the transfer function lives in source and the compiler derives the coefficients directly. consteig can automatically generate IIR digital filter
 coefficients from a time-domain transfer function. They are derived at
@@ -242,7 +242,7 @@ a2           afc5 de84 c451 da3f  0.411240701442774
 K            d727 1cf8 5734 d03f  0.253194801611810
 ```
 
-### Control Theory
+## Control Theory
 
 When system parameters and controller gains are known at compile time, consteig can verify that the closed-loop poles meet performance requirements, turning a runtime failure into a build failure. At compile time, consteig can validate that the chosen gains for a PID loop meet
 the required performance requirements for a system. Consider the [DC Motor
@@ -295,7 +295,7 @@ Validation:
 ![Motor Control](docs/imgs/step_response.png "step_response")
 
 
-## Why Does This Exist
+# Why Does This Exist
 
 This library was originally developed to support a generic digital filter
 library for embedded systems, where filter coefficients are calculated at
@@ -305,7 +305,7 @@ manageable. This is the same approach used by
 [LAPACK](https://netlib.org/lapack/), and by extension MATLAB and Octave's
 root-finding functions.
 
-## How Is This Different
+# How Is This Different
 
 Powerful open-source C++ eigenvalue solvers already exist that are more robust,
 optimized, and tested than anything here. However, they share two limitations:
@@ -313,12 +313,12 @@ they cannot compute eigenvalues at compile time, and they depend on the
 standard library, which is unavailable on some embedded systems. This library
 addresses both constraints.
 
-## Algorithmic Approach and Optimizations [^3]
+# Algorithmic Approach and Optimizations [^3]
 
 See [docs/methods.md](docs/methods.md) for a discussion on the implementation
 specifics for the numerical solvers implemented by consteig.
 
-## Verification, Accuracy and Performance
+# Verification, Accuracy and Performance
 
 consteig uses `8x8` matrices as its test basis and leverages 2 tolerances for
 verification. For all non-defective matrices it uses `1e-9` as an expectation
@@ -333,21 +333,21 @@ See [docs/verification.md](docs/verification.md) for a detailed discussion on
 the accuracy and verification methods implemented to test this library.
 
 
-## When To Use consteig
+# When To Use consteig
 
 * Eigenvalues (real or complex) need to be known at compile time.
 * Eigenvalues need to be known and the standard library is unavailable.
 * You need to manipulate static matrices at compile time.
 
-## Constraints
+# Constraints
 
 * Matrix dimensions are template parameters and must be compile-time constants.
 * Input matrices must be real-valued. Eigenvalue output may be complex, but `Matrix<consteig::Complex<T>, ...>` is not supported as input.
 * Only square matrices are supported for eigenvalue computation and decompositions.
 
-## Development
+# Development
 
-### With Docker (recommended)
+## With Docker (recommended)
 
 The only local dependency is Docker. All build tools are packaged in the dev container:
 
@@ -361,7 +361,7 @@ make container.make.test
 
 Any make target can be run inside the container via `container.make.<target>`.
 
-### Without Docker (native)
+## Without Docker (native)
 
 Required:
 * gcc and/or clang (C++17 support)
@@ -377,7 +377,7 @@ make build
 make test
 ```
 
-## References
+# References
 
 [^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
 [^2]: James, R., Langou, J., & Lowery, B. R. (2014). [On matrix balancing and eigenvector computation](https://arxiv.org/pdf/1401.5766)
