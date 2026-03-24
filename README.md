@@ -192,10 +192,10 @@ Final Digital Filter Difference Equation:
 y[n] = 0.2532 * x[n] - (-1.1580) * y[n-1] - (0.4112) * y[n-2]
 ```
 
-To demonstrate the compile time nature of this library, the filter data is
-compiled into a special `.filter_data` section of the binary. You can compile
-and extract the data as is shown below to demonstrate that the filter
-coefficients are indeed calculated completely at compile time.
+The compile-time nature of this library can be verified directly. The filter
+data is compiled into a special `.filter_data` section of the binary, which
+can be extracted to confirm that the coefficients are calculated entirely at
+compile time.
 
 ```bash
 make butterworth.main
@@ -346,9 +346,9 @@ the accuracy and verification methods implemented to test this library.
 
 # When To Use consteig
 
-* Eigenvalues (real or complex) need to be known at compile time.
+* Eigenvalues (real or complex) need to be known at compile-time.
 * Eigenvalues need to be known and the standard library is unavailable.
-* You need to manipulate static matrices at compile time.
+* Static matrices can need to be manipulated at compile-time.
 
 # Constraints
 
