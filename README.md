@@ -3,7 +3,7 @@
 # consteig
 
 consteig is a header-only C++17 constexpr template library for computing
-eigenvalues and eigenvectors of square matrices at compile time. Results are
+eigenvalues and eigenvectors of square matrices at compile-time. Results are
 stored as `static constexpr` values, so no processor time is spent on them
 at runtime and no offline tool is needed to generate them.
 
@@ -15,7 +15,7 @@ recomputes. When the math is wrong, `static_assert` catches it at build time.
 consteig is strictly freestanding and depends on no external libraries,
 including the C++ standard library.
 
-All at compile time, consteig supports:
+All at compile-time, consteig supports:
 
 * Computation of real and complex eigenvalues and eigenvectors for symmetric and
   non-symmetric matrices.
@@ -107,9 +107,9 @@ Compiler flags:
 
 ## Population Flow
 
-If a system's transition matrix is fixed at compile time, its steady-state behavior never needs to be recomputed at runtime. Take the example from [Using Eigenvectors to Find Steady State Population
+If a system's transition matrix is fixed at compile-time, its steady-state behavior never needs to be recomputed at runtime. Take the example from [Using Eigenvectors to Find Steady State Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
-and apply it using consteig. The transition matrix is fixed at compile time, so
+and apply it using consteig. The transition matrix is fixed at compile-time, so
 the steady-state fractions can be stored as `static constexpr` values. At runtime,
 computing the distribution for any total population is then a single multiply.
 There is no need to iterate the transition matrix until it converges.
@@ -194,7 +194,7 @@ y[n] = 0.2532 * x[n] - (-1.1580) * y[n-1] - (0.4112) * y[n-2]
 The compile-time nature of this library can be verified directly. The filter
 data is compiled into a special `.filter_data` section of the binary, which
 can be extracted to confirm that the coefficients are calculated entirely at
-compile time.
+compile-time.
 
 ```bash
 make butterworth.main
@@ -250,13 +250,13 @@ K            d727 1cf8 5734 d03f  0.253194801611810
 
 ## Control Theory
 
-When system parameters and controller gains are known at compile time, consteig can verify that the closed-loop poles meet performance requirements, turning a runtime failure into a build failure. At compile time, consteig can validate that the chosen gains for a PID loop meet
+When system parameters and controller gains are known at compile-time, consteig can verify that the closed-loop poles meet performance requirements, turning a runtime failure into a build failure. At compile-time, consteig can validate that the chosen gains for a PID loop meet
 the performance requirements for a system. Consider the [DC Motor
 Position: PID Controller
 Design](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlPID)
 , along with the [state space
 model](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlStateSpace)
-from the University of Michigan. The information known at compile time is:
+from the University of Michigan. The information known at compile-time is:
 
 * The motor parameters (and thus state space model)
 * Chosen gains
@@ -309,7 +309,7 @@ Validation:
 
 This library was originally developed to support a generic digital filter
 library for embedded systems, where filter coefficients are calculated at
-compile time. Computing those coefficients requires solving a high-order
+compile-time. Computing those coefficients requires solving a high-order
 polynomial, which can be reframed as an eigenvalue problem, making it far more
 manageable. This is the same approach used by
 [LAPACK](https://netlib.org/lapack/), and by extension MATLAB and Octave's
@@ -319,7 +319,7 @@ root-finding functions.
 
 Powerful open-source C++ eigenvalue solvers already exist that are more robust,
 optimized, and tested than anything here. However, they share two limitations:
-they cannot compute eigenvalues at compile time, and they depend on the
+they cannot compute eigenvalues at compile-time, and they depend on the
 standard library, which is unavailable on some embedded systems. This library
 addresses both constraints.
 
@@ -347,7 +347,7 @@ the accuracy and verification methods implemented to test this library.
 
 * Eigenvalues (real or complex) need to be known at compile-time.
 * Eigenvalues need to be known and the standard library is unavailable.
-* Static matrices can need to be manipulated at compile-time.
+* Static matrices need to be manipulated at compile-time.
 
 # Constraints
 

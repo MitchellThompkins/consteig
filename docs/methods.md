@@ -72,7 +72,7 @@ matrices. This difference stems from several factors:
 1.  Balancing Strategy: consteig implements diagonal scaling only (based on
     Parlett & Reinsch 1969)[^2]. Standard libraries also perform permutation to
     isolate eigenvalues, which significantly improves conditioning for reducible
-    matrices.
+    matrices[^3].
 2.  Arithmetic: This library uses real arithmetic with implicit double shifts to
     maintain `constexpr` compatibility and performance. Full complex arithmetic
     solvers can sometimes resolve clustered eigenvalues more cleanly.
@@ -85,3 +85,4 @@ matrices. This difference stems from several factors:
 
 [^1]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
 [^2]: Parlett, B. N., & Reinsch, C. (1969). Balancing a matrix for calculation of eigenvalues and eigenvectors. Numerische Mathematik, 13. Springer.
+[^3]: LAPACK. [DGEBAL: Balance a general real matrix](https://netlib.org/lapack/explore-html/df/df3/group__gebal_ga999e2b7075625a2b5ce75e0241ecdb19.html)
