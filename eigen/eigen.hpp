@@ -373,7 +373,7 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
 }
 
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> a)
+constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
 {
     static_assert(is_float<T>(), "eigenvalues expects floating point type");
     Matrix<InternalScalar, S, S> a_internal{};
