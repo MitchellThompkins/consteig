@@ -230,14 +230,20 @@ TEST(consteig_eigen, member_eigenvalues)
     static constexpr auto fromFree{eigenvalues(mat)};
     static constexpr auto fromMember{mat.eigenvalues()};
 
-    // Member wrapper should produce identical results
-    for (Size i = 0; i < s; ++i)
-    {
-        EXPECT_NEAR(fromMember(i, 0).real, fromFree(i, 0).real,
-                    CONSTEIG_TEST_TOLERANCE);
-        EXPECT_NEAR(fromMember(i, 0).imag, fromFree(i, 0).imag,
-                    CONSTEIG_TEST_TOLERANCE);
-    }
+    // Member wrapper delegates to the same free function — results must be
+    // bitwise identical, verified at compile time.
+    static_assert(fromMember(0, 0).real == fromFree(0, 0).real &&
+                      fromMember(0, 0).imag == fromFree(0, 0).imag,
+                  "member/free mismatch at index 0");
+    static_assert(fromMember(1, 0).real == fromFree(1, 0).real &&
+                      fromMember(1, 0).imag == fromFree(1, 0).imag,
+                  "member/free mismatch at index 1");
+    static_assert(fromMember(2, 0).real == fromFree(2, 0).real &&
+                      fromMember(2, 0).imag == fromFree(2, 0).imag,
+                  "member/free mismatch at index 2");
+    static_assert(fromMember(3, 0).real == fromFree(3, 0).real &&
+                      fromMember(3, 0).imag == fromFree(3, 0).imag,
+                  "member/free mismatch at index 3");
 
     // Compile-time verification: Sum of member eigenvalues = Trace(A)
     static constexpr double tr = trace(mat);
