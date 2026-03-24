@@ -214,3 +214,62 @@ TEST(consteig_eigen, non_symmetric_general)
     EXPECT_TRUE(found_c1);
     EXPECT_TRUE(found_c2);
 }
+
+// ---- Member wrapper tests ----
+
+TEST(consteig_eigen, member_eigenvalues)
+{
+    static constexpr Size s{4};
+
+    static constexpr Matrix<double, s, s> mat{
+        {{-4.4529e-01, 4.9063e+00, -8.7871e-01, 6.3036e+00},
+         {-6.3941e+00, 1.3354e+01, 1.6668e+00, 1.1945e+01},
+         {3.6842e+00, -6.6617e+00, -6.0021e-02, -7.0043e+00},
+         {3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}}};
+
+    static constexpr auto fromFree{eigenvalues(mat)};
+    static constexpr auto fromMember{mat.eigenvalues()};
+
+    // Member wrapper should produce identical results
+    for (Size i = 0; i < s; ++i)
+    {
+        EXPECT_NEAR(fromMember(i, 0).real, fromFree(i, 0).real,
+                    CONSTEIG_TEST_TOLERANCE);
+        EXPECT_NEAR(fromMember(i, 0).imag, fromFree(i, 0).imag,
+                    CONSTEIG_TEST_TOLERANCE);
+    }
+
+    // Compile-time verification: Sum of member eigenvalues = Trace(A)
+    static constexpr double tr = trace(mat);
+    static constexpr auto sumEigs = sum(fromMember);
+    static_assert(consteig::abs(sumEigs.real - tr) <
+                      static_cast<double>(CONSTEIG_TEST_TOLERANCE),
+                  "Member eigenvalues trace mismatch");
+}
+
+TEST(consteig_eigen, member_eigenvectors)
+{
+    static constexpr Size s{2};
+
+    static constexpr Matrix<double, s, s> A{{{2.0, 1.0}, {1.0, 2.0}}};
+
+    static constexpr auto evals{A.eigenvalues()};
+    static constexpr auto V{A.eigenvectors(evals)};
+
+    // Verify Av = lambda * v for each eigenpair
+    for (Size j = 0; j < s; ++j)
+    {
+        Complex<double> lam = evals(j, 0);
+        for (Size i = 0; i < s; ++i)
+        {
+            Complex<double> Av_i{0, 0};
+            for (Size k = 0; k < s; ++k)
+            {
+                Av_i = Av_i + Complex<double>{A(i, k)} * V(k, j);
+            }
+            Complex<double> lv_i = lam * V(i, j);
+            EXPECT_NEAR(Av_i.real, lv_i.real, CONSTEIG_TEST_TOLERANCE);
+            EXPECT_NEAR(Av_i.imag, lv_i.imag, CONSTEIG_TEST_TOLERANCE);
+        }
+    }
+}
