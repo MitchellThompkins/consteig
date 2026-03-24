@@ -5,8 +5,8 @@ compatibility with the use of robust and efficient numerical methods.
 
 ## Eigenvalue Calculation (Core Solver)
 
-The core eigenvalue solver is based on the optimized Francis QR
-algorithm, tailored for a `constexpr` context.
+The core eigenvalue solver is based on the optimized Francis QR algorithm,
+tailored for a `constexpr` context.
 
 * Preprocessing Steps:
     1. Balancing: An initial balancing step permutes and scales the matrix
@@ -79,7 +79,7 @@ matrices. This difference stems from several factors:
 3.  Floating Point Environment: `constexpr` evaluation is performed by the
     compiler's abstract machine, which does not use extended precision
     intermediate registers (80-bit/128-bit) that a runtime hardware FPU might
-    utilize to preserve precision in critical steps. As far as we can tell,
+    utilize to preserve precision in critical steps. As far as I can tell,
     `constexpr` evaluation does not use extended floating-point registers even
     on hardware that supports them.
 
