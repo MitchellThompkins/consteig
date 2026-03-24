@@ -102,7 +102,7 @@ For defective matrices (those with non-trivial Jordan blocks), the
 eigenvalue problem is inherently ill-conditioned. A perturbation of size
 $\epsilon$ in the matrix entries can result in a perturbation of size
 $\epsilon^{1/k}$ in the eigenvalues, where $k$ is the size of the Jordan block.
-This ii described above.
+This is described above.
 
 Consequently, tests for defective, nearly defective, and large Jordan
 block matrices use a relaxed tolerance (`0.03`) to account for this
