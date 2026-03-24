@@ -68,8 +68,7 @@ algorithm, tailored for a `constexpr` context.
 
 While consteig uses the same fundamental Francis QR algorithm as LAPACK
 (`DLAHQR`) and Eigen, users may notice lower accuracy on highly defective
-matrices (e.g., error $\approx 0.05$ vs $0.01$). This difference stems from
-several factors:
+matrices. This difference stems from several factors:
 1.  Balancing Strategy: consteig implements diagonal scaling only (based on
     Parlett & Reinsch 1969)[^2]. Standard libraries also perform permutation to
     isolate eigenvalues, which significantly improves conditioning for reducible
@@ -77,14 +76,12 @@ several factors:
 2.  Arithmetic: This library uses real arithmetic with implicit double shifts to
     maintain `constexpr` compatibility and performance. Full complex arithmetic
     solvers can sometimes resolve clustered eigenvalues more cleanly.
-3.  Blocking: Runtime libraries use blocked algorithms (Level 3 BLAS) that
-    accumulate round-off errors more favorably than the unblocked Level 1/2
-    algorithms required for straightforward `constexpr` implementation.
-4.  Floating Point Environment: `constexpr` evaluation is performed by the
-    compiler's abstract machine, which may not support the same denormal
-    handling or extended precision intermediate registers (80-bit/128-bit) that
-    a runtime hardware FPU might utilize to preserve precision in critical
-    steps.
+3.  Floating Point Environment: `constexpr` evaluation is performed by the
+    compiler's abstract machine, which does not use extended precision
+    intermediate registers (80-bit/128-bit) that a runtime hardware FPU might
+    utilize to preserve precision in critical steps. As far as we can tell,
+    `constexpr` evaluation does not use extended floating-point registers even
+    on hardware that supports them.
 
 [^1]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
 [^2]: Parlett, B. N., & Reinsch, C. (1969). Balancing a matrix for calculation of eigenvalues and eigenvectors. Numerische Mathematik, 13. Springer.
