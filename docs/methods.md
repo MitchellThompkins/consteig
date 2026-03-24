@@ -1,9 +1,10 @@
-# Algorithmic Approach and Optimizations [^2]
+# Algorithmic Approach and Optimizations [^1]
 
 Consteig employs a hybrid approach to performance, balancing `constexpr`
 compatibility with the use of robust and efficient numerical methods.
 
 ## Eigenvalue Calculation (Core Solver)
+
 The core eigenvalue solver is based on the optimized Francis QR
 algorithm, tailored for a `constexpr` context.
 
@@ -45,6 +46,7 @@ algorithm, tailored for a `constexpr` context.
         the matrix determinant) invariants.
 
 ## Matrix Decompositions
+
 *   QR Decomposition: The general-purpose `qr()` decomposition is
     implemented using a series of Givens rotations. This method was chosen
     for its numerical stability over alternatives like the Gram-Schmidt process,
@@ -55,6 +57,7 @@ algorithm, tailored for a `constexpr` context.
     structure.
 
 ## Other Operations
+
 *   Determinant: The `det()` function is currently implemented using Laplace
     expansion (cofactor expansion). While straightforward and
     `constexpr`-compatible, this algorithm has a factorial time complexity
@@ -62,6 +65,7 @@ algorithm, tailored for a `constexpr` context.
     trade-off for implementation simplicity.
 
 ## Comparison with LAPACK/Eigen
+
 While `consteig` uses the same fundamental Francis QR algorithm as LAPACK
 (`DLAHQR`) and Eigen, users may notice lower accuracy on highly defective
 matrices (e.g., error $\approx 0.05$ vs $0.01$). This difference stems from
@@ -82,4 +86,4 @@ several factors:
     a runtime hardware FPU might utilize to preserve precision in critical
     steps.
 
-[^2]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
+[^1]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.

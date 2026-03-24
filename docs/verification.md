@@ -8,7 +8,7 @@ The library is verified through two primary methods:
    is provided to generate fresh matrix test data and expected results, which
    are automatically verified using `static_assert` at compile time.
 
-## Accuracy [^3]
+## Accuracy [^1]
 
 An eigenvalue solver is limited not only by the numerical algorithm it employs
 but also by the conditioning of the eigenvalue problem and the finite precision
@@ -63,6 +63,7 @@ observed accuracy of ~0.03 for consteig on such matrices is therefore
 consistent with the theoretical limit.
 
 ## Compile-Time Verification Limits
+
 Iterative algorithms like the QR iteration used here are computationally
 expensive for a compiler's `constexpr` evaluator. The library's deflation
 criterion adds an absolute check against machine epsilon alongside the
@@ -71,6 +72,7 @@ early. This dramatically reduces iteration counts, keeping the constexpr
 operation budget within default compiler limits for the test suite.
 
 ## Robustness Test Suite
+
 In addition to random matrix tests, a dedicated robustness test suite exercises
 the solver against the following categories of numerically challenging matrices:
 
@@ -95,6 +97,7 @@ trace/determinant checks and direct comparison against reference values
 (generated via Octave/LAPACK).
 
 ### Defective Matrices
+
 For defective matrices (those with non-trivial Jordan blocks), the
 eigenvalue problem is inherently ill-conditioned. A perturbation of size
 $\epsilon$ in the matrix entries can result in a perturbation of size
@@ -108,6 +111,7 @@ computing eigenvalues for such matrices using standard double-precision
 arithmetic.
 
 ### Standard Matrices
+
 For normal, symmetric, and well-conditioned non-symmetric matrices, the library
 maintains high-precision, typically matching reference values within `1e-9` or
 better.
@@ -159,4 +163,4 @@ CI/CD Integration:
       constraint. A stalled QR iteration on a 10x10 non-normal matrix can
       easily exhaust this budget, causing a compilation failure.
 
-[^3]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
+[^1]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
