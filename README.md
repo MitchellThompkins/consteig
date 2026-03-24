@@ -12,7 +12,8 @@ time. Filter coefficients, control poles, and steady-state distributions are
 among the values that can live directly in source code rather than being
 derived externally and hardcoded. When parameters change, the compiler
 recomputes. When the math is wrong, `static_assert` catches it at build time.
-consteig is freestanding, with no dependency on the C++ standard library.
+consteig is strictly freestanding and depends on no external libraries,
+including the C++ standard library.
 
 All at compile time, consteig supports:
 
@@ -20,11 +21,10 @@ All at compile time, consteig supports:
   non-symmetric matrices.
 * Matrix construction and manipulation, including common operations and decompositions.
 * A selection of mathematical functions, including complex arithmetic. [^1]
-* A strictly freestanding core with no dependence on the C++ standard library.
 
 # How To Use consteig
 
-consteig is a templated library and as such a user does not need to compile
+As consteig is a templated library and as such a user does not need to compile
 anything separately. Simply `#include "consteig.hpp"` into the project, or
 consume it via CMake with `add_subdirectory` or `FetchContent`.
 
