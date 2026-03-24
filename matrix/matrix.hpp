@@ -7,6 +7,25 @@
 namespace consteig
 {
 
+// Forward declarations of free functions (defined in operations.hpp)
+// needed by member wrappers below.
+template <typename T, Size R, Size C> class Matrix;
+
+template <typename T, Size R, Size C>
+constexpr Matrix<T, C, R> transpose(const Matrix<T, R, C> &mat);
+
+template <typename T, Size R, Size C>
+constexpr T trace(const Matrix<T, R, C> &mat);
+
+template <typename T, Size R, Size C>
+constexpr T determinant(const Matrix<T, R, C> &mat);
+
+template <typename T, Size R, Size C>
+constexpr T norm(const Matrix<T, R, C> &mat);
+
+template <typename T, Size R, Size C>
+constexpr T dot(const Matrix<T, R, C> &lhs, const Matrix<T, R, C> &rhs);
+
 template <typename T, Size R, Size C> class Matrix
 {
   public:
@@ -105,8 +124,9 @@ template <typename T, Size R, Size C> class Matrix
         return result;
     }
 
-    template <Size startRow, Size startCol, Size numRows, Size numCols>
-    constexpr Matrix<T, numRows, numCols> block() const
+    template <Size numRows, Size numCols>
+    constexpr Matrix<T, numRows, numCols> block(Size startRow,
+                                                Size startCol) const
     {
         Matrix<T, numRows, numCols> result{};
 
@@ -173,8 +193,9 @@ template <typename T, Size R, Size C> class Matrix
         }
     }
 
-    template <Size startRow, Size startCol, Size numRows, Size numCols>
-    constexpr void setBlock(const Matrix<T, numRows, numCols> &mat)
+    template <Size numRows, Size numCols>
+    constexpr void setBlock(const Matrix<T, numRows, numCols> &mat,
+                            Size startRow, Size startCol)
     {
         for (Size i{startRow}; i < startRow + numRows; i++)
         {
@@ -265,6 +286,32 @@ template <typename T, Size R, Size C> class Matrix
     constexpr const T *data() const
     {
         return &_data[0][0];
+    }
+
+    // Member wrappers delegating to free functions in operations.hpp
+    constexpr Matrix<T, C, R> transpose() const
+    {
+        return consteig::transpose(*this);
+    }
+
+    constexpr T trace() const
+    {
+        return consteig::trace(*this);
+    }
+
+    constexpr T determinant() const
+    {
+        return consteig::determinant(*this);
+    }
+
+    constexpr T norm() const
+    {
+        return consteig::norm(*this);
+    }
+
+    constexpr T dot(const Matrix<T, R, C> &other) const
+    {
+        return consteig::dot(*this, other);
     }
 
     T _data[R][C]{};

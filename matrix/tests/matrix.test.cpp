@@ -53,7 +53,7 @@ template <typename T, Size R, Size C, Size startRow, Size startCol,
 static constexpr Matrix<T, R, C> setBlockTest(
     Matrix<T, R, C> original, const Matrix<T, numRows, numCols> mat)
 {
-    original.template setBlock<startRow, startCol, numRows, numCols>(mat);
+    original.template setBlock<numRows, numCols>(mat, startRow, startCol);
     return original;
 }
 
@@ -202,8 +202,7 @@ TEST(matrix, static_constexpr_subMatrix)
     static constexpr Matrix<float, x, x> mat{
         {{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}};
 
-    static constexpr Matrix<float, x - 1, x - 1> subMat{
-        mat.block<1, 1, 2, 2>()};
+    static constexpr Matrix<float, x - 1, x - 1> subMat{mat.block<2, 2>(1, 1)};
 
     static constexpr Matrix<float, x - 1, x - 1> answer{
         {{2.0F, 3.0F}, {1.0F, 0.0F}}};
@@ -220,7 +219,7 @@ TEST(matrix, static_constexpr_subMatrixSameSize)
 
     static constexpr Matrix<float, x, x> mat{{{5.0F}}};
 
-    static constexpr Matrix<float, x, x> subMat{mat.block<0, 0, 1, 1>()};
+    static constexpr Matrix<float, x, x> subMat{mat.block<1, 1>(0, 0)};
 
     static constexpr Matrix<float, x, x> answer{{{5.0F}}};
 

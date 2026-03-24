@@ -103,7 +103,7 @@ int main()
         {{K1_good, K2_good, K3_good, K4_good}}};
 
     static constexpr consteig::Matrix<double, s, s> A_cl_good{A - B * K_good};
-    static constexpr auto eigs_good = consteig::eigvals(A_cl_good);
+    static constexpr auto eigs_good = consteig::eigenvalues(A_cl_good);
 
     // Verify Scenario 1 Requirements
     static_assert(check_stability(eigs_good),
@@ -136,7 +136,7 @@ int main()
         {{K1_bad, K2_bad, K3_bad, K4_bad}}};
 
     static constexpr consteig::Matrix<double, s, s> A_cl_bad{A - B * K_bad};
-    static constexpr auto eigs_bad = consteig::eigvals(A_cl_bad);
+    static constexpr auto eigs_bad = consteig::eigenvalues(A_cl_bad);
 
     // These assertions WILL fail the build if uncommented!
     static_assert(

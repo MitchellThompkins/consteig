@@ -62,15 +62,15 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a)
         constexpr Size houseSize{L};
 
         // Extract the trailing submatrix and compute its Householder reflector
-        Matrix<T, L, L> subA{a.template block<R - houseSize, R - houseSize,
-                                              houseSize, houseSize>()};
+        Matrix<T, L, L> subA{a.template block<houseSize, houseSize>(
+            R - houseSize, R - houseSize)};
         Matrix<T, L, L> m{house(subA)};
 
         // Embed the reflector into a full-size identity matrix
         Matrix<T, size, size> p{eye<T, R>()};
-        p.template setBlock<R - houseSize + 1, R - houseSize + 1, houseSize - 1,
-                            houseSize - 1>(
-            m.template block<1, 1, houseSize - 1, houseSize - 1>());
+        p.template setBlock<houseSize - 1, houseSize - 1>(
+            m.template block<houseSize - 1, houseSize - 1>(1, 1),
+            R - houseSize + 1, R - houseSize + 1);
 
         // Apply the similarity transformation P * A * P and recurse
         PHMatrix<T, R> out = hess<T, R, R, houseSize - 1>(p * a * p);

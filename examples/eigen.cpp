@@ -13,7 +13,7 @@ int main()
 
     static constexpr consteig::Matrix<double, s, s> testEig{consteig::eig(mat)};
     static constexpr consteig::Matrix<consteig::Complex<double>, s, 1>
-        testEigVals{consteig::eigvals(mat)};
+        testEigVals{consteig::eigenvalues(mat)};
 
     printMat("testEig (Schur Form)", testEig);
 

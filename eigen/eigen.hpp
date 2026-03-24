@@ -365,7 +365,7 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
 }
 
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
+constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> a)
 {
     Matrix<InternalScalar, S, S> a_internal{};
     for (Size i = 0; i < S; ++i)
@@ -491,7 +491,7 @@ static inline constexpr bool checkEigenValues(
 // Computes the eigenvectors of a matrix A given its eigenvalues.
 // Solves (A - \lambda I)v = b iteratively to find the eigenvector v.
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, S> eigvecs(
+constexpr Matrix<Complex<T>, S, S> eigenvectors(
     const Matrix<T, S, S> &A, const Matrix<Complex<T>, S, 1> &eigenvalues)
 {
     Matrix<Complex<T>, S, S> V{};

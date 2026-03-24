@@ -75,7 +75,7 @@ TEST(consteig_eigen, constexpr_eigenValues)
          {3.6842e+00, -6.6617e+00, -6.0021e-02, -7.0043e+00},
          {3.1209e+00, -5.2052e+00, -1.4130e+00, -2.8484e+00}}};
 
-    static constexpr auto eigenValueTest{eigvals(mat)};
+    static constexpr auto eigenValueTest{eigenvalues(mat)};
 
     // Compile-time verification: Sum of eigenvalues = Trace(A)
     static constexpr double tr = trace(mat);
@@ -102,7 +102,7 @@ TEST(consteig_eigen, symmetric_trace)
         {77.1, 9.2, 2, 4, 2},
     }};
 
-    static constexpr auto eigenValueTest{eigvals(mat)};
+    static constexpr auto eigenValueTest{eigenvalues(mat)};
 
     // Compile-time verification: Sum of eigenvalues = Trace(A)
     static constexpr double tr = trace(mat);
@@ -120,7 +120,7 @@ TEST(consteig_eigen, non_symmetric_complex_eigenvalues)
     // Matrix with complex eigenvalues: [0, 1; -1, 0] -> +/- i
     static constexpr Matrix<double, s, s> mat{{{0.0, 1.0}, {-1.0, 0.0}}};
 
-    static constexpr auto eigenValueTest{eigvals(mat)};
+    static constexpr auto eigenValueTest{eigenvalues(mat)};
 
     // Compile-time check
     static constexpr auto sumEigs = sum(eigenValueTest);
@@ -167,7 +167,7 @@ TEST(consteig_eigen, non_symmetric_general)
     static constexpr Matrix<double, s, s> mat{
         {{1.0, 2.0, 3.0}, {0.0, 1.0, 5.0}, {0.0, -2.0, 1.0}}};
 
-    static constexpr auto eigenValueTest{eigvals(mat)};
+    static constexpr auto eigenValueTest{eigenvalues(mat)};
 
     // Compile-time check
     static constexpr auto sumEigs =

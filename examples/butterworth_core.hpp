@@ -32,7 +32,7 @@ constexpr Constants design()
 
     consteig::Matrix<double, 2, 2> A_c{{{0.0, 1.0}, {-wc_sq, -sqrt2_wc}}};
 
-    auto poles_c = consteig::eigvals(A_c);
+    auto poles_c = consteig::eigenvalues(A_c);
     auto p1_c = poles_c(0, 0);
     auto p2_c = poles_c(1, 0);
 

@@ -21,9 +21,10 @@ int main()
     static constexpr auto pop_eigs{consteig::eig(pop_mat)};
     static_assert(pop_eigs.rows() == pop_size,
                   "Eigen result should match input size");
-    static constexpr auto pop_eig_vals{consteig::eigvals(pop_mat)};
+    static constexpr auto pop_eig_vals{consteig::eigenvalues(pop_mat)};
 
-    static constexpr auto pop_eig_vec{consteig::eigvecs(pop_mat, pop_eig_vals)};
+    static constexpr auto pop_eig_vec{
+        consteig::eigenvectors(pop_mat, pop_eig_vals)};
 
     // For a Markov matrix describing population flow, the steady state is
     // represented by the eigenvector associated with the eigenvalue of 1.
