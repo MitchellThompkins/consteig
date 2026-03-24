@@ -70,8 +70,8 @@ While consteig uses the same fundamental Francis QR algorithm as LAPACK
 (`DLAHQR`) and Eigen, users may notice lower accuracy on highly defective
 matrices (e.g., error $\approx 0.05$ vs $0.01$). This difference stems from
 several factors:
-1.  Balancing Strategy: consteig implements basic diagonal scaling balancing
-    (`GEBAL` scaling only). Standard libraries also perform permutation to
+1.  Balancing Strategy: consteig implements diagonal scaling only (based on
+    Parlett & Reinsch 1969)[^2]. Standard libraries also perform permutation to
     isolate eigenvalues, which significantly improves conditioning for reducible
     matrices.
 2.  Arithmetic: This library uses real arithmetic with implicit double shifts to
@@ -87,3 +87,4 @@ several factors:
     steps.
 
 [^1]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
+[^2]: Parlett, B. N., & Reinsch, C. (1969). Balancing a matrix for calculation of eigenvalues and eigenvectors. Numerische Mathematik, 13. Springer.
