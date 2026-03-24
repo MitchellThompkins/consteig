@@ -167,6 +167,14 @@ test-dc-motor-fail:
 generate-test-cases:
 	octave octave/generate_test_cases.m
 
+.PHONY: generate-profiling-cases
+generate-profiling-cases:
+	octave octave/generate_profiling_cases.m
+
+.PHONY: profile
+profile:
+	./profiling/run_profiling.sh $(CXX)
+
 $(BUILD_PREFIX)/$(BUILD_FILE):
 	# create the temporary build directory if needed
 	mkdir -p $(BUILD_PREFIX)
