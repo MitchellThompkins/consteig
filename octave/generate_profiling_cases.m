@@ -8,7 +8,7 @@
 rand('seed', 99);
 randn('seed', 99);
 
-SIZES = [2, 4, 6, 8, 10, 12, 14, 16];
+SIZES = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
 NUM_SAMPLES = 10;
 
 CATEGORIES = {'random_sym', 'random_nonsym', ...

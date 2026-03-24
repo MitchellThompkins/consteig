@@ -25,8 +25,15 @@ COMPILE_DIR="$SCRIPT_DIR/compile_time"
 mkdir -p "$RESULTS_DIR"
 
 COMPILER_VERSION=$("$COMPILER" --version | head -1)
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-RESULTS_FILE="$RESULTS_DIR/compile_times_${TIMESTAMP}.csv"
+if "$COMPILER" --version 2>&1 | grep -qi gcc; then
+    COMPILER_ID="gcc"
+elif "$COMPILER" --version 2>&1 | grep -qi clang; then
+    COMPILER_ID="clang"
+else
+    COMPILER_ID=$(basename "$COMPILER")
+fi
+COMPILER_VER=$("$COMPILER" --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+RESULTS_FILE="$RESULTS_DIR/compile_times_${COMPILER_ID}_${COMPILER_VER}.csv"
 
 echo "Compiler: $COMPILER_VERSION"
 echo "Timeout:  ${TIMEOUT}s per file"
