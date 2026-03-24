@@ -599,7 +599,8 @@ template <typename T, Size S> class EigenSolver
 {
   public:
     constexpr EigenSolver(const Matrix<T, S, S> &mat)
-        : _evals(eigenvalues(mat)), _evecs(eigenvectors(mat, _evals))
+        : _evals(consteig::eigenvalues(mat)),
+          _evecs(consteig::eigenvectors(mat, _evals))
     {
     }
 
