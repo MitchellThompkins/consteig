@@ -26,7 +26,7 @@ static constexpr consteig::Matrix<double, 2, 2> A{{
 }};
 
 // Compute eigenvalues at compile time
-static constexpr auto eigs = consteig::eigvals(A);
+static constexpr auto eigs = consteig::eigenvalues(A);
 
 // eigs is a Matrix<Complex<double>, 2, 1>
 // eigs(0,0).real ≈ 4.0,  eigs(0,0).imag ≈ 0.0
@@ -46,7 +46,7 @@ static constexpr consteig::Matrix<double, 2, 2> A{{
     {1.0, 3.0}
 }};
 
-static constexpr auto eigs = consteig::eigvals(A);
+static constexpr auto eigs = consteig::eigenvalues(A);
 
 // checkEigenValues verifies trace and determinant invariants
 static_assert(consteig::checkEigenValues(A, eigs, 1e-9),
@@ -56,8 +56,8 @@ static_assert(consteig::checkEigenValues(A, eigs, 1e-9),
 ## Computing Eigenvectors
 
 ```cpp
-static constexpr auto eigs = consteig::eigvals(A);
-static constexpr auto vecs = consteig::eigvecs(A, eigs);
+static constexpr auto eigs = consteig::eigenvalues(A);
+static constexpr auto vecs = consteig::eigenvectors(A, eigs);
 
 // vecs is a Matrix<Complex<double>, N, N>
 // Column i of vecs is the eigenvector for eigs(i, 0)
@@ -85,6 +85,6 @@ static constexpr double val = M(1, 2);  // 6.0
 ## Next Steps
 
 - [Matrix Operations](../guide/matrix.md) — construction, arithmetic, slicing
-- [Eigensolvers](../guide/eigensolvers.md) — `eigvals`, `eigvecs`, verification
+- [Eigensolvers](../guide/eigensolvers.md) — `eigenvalues`, `eigenvectors`, verification
 - [Examples](../examples/population.md) — real-world use cases
 - [Configuration](../guide/configuration.md) — tuning for large or difficult matrices

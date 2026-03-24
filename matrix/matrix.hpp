@@ -1,7 +1,7 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
-#include "../array/array.hpp"
+#include "../consteig_types.hpp"
 #include "../math/functions/utilities.hpp"
 
 namespace consteig
@@ -11,6 +11,24 @@ namespace consteig
 /// @brief Fixed-size matrix type and arithmetic operations.
 /// @{
 
+// Forward declarations for member wrapper implementations
+template <typename T, Size R, Size C> class Matrix;
+
+template <typename T, Size R, Size C>
+constexpr Matrix<T, C, R> transpose(const Matrix<T, R, C> &mat);
+
+template <typename T, Size R, Size C>
+constexpr T trace(const Matrix<T, R, C> &mat);
+
+template <typename T, Size R, Size C>
+constexpr T determinant(const Matrix<T, R, C> &mat);
+
+template <typename T, Size R, Size C>
+constexpr T norm(const Matrix<T, R, C> &mat);
+
+template <typename T, Size R, Size C>
+constexpr T dot(const Matrix<T, R, C> &lhs, const Matrix<T, R, C> &rhs);
+
 /// @brief Fixed-size matrix with compile-time dimensions.
 ///
 /// The primary container type for all consteig operations. All member
@@ -18,8 +36,7 @@ namespace consteig
 /// the matrix is declared `static constexpr`.
 ///
 /// Storage is row-major: `_data[i][j]` holds row `i`, column `j`.
-/// Element access uses `operator()(i, j)` (1-based indexing is **not** used;
-/// indices run from `0` to `R-1` / `C-1`).
+/// Element access uses `operator()(i, j)` using zero-based indices.
 ///
 /// @tparam T  Scalar element type. Floating-point types (`float`, `double`,
 ///            `long double`) are required for eigensolver and decomposition
@@ -155,29 +172,24 @@ template <typename T, Size R, Size C> class Matrix
 
     /// @brief Extract a rectangular submatrix.
     ///
-    /// All indices are zero-based and inclusive. The returned matrix has
-    /// dimensions `(x2-x1+1) × (y2-y1+1)`.
+    /// Returns a `numRows × numCols` submatrix starting at `(startRow, startCol)`.
+    /// Dimensions are compile-time constants; start position is runtime.
     ///
-    /// @tparam x1  Top-left row index.
-    /// @tparam y1  Top-left column index.
-    /// @tparam x2  Bottom-right row index. Must be `>= x1`.
-    /// @tparam y2  Bottom-right column index. Must be `>= y1`.
-    // x1,y1,x2,y2 are indexes
-    template <Size x1, Size y1, Size x2, Size y2>
-    constexpr Matrix<T, x2 - x1 + 1, y2 - y1 + 1> sub() const
+    /// @tparam numRows   Number of rows to extract (compile-time).
+    /// @tparam numCols   Number of columns to extract (compile-time).
+    /// @param  startRow  Top-left row index (zero-based, runtime).
+    /// @param  startCol  Top-left column index (zero-based, runtime).
+    template <Size numRows, Size numCols>
+    constexpr Matrix<T, numRows, numCols> block(Size startRow,
+                                                Size startCol) const
     {
-        static_assert(x2 >= x1,
-                      "Second x index must be bigger than the first.");
-        static_assert(y2 >= y1,
-                      "Second y index must be bigger than the first.");
+        Matrix<T, numRows, numCols> result{};
 
-        Matrix<T, x2 - x1 + 1, y2 - y1 + 1> result{};
-
-        for (Size i{x1}; i <= x2; i++)
+        for (Size i{startRow}; i < startRow + numRows; i++)
         {
-            for (Size j{y1}; j <= y2; j++)
+            for (Size j{startCol}; j < startCol + numCols; j++)
             {
-                result(i - x1, j - y1) = (*this)(i, j);
+                result(i - startRow, j - startCol) = (*this)(i, j);
             }
         }
 
@@ -256,28 +268,24 @@ template <typename T, Size R, Size C> class Matrix
 
     /// @brief Overwrite a rectangular subregion of this matrix.
     ///
-    /// Copies `mat` into the region `[x1..x2][y1..y2]` (all inclusive,
-    /// zero-based). The source matrix must have dimensions
-    /// `(y2-y1+1) × (x2-x1+1)`.
+    /// Copies the `numRows × numCols` source matrix `mat` into this matrix
+    /// starting at `(startRow, startCol)`. Dimensions are compile-time;
+    /// start position is runtime.
     ///
-    /// @tparam x1  Top-left row.
-    /// @tparam y1  Top-left column.
-    /// @tparam x2  Bottom-right row. Must be `>= x1`.
-    /// @tparam y2  Bottom-right column. Must be `>= y1`.
-    // x1,y1,x2,y2 are indexes
-    template <Size x1, Size y1, Size x2, Size y2>
-    constexpr void setSub(const Matrix<T, y2 - y1 + 1, x2 - x1 + 1> &mat)
+    /// @tparam numRows   Number of rows to write (compile-time).
+    /// @tparam numCols   Number of columns to write (compile-time).
+    /// @param  mat       Source matrix of dimensions `numRows × numCols`.
+    /// @param  startRow  Top-left target row (zero-based, runtime).
+    /// @param  startCol  Top-left target column (zero-based, runtime).
+    template <Size numRows, Size numCols>
+    constexpr void setBlock(const Matrix<T, numRows, numCols> &mat,
+                            Size startRow, Size startCol)
     {
-        static_assert(x2 >= x1,
-                      "Second x index must be bigger than the first.");
-        static_assert(y2 >= y1,
-                      "Second y index must be bigger than the first.");
-
-        for (Size i{x1}; i <= x2; i++)
+        for (Size i{startRow}; i < startRow + numRows; i++)
         {
-            for (Size j{y1}; j <= y2; j++)
+            for (Size j{startCol}; j < startCol + numCols; j++)
             {
-                (*this)(i, j) = mat(i - x1, j - y1);
+                (*this)(i, j) = mat(i - startRow, j - startCol);
             }
         }
     }
@@ -285,7 +293,7 @@ template <typename T, Size R, Size C> class Matrix
     /// @brief Returns `true` if the matrix has equal row and column counts.
     constexpr bool isSquare() const
     {
-        return sizeX() == sizeY();
+        return rows() == cols();
     }
 
     /// @brief Returns `true` if the matrix is symmetric within machine epsilon.
@@ -299,9 +307,9 @@ template <typename T, Size R, Size C> class Matrix
     {
         static_assert(R == C, "Symmetric matrices should be square.");
 
-        if (sizeX() > 1)
+        if (rows() > 1)
         {
-            for (Size i{1}; i <= sizeX() - 1; i++)
+            for (Size i{1}; i <= rows() - 1; i++)
             {
                 for (Size j{0}; j < i; j++)
                 {
@@ -346,9 +354,9 @@ template <typename T, Size R, Size C> class Matrix
                 floating point values");
         static_assert(R == C, "Symmetric matrices should be square.");
 
-        if (sizeX() > 1)
+        if (rows() > 1)
         {
-            for (Size i{1}; i <= sizeX() - 1; i++)
+            for (Size i{1}; i <= rows() - 1; i++)
             {
                 for (Size j{0}; j < i; j++)
                 {
@@ -364,18 +372,65 @@ template <typename T, Size R, Size C> class Matrix
     }
 
     /// @brief Number of rows (same as template parameter `R`).
-    constexpr Size sizeX() const
+    constexpr Size rows() const
     {
         return R;
     }
     /// @brief Number of columns (same as template parameter `C`).
-    constexpr Size sizeY() const
+    constexpr Size cols() const
     {
         return C;
     }
 
+    /// @brief Raw pointer to first element (mutable).
+    constexpr T *data()
+    {
+        return &_data[0][0];
+    }
+
+    /// @brief Raw pointer to first element (read-only).
+    constexpr const T *data() const
+    {
+        return &_data[0][0];
+    }
+
+    /// @brief Member convenience wrappers — delegate to free functions.
+    /// @{
+
+    /// @brief Returns the transpose. Delegates to @ref consteig::transpose.
+    constexpr Matrix<T, C, R> transpose() const
+    {
+        return consteig::transpose(*this);
+    }
+
+    /// @brief Returns the trace. Delegates to @ref consteig::trace.
+    constexpr T trace() const
+    {
+        return consteig::trace(*this);
+    }
+
+    /// @brief Returns the determinant. Delegates to @ref consteig::determinant.
+    constexpr T determinant() const
+    {
+        return consteig::determinant(*this);
+    }
+
+    /// @brief Returns the Frobenius norm. Delegates to @ref consteig::norm.
+    constexpr T norm() const
+    {
+        return consteig::norm(*this);
+    }
+
+    /// @brief Dot product with `other`. Delegates to @ref consteig::dot.
+    constexpr T dot(const Matrix<T, R, C> &other) const
+    {
+        return consteig::dot(*this, other);
+    }
+
+    /// @}
+
     /// @brief Raw row-major storage. Prefer `operator()` for element access.
-    Array<Array<T, C>, R> _data{};
+    T _data[R][C]{};
 };
 
 /// @}  // defgroup matrix

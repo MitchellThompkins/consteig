@@ -9,7 +9,7 @@ This example designs a 2nd-order IIR Butterworth digital filter using compile-ti
 Instead of symbolically transforming H(s) to H(z), the algorithm:
 
 1. Defines the continuous-time state-space matrix A_c
-2. Uses `eigvals` to find the continuous-time poles (eigenvalues of A_c)
+2. Uses `eigenvalues` to find the continuous-time poles (eigenvalues of A_c)
 3. Maps poles to the Z-domain via the matched Z-transform: z = e^(sT)
 4. Reconstructs the digital filter's characteristic polynomial from the mapped poles
 
@@ -25,7 +25,7 @@ static constexpr consteig::Matrix<double, 2, 2> A_c{{
 }};
 
 // Continuous-time poles (complex eigenvalues)
-static constexpr auto ct_poles = consteig::eigvals(A_c);
+static constexpr auto ct_poles = consteig::eigenvalues(A_c);
 
 // Map to discrete time: z = exp(s * T)
 // z1 = exp(ct_poles(0,0) * T_s)

@@ -5,14 +5,14 @@ title: Verification & Accuracy
 # Verification
 
 The library is verified through two primary methods:
-1. **Eigen Library Comparison**: Unit tests link against the
+1. Eigen Library Comparison: Unit tests link against the
    [Eigen](https://eigen.tuxfamily.org/) library to compare compile-time results
    against a high-performance reference implementation.
-2. **Octave Test Generation**: An Octave script (`octave/generate_test_cases.m`)
+2. Octave Test Generation: An Octave script (`octave/generate_test_cases.m`)
    is provided to generate fresh matrix test data and expected results, which
    are automatically verified using `static_assert` at compile time.
 
-## Accuracy [^3]
+## Accuracy [^1]
 
 An eigenvalue solver is limited not only by the numerical algorithm it employs
 but also by the conditioning of the eigenvalue problem and the finite precision
@@ -57,14 +57,16 @@ observed accuracy of ~0.03 for consteig on such matrices is therefore
 consistent with the theoretical limit.
 
 ## Compile-Time Verification Limits
+
 Iterative algorithms like the QR iteration used here are computationally
 expensive for a compiler's `constexpr` evaluator. The library's deflation
-criterion — which adds an absolute check against machine epsilon alongside the
-standard relative check — allows near-zero sub-diagonal elements to deflate
+criterion adds an absolute check against machine epsilon alongside the
+standard relative check, which allows near-zero sub-diagonal elements to deflate
 early. This dramatically reduces iteration counts, keeping the constexpr
 operation budget within default compiler limits for the test suite.
 
 ## Robustness Test Suite
+
 In addition to random matrix tests, a dedicated robustness test suite exercises
 the solver against the following categories of numerically challenging matrices:
 
@@ -89,39 +91,42 @@ trace/determinant checks and direct comparison against reference values
 (generated via Octave/LAPACK).
 
 ### Defective Matrices
-For **defective matrices** (those with non-trivial Jordan blocks), the
+
+For defective matrices (those with non-trivial Jordan blocks), the
 eigenvalue problem is inherently ill-conditioned. A perturbation of size
 $\epsilon$ in the matrix entries can result in a perturbation of size
 $\epsilon^{1/k}$ in the eigenvalues, where $k$ is the size of the Jordan block.
-This ii described above.
+This is described above.
 
-Consequently, tests for **defective**, **nearly defective**, and **large Jordan
-block** matrices use a relaxed tolerance (`0.03`) to account for this
+Consequently, tests for defective, nearly defective, and large Jordan
+block matrices use a relaxed tolerance (`0.03`) to account for this
 theoretical limit. As described above, this describes a fundamental limit of
 computing eigenvalues for such matrices using standard double-precision
 arithmetic.
 
 ### Standard Matrices
+
 For normal, symmetric, and well-conditioned non-symmetric matrices, the library
 maintains high-precision, typically matching reference values within `1e-9` or
 better.
 
-**Running Robustness Tests**:
+Running Robustness Tests:
+
 ```bash
 make container.make.build
 ```
 
-**CI/CD Integration**:
-* **Granular Binaries**: Non-symmetric test cases are split into individual
+CI/CD Integration:
+* Granular Binaries: Non-symmetric test cases are split into individual
   `.cpp` files. This ensures each `static_assert` gets a fresh "budget" of
   compiler operations and limits the memory overhead to a single matrix solve
   at a time.
-* **Compiler Flags**: Thanks to the deflation criterion, default
+* Compiler Flags: Thanks to the deflation criterion, default
   compiler constexpr limits are sufficient for the test suite. For very large
   or pathological matrices, users may need to raise limits like
   `-fconstexpr-ops-limit` (GCC) or `-fconstexpr-steps` (Clang) on their own
   targets.
-* **Spectral Limits & Matrix Size Constraints**: While the algorithm is
+* Spectral Limits & Matrix Size Constraints: While the algorithm is
   algebraically sound for higher orders, random matrices of orders higher than
   8x8 (and larger) frequently encounter particular arrangement, spacing, or
   clustering of eigenvalues in the matrix configurations. They thusly fail to
@@ -131,7 +136,7 @@ make container.make.build
   Clang) on their own targets.
 * From a numerical analysis perspective, the following factors have a
   significant impact:
-    * **Spectral Separation and Convergence Rate**: The convergence rate of
+    * Spectral Separation and Convergence Rate: The convergence rate of
       the QR algorithm is intrinsically governed by the ratios of adjacent
       eigenvalues $|\lambda_{i+1}/\lambda_i|$ in the ordered spectrum. As the
       matrix dimension $n$ increases, the probability of encountering
@@ -139,18 +144,18 @@ make container.make.build
       sharply. In a random real 10x10 matrix, eigenvalues often distribute
       near the unit circle with several close pairs or nearly equal
       magnitudes.
-    * **The Unit Convergence Factor**: When eigenvalues are poorly separated,
+    * The Unit Convergence Factor: When eigenvalues are poorly separated,
       the convergence factor $\rho = |\lambda_{i+1}/\lambda_i|$ approaches
       unity. This results in slow linear convergence, requiring an explosive
       number of iterations to satisfy the deflation criterion
       $|{h_{k+1,k}}| \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)$
-    * **Non-Normal Structure**: Randomly generated matrices are typically
+    * Non-Normal Structure: Randomly generated matrices are typically
       highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
       transient growth in the QR residual and further stall the convergence of
       sub-diagonal elements toward the Real Schur Form.
-    * **Constexpr Step Budget**: While 500M operations is significantly higher
+    * Constexpr Step Budget: While 500M operations is significantly higher
       than the compiler default (33,554,432 in GCC), it remains a finite
       constraint. A stalled QR iteration on a 10x10 non-normal matrix can
       easily exhaust this budget, causing a compilation failure.
 
-[^3]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
+[^1]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.

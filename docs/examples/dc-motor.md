@@ -2,7 +2,7 @@ title: DC Motor Control
 
 # DC Motor Control
 
-This example demonstrates using `eigvals` and `static_assert` to validate PID controller gains for a DC motor position control system at compile time. Full source: [`examples/dc_motor_control.cpp`](https://github.com/mitchellthompkins/consteig/blob/develop/examples/dc_motor_control.cpp).
+This example demonstrates using `eigenvalues` and `static_assert` to validate PID controller gains for a DC motor position control system at compile time. Full source: [`examples/dc_motor_control.cpp`](https://github.com/mitchellthompkins/consteig/blob/develop/examples/dc_motor_control.cpp).
 
 ## Problem
 
@@ -22,7 +22,7 @@ If the gains do not meet these requirements, the build fails with a descriptive 
 static constexpr consteig::Matrix<double, 4, 4> A_cl = /* ... */;
 
 // Compute closed-loop poles at compile time
-static constexpr auto poles = consteig::eigvals(A_cl);
+static constexpr auto poles = consteig::eigenvalues(A_cl);
 
 // All poles must be in the left half-plane (negative real part)
 static_assert(check_stability(poles), "System is unstable");

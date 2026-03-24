@@ -2,7 +2,7 @@ title: Eigensolvers
 
 # Eigensolvers
 
-## eigvals — Eigenvalues Only
+## eigenvalues — Eigenvalues Only
 
 The primary entry point for most use cases. Returns all eigenvalues as a column vector of `Complex<T>`.
 
@@ -13,27 +13,37 @@ static constexpr consteig::Matrix<double, 3, 3> A{{
     { 0.0, -1.0,  2.0}
 }};
 
-static constexpr auto eigs = consteig::eigvals(A);
+static constexpr auto eigs = consteig::eigenvalues(A);
 // eigs is Matrix<Complex<double>, 3, 1>
 // eigs(0,0), eigs(1,0), eigs(2,0) are the three eigenvalues
 ```
 
 Real eigenvalues have zero imaginary part. Complex eigenvalues appear as conjugate pairs.
 
-## eigvecs — Eigenvectors
+## eigenvectors — Eigenvectors
 
 Given a matrix and its eigenvalues, compute the corresponding eigenvectors. Each column of the result is the eigenvector for the eigenvalue at the same index.
 
 ```cpp
-static constexpr auto eigs = consteig::eigvals(A);
-static constexpr auto vecs = consteig::eigvecs(A, eigs);
+static constexpr auto eigs = consteig::eigenvalues(A);
+static constexpr auto vecs = consteig::eigenvectors(A, eigs);
 // vecs is Matrix<Complex<double>, 3, 3>
 // vecs.col(i) is the eigenvector for eigs(i, 0)
 ```
 
+## EigenSolver — Combined Class
+
+`EigenSolver<T, S>` computes both eigenvalues and eigenvectors in one object. Use it when you need both and want to avoid calling `eigenvalues` twice.
+
+```cpp
+static constexpr consteig::EigenSolver<double, 3> solver(A);
+static constexpr auto eigs = solver.eigenvalues();  // Matrix<Complex<double>, 3, 1>
+static constexpr auto vecs = solver.eigenvectors(); // Matrix<Complex<double>, 3, 3>
+```
+
 ## eig — Schur Form
 
-`eig()` returns the real Schur form of the matrix (quasi-upper-triangular). The diagonal entries are real eigenvalues; 2×2 diagonal blocks encode complex conjugate pairs. In most cases you want `eigvals` or `eigvecs` instead.
+`eig()` returns the real Schur form of the matrix (quasi-upper-triangular). The diagonal entries are real eigenvalues; 2×2 diagonal blocks encode complex conjugate pairs. In most cases you want `eigenvalues` or `eigenvectors` instead.
 
 ```cpp
 static constexpr auto schur = consteig::eig(A);
@@ -49,7 +59,7 @@ static constexpr auto schur = consteig::eig(A);
 Use this in a `static_assert` to make the build fail if eigenvalues are wrong:
 
 ```cpp
-static constexpr auto eigs = consteig::eigvals(A);
+static constexpr auto eigs = consteig::eigenvalues(A);
 static_assert(consteig::checkEigenValues(A, eigs, 1e-9),
               "Eigenvalue check failed");
 ```

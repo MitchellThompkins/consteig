@@ -30,8 +30,8 @@ template <Size S> void verify_symmetric_random(const int seed)
     }
 
     // Consteig
-    auto res = eigvals(mat); // Runtime call to constexpr function
-    auto vecs = eigvecs(mat, res);
+    auto res = eigenvalues(mat); // Runtime call to constexpr function
+    auto vecs = eigenvectors(mat, res);
 
     // Verify Eigenvector Invariant at runtime
     for (Size j = 0; j < S; ++j)
@@ -86,8 +86,8 @@ template <Size S> void verify_nonsymmetric_random(const int seed)
     }
 
     // Consteig
-    auto res = eigvals(mat);
-    auto vecs = eigvecs(mat, res);
+    auto res = eigenvalues(mat);
+    auto vecs = eigenvectors(mat, res);
 
     // Verify Eigenvector Invariant at runtime
     for (Size j = 0; j < S; ++j)
@@ -153,15 +153,15 @@ TEST(eigen_comparison, hardcoded_symmetric_5x5)
 {
     static constexpr Size s{5};
 
-    static constexpr consteig::Matrix<double, s, s> mat{{{
+    static constexpr consteig::Matrix<double, s, s> mat{{
         {-5, -4, 2, 1, 77.1},
         {-4, 5, 7, 8, 9.2},
         {2, 7, 0, -83, 2},
         {1, 8, -83, 3, 4},
         {77.1, 9.2, 2, 4, 2},
-    }}};
+    }};
 
-    static constexpr auto eigenValueTest{eigvals(mat)};
+    static constexpr auto eigenValueTest{eigenvalues(mat)};
 
     auto eigenMat = toEigen(mat);
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, s, s>> es(eigenMat);

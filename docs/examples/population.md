@@ -2,7 +2,7 @@ title: Population Flow Example
 
 # Population Flow
 
-This example demonstrates using `eigvals` to find the steady-state distribution of a population model. Full source: [`examples/population.cpp`](https://github.com/mitchellthompkins/consteig/blob/develop/examples/population.cpp).
+This example demonstrates using `eigenvalues` to find the steady-state distribution of a population model. Full source: [`examples/population.cpp`](https://github.com/mitchellthompkins/consteig/blob/develop/examples/population.cpp).
 
 ## Problem
 
@@ -30,7 +30,7 @@ static constexpr consteig::Matrix<double, 2, 2> A{{
 }};
 
 // Eigenvalues computed at compile time
-static constexpr auto eigs = consteig::eigvals(A);
+static constexpr auto eigs = consteig::eigenvalues(A);
 // eigs(0,0).real ≈ 1.0   ← steady state
 // eigs(1,0).real ≈ 0.75  ← transient mode
 

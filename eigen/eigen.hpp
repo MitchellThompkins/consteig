@@ -30,8 +30,8 @@ constexpr Matrix<T, S, S> eig(
     const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
 
 /// @internal
-/// Permutes and scales the matrix to reduce the norm of its rows and columns
-/// to improve the accuracy and convergence rate of QR iterations.
+/// Applies diagonal scaling only (Parlett & Reinsch 1969) to reduce the norm
+/// of rows and columns. No permutation-based eigenvalue isolation is performed.
 // Algorithm: Balancing
 template <typename T, Size S>
 constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
@@ -199,8 +199,10 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
 }
 
 /// @internal
-/// Double-shift QR iteration for non-symmetric matrices (handles complex
-/// conjugate eigenvalue pairs without explicit complex arithmetic).
+/// Real arithmetic implicit double-shift QR. Handles complex conjugate pairs
+/// simultaneously via 2×2 bulge chasing, avoiding complex arithmetic in the
+/// iteration loop. A single-shift complex QR would resolve clustered conjugate
+/// pairs more cleanly but would roughly quadruple arithmetic in the inner loop.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
 {
@@ -364,8 +366,8 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
 /// matrix is in real Schur form: diagonal entries are the real eigenvalues,
 /// and 2×2 diagonal blocks encode complex conjugate pairs.
 ///
-/// In most cases you want @ref eigvals or @ref eigvecs rather than this
-/// function directly.
+/// In most cases you want @ref eigenvalues or @ref eigenvectors rather than
+/// this function directly.
 ///
 /// @tparam T  Floating-point scalar type.
 /// @tparam S  Matrix dimension.
@@ -417,13 +419,14 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
 ///     {0.0, -1.0},
 ///     {1.0,  0.0}
 /// }};
-/// static constexpr auto eigs = consteig::eigvals(A);
+/// static constexpr auto eigs = consteig::eigenvalues(A);
 /// // eigs(0,0) ≈ Complex{0.0,  1.0}
 /// // eigs(1,0) ≈ Complex{0.0, -1.0}
 /// @endcode
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
+constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
 {
+    static_assert(is_float<T>(), "eigenvalues expects floating point type");
     Matrix<InternalScalar, S, S> a_internal{};
     for (Size i = 0; i < S; ++i)
     {
@@ -508,7 +511,7 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
 /// compile time:
 ///
 /// @code
-/// static constexpr auto eigs = consteig::eigvals(A);
+/// static constexpr auto eigs = consteig::eigenvalues(A);
 /// static_assert(consteig::checkEigenValues(A, eigs, 1e-9), "Bad eigenvalues");
 /// @endcode
 ///
@@ -516,13 +519,13 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
 /// @tparam R  Number of rows (must equal `C`).
 /// @tparam C  Number of columns.
 /// @param  a       Input matrix.
-/// @param  lambda  Eigenvalue column vector from @ref eigvals.
+/// @param  lambda  Eigenvalue column vector from @ref eigenvalues.
 /// @param  thresh  Absolute tolerance for invariant checks.
 /// @return `true` if both invariants hold within `thresh`.
 // Algorithm: Eigenvalue Verification
 template <typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(
-    const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
+    const Matrix<T, R, C> &a, const Matrix<Complex<T>, R, 1> &lambda,
     const T thresh)
 {
     T tr = trace(a);
@@ -543,7 +546,7 @@ static inline constexpr bool checkEigenValues(
 
     if constexpr (R <= 4)
     {
-        T d = det(a);
+        T d = determinant(a);
         Complex<T> prod_lambda{1, 0};
         for (Size i = 0; i < R; ++i)
         {
@@ -567,7 +570,7 @@ static inline constexpr bool checkEigenValues(
 ///
 /// Uses inverse iteration: for each eigenvalue λ, solves (A - λI)v = b
 /// for a normalized vector v. Two iterations are performed per eigenvector,
-/// which is typically sufficient given the accuracy of @ref eigvals.
+/// which is typically sufficient given the accuracy of @ref eigenvalues.
 ///
 /// Each column of the returned matrix is the eigenvector corresponding to
 /// the eigenvalue at the same index in `eigenvalues`.
@@ -575,20 +578,21 @@ static inline constexpr bool checkEigenValues(
 /// @tparam T  Floating-point scalar type.
 /// @tparam S  Matrix dimension.
 /// @param  A            Real S×S matrix.
-/// @param  eigenvalues  S×1 eigenvalue vector from @ref eigvals.
+/// @param  eigenvalues  S×1 eigenvalue vector from @ref eigenvalues.
 /// @return S×S matrix whose columns are the eigenvectors (as @ref Complex<T>).
 ///         Column `i` corresponds to `eigenvalues(i,0)`.
 ///
 /// @code
-/// static constexpr auto eigs   = consteig::eigvals(A);
-/// static constexpr auto vecs   = consteig::eigvecs(A, eigs);
+/// static constexpr auto eigs = consteig::eigenvalues(A);
+/// static constexpr auto vecs = consteig::eigenvectors(A, eigs);
 /// // vecs.col(0) is the eigenvector for eigs(0,0)
 /// @endcode
 // Algorithm: Inverse Iteration
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, S> eigvecs(
+constexpr Matrix<Complex<T>, S, S> eigenvectors(
     const Matrix<T, S, S> &A, const Matrix<Complex<T>, S, 1> &eigenvalues)
 {
+    static_assert(is_float<T>(), "eigenvectors expects floating point type");
     Matrix<Complex<T>, S, S> V{};
 
     for (Size i = 0; i < S; ++i)
@@ -681,6 +685,46 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
 
     return V;
 }
+
+/// @brief Convenience class that computes both eigenvalues and eigenvectors.
+///
+/// Constructs both at initialization time. Prefer the free functions
+/// @ref eigenvalues and @ref eigenvectors when you only need one.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam S  Matrix dimension.
+///
+/// @code
+/// static constexpr consteig::EigenSolver<double, 3> solver(A);
+/// static constexpr auto eigs = solver.eigenvalues();
+/// static constexpr auto vecs = solver.eigenvectors();
+/// @endcode
+template <typename T, Size S> class EigenSolver
+{
+  public:
+    /// @brief Compute eigenvalues and eigenvectors of `mat`.
+    constexpr EigenSolver(const Matrix<T, S, S> &mat)
+        : _evals(consteig::eigenvalues(mat)),
+          _evecs(consteig::eigenvectors(mat, _evals))
+    {
+    }
+
+    /// @brief Return the S×1 eigenvalue column vector.
+    constexpr const Matrix<Complex<T>, S, 1> &eigenvalues() const
+    {
+        return _evals;
+    }
+
+    /// @brief Return the S×S eigenvector matrix (column `i` corresponds to eigenvalue `i`).
+    constexpr const Matrix<Complex<T>, S, S> &eigenvectors() const
+    {
+        return _evecs;
+    }
+
+  private:
+    Matrix<Complex<T>, S, 1> _evals;
+    Matrix<Complex<T>, S, S> _evecs;
+};
 
 /// @}  // defgroup eigen
 

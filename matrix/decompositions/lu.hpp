@@ -1,6 +1,7 @@
 #ifndef LU_DECOMP_HPP
 #define LU_DECOMP_HPP
 
+#include "../../array/array.hpp"
 #include "../../math/constmath.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"

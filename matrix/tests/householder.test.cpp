@@ -8,7 +8,7 @@ using namespace consteig;
 TEST(householder, house)
 {
     static constexpr Size s{10};
-    static constexpr Matrix<double, s, s> mat{{{
+    static constexpr Matrix<double, s, s> mat{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
         {-0.42729, -0.47479, -0.28187, -0.6335, -0.84281, -0.88644, -0.77489,
@@ -29,11 +29,11 @@ TEST(householder, house)
          1.4777, -3.0378},
         {0.81169, 0.3244, 2.2287, -0.72454, -1.6842, -1.5909, -1.0693, 0.72293,
          -1.4584, 0.68517},
-    }}};
+    }};
 
     static constexpr Matrix<double, s, s> test{house(mat)};
 
-    static constexpr Matrix<double, s, s> answer{{{
+    static constexpr Matrix<double, s, s> answer{{
         {1.000000000, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, -0.181172707, 0.433798583, 0.144738036, 0.692313876, 0.253079561,
          0.198077750, 0.231951437, 0.056710547, 0.344159879},
@@ -53,7 +53,7 @@ TEST(householder, house)
          -0.009510123, -0.011136469, 0.997277209, -0.016523828},
         {0, 0.344159879, -0.126396476, -0.042172516, -0.201720425, -0.073740132,
          -0.057714180, -0.067584002, -0.016523828, 0.899721674},
-    }}};
+    }};
 
     static_assert(equalWithinMat(test, answer, CONSTEIG_TEST_TOLERANCE), MSG);
     ASSERT_TRUE(equalWithinMat(test, answer, CONSTEIG_TEST_TOLERANCE));
@@ -62,17 +62,17 @@ TEST(householder, house)
 TEST(householder, house_single)
 {
     static constexpr Size s{2};
-    static constexpr Matrix<float, s, s> mat{{{
+    static constexpr Matrix<float, s, s> mat{{
         {-2.0114F, -0.52132F},
         {-0.42729F, -0.47479F},
-    }}};
+    }};
 
     static constexpr Matrix<float, s, s> test{house(mat)};
 
-    static constexpr Matrix<float, s, s> answer{{{
+    static constexpr Matrix<float, s, s> answer{{
         {1.0F, 0.0F},
         {0.0F, -1.0F},
-    }}};
+    }};
 
     static_assert(equalWithinMat(test, answer, CONSTEIG_FLOAT_TEST_TOLERANCE),
                   MSG);
@@ -83,7 +83,7 @@ TEST(householder, properties)
 {
     static constexpr Size s{4};
     static constexpr Matrix<double, s, s> mat = {
-        {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
+        {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}};
 
     static constexpr Matrix<double, s, s> P = house(mat);
 

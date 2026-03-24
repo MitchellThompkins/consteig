@@ -207,7 +207,7 @@ template <typename T, Size S> constexpr Matrix<T, S, S> eye()
 /// @return Non-negative Frobenius norm.
 // Euclidean normal of a matrix
 template <typename T, Size R, Size C>
-constexpr T normE(const Matrix<T, R, C> &mat)
+constexpr T norm(const Matrix<T, R, C> &mat)
 {
     T result{};
 
@@ -319,7 +319,7 @@ constexpr Matrix<T, R, C> sqrt(const Matrix<T, R, C> &mat)
 // Note: This has factorial time complexity (O(n!)) and is only practical for
 // very small matrices.
 template <typename T, Size R, Size C>
-constexpr T det(const Matrix<T, R, C> &mat)
+constexpr T determinant(const Matrix<T, R, C> &mat)
 {
     static_assert(R == C, "Can only find determinant of a square matrix");
 
@@ -351,7 +351,7 @@ constexpr T det(const Matrix<T, R, C> &mat)
                 }
             }
             T sign = (i % 2 == 0) ? static_cast<T>(1) : static_cast<T>(-1);
-            result += (sign * mat(0, i) * det(submat));
+            result += (sign * mat(0, i) * determinant(submat));
         }
         return result;
     }

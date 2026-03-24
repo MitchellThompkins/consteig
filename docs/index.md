@@ -18,7 +18,7 @@ static constexpr consteig::Matrix<double, 2, 2> A{{
 }};
 
 // Eigenvalues computed by the compiler, not at runtime
-static constexpr auto eigs = consteig::eigvals(A);
+static constexpr auto eigs = consteig::eigenvalues(A);
 
 // Verify at compile time — build fails if wrong
 static_assert(consteig::checkEigenValues(A, eigs, 1e-9), "Bad eigenvalues");
@@ -44,7 +44,7 @@ static constexpr consteig::Matrix<double, 3, 3> M{{
     { 0.0, -1.0,  2.0}
 }};
 
-static constexpr auto eigenvalues = consteig::eigvals(M);
+static constexpr auto eigenvalues = consteig::eigenvalues(M);
 // eigenvalues(0,0), (1,0), (2,0) are the three eigenvalues as Complex<double>
 ```
 
