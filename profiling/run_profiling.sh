@@ -97,5 +97,5 @@ echo ""
 
 # Print summary table
 echo "=== Summary (mean compile time in seconds) ==="
-python3 "$SCRIPT_DIR/analyze_results.py" "$RESULTS_FILE" 2>/dev/null || \
-    echo "(install python3 for summary tables)"
+uv run "$SCRIPT_DIR/analyze_results.py" "$RESULTS_FILE" 2>/dev/null || \
+    echo "(uv not available, run: uv run profiling/analyze_results.py <csv>)"
