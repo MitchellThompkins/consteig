@@ -455,7 +455,7 @@ constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
 // determinant) invariants.
 template <typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(
-    const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
+    const Matrix<T, R, C> &a, const Matrix<Complex<T>, R, 1> &lambda,
     const T thresh)
 {
     T tr = trace(a);
