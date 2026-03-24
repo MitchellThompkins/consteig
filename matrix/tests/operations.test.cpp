@@ -199,3 +199,91 @@ TEST(matrix, static_constexpr_sqrt)
     static_assert(result == answer, MSG);
     ASSERT_TRUE(result == answer);
 }
+
+// ---- Member wrapper tests ----
+
+TEST(matrix, member_transpose)
+{
+    static constexpr int r{3};
+    static constexpr int c{2};
+
+    static constexpr Matrix<int, r, c> mat1{{{3, 4}, {5, 6}, {3, 9}}};
+    static constexpr Matrix<int, r, r> mat2{{{3, 4, 8}, {5, 6, 7}, {3, 9, 8}}};
+
+    static constexpr Matrix<int, c, r> answer1{{{3, 5, 3}, {4, 6, 9}}};
+    static constexpr Matrix<int, r, r> answer2{
+        {{3, 5, 3}, {4, 6, 9}, {8, 7, 8}}};
+
+    static constexpr Matrix<int, c, r> t1{mat1.transpose()};
+    static constexpr Matrix<int, r, r> t2{mat2.transpose()};
+
+    static_assert(t1 == answer1, MSG);
+    static_assert(t2 == answer2, MSG);
+
+    ASSERT_TRUE(t1 == answer1);
+    ASSERT_TRUE(t2 == answer2);
+}
+
+TEST(matrix, member_trace)
+{
+    static constexpr int s{3};
+
+    static constexpr Matrix<int, s, s> mat{{{3, 4, 8}, {5, 6, 7}, {3, 9, 8}}};
+
+    static constexpr int t{mat.trace()};
+    static constexpr int answer{17};
+
+    static_assert(t == answer, MSG);
+    ASSERT_EQ(t, answer);
+}
+
+TEST(matrix, member_determinant)
+{
+    static constexpr int x{3};
+    static constexpr int r{2};
+
+    static constexpr Matrix<float, x, x> mat1{
+        {{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}};
+
+    static constexpr Matrix<float, r, r> mat2{{{1.0F, -7.0F}, {-2.0F, 3.0F}}};
+
+    static constexpr float d1{mat1.determinant()};
+    static constexpr float d2{mat2.determinant()};
+
+    static_assert(d1 == 15.0F, MSG);
+    static_assert(d2 == -11.0F, MSG);
+
+    ASSERT_NEAR(d1, 15.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+    ASSERT_NEAR(d2, -11.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, member_norm)
+{
+    static constexpr int x{3};
+    static constexpr int r{2};
+
+    static constexpr Matrix<float, x, x> mat1{
+        {{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}};
+
+    static constexpr Matrix<float, r, r> mat2{{{1.0F, -7.0F}, {-2.0F, 3.0F}}};
+
+    static constexpr float n1{mat1.norm()};
+    static constexpr float n2{mat2.norm()};
+
+    ASSERT_NEAR(n1, 8.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+    ASSERT_NEAR(n2, 7.937253933F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, member_dot)
+{
+    static constexpr int n{4};
+
+    static constexpr Matrix<int, 1, n> mat1{{{3, 4, 4, 8}}};
+    static constexpr Matrix<int, 1, n> mat2{{{3, 5, 3, 9}}};
+
+    static constexpr int d{mat1.dot(mat2)};
+    static constexpr int answer{113};
+
+    static_assert(d == answer, MSG);
+    ASSERT_EQ(d, answer);
+}
