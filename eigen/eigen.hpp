@@ -25,9 +25,10 @@ constexpr Matrix<T, S, S> eig(
     Matrix<T, S, S> a,
     const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
 
-// Algorithm: Balancing
-// Permutes and scales the matrix to reduce the norm of its rows and columns
-// to improve the accuracy and convergence rate of QR iterations.
+// Algorithm: Balancing (Parlett & Reinsch 1969)
+// Applies diagonal scaling only to reduce the norm of rows and columns
+// and improve the accuracy and convergence rate of QR iterations.
+// No permutation-based eigenvalue isolation is performed.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
 {
@@ -192,6 +193,13 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
     }
 }
 
+// Real arithmetic implicit double-shift QR. Handles complex conjugate pairs
+// simultaneously via 2x2 bulge chasing, avoiding complex arithmetic in the
+// iteration loop. A single-shift complex QR would resolve clustered conjugate
+// pairs more cleanly but would roughly quadruple arithmetic in the inner loop:
+// each complex multiply requires 4 real multiplies and 2 adds ((a+bi)(c+di) =
+// ac-bd + (ad+bc)i), versus 1 multiply and 0 adds for a real multiply. This
+// significantly increases constexpr evaluation cost.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
 {
