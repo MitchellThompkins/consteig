@@ -164,8 +164,11 @@ use the Matched Z-Transform (matched-pole mapping):
 The [`butterworth_core.hpp`](examples/butterworth/butterworth_core.hpp) example generates
 the following design for a 100Hz cutoff at 1kHz sampling:
 
+```bash
+./build/bin/butterworth.main
 ```
-> ./build/bin/butterworth.main
+
+```
 Designing 2nd Order Butterworth Lowpass Filter
 Cutoff: 100.0000 Hz, Sampling Rate: 1000.0000 Hz
 Continuous System Matrix A:
@@ -187,7 +190,6 @@ Gain K = 0.2532
 
 Final Digital Filter Difference Equation:
 y[n] = 0.2532 * x[n] - (-1.1580) * y[n-1] - (0.4112) * y[n-2]
-
 ```
 
 To demonstrate the compile time nature of this library, the filter data is
@@ -195,12 +197,13 @@ compiled into a special `.filter_data` section of the binary. You can compile
 and extract the data as is shown below to demonstrate that the filter
 coefficients are indeed calculated completely at compile time.
 
+```bash
+make butterworth.main
+objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth/butterworth_values.cpp.o filter_data.bin
+xxd -c 8 filter_data.bin
 ```
-> make butterworth.main
-> objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir/butterworth/butterworth_values.cpp.o filter_data.bin
 
-> xxd -c 8 filter_data.bin
-
+```asm
 00000000: 0000 0000 0040 8f40  .....@.@
 00000008: 0000 0000 0000 5940  ......Y@
 00000010: 0000 0000 0000 0000  ........
@@ -218,9 +221,13 @@ coefficients are indeed calculated completely at compile time.
 00000070: 76a7 3023 5b87 f2bf  v.0#[...
 00000078: afc5 de84 c451 da3f  .....Q.?
 00000080: d727 1cf8 5734 d03f  .'..W4.?
+```
 
-> python3 examples/butterworth/print_butterworth_binary.py
+```bash
+python3 examples/butterworth/print_butterworth_binary.py
+```
 
+```
 Name         Double (64-bit)      Decimal
 ----------------------------------------------------------------------
 fs           0000 0000 0040 8f40  1000.000000000000000
@@ -259,8 +266,11 @@ from the University of Michigan. The information known at compile time is:
 When building the system with gains that do not meet the performance requirements,
 `static_assert` can validate system gains by preventing compilation:
 
+```bash
+make container.make.dc_motor_control.main
 ```
-> make container.make.dc_motor_control.main
+
+```
 ...
 /Users/mitchellthompkins/workspace/consteig/examples/dc_motor_control.cpp:143:19: error: static assertion failed due to requirement 'check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING)': Scenario 2 REJECTED: Settling time less than 0.040 seconds [FAILED]
   143 |     static_assert(check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING),
@@ -268,13 +278,15 @@ When building the system with gains that do not meet the performance requirement
 /Users/mitchellthompkins/workspace/consteig/examples/dc_motor_control.cpp:145:19: error: static assertion failed due to requirement 'check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT)': Scenario 2 REJECTED: Overshoot less than 16% [FAILED]
   145 |     static_assert(check_overshoot(eigs_bad, ZETA_LIMIT_FOR_OVERSHOOT),
       |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 ```
 
 This aligns with the output produced by octave:
 
+```bash
+octave octave/dc_motor_control.m
 ```
-> octave octave/dc_motor_control.m
+
+```
 ...
 State Feedback Gains: K = [21.0000, 0.0500, 0.0000, -200.0000]
 
@@ -289,7 +301,6 @@ Validation:
   [FAIL] Settling time less than 0.040 seconds (Actual: 0.0509 s)
   [FAIL] Overshoot less than 16% (Actual: 33.40 %)
   [PASS] No steady-state error (Enforced by integral action)
-
 ```
 
 ![Motor Control](docs/imgs/step_response.png "step_response")
@@ -351,7 +362,7 @@ the accuracy and verification methods implemented to test this library.
 
 The only local dependency is Docker. All build tools are packaged in the dev container:
 
-```
+```bash
 make container.pull
 export MY_UID=$(id -u)
 export MY_GID=$(id -g)
