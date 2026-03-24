@@ -25,9 +25,10 @@ constexpr Matrix<T, S, S> eig(
     Matrix<T, S, S> a,
     const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
 
-// Algorithm: Balancing
-// Permutes and scales the matrix to reduce the norm of its rows and columns
-// to improve the accuracy and convergence rate of QR iterations.
+// Algorithm: Balancing (Parlett & Reinsch 1969)
+// Applies diagonal scaling only to reduce the norm of rows and columns
+// and improve the accuracy and convergence rate of QR iterations.
+// No permutation-based eigenvalue isolation is performed.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
 {

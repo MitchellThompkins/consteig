@@ -9,10 +9,11 @@ The core eigenvalue solver is based on the optimized Francis QR algorithm,
 tailored for a `constexpr` context.
 
 * Preprocessing Steps:
-    1. Balancing: An initial balancing step permutes and scales the matrix
-       to reduce the norm of its rows and columns. This is a crucial step for
-       improving the accuracy and convergence rate of the subsequent QR
-       iterations, especially for matrices with poorly scaled entries.
+    1. Balancing: An initial balancing step applies diagonal scaling
+       (Parlett & Reinsch 1969) to reduce the norm of rows and columns.
+       This improves the accuracy and convergence rate of the subsequent QR
+       iterations, especially for matrices with poorly scaled entries. No
+       permutation-based eigenvalue isolation is performed.
     2. Hessenberg Reduction: The balanced matrix is then reduced to upper
        Hessenberg form using a series of Householder transformations. This is a
        critical optimization that reduces the computational cost of each QR
