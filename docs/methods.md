@@ -1,6 +1,6 @@
 # Algorithmic Approach and Optimizations [^1]
 
-Consteig employs a hybrid approach to performance, balancing `constexpr`
+consteig employs a hybrid approach to performance, balancing `constexpr`
 compatibility with the use of robust and efficient numerical methods.
 
 ## Eigenvalue Calculation (Core Solver)
@@ -66,11 +66,11 @@ algorithm, tailored for a `constexpr` context.
 
 ## Comparison with LAPACK/Eigen
 
-While `consteig` uses the same fundamental Francis QR algorithm as LAPACK
+While consteig uses the same fundamental Francis QR algorithm as LAPACK
 (`DLAHQR`) and Eigen, users may notice lower accuracy on highly defective
 matrices (e.g., error $\approx 0.05$ vs $0.01$). This difference stems from
 several factors:
-1.  Balancing Strategy: `consteig` implements basic diagonal scaling balancing
+1.  Balancing Strategy: consteig implements basic diagonal scaling balancing
     (`GEBAL` scaling only). Standard libraries also perform permutation to
     isolate eigenvalues, which significantly improves conditioning for reducible
     matrices.
