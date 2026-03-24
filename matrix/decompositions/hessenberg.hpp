@@ -9,7 +9,20 @@
 namespace consteig
 {
 
-///////////// TYPES /////////////
+/// @addtogroup decompositions
+/// @{
+
+/// @brief Result type for Hessenberg reduction.
+///
+/// Holds the accumulated orthogonal factor `_p` and the upper Hessenberg
+/// matrix `_h` such that `_h = _p^T * A * _p` (similarity transformation
+/// preserving eigenvalues).
+///
+/// @tparam T  Scalar element type.
+/// @tparam S  Matrix dimension.
+///
+/// @var PHMatrix::_p  Accumulated product of Householder reflectors (S×S orthogonal).
+/// @var PHMatrix::_h  Upper Hessenberg form of the input matrix.
 template <typename T, Size S> struct PHMatrix
 {
     Matrix<T, S, S> _p;
@@ -22,7 +35,26 @@ template <typename T, Size S> struct PHMatrix
     constexpr PHMatrix &operator=(PHMatrix &&) = default;
 };
 
-///////////// FUNCTION DECLARATIONS /////////////
+/// @brief Reduce a square matrix to upper Hessenberg form.
+///
+/// Computes H = P^T * A * P where H is upper Hessenberg (zero below the
+/// first subdiagonal) and P is an orthogonal matrix accumulated from
+/// Householder reflectors. This is a similarity transformation: H and A
+/// have the same eigenvalues.
+///
+/// Reducing to Hessenberg form before QR iteration cuts the cost of each
+/// QR step from O(n^3) to O(n^2), making the overall eigenvalue solver O(n^3).
+///
+/// Used internally by @ref eig, @ref eig_shifted_qr, and
+/// @ref eig_double_shifted_qr.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam R  Number of rows (must equal `C`).
+/// @tparam C  Number of columns.
+/// @tparam L  Internal recursion parameter — do not specify (defaults to `R`).
+/// @param  a  Square input matrix.
+/// @return @ref PHMatrix containing `_p` (orthogonal) and `_h` (Hessenberg).
+/// @pre `R == C` and `T` must be floating-point (both enforced by `static_assert`).
 template <typename T, Size R, Size C, Size L = R>
 constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a);
 
@@ -81,6 +113,8 @@ constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a)
         return {pRtn, out._h};
     }
 }
+
+/// @}  // addtogroup decompositions
 
 } // namespace consteig
 #endif

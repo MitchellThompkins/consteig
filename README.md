@@ -1,4 +1,5 @@
 ![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
+[![Documentation](https://img.shields.io/badge/docs-online-blue)](https://mitchellthompkins.github.io/consteig/)
 
 ## What Is This 
 Consteig is a constexpr template library which uses both constexpr functions and

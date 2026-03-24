@@ -13,6 +13,10 @@
 namespace consteig
 {
 
+/// @defgroup eigen Eigensolvers
+/// @brief Functions for computing eigenvalues and eigenvectors at compile time.
+/// @{
+
 #ifdef CONSTEIG_USE_LONG_DOUBLE
 using InternalScalar = long double;
 #else
@@ -25,9 +29,10 @@ constexpr Matrix<T, S, S> eig(
     Matrix<T, S, S> a,
     const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
 
+/// @internal
+/// Permutes and scales the matrix to reduce the norm of its rows and columns
+/// to improve the accuracy and convergence rate of QR iterations.
 // Algorithm: Balancing
-// Permutes and scales the matrix to reduce the norm of its rows and columns
-// to improve the accuracy and convergence rate of QR iterations.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
 {
@@ -90,9 +95,10 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
     return a;
 }
 
+/// @internal
+/// Wilkinson shift: default shifting strategy for QR iteration
+/// (quadratically convergent in most cases).
 // Algorithm: Wilkinson Shifts
-// Default shifting strategy to accelerate convergence (quadratically convergent
-// in most cases).
 template <typename T>
 constexpr T wilkinsonShift(const T a, const T b, const T c)
 {
@@ -106,9 +112,9 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
     return c - (b * b) / (delta + s);
 }
 
+/// @internal
+/// Implicit double-shift Francis QR step with Householder bulge chasing.
 // Algorithm: Implicit Double-Shift QR (Francis QR Step)
-// Employs a true implicit double-shift strategy using Householder reflectors
-// for bulge chasing to preserve Hessenberg structure.
 template <typename T, Size S>
 constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
 {
@@ -192,6 +198,9 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
     }
 }
 
+/// @internal
+/// Double-shift QR iteration for non-symmetric matrices (handles complex
+/// conjugate eigenvalue pairs without explicit complex arithmetic).
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
 {
@@ -304,6 +313,8 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
     return a;
 }
 
+/// @internal
+/// Single-shift QR iteration for symmetric (real eigenvalue) matrices.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
 {
@@ -346,6 +357,23 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
     return a;
 }
 
+/// @brief Reduce a matrix to quasi-upper-triangular (Schur) form.
+///
+/// Routes to the single-shift or double-shift QR solver based on the
+/// symmetry of `a` (controlled by `symmetryTolerance`). The returned
+/// matrix is in real Schur form: diagonal entries are the real eigenvalues,
+/// and 2×2 diagonal blocks encode complex conjugate pairs.
+///
+/// In most cases you want @ref eigvals or @ref eigvecs rather than this
+/// function directly.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam S  Matrix dimension.
+/// @param  a                  Real square matrix.
+/// @param  symmetryTolerance  Threshold for routing to the symmetric solver.
+///                            Default: @ref CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE.
+/// @return Quasi-upper-triangular matrix in real Schur form.
+/// @pre `T` must be a floating-point type (enforced by `static_assert`).
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
 {
@@ -364,6 +392,35 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
     }
 }
 
+/// @brief Compute the eigenvalues of a real square matrix.
+///
+/// Returns the complete spectrum as a column vector of @ref Complex values.
+/// Real eigenvalues have zero imaginary part; complex eigenvalues appear as
+/// conjugate pairs.
+///
+/// Internally promotes to `double` (or `long double` if
+/// @ref CONSTEIG_USE_LONG_DOUBLE is defined) for better numerical stability,
+/// then narrows back to `T` for the result.
+///
+/// @tparam T  Floating-point scalar type of the input matrix.
+/// @tparam S  Matrix dimension.
+/// @param  a  Real S×S matrix.
+/// @return S×1 column vector of eigenvalues as @ref Complex<T>.
+///         No particular ordering is guaranteed.
+///
+/// @note Accuracy on well-conditioned matrices: ~1e-9.
+///       Accuracy on defective matrices (Jordan blocks): ~0.03.
+///       See the verification documentation for details.
+///
+/// @code
+/// static constexpr consteig::Matrix<double, 2, 2> A{{
+///     {0.0, -1.0},
+///     {1.0,  0.0}
+/// }};
+/// static constexpr auto eigs = consteig::eigvals(A);
+/// // eigs(0,0) ≈ Complex{0.0,  1.0}
+/// // eigs(1,0) ≈ Complex{0.0, -1.0}
+/// @endcode
 template <typename T, Size S>
 constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
 {
@@ -440,10 +497,29 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
     return result;
 }
 
+/// @brief Verify computed eigenvalues against matrix invariants.
+///
+/// Checks two matrix invariants:
+/// 1. **Trace**: sum of eigenvalues must equal the matrix trace within `thresh`.
+/// 2. **Determinant** (only for `R <= 4`): product of eigenvalues must equal
+///    `det(a)` within a scaled tolerance.
+///
+/// Use this in `static_assert` blocks to validate eigenvalue correctness at
+/// compile time:
+///
+/// @code
+/// static constexpr auto eigs = consteig::eigvals(A);
+/// static_assert(consteig::checkEigenValues(A, eigs, 1e-9), "Bad eigenvalues");
+/// @endcode
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam R  Number of rows (must equal `C`).
+/// @tparam C  Number of columns.
+/// @param  a       Input matrix.
+/// @param  lambda  Eigenvalue column vector from @ref eigvals.
+/// @param  thresh  Absolute tolerance for invariant checks.
+/// @return `true` if both invariants hold within `thresh`.
 // Algorithm: Eigenvalue Verification
-// Verifies computed eigenvalues by checking both the trace (sum of eigenvalues
-// equals matrix trace) and determinant (product of eigenvalues equals matrix
-// determinant) invariants.
 template <typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(
     const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
@@ -487,9 +563,28 @@ static inline constexpr bool checkEigenValues(
     return true;
 }
 
+/// @brief Compute eigenvectors given a matrix and its eigenvalues.
+///
+/// Uses inverse iteration: for each eigenvalue λ, solves (A - λI)v = b
+/// for a normalized vector v. Two iterations are performed per eigenvector,
+/// which is typically sufficient given the accuracy of @ref eigvals.
+///
+/// Each column of the returned matrix is the eigenvector corresponding to
+/// the eigenvalue at the same index in `eigenvalues`.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam S  Matrix dimension.
+/// @param  A            Real S×S matrix.
+/// @param  eigenvalues  S×1 eigenvalue vector from @ref eigvals.
+/// @return S×S matrix whose columns are the eigenvectors (as @ref Complex<T>).
+///         Column `i` corresponds to `eigenvalues(i,0)`.
+///
+/// @code
+/// static constexpr auto eigs   = consteig::eigvals(A);
+/// static constexpr auto vecs   = consteig::eigvecs(A, eigs);
+/// // vecs.col(0) is the eigenvector for eigs(0,0)
+/// @endcode
 // Algorithm: Inverse Iteration
-// Computes the eigenvectors of a matrix A given its eigenvalues.
-// Solves (A - \lambda I)v = b iteratively to find the eigenvector v.
 template <typename T, Size S>
 constexpr Matrix<Complex<T>, S, S> eigvecs(
     const Matrix<T, S, S> &A, const Matrix<Complex<T>, S, 1> &eigenvalues)
@@ -586,6 +681,8 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
 
     return V;
 }
+
+/// @}  // defgroup eigen
 
 } // namespace consteig
 

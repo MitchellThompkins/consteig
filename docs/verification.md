@@ -1,3 +1,7 @@
+---
+title: Verification & Accuracy
+---
+
 # Verification
 
 The library is verified through two primary methods:
@@ -19,16 +23,12 @@ produce much larger perturbations in the eigenvalues.
 For a defective eigenvalue associated with a single $N\times N$ Jordan block,
 classical perturbation theory shows that eigenvalue perturbations scale as
 
-```math
-\delta \lambda| \sim \|E\|^{1/N}
-```
+$$|\delta \lambda| \sim \|E\|^{1/N}$$
 
 Modern dense eigenvalue algorithms (e.g., QR) are backward stable, meaning
 the perturbation they introduce is on the order of machine precision:
 
-```math
-\|E\|\lesssim \epsilon_{\text{mach}}\|A\|
-```
+$$\|E\|\lesssim \epsilon_{\text{mach}}\|A\|$$
 
 which says
 
@@ -37,15 +37,11 @@ size of the matrix.
 
 If the matrix is scaled so that its norm is about 1:
 
-```math
-\|A\| \approx 1
-```
+$$\|A\| \approx 1$$
 
 then the backward error simplifies to:
 
-```math
-\|E\| \approx \epsilon_{\text{mach}}
-```
+$$\|E\| \approx \epsilon_{\text{mach}}$$
 
 So the solver is effectively perturbing the matrix at the level of machine
 precision.
@@ -53,9 +49,7 @@ precision.
 For IEEE-754 double precision $\epsilon_{\text{mach}}=2^{-53}$ and a single
 $8\times8$ Jordan block this gives:
 
-```math
-(2^{-53})^{1\over8} \approx 0.010
-```
+$$(2^{-53})^{1/8} \approx 0.010$$
 
 Accordingly, for defective matrices of this type, eigenvalues cannot in general
 be expected to be accurate beyond the percent level in double precision. The

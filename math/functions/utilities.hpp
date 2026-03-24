@@ -6,6 +6,10 @@
 namespace consteig
 {
 
+/// @defgroup math Math Functions
+/// @brief Constexpr mathematical functions with no standard library dependency.
+/// @{
+
 // These functions determine if a number is a floating point number
 
 template <typename T> struct is_float_impl
@@ -40,24 +44,57 @@ template <> struct is_float_impl<long double>
     }
 };
 
+/// @brief Returns `true` if `T` is a floating-point type (value overload).
+/// @tparam T  Type to test.
 template <typename T> constexpr bool is_float(T const &)
 {
     return is_float_impl<T>::_();
 }
 
-// Check if float
+/// @brief Returns `true` if `T` is a floating-point type (type-only overload).
+///
+/// Recognized floating-point types: `float`, `double`, `long double`.
+/// All other types (including integer types) return `false`.
+///
+/// @tparam T  Type to test.
+///
+/// @code
+/// static_assert(consteig::is_float<double>(), "");
+/// static_assert(!consteig::is_float<int>(), "");
+/// @endcode
 template <typename T> constexpr bool is_float()
 {
     return is_float_impl<T>::_();
 }
 
-// Compare Floats
+/// @brief Compare two values within an absolute tolerance.
+///
+/// Returns `true` if `|a - b| < thresh`. Does not use relative tolerance,
+/// so be careful when comparing values with very different magnitudes.
+///
+/// @tparam T      Type of the values being compared.
+/// @tparam U      Type of the threshold (converted to `T` internally).
+/// @param  a      First value.
+/// @param  b      Second value.
+/// @param  thresh Absolute tolerance.
+/// @return `true` if the values are within `thresh` of each other.
 template <typename T, typename U>
 static constexpr bool equalWithin(T a, T b, U thresh)
 {
     return consteig::abs(a - b) < static_cast<T>(thresh);
 }
 
+/// @brief Machine epsilon for type `T`.
+///
+/// Returns the smallest value `eps` such that `1 + eps != 1` in type `T`.
+/// Hardcoded for `float` and `double` to IEEE 754 values for O(1) constexpr
+/// performance. Falls back to iterative computation for `long double` and
+/// other types.
+///
+/// For non-floating-point types, returns `T(0)`.
+///
+/// @tparam T  Numeric type.
+/// @return Machine epsilon, or `T(0)` for integer types.
 // Find machine epsilon
 // Implemented from wikipedia
 // https://en.wikipedia.org/wiki/Machine_epsilon#Approximation
@@ -93,6 +130,8 @@ template <typename T> constexpr T epsilon()
         return eps;
     }
 }
+
+/// @}  // defgroup math
 
 // This helper is intentionally NOT constexpr.
 // If a user attempts to evaluate a negative square root at compile-time
