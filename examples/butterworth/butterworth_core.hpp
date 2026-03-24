@@ -36,6 +36,11 @@ constexpr Constants design()
     auto p1_c = poles_c(0, 0);
     auto p2_c = poles_c(1, 0);
 
+    // Map each continuous-time pole to discrete-time via z = exp(s*T).
+    // This is the Matched Z-Transform: poles are mapped individually rather
+    // than by discretizing the full state-space system (ZOH). For this
+    // filter, which has no finite zeros, both methods produce the same
+    // discrete poles. The gain K is set separately to enforce DC unity gain.
     auto p1_d = consteig::exp(p1_c * T);
     auto p2_d = consteig::exp(p2_c * T);
 
