@@ -19,12 +19,9 @@ using InternalScalar = long double;
 using InternalScalar = double;
 #endif
 
-// Forward declarations
+// Forward declaration
 template <typename T, Size S>
-struct EigQRResult;
-
-template <typename T, Size S, bool Profile = false>
-constexpr auto eig(
+constexpr Matrix<T, S, S> eig(
     Matrix<T, S, S> a,
     const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
 
@@ -196,25 +193,11 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
 }
 
 template <typename T, Size S>
-struct EigQRResult
-{
-    Matrix<T, S, S> schur;
-    Size iterations;
-};
-
-template <typename T, Size S, bool Profile = false>
-constexpr auto eig_double_shifted_qr(Matrix<T, S, S> a)
+constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
 {
     if constexpr (S <= 1)
     {
-        if constexpr (Profile)
-        {
-            return EigQRResult<T, S>{a, 0};
-        }
-        else
-        {
-            return a;
-        }
+        return a;
     }
     a = balance(a);
     a = hess(a)._h;
@@ -318,29 +301,15 @@ constexpr auto eig_double_shifted_qr(Matrix<T, S, S> a)
         total_iter++;
         its++;
     }
-    if constexpr (Profile)
-    {
-        return EigQRResult<T, S>{a, total_iter};
-    }
-    else
-    {
-        return a;
-    }
+    return a;
 }
 
-template <typename T, Size S, bool Profile = false>
-constexpr auto eig_shifted_qr(Matrix<T, S, S> a)
+template <typename T, Size S>
+constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
 {
     if constexpr (S <= 1)
     {
-        if constexpr (Profile)
-        {
-            return EigQRResult<T, S>{a, 0};
-        }
-        else
-        {
-            return a;
-        }
+        return a;
     }
     a = balance(a);
     a = hess(a)._h;
@@ -374,18 +343,11 @@ constexpr auto eig_shifted_qr(Matrix<T, S, S> a)
         a = (qrm._r * qrm._q) + (mu * eyeS);
         iter++;
     }
-    if constexpr (Profile)
-    {
-        return EigQRResult<T, S>{a, iter};
-    }
-    else
-    {
-        return a;
-    }
+    return a;
 }
 
-template <typename T, Size S, bool Profile>
-constexpr auto eig(Matrix<T, S, S> a, const T symmetryTolerance)
+template <typename T, Size S>
+constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
 {
     static_assert(is_float<T>(), "eig reduction expects floating point");
     // symmetryTolerance is a routing threshold. If a matrix is "symmetric
@@ -394,11 +356,11 @@ constexpr auto eig(Matrix<T, S, S> a, const T symmetryTolerance)
     // heavier Double-Shift QR (eig_double_shifted_qr) to handle complex pairs.
     if (a.isSymmetric(static_cast<T>(symmetryTolerance)))
     {
-        return eig_shifted_qr<T, S, Profile>(a);
+        return eig_shifted_qr<T, S>(a);
     }
     else
     {
-        return eig_double_shifted_qr<T, S, Profile>(a);
+        return eig_double_shifted_qr<T, S>(a);
     }
 }
 
@@ -476,78 +438,6 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
         }
     }
     return result;
-}
-
-template <typename T, Size S>
-struct EigvalsProfileResult
-{
-    Matrix<Complex<T>, S, 1> eigenvalues;
-    Size iterations;
-};
-
-template <typename T, Size S>
-constexpr EigvalsProfileResult<T, S> eigvals_profile(const Matrix<T, S, S> a)
-{
-    Matrix<InternalScalar, S, S> a_internal{};
-    for (Size i = 0; i < S; ++i)
-    {
-        for (Size j = 0; j < S; ++j)
-        {
-            a_internal(i, j) = static_cast<InternalScalar>(a(i, j));
-        }
-    }
-
-    EigQRResult<InternalScalar, S> eig_result = eig<InternalScalar, S, true>(a_internal);
-    Matrix<InternalScalar, S, S> out = eig_result.schur;
-    Size iterations = eig_result.iterations;
-
-    Matrix<Complex<T>, S, 1> result{};
-    InternalScalar eps = consteig::epsilon<InternalScalar>() *
-                         (norm1(out) + static_cast<InternalScalar>(1.0));
-
-    for (Size i = 0; i < S; ++i)
-    {
-        bool found_2x2 = false;
-        if (i < S - 1)
-        {
-            InternalScalar subdiag = out(i + 1, i);
-            if (consteig::abs(subdiag) > eps)
-            {
-                found_2x2 = true;
-            }
-        }
-
-        if (found_2x2)
-        {
-            InternalScalar a00 = out(i, i);
-            InternalScalar a01 = out(i, i + 1);
-            InternalScalar a10 = out(i + 1, i);
-            InternalScalar a11 = out(i + 1, i + 1);
-            InternalScalar tr = a00 + a11;
-            InternalScalar d = a00 * a11 - a01 * a10;
-            InternalScalar disc = tr * tr - 4 * d;
-            if (disc >= 0)
-            {
-                InternalScalar sq = consteig::sqrt(disc);
-                result(i, 0) = Complex<T>{static_cast<T>((tr + sq) / 2), 0};
-                result(i + 1, 0) = Complex<T>{static_cast<T>((tr - sq) / 2), 0};
-            }
-            else
-            {
-                InternalScalar sq = consteig::sqrt(-disc);
-                result(i, 0) =
-                    Complex<T>{static_cast<T>(tr / 2), static_cast<T>(sq / 2)};
-                result(i + 1, 0) =
-                    Complex<T>{static_cast<T>(tr / 2), static_cast<T>(-sq / 2)};
-            }
-            i++;
-        }
-        else
-        {
-            result(i, 0) = Complex<T>{static_cast<T>(out(i, i)), 0};
-        }
-    }
-    return {result, iterations};
 }
 
 // Algorithm: Eigenvalue Verification
