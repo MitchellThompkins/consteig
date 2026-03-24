@@ -291,7 +291,7 @@ TEST(consteig_eigen, member_eigenvectors)
     static constexpr auto evals{A.eigenvalues()};
     static constexpr auto V{A.eigenvectors(evals)};
 
-    static_assert(verify_eigenpairs_constexpr(A, evals, V,
-                                              CONSTEIG_TEST_TOLERANCE),
-                  "Av = lambda*v relation failed at compile time");
+    static_assert(
+        verify_eigenpairs_constexpr(A, evals, V, CONSTEIG_TEST_TOLERANCE),
+        "Av = lambda*v relation failed at compile time");
 }
