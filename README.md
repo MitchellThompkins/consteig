@@ -116,7 +116,7 @@ There is no need to iterate the transition matrix until it converges.
 
 The [`population.cpp`](examples/population.cpp) example demonstrates this:
 
-```
+```text
 Population Transition Matrix (A)
 0.95 0.2
 0.05 0.8
@@ -167,7 +167,7 @@ the following design for a 100Hz cutoff at 1kHz sampling:
 ./build/bin/butterworth.main
 ```
 
-```
+```text
 Designing 2nd Order Butterworth Lowpass Filter
 Cutoff: 100.0000 Hz, Sampling Rate: 1000.0000 Hz
 Continuous System Matrix A:
@@ -202,7 +202,7 @@ objcopy -O binary -j .filter_data build/examples/CMakeFiles/butterworth.main.dir
 xxd -c 8 filter_data.bin
 ```
 
-```asm
+```text
 00000000: 0000 0000 0040 8f40  .....@.@
 00000008: 0000 0000 0000 5940  ......Y@
 00000010: 0000 0000 0000 0000  ........
@@ -226,7 +226,7 @@ xxd -c 8 filter_data.bin
 python3 examples/butterworth/print_butterworth_binary.py
 ```
 
-```
+```text
 Name         Double (64-bit)      Decimal
 ----------------------------------------------------------------------
 fs           0000 0000 0040 8f40  1000.000000000000000
@@ -269,7 +269,7 @@ When building the system with gains that do not meet the performance requirement
 make container.make.dc_motor_control.main
 ```
 
-```
+```text
 ...
 /Users/mitchellthompkins/workspace/consteig/examples/dc_motor_control.cpp:143:19: error: static assertion failed due to requirement 'check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING)': Scenario 2 REJECTED: Settling time less than 0.040 seconds [FAILED]
   143 |     static_assert(check_settling_time(eigs_bad, POLE_LIMIT_FOR_SETTLING),
@@ -285,7 +285,7 @@ This aligns with the output produced by octave:
 octave octave/dc_motor_control.m
 ```
 
-```
+```text
 ...
 State Feedback Gains: K = [21.0000, 0.0500, 0.0000, -200.0000]
 
