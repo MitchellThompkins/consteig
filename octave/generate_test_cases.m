@@ -2,6 +2,8 @@
 % Run this in Octave/Matlab to generate 'eigen/tests/generated_cases.hpp'
 % and individual test files in 'eigen/tests/'
 
+addpath(fileparts(mfilename('fullpath')));
+
 % Fix seed for reproducibility, removing this will produce truly (well _mostly_)
 % random matrices
 rand('seed', 42);

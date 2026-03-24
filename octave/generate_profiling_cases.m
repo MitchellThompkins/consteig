@@ -5,6 +5,8 @@
 % Usage: run from the repository root directory
 %   octave octave/generate_profiling_cases.m
 
+addpath(fileparts(mfilename('fullpath')));
+
 rand('seed', 99);
 randn('seed', 99);
 
