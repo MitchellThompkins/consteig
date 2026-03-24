@@ -37,7 +37,7 @@ Quick reference examples:
 * [Population flow](examples/population.cpp)
 * [Butterworth Filter Design](examples/butterworth/butterworth_core.hpp)
 
-### Build Options
+## Build Options
 
 consteig has a few options which can be modified. However, these defaults are
 well tested and modifying them may have non-desirable results such as increased
