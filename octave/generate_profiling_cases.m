@@ -1,6 +1,6 @@
 % Generate profiling matrices and C++ source files for compile-time measurement.
 % Produces matrices at multiple sizes across all categories, plus individual
-% .cpp files that force constexpr eigvals() evaluation for timing.
+% .cpp files that force constexpr eigenvalues() evaluation for timing.
 %
 % Usage: run from the repository root directory
 %   octave octave/generate_profiling_cases.m
