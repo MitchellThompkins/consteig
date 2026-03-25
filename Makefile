@@ -168,13 +168,19 @@ generate-test-cases:
 	octave octave/generate_test_cases.m
 
 .PHONY: check-generated
-check-generated: generate-test-cases
-	@if ! git diff --quiet -- eigen/tests/; then \
+check-generated:
+	@SNAP=$$(mktemp -d); \
+	cp eigen/tests/generated_cases.hpp "$$SNAP/"; \
+	cp eigen/tests/generated_*.test.cpp "$$SNAP/"; \
+	$(MAKE) generate-test-cases; \
+	if ! diff -rq "$$SNAP" eigen/tests/ --include='generated_cases.hpp' --include='generated_*.test.cpp' >/dev/null 2>&1; then \
 		echo "ERROR: Generated test cases are out of date. Run 'make generate-test-cases' and commit the results."; \
-		git diff --stat -- eigen/tests/; \
+		diff -rq "$$SNAP" eigen/tests/ --include='generated_cases.hpp' --include='generated_*.test.cpp' || true; \
+		rm -rf "$$SNAP"; \
 		exit 1; \
-	fi
-	@echo "Generated test cases are up to date."
+	fi; \
+	rm -rf "$$SNAP"; \
+	echo "Generated test cases are up to date."
 
 .PHONY: generate-profiling-cases
 generate-profiling-cases:
