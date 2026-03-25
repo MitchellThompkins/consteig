@@ -10,7 +10,7 @@ From the repository root:
 make profile
 ```
 
-This regenerates the `compile_time/` source files, then compiles each one and records the result. The default compiler is `g++` with a 300-second timeout per file.
+This regenerates the `compile_time/` source files, then compiles each one and records the result. The default compiler is `g++` with a 300-second timeout per file. Files are compiled one at a time (single-core) to avoid exhausting system memory, since each constexpr compilation can use several GB of RAM.
 
 To use a different compiler or timeout, invoke the script directly:
 
