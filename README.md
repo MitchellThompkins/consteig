@@ -328,7 +328,7 @@ addresses both constraints.
 See [docs/methods.md](docs/methods.md) for a discussion on the implementation
 specifics for the numerical solvers implemented by consteig.
 
-# Verification, Accuracy and Performance
+# Verification and Accuracy
 
 consteig uses `8x8` matrices as its test basis and leverages 2 tolerances for
 verification. For all non-defective matrices it uses `1e-9` as an expectation
@@ -341,6 +341,11 @@ library and Eigen, but the consteig library core does not.
 
 See [docs/verification.md](docs/verification.md) for a detailed discussion on
 the accuracy and verification methods implemented to test this library.
+
+# Performance
+
+![Compilation Times](profiling/results/compile_times_gcc_15.2.0.png "compilation_times")
+![Compilation Memory](profiling/results/compile_times_gcc_15.2.0_memory.png "compilation_memory")
 
 
 # When To Use consteig
