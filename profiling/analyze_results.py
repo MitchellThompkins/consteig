@@ -18,6 +18,7 @@ def load_data(csv_path):
 
     compiler_info = None
     compiler_family = None
+    os_name = None
     with open(csv_path) as f:
         lines = []
         for line in f:
@@ -25,6 +26,8 @@ def load_data(csv_path):
                 compiler_info = line[len("# compiler:"):].strip()
             elif line.startswith("# family:"):
                 compiler_family = line[len("# family:"):].strip()
+            elif line.startswith("# os:"):
+                os_name = line[len("# os:"):].strip()
             elif not line.startswith("#"):
                 lines.append(line)
 
@@ -40,7 +43,7 @@ def load_data(csv_path):
             elif int(row["exit_code"]) != 124:  # 124 = timeout, skip
                 failed[key].append(t)
 
-    return success, failed, memory, sorted(sizes), sorted(categories), compiler_info, compiler_family
+    return success, failed, memory, sorted(sizes), sorted(categories), compiler_info, compiler_family, os_name
 
 
 def print_table(success, failed, sizes, categories):
@@ -169,12 +172,14 @@ def main():
         sys.exit(1)
 
     csv_path = sys.argv[1]
-    success, failed, memory, sizes, categories, compiler_info, compiler_family = load_data(csv_path)
+    success, failed, memory, sizes, categories, compiler_info, compiler_family, os_name = load_data(csv_path)
 
     # The filename is always compile_times_<family>_<version>.csv — use it as
     # the canonical compiler label for titles regardless of CSV metadata.
     compiler_label = os.path.splitext(os.path.basename(csv_path))[0]
     compiler_label = compiler_label.replace("compile_times_", "").replace("_", " ", 1)
+    if os_name:
+        compiler_label += f" ({os_name})"
 
     print(f"Compiler: {compiler_label}")
     print("")

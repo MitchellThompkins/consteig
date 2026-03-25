@@ -156,11 +156,23 @@ echo ""
 #   2. Time it with /usr/bin/time (wall clock + peak RSS)
 #   3. Record the result to the CSV
 
+# Detect OS name for metadata (e.g. "alpine", "macos", "ubuntu").
+# /etc/os-release covers most Linux distros; sw_vers covers macOS.
+if [ -f /etc/os-release ]; then
+    OS_NAME=$(. /etc/os-release && echo "$NAME")
+elif sw_vers > /dev/null 2>&1; then
+    OS_NAME="macOS $(sw_vers -productVersion)"
+else
+    OS_NAME="unknown"
+fi
+
 # Write compiler metadata and CSV header.
 # "family" is the detected compiler family (gcc/clang) used for plot titles.
 # "compiler" is the full version string for traceability.
+# "os" is the host OS for context when comparing timings across machines.
 printf '# family: %s\n' "$COMPILER_ID" > "$RESULTS_FILE"
 printf '# compiler: %s\n' "$COMPILER_VERSION" >> "$RESULTS_FILE"
+printf '# os: %s\n' "$OS_NAME" >> "$RESULTS_FILE"
 echo "category,size,sample,compile_time_sec,max_rss_kb,exit_code" >> "$RESULTS_FILE"
 
 TOTAL=$(find "$COMPILE_DIR" -name 'profile_*.cpp' | wc -l)
