@@ -14,5 +14,6 @@ compile_commands.json
 tags
 .DS_Store
 
-# profiling — generated .cpp files (recreated by make profile)
+# profiling — generated files (recreated by make profile)
 profiling/compile_time/*.cpp
+profiling/generated_profiling_cases.hpp
