@@ -50,8 +50,13 @@ fprintf(hdr, '#include "../consteig.hpp"\n\n');
 fprintf(hdr, 'namespace consteig\n{\n\n');
 
 % Ensure output directory exists and clean old generated .cpp files
-[~, ~] = system('mkdir -p profiling/compile_time');
-[~, ~] = system('rm -f profiling/compile_time/profile_*.cpp');
+if ~exist(fullfile('profiling', 'compile_time'), 'dir')
+    mkdir(fullfile('profiling', 'compile_time'));
+end
+old_files = dir(fullfile('profiling', 'compile_time', 'profile_*.cpp'));
+for k = 1:length(old_files)
+    delete(fullfile(old_files(k).folder, old_files(k).name));
+end
 
 for si = 1:length(SIZES)
     S = SIZES(si);

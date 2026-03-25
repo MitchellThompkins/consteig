@@ -33,15 +33,15 @@ def load_data(csv_path):
 
     reader = csv.DictReader(lines)
     for row in reader:
-            key = (row["category"], int(row["size"]))
-            t = float(row["compile_time_sec"])
-            sizes.add(int(row["size"]))
-            categories.add(row["category"])
-            if int(row["exit_code"]) == 0:
-                success[key].append(t)
-                memory[key].append(float(row["max_rss_kb"]))
-            elif int(row["exit_code"]) != 124:  # 124 = timeout, skip
-                failed[key].append(t)
+        key = (row["category"], int(row["size"]))
+        t = float(row["compile_time_sec"])
+        sizes.add(int(row["size"]))
+        categories.add(row["category"])
+        if int(row["exit_code"]) == 0:
+            success[key].append(t)
+            memory[key].append(float(row["max_rss_kb"]))
+        elif int(row["exit_code"]) != 124:  # 124 = timeout, skip
+            failed[key].append(t)
 
     return success, failed, memory, sorted(sizes), sorted(categories), compiler_info, compiler_family, os_name
 
@@ -172,7 +172,7 @@ def main():
         sys.exit(1)
 
     csv_path = sys.argv[1]
-    success, failed, memory, sizes, categories, compiler_info, compiler_family, os_name = load_data(csv_path)
+    success, failed, memory, sizes, categories, _compiler_info, _compiler_family, os_name = load_data(csv_path)
 
     # The filename is always compile_times_<family>_<version>.csv — use it as
     # the canonical compiler label for titles regardless of CSV metadata.

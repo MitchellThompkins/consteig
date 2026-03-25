@@ -36,8 +36,6 @@ Results are written to `profiling/results/compile_times_<compiler>_<version>.csv
 uv run profiling/analyze_results.py profiling/results/compile_times_<compiler>_<version>.csv
 ```
 
-**Requirements:** Python 3.14 (see `.python-version`), managed by `uv`. `matplotlib` is optional; without it only the summary table is printed.
-
 ## Scope and Limitations
 
 This profiling suite measures compile time and memory usage only. The eigenvalues produced by each profiling compilation are not checked against a reference implementation (such as Eigen or Octave). Correctness is covered separately by the main test suite in `eigen/tests/`, which validates results against Eigen using `static_assert` and Google Test.
