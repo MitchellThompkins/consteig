@@ -147,8 +147,11 @@ echo ""
 #   2. Time it with /usr/bin/time (wall clock + peak RSS)
 #   3. Record the result to the CSV
 
-# Write compiler metadata comment and CSV header
-printf '# compiler: %s\n' "$COMPILER_VERSION" > "$RESULTS_FILE"
+# Write compiler metadata and CSV header.
+# "family" is the detected compiler family (gcc/clang) used for plot titles.
+# "compiler" is the full version string for traceability.
+printf '# family: %s\n' "$COMPILER_ID" > "$RESULTS_FILE"
+printf '# compiler: %s\n' "$COMPILER_VERSION" >> "$RESULTS_FILE"
 echo "category,size,sample,compile_time_sec,max_rss_kb,exit_code" >> "$RESULTS_FILE"
 
 TOTAL=$(find "$COMPILE_DIR" -name 'profile_*.cpp' | wc -l)
