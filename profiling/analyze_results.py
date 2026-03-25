@@ -1,4 +1,7 @@
 #!/usr/bin/env -S uv run
+# /// script
+# dependencies = ["matplotlib"]
+# ///
 """Analyze profiling CSV results, print summary tables, and generate plots."""
 
 import csv
