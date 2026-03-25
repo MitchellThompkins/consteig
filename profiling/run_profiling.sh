@@ -21,40 +21,51 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 RESULTS_DIR="$SCRIPT_DIR/results"
 COMPILE_DIR="$SCRIPT_DIR/compile_time"
+BUILD_DIR="$SCRIPT_DIR/build"
 
 mkdir -p "$RESULTS_DIR"
 
 COMPILER_VERSION=$("$COMPILER" --version | head -1)
-if "$COMPILER" --version 2>&1 | grep -qi gcc; then
-    COMPILER_ID="gcc"
-elif "$COMPILER" --version 2>&1 | grep -qi clang; then
+COMPILER_VER=$("$COMPILER" --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+
+# Detect compiler family via preprocessor macros — reliable regardless of binary name.
+# Check __clang__ before __GNUC__ because clang defines both.
+PROBE=$(echo "" | "$COMPILER" -E -dM -x c++ - 2>/dev/null)
+if echo "$PROBE" | grep -q "^#define __clang__"; then
     COMPILER_ID="clang"
+elif echo "$PROBE" | grep -q "^#define __GNUC__"; then
+    COMPILER_ID="gcc"
 else
     COMPILER_ID=$(basename "$COMPILER")
+    echo "Warning: unrecognized compiler family"
 fi
-COMPILER_VER=$("$COMPILER" --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+
 RESULTS_FILE="$RESULTS_DIR/compile_times_${COMPILER_ID}_${COMPILER_VER}.csv"
 
 echo "Compiler: $COMPILER_VERSION"
+echo "Family:   $COMPILER_ID"
 echo "Timeout:  ${TIMEOUT}s per file"
 echo "Output:   $RESULTS_FILE"
 echo ""
 
-# CSV header
-echo "category,size,sample,compile_time_sec,max_rss_kb,exit_code" > "$RESULTS_FILE"
+# Configure cmake (once). Constexpr flags are applied via consteig_raise_compiler_limits
+# in profiling/CMakeLists.txt — no manual flag management needed here.
+echo "Configuring CMake..."
+cmake -S "$REPO_ROOT" -B "$BUILD_DIR" \
+    -DCMAKE_CXX_COMPILER="$COMPILER" \
+    -DCONSTEIG_BUILD_TESTS=OFF \
+    > /dev/null 2>&1 \
+    || { echo "CMake configuration failed"; exit 1; }
+echo "Done."
+echo ""
+
+# Write compiler metadata and CSV header
+printf '# compiler: %s\n' "$COMPILER_VERSION" > "$RESULTS_FILE"
+echo "category,size,sample,compile_time_sec,max_rss_kb,exit_code" >> "$RESULTS_FILE"
 
 # Count total files for progress
 TOTAL=$(find "$COMPILE_DIR" -name 'profile_*.cpp' | wc -l)
 CURRENT=0
-
-# Determine constexpr flags based on compiler
-if "$COMPILER" --version 2>&1 | grep -qi gcc; then
-    CONSTEXPR_FLAGS="-fconstexpr-ops-limit=1000000000 -fconstexpr-depth=1024"
-elif "$COMPILER" --version 2>&1 | grep -qi clang; then
-    CONSTEXPR_FLAGS="-fconstexpr-steps=1000000000 -fconstexpr-depth=1024"
-else
-    CONSTEXPR_FLAGS="-fconstexpr-depth=1024"
-fi
 
 for src in "$COMPILE_DIR"/profile_*.cpp; do
     CURRENT=$((CURRENT + 1))
@@ -70,14 +81,16 @@ for src in "$COMPILE_DIR"/profile_*.cpp; do
 
     printf "[%d/%d] %s size=%s sample=%s ... " "$CURRENT" "$TOTAL" "$category" "$size" "$sample"
 
+    # Delete the object file to force recompilation of this target
+    rm -f "$BUILD_DIR/profiling/CMakeFiles/${basename_noext}.dir/compile_time/${basename_noext}.cpp.o"
+
     # Use /usr/bin/time for wall clock and RSS, with timeout
     TIME_OUTPUT=$(mktemp)
     EXIT_CODE=0
     /usr/bin/time -f "%e %M" -o "$TIME_OUTPUT" \
         timeout "$TIMEOUT" \
-        "$COMPILER" -std=c++17 -O0 -I"$REPO_ROOT" \
-        $CONSTEXPR_FLAGS \
-        -c "$src" -o /tmp/profile_out.o 2>/dev/null \
+        cmake --build "$BUILD_DIR" --target "$basename_noext" \
+        > /dev/null 2>&1 \
         || EXIT_CODE=$?
 
     WALL_SEC=$(awk 'END{print $1}' "$TIME_OUTPUT")

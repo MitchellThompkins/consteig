@@ -13,9 +13,17 @@ def load_data(csv_path):
     sizes = set()
     categories = set()
 
+    compiler_info = None
     with open(csv_path) as f:
-        reader = csv.DictReader(f)
-        for row in reader:
+        lines = []
+        for line in f:
+            if line.startswith("# compiler:"):
+                compiler_info = line[len("# compiler:"):].strip()
+            elif not line.startswith("#"):
+                lines.append(line)
+
+    reader = csv.DictReader(lines)
+    for row in reader:
             key = (row["category"], int(row["size"]))
             t = float(row["compile_time_sec"])
             sizes.add(int(row["size"]))
@@ -26,7 +34,7 @@ def load_data(csv_path):
             elif int(row["exit_code"]) != 124:  # 124 = timeout, skip
                 failed[key].append(t)
 
-    return success, failed, memory, sorted(sizes), sorted(categories)
+    return success, failed, memory, sorted(sizes), sorted(categories), compiler_info
 
 
 def print_table(success, failed, sizes, categories):
@@ -55,7 +63,7 @@ def print_table(success, failed, sizes, categories):
           f"Failed: {sum(len(v) for v in failed.values())}")
 
 
-def generate_memory_plot(memory, sizes, categories, csv_path):
+def generate_memory_plot(memory, sizes, categories, csv_path, compiler_info=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -74,7 +82,10 @@ def generate_memory_plot(memory, sizes, categories, csv_path):
 
     ax.set_xlabel("Matrix Size")
     ax.set_ylabel("Mean Peak RSS (MB)")
-    ax.set_title("Constexpr eigvals() Peak Compiler Memory by Matrix Size and Category")
+    title = "Constexpr eigvals() Peak Compiler Memory by Matrix Size and Category"
+    if compiler_info:
+        title += f"\n{compiler_info}"
+    ax.set_title(title)
     ax.set_xticks(sizes)
     ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
     ax.grid(True, alpha=0.3)
@@ -86,7 +97,7 @@ def generate_memory_plot(memory, sizes, categories, csv_path):
     print(f"Plot saved: {png_path}")
 
 
-def generate_plot(success, failed, sizes, categories, csv_path):
+def generate_plot(success, failed, sizes, categories, csv_path, compiler_info=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -112,7 +123,10 @@ def generate_plot(success, failed, sizes, categories, csv_path):
 
     ax.set_xlabel("Matrix Size")
     ax.set_ylabel("Mean Compile Time (s)")
-    ax.set_title("Constexpr eigvals() Compile Time by Matrix Size and Category")
+    title = "Constexpr eigvals() Compile Time by Matrix Size and Category"
+    if compiler_info:
+        title += f"\n{compiler_info}"
+    ax.set_title(title)
     ax.set_xticks(sizes)
     ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
     ax.grid(True, alpha=0.3)
@@ -137,13 +151,20 @@ def main():
         sys.exit(1)
 
     csv_path = sys.argv[1]
-    success, failed, memory, sizes, categories = load_data(csv_path)
+    success, failed, memory, sizes, categories, compiler_info = load_data(csv_path)
+
+    if compiler_info:
+        print(f"Compiler: {compiler_info}")
+        print("")
+    else:
+        print("Warning: no compiler metadata found in CSV (old format)")
+        print("")
 
     print_table(success, failed, sizes, categories)
 
     try:
-        generate_plot(success, failed, sizes, categories, csv_path)
-        generate_memory_plot(memory, sizes, categories, csv_path)
+        generate_plot(success, failed, sizes, categories, csv_path, compiler_info)
+        generate_memory_plot(memory, sizes, categories, csv_path, compiler_info)
     except ImportError:
         print("(matplotlib not available, skipping plot)")
 
