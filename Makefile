@@ -172,7 +172,7 @@ generate-profiling-cases:
 	octave octave/generate_profiling_cases.m
 
 .PHONY: profile
-profile:
+profile: generate-profiling-cases
 	./profiling/run_profiling.sh $(CXX)
 
 $(BUILD_PREFIX)/$(BUILD_FILE):
