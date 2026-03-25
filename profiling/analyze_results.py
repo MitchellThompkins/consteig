@@ -62,8 +62,9 @@ def generate_memory_plot(memory, sizes, categories, csv_path):
 
     fig, ax = plt.subplots(figsize=(12, 7))
 
+    import itertools
     prop_cycle = plt.rcParams["axes.prop_cycle"]
-    colors = {cat: c["color"] for cat, c in zip(categories, prop_cycle)}
+    colors = {cat: c["color"] for cat, c in zip(categories, itertools.cycle(prop_cycle))}
 
     for cat in categories:
         xs = [s for s in sizes if memory.get((cat, s))]
@@ -92,8 +93,9 @@ def generate_plot(success, failed, sizes, categories, csv_path):
 
     fig, ax = plt.subplots(figsize=(12, 7))
 
+    import itertools
     prop_cycle = plt.rcParams["axes.prop_cycle"]
-    colors = {cat: c["color"] for cat, c in zip(categories, prop_cycle)}
+    colors = {cat: c["color"] for cat, c in zip(categories, itertools.cycle(prop_cycle))}
 
     for cat in categories:
         color = colors[cat]

@@ -80,8 +80,8 @@ for src in "$COMPILE_DIR"/profile_*.cpp; do
         -c "$src" -o /tmp/profile_out.o 2>/dev/null \
         || EXIT_CODE=$?
 
-    WALL_SEC=$(awk '{print $1}' "$TIME_OUTPUT")
-    MAX_RSS=$(awk '{print $2}' "$TIME_OUTPUT")
+    WALL_SEC=$(awk 'END{print $1}' "$TIME_OUTPUT")
+    MAX_RSS=$(awk 'END{print $2}' "$TIME_OUTPUT")
 
     if [ "$EXIT_CODE" -eq 0 ]; then
         printf "%ss %sKB\n" "$WALL_SEC" "$MAX_RSS"
