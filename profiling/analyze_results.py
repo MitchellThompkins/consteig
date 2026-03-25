@@ -66,7 +66,7 @@ def print_table(success, failed, sizes, categories):
           f"Failed: {sum(len(v) for v in failed.values())}")
 
 
-def generate_memory_plot(memory, sizes, categories, csv_path, compiler_info=None, compiler_family=None):
+def generate_memory_plot(memory, sizes, categories, csv_path, compiler_label=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -84,17 +84,16 @@ def generate_memory_plot(memory, sizes, categories, csv_path, compiler_info=None
             ax.plot(xs, ys, marker="o", label=cat, color=colors[cat])
 
     ax.set_xlabel("Matrix Size")
-    ax.set_ylabel("Mean Peak RSS (MB)")
-    label = compiler_family if compiler_family else compiler_info
-    title = f"Constexpr eigvals() Peak Compiler Memory by Matrix Size and Category"
-    if label:
-        title += f"\n{label}: {compiler_info}" if compiler_family else f"\n{compiler_info}"
+    ax.set_ylabel("Mean RSS (MB)")
+    title = "Constexpr eigvals() Compiler Memory by Matrix Size and Category"
+    if compiler_label:
+        title += f"\n{compiler_label}"
     ax.set_title(title)
     ax.set_xticks(sizes)
     ax.grid(True, alpha=0.3)
 
     ax.axvspan(13.5, max(sizes) + 0.5, alpha=0.08, color="red",
-               label="consteig_raise_compiler_limits required (size >= 14)")
+               label="consteig_raise_compiler_limits required")
 
     # Legend placed after the span so its label is included.
     ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
@@ -106,7 +105,7 @@ def generate_memory_plot(memory, sizes, categories, csv_path, compiler_info=None
     print(f"Plot saved: {png_path}")
 
 
-def generate_plot(success, failed, sizes, categories, csv_path, compiler_info=None, compiler_family=None):
+def generate_plot(success, failed, sizes, categories, csv_path, compiler_label=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -132,10 +131,9 @@ def generate_plot(success, failed, sizes, categories, csv_path, compiler_info=No
 
     ax.set_xlabel("Matrix Size")
     ax.set_ylabel("Mean Compile Time (s)")
-    label = compiler_family if compiler_family else compiler_info
     title = "Constexpr eigvals() Compile Time by Matrix Size and Category"
-    if label:
-        title += f"\n{label}: {compiler_info}" if compiler_family else f"\n{compiler_info}"
+    if compiler_label:
+        title += f"\n{compiler_label}"
     ax.set_title(title)
     ax.set_xticks(sizes)
     ax.grid(True, alpha=0.3)
@@ -143,13 +141,13 @@ def generate_plot(success, failed, sizes, categories, csv_path, compiler_info=No
     # Shaded region from size 14 onwards: this is where the default compiler
     # constexpr budget is exceeded and consteig_raise_compiler_limits is required.
     ax.axvspan(13.5, max(sizes) + 0.5, alpha=0.08, color="red",
-               label="consteig_raise_compiler_limits required (size >= 14)")
+               label="consteig_raise_compiler_limits required")
 
     # Separate shaded region for sizes where failures actually occur in this data.
     fail_sizes = sorted({s for (_, s) in failed})
     if fail_sizes:
         ax.axvspan(fail_sizes[0] - 0.5, max(sizes) + 0.5, alpha=0.08, color="darkred",
-                   label=f"compiler limit exceeded (size >= {fail_sizes[0]})")
+                   label="compiler limit exceeded")
 
     # Legend is placed after the spans so their labels are included.
     ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
@@ -170,19 +168,19 @@ def main():
     csv_path = sys.argv[1]
     success, failed, memory, sizes, categories, compiler_info, compiler_family = load_data(csv_path)
 
-    if compiler_info:
-        prefix = f"{compiler_family}: " if compiler_family else ""
-        print(f"Compiler: {prefix}{compiler_info}")
-        print("")
-    else:
-        print("Warning: no compiler metadata found in CSV (old format)")
-        print("")
+    # The filename is always compile_times_<family>_<version>.csv — use it as
+    # the canonical compiler label for titles regardless of CSV metadata.
+    compiler_label = os.path.splitext(os.path.basename(csv_path))[0]
+    compiler_label = compiler_label.replace("compile_times_", "").replace("_", " ", 1)
+
+    print(f"Compiler: {compiler_label}")
+    print("")
 
     print_table(success, failed, sizes, categories)
 
     try:
-        generate_plot(success, failed, sizes, categories, csv_path, compiler_info, compiler_family)
-        generate_memory_plot(memory, sizes, categories, csv_path, compiler_info, compiler_family)
+        generate_plot(success, failed, sizes, categories, csv_path, compiler_label)
+        generate_memory_plot(memory, sizes, categories, csv_path, compiler_label)
     except ImportError:
         print("(matplotlib not available, skipping plot)")
 
