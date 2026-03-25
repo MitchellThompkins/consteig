@@ -41,11 +41,11 @@ template <typename T, Size R, Size C> class Matrix
     template <typename U>
     constexpr bool operator==(const Matrix<U, R, C> &rhs) const
     {
-        for (Size i{0}; i < R; i++)
+        for (Size row{0}; row < R; row++)
         {
-            for (Size j{0}; j < C; j++)
+            for (Size col{0}; col < C; col++)
             {
-                if ((*this)(i, j) != rhs(i, j))
+                if ((*this)(row, col) != rhs(row, col))
                 {
                     return false;
                 }
@@ -64,9 +64,9 @@ template <typename T, Size R, Size C> class Matrix
     {
         Matrix<T, 1, C> result{};
 
-        for (Size j{0}; j < C; j++)
+        for (Size col{0}; col < C; col++)
         {
-            result(0, j) = (*this)(n, j);
+            result(0, col) = (*this)(n, col);
         }
 
         return result;
@@ -83,9 +83,9 @@ template <typename T, Size R, Size C> class Matrix
 
         Matrix<T, 1, endIndex - startIndex + 1> result{};
 
-        for (Size i{startIndex}; i <= endIndex; i++)
+        for (Size col{startIndex}; col <= endIndex; col++)
         {
-            result(0, i - startIndex) = (*this)(n, i);
+            result(0, col - startIndex) = (*this)(n, col);
         }
 
         return result;
@@ -95,9 +95,9 @@ template <typename T, Size R, Size C> class Matrix
     {
         Matrix<T, R, 1> result{};
 
-        for (Size i{0}; i < R; i++)
+        for (Size row{0}; row < R; row++)
         {
-            result(i, 0) = (*this)(i, n);
+            result(row, 0) = (*this)(row, n);
         }
 
         return result;
@@ -114,9 +114,9 @@ template <typename T, Size R, Size C> class Matrix
 
         Matrix<T, endIndex - startIndex + 1, 1> result{};
 
-        for (Size i{startIndex}; i <= endIndex; i++)
+        for (Size row{startIndex}; row <= endIndex; row++)
         {
-            result(i - startIndex, 0) = (*this)(i, n);
+            result(row - startIndex, 0) = (*this)(row, n);
         }
 
         return result;
@@ -128,11 +128,11 @@ template <typename T, Size R, Size C> class Matrix
     {
         Matrix<T, numRows, numCols> result{};
 
-        for (Size i{startRow}; i < startRow + numRows; i++)
+        for (Size row{startRow}; row < startRow + numRows; row++)
         {
-            for (Size j{startCol}; j < startCol + numCols; j++)
+            for (Size col{startCol}; col < startCol + numCols; col++)
             {
-                result(i - startRow, j - startCol) = (*this)(i, j);
+                result(row - startRow, col - startCol) = (*this)(row, col);
             }
         }
 
@@ -147,9 +147,9 @@ template <typename T, Size R, Size C> class Matrix
 
     constexpr void setRow(const Matrix<T, 1, C> &mat, const Size n)
     {
-        for (Size i{0}; i < C; i++)
+        for (Size col{0}; col < C; col++)
         {
-            (*this)(n, i) = mat(0, i);
+            (*this)(n, col) = mat(0, col);
         }
     }
 
@@ -162,17 +162,17 @@ template <typename T, Size R, Size C> class Matrix
         static_assert(endIndex >= startIndex,
                       "startIndex cannot be larger than endIndex");
 
-        for (Size i{startIndex}; i <= endIndex; i++)
+        for (Size col{startIndex}; col <= endIndex; col++)
         {
-            (*this)(n, i) = mat(0, i - startIndex);
+            (*this)(n, col) = mat(0, col - startIndex);
         }
     }
 
     constexpr void setCol(const Matrix<T, R, 1> &mat, const Size n)
     {
-        for (Size j{0}; j < R; j++)
+        for (Size row{0}; row < R; row++)
         {
-            (*this)(j, n) = mat(j, 0);
+            (*this)(row, n) = mat(row, 0);
         }
     }
 
@@ -185,9 +185,9 @@ template <typename T, Size R, Size C> class Matrix
         static_assert(endIndex >= startIndex,
                       "startIndex cannot be larger than endIndex");
 
-        for (Size i{startIndex}; i <= endIndex; i++)
+        for (Size row{startIndex}; row <= endIndex; row++)
         {
-            (*this)(i, n) = mat(i - startIndex, 0);
+            (*this)(row, n) = mat(row - startIndex, 0);
         }
     }
 
@@ -195,11 +195,11 @@ template <typename T, Size R, Size C> class Matrix
     constexpr void setBlock(const Matrix<T, numRows, numCols> &mat,
                             Size startRow, Size startCol)
     {
-        for (Size i{startRow}; i < startRow + numRows; i++)
+        for (Size row{startRow}; row < startRow + numRows; row++)
         {
-            for (Size j{startCol}; j < startCol + numCols; j++)
+            for (Size col{startCol}; col < startCol + numCols; col++)
             {
-                (*this)(i, j) = mat(i - startRow, j - startCol);
+                (*this)(row, col) = mat(row - startRow, col - startCol);
             }
         }
     }
@@ -215,19 +215,19 @@ template <typename T, Size R, Size C> class Matrix
 
         if (rows() > 1)
         {
-            for (Size i{1}; i <= rows() - 1; i++)
+            for (Size row{1}; row <= rows() - 1; row++)
             {
-                for (Size j{0}; j < i; j++)
+                for (Size col{0}; col < row; col++)
                 {
                     bool eq{false};
                     if constexpr (is_float<T>())
                     {
-                        eq = equalWithin((*this)(i, j), (*this)(j, i),
+                        eq = equalWithin((*this)(row, col), (*this)(col, row),
                                          epsilon<T>());
                     }
                     else
                     {
-                        eq = ((*this)(i, j) == (*this)(j, i));
+                        eq = ((*this)(row, col) == (*this)(col, row));
                     }
 
                     if (!eq)
@@ -252,11 +252,12 @@ template <typename T, Size R, Size C> class Matrix
 
         if (rows() > 1)
         {
-            for (Size i{1}; i <= rows() - 1; i++)
+            for (Size row{1}; row <= rows() - 1; row++)
             {
-                for (Size j{0}; j < i; j++)
+                for (Size col{0}; col < row; col++)
                 {
-                    if (!equalWithin((*this)(i, j), (*this)(j, i), thresh))
+                    if (!equalWithin((*this)(row, col), (*this)(col, row),
+                                     thresh))
                     {
                         return false;
                     }
@@ -354,11 +355,11 @@ constexpr Matrix<T, R, C> make_matrix(Args... args)
     Matrix<T, R, C> result{};
     T flat[] = {static_cast<T>(args)...};
 
-    for (Size i{0}; i < R; i++)
+    for (Size row{0}; row < R; row++)
     {
-        for (Size j{0}; j < C; j++)
+        for (Size col{0}; col < C; col++)
         {
-            result(i, j) = flat[i * C + j];
+            result(row, col) = flat[row * C + col];
         }
     }
 

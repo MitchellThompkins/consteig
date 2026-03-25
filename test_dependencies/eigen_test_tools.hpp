@@ -24,12 +24,12 @@ template <typename T, consteig::Size R, consteig::Size C>
 Eigen::Matrix<T, R, C> toEigen(const consteig::Matrix<T, R, C> &mat)
 {
     Eigen::Matrix<T, R, C> res;
-    for (consteig::Size i = 0; i < R; ++i)
+    for (consteig::Size row = 0; row < R; ++row)
     {
-        for (consteig::Size j = 0; j < C; ++j)
+        for (consteig::Size col = 0; col < C; ++col)
         {
-            res(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)) =
-                mat(i, j);
+            res(static_cast<Eigen::Index>(row),
+                static_cast<Eigen::Index>(col)) = mat(row, col);
         }
     }
     return res;
@@ -39,15 +39,15 @@ template <typename T, consteig::Size R, consteig::Size C>
 void expectNear(const consteig::Matrix<T, R, C> &a,
                 const Eigen::Matrix<T, R, C> &b, double tol = 1e-4)
 {
-    for (consteig::Size i = 0; i < R; ++i)
+    for (consteig::Size row = 0; row < R; ++row)
     {
-        for (consteig::Size j = 0; j < C; ++j)
+        for (consteig::Size col = 0; col < C; ++col)
         {
-            EXPECT_NEAR(
-                a(i, j),
-                b(static_cast<Eigen::Index>(i), static_cast<Eigen::Index>(j)),
-                tol)
-                << "Mismatch at (" << i << "," << j << ")";
+            EXPECT_NEAR(a(row, col),
+                        b(static_cast<Eigen::Index>(row),
+                          static_cast<Eigen::Index>(col)),
+                        tol)
+                << "Mismatch at (" << row << "," << col << ")";
         }
     }
 }
