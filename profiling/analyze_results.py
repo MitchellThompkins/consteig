@@ -7,24 +7,27 @@ import sys
 from collections import defaultdict
 
 def load_data(csv_path):
-    data = defaultdict(list)  # (category, size) -> [compile_time_sec, ...]
+    success = defaultdict(list)   # (category, size) -> [compile_time_sec, ...]
+    failed  = defaultdict(list)   # (category, size) -> [compile_time_sec, ...]
     sizes = set()
     categories = set()
 
     with open(csv_path) as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if int(row["exit_code"]) != 0:
-                continue
             key = (row["category"], int(row["size"]))
-            data[key].append(float(row["compile_time_sec"]))
+            t = float(row["compile_time_sec"])
             sizes.add(int(row["size"]))
             categories.add(row["category"])
+            if int(row["exit_code"]) == 0:
+                success[key].append(t)
+            elif int(row["exit_code"]) != 124:  # 124 = timeout, skip
+                failed[key].append(t)
 
-    return data, sorted(sizes), sorted(categories)
+    return success, failed, sorted(sizes), sorted(categories)
 
 
-def print_table(data, sizes, categories):
+def print_table(success, failed, sizes, categories):
     header = f"{'category':<25}" + "".join(f"{s:>8}" for s in sizes)
     print(header)
     print("-" * len(header))
@@ -32,36 +35,46 @@ def print_table(data, sizes, categories):
     for cat in categories:
         row = f"{cat:<25}"
         for s in sizes:
-            vals = data.get((cat, s), [])
-            if vals:
-                mean = sum(vals) / len(vals)
+            svals = success.get((cat, s), [])
+            fvals = failed.get((cat, s), [])
+            if svals:
+                mean = sum(svals) / len(svals)
                 row += f"{mean:>8.2f}"
+            elif fvals:
+                mean = sum(fvals) / len(fvals)
+                row += f"{'F'+f'{mean:.1f}':>8}"
             else:
                 row += f"{'---':>8}"
         print(row)
 
     print("")
-    print("Values are mean compile time in seconds across samples.")
-    print(f"Successful compilations: {sum(len(v) for v in data.values())}")
+    print("Values are mean compile time in seconds. F<t> = compiler limit hit at <t>s.")
+    print(f"Successful: {sum(len(v) for v in success.values())}  "
+          f"Failed: {sum(len(v) for v in failed.values())}")
 
 
-def generate_plot(data, sizes, categories, csv_path):
+def generate_plot(success, failed, sizes, categories, csv_path):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(12, 7))
 
+    prop_cycle = plt.rcParams["axes.prop_cycle"]
+    colors = {cat: c["color"] for cat, c in zip(categories, prop_cycle)}
+
     for cat in categories:
-        xs = []
-        ys = []
-        for s in sizes:
-            vals = data.get((cat, s), [])
-            if vals:
-                xs.append(s)
-                ys.append(sum(vals) / len(vals))
+        color = colors[cat]
+        xs = [s for s in sizes if success.get((cat, s))]
+        ys = [sum(success[(cat, s)]) / len(success[(cat, s)]) for s in xs]
         if xs:
-            ax.plot(xs, ys, marker="o", label=cat)
+            ax.plot(xs, ys, marker="o", label=cat, color=color)
+
+        fxs = [s for s in sizes if failed.get((cat, s))]
+        fys = [sum(failed[(cat, s)]) / len(failed[(cat, s)]) for s in fxs]
+        if fxs:
+            ax.plot(fxs, fys, marker="x", markersize=10, linestyle="none",
+                    color=color)
 
     ax.set_xlabel("Matrix Size")
     ax.set_ylabel("Mean Compile Time (s)")
@@ -69,6 +82,13 @@ def generate_plot(data, sizes, categories, csv_path):
     ax.set_xticks(sizes)
     ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
     ax.grid(True, alpha=0.3)
+
+    # Annotate the failure region
+    fail_sizes = sorted({s for (_, s) in failed})
+    if fail_sizes:
+        ax.axvspan(fail_sizes[0] - 1, max(sizes) + 1, alpha=0.05, color="red",
+                   label="compiler limit")
+
     fig.tight_layout()
 
     png_path = os.path.splitext(csv_path)[0] + ".png"
@@ -83,12 +103,12 @@ def main():
         sys.exit(1)
 
     csv_path = sys.argv[1]
-    data, sizes, categories = load_data(csv_path)
+    success, failed, sizes, categories = load_data(csv_path)
 
-    print_table(data, sizes, categories)
+    print_table(success, failed, sizes, categories)
 
     try:
-        generate_plot(data, sizes, categories, csv_path)
+        generate_plot(success, failed, sizes, categories, csv_path)
     except ImportError:
         print("(matplotlib not available, skipping plot)")
 
