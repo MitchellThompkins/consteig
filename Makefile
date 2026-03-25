@@ -169,9 +169,9 @@ generate-test-cases:
 
 .PHONY: check-generated
 check-generated: generate-test-cases
-	@if ! git diff --quiet -- eigen/tests/generated_cases.hpp eigen/tests/generated_*.test.cpp; then \
+	@if ! git diff --quiet -- eigen/tests/; then \
 		echo "ERROR: Generated test cases are out of date. Run 'make generate-test-cases' and commit the results."; \
-		git diff --stat -- eigen/tests/generated_cases.hpp eigen/tests/generated_*.test.cpp; \
+		git diff --stat -- eigen/tests/; \
 		exit 1; \
 	fi
 	@echo "Generated test cases are up to date."
