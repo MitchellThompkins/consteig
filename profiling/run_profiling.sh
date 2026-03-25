@@ -80,18 +80,17 @@ for src in "$COMPILE_DIR"/profile_*.cpp; do
         -c "$src" -o /tmp/profile_out.o 2>/dev/null \
         || EXIT_CODE=$?
 
+    WALL_SEC=$(awk '{print $1}' "$TIME_OUTPUT")
+    MAX_RSS=$(awk '{print $2}' "$TIME_OUTPUT")
+
     if [ "$EXIT_CODE" -eq 0 ]; then
-        WALL_SEC=$(awk '{print $1}' "$TIME_OUTPUT")
-        MAX_RSS=$(awk '{print $2}' "$TIME_OUTPUT")
         printf "%ss %sKB\n" "$WALL_SEC" "$MAX_RSS"
     elif [ "$EXIT_CODE" -eq 124 ]; then
         WALL_SEC="$TIMEOUT"
         MAX_RSS=0
         printf "TIMEOUT\n"
     else
-        WALL_SEC=0
-        MAX_RSS=0
-        printf "FAILED (exit %d)\n" "$EXIT_CODE"
+        printf "FAILED (exit %d) %ss %sKB\n" "$EXIT_CODE" "$WALL_SEC" "$MAX_RSS"
     fi
 
     echo "$category,$size,$sample,$WALL_SEC,$MAX_RSS,$EXIT_CODE" >> "$RESULTS_FILE"
