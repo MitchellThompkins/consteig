@@ -173,13 +173,19 @@ check-generated:
 	cp eigen/tests/generated_cases.hpp "$$SNAP/"; \
 	cp eigen/tests/generated_*.test.cpp "$$SNAP/"; \
 	$(MAKE) generate-test-cases; \
-	if ! diff -rq "$$SNAP" eigen/tests/ --include='generated_cases.hpp' --include='generated_*.test.cpp' >/dev/null 2>&1; then \
+	CHANGED=0; \
+	for f in "$$SNAP"/*; do \
+		base=$$(basename "$$f"); \
+		if ! diff -q "$$f" "eigen/tests/$$base" >/dev/null 2>&1; then \
+			echo "  changed: eigen/tests/$$base"; \
+			CHANGED=1; \
+		fi; \
+	done; \
+	rm -rf "$$SNAP"; \
+	if [ "$$CHANGED" -ne 0 ]; then \
 		echo "ERROR: Generated test cases are out of date. Run 'make generate-test-cases' and commit the results."; \
-		diff -rq "$$SNAP" eigen/tests/ --include='generated_cases.hpp' --include='generated_*.test.cpp' || true; \
-		rm -rf "$$SNAP"; \
 		exit 1; \
 	fi; \
-	rm -rf "$$SNAP"; \
 	echo "Generated test cases are up to date."
 
 .PHONY: generate-profiling-cases
