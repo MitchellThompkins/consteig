@@ -49,7 +49,8 @@ fprintf(hdr, '#define GENERATED_PROFILING_CASES_HPP\n\n');
 fprintf(hdr, '#include "../consteig.hpp"\n\n');
 fprintf(hdr, 'namespace consteig\n{\n\n');
 
-% Clean old generated .cpp files
+% Ensure output directory exists and clean old generated .cpp files
+[~, ~] = system('mkdir -p profiling/compile_time');
 [~, ~] = system('rm -f profiling/compile_time/profile_*.cpp');
 
 for si = 1:length(SIZES)
