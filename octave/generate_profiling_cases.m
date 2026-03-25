@@ -22,7 +22,7 @@ CATEGORIES = {'random_sym', 'random_nonsym', ...
 % ---------- write C++ matrix literal ----------
 
 function write_matrix(fid, A, S)
-    fprintf(fid, '{{{\n');
+    fprintf(fid, '{{\n');
     for i = 1:S
         fprintf(fid, '    {');
         for j = 1:S
@@ -37,7 +37,7 @@ function write_matrix(fid, A, S)
             fprintf(fid, '}\n');
         end
     end
-    fprintf(fid, '}}}');
+    fprintf(fid, '}}');
 end
 
 % ---------- main generation ----------
@@ -85,7 +85,7 @@ for si = 1:length(SIZES)
             fprintf(cpp, 'static constexpr Matrix<double, %d, %d> mat\n', S, S);
             write_matrix(cpp, A, S);
             fprintf(cpp, ';\n\n');
-            fprintf(cpp, 'static constexpr auto result = eigvals(mat);\n\n');
+            fprintf(cpp, 'static constexpr auto result = eigenvalues(mat);\n\n');
             fprintf(cpp, 'int main() { return 0; }\n');
             fclose(cpp);
         end
