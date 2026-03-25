@@ -9,6 +9,7 @@ from collections import defaultdict
 def load_data(csv_path):
     success = defaultdict(list)   # (category, size) -> [compile_time_sec, ...]
     failed  = defaultdict(list)   # (category, size) -> [compile_time_sec, ...]
+    memory  = defaultdict(list)   # (category, size) -> [max_rss_kb, ...]  (success only)
     sizes = set()
     categories = set()
 
@@ -21,10 +22,11 @@ def load_data(csv_path):
             categories.add(row["category"])
             if int(row["exit_code"]) == 0:
                 success[key].append(t)
+                memory[key].append(float(row["max_rss_kb"]))
             elif int(row["exit_code"]) != 124:  # 124 = timeout, skip
                 failed[key].append(t)
 
-    return success, failed, sorted(sizes), sorted(categories)
+    return success, failed, memory, sorted(sizes), sorted(categories)
 
 
 def print_table(success, failed, sizes, categories):
@@ -51,6 +53,36 @@ def print_table(success, failed, sizes, categories):
     print("Values are mean compile time in seconds. F<t> = compiler limit hit at <t>s.")
     print(f"Successful: {sum(len(v) for v in success.values())}  "
           f"Failed: {sum(len(v) for v in failed.values())}")
+
+
+def generate_memory_plot(memory, sizes, categories, csv_path):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(12, 7))
+
+    prop_cycle = plt.rcParams["axes.prop_cycle"]
+    colors = {cat: c["color"] for cat, c in zip(categories, prop_cycle)}
+
+    for cat in categories:
+        xs = [s for s in sizes if memory.get((cat, s))]
+        ys = [sum(memory[(cat, s)]) / len(memory[(cat, s)]) / 1024 for s in xs]  # MB
+        if xs:
+            ax.plot(xs, ys, marker="o", label=cat, color=colors[cat])
+
+    ax.set_xlabel("Matrix Size")
+    ax.set_ylabel("Mean Peak RSS (MB)")
+    ax.set_title("Constexpr eigvals() Peak Compiler Memory by Matrix Size and Category")
+    ax.set_xticks(sizes)
+    ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+
+    png_path = os.path.splitext(csv_path)[0] + "_memory.png"
+    fig.savefig(png_path, dpi=150)
+    plt.close(fig)
+    print(f"Plot saved: {png_path}")
 
 
 def generate_plot(success, failed, sizes, categories, csv_path):
@@ -103,12 +135,13 @@ def main():
         sys.exit(1)
 
     csv_path = sys.argv[1]
-    success, failed, sizes, categories = load_data(csv_path)
+    success, failed, memory, sizes, categories = load_data(csv_path)
 
     print_table(success, failed, sizes, categories)
 
     try:
         generate_plot(success, failed, sizes, categories, csv_path)
+        generate_memory_plot(memory, sizes, categories, csv_path)
     except ImportError:
         print("(matplotlib not available, skipping plot)")
 
