@@ -40,6 +40,15 @@ set -eu
 COMPILER="${1:-g++}"
 TIMEOUT="${2:-300}"
 
+# Detect whether /usr/bin/time is GNU (Linux) or BSD (macOS).
+# GNU time supports -f for format strings; BSD time does not.
+OS=$(uname -s)
+if [ "$OS" = "Darwin" ]; then
+    TIME_FLAVOR="bsd"
+else
+    TIME_FLAVOR="gnu"
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 RESULTS_DIR="$SCRIPT_DIR/results"
@@ -176,18 +185,31 @@ for src in "$COMPILE_DIR"/profile_*.cpp; do
     # and never used after compilation.
     TIME_OUTPUT=$(mktemp)
     EXIT_CODE=0
-    /usr/bin/time -f "%e %M" -o "$TIME_OUTPUT" \
-        timeout "$TIMEOUT" \
-        "$COMPILER" $COMPILE_FLAGS \
-            -c "$src" -o /tmp/profile_out.o \
-        2>/dev/null \
-        || EXIT_CODE=$?
-
-    # /usr/bin/time writes "<wall_sec> <max_rss_kb>" as the last line of
-    # TIME_OUTPUT. On failure it may prepend an error message, so we read
-    # only the last line via awk END.
-    WALL_SEC=$(awk 'END{print $1}' "$TIME_OUTPUT")
-    MAX_RSS=$(awk 'END{print $2}' "$TIME_OUTPUT")
+    if [ "$TIME_FLAVOR" = "gnu" ]; then
+        # GNU time (Linux): -f sets output format, -o writes to file.
+        # Output: "<wall_sec> <max_rss_kb>" on the last line.
+        /usr/bin/time -f "%e %M" -o "$TIME_OUTPUT" \
+            timeout "$TIMEOUT" \
+            "$COMPILER" $COMPILE_FLAGS \
+                -c "$src" -o /tmp/profile_out.o \
+            2>/dev/null \
+            || EXIT_CODE=$?
+        WALL_SEC=$(awk 'END{print $1}' "$TIME_OUTPUT")
+        MAX_RSS=$(awk 'END{print $2}' "$TIME_OUTPUT")
+    else
+        # BSD time (macOS): no -f flag. Use -l for verbose stats, -o to write
+        # to file. Output format:
+        #   "        1.23 real         0.00 user         0.00 sys"
+        #   "       9437184  maximum resident set size"  (bytes, not KB)
+        /usr/bin/time -l -o "$TIME_OUTPUT" \
+            timeout "$TIMEOUT" \
+            "$COMPILER" $COMPILE_FLAGS \
+                -c "$src" -o /tmp/profile_out.o \
+            2>/dev/null \
+            || EXIT_CODE=$?
+        WALL_SEC=$(awk '/real/{print $1}' "$TIME_OUTPUT")
+        MAX_RSS=$(awk '/maximum resident set size/{printf "%.0f\n", $1/1024}' "$TIME_OUTPUT")
+    fi
 
     if [ "$EXIT_CODE" -eq 0 ]; then
         printf "%ss %sKB\n" "$WALL_SEC" "$MAX_RSS"
