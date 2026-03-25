@@ -312,8 +312,58 @@ template <typename T, Size R, Size C> class Matrix
         return consteig::dot(*this, other);
     }
 
+    // Public for aggregate initialization only. C++17 aggregates require all
+    // data members to be public; making this private breaks the {{...}} syntax.
+    // Treat as an implementation detail — use operator() for element access.
+    //
+    // Row-major storage: _data[row][col]. This differs from Eigen and LAPACK,
+    // which default to column-major. The tradeoff is intentional: row-major
+    // matches C's native 2D array layout, so aggregate initialization reads
+    // naturally as written-out matrix rows (e.g. {{1,2},{3,4}}). Interop via
+    // data() with Eigen/LAPACK will produce transposed results unless the
+    // consumer specifies row-major explicitly (e.g. Eigen::RowMajor).
     T _data[R][C]{};
 };
+
+/// @brief Construct a Matrix from a flat list of scalar arguments in row-major
+/// order.
+///
+/// Alternative to aggregate initialization when nested braces are inconvenient.
+/// Arguments are filled row by row, left to right — identical to how values
+/// appear when written out as a matrix on paper.
+///
+/// @tparam T     Scalar element type.
+/// @tparam R     Number of rows (compile-time).
+/// @tparam C     Number of columns (compile-time).
+/// @tparam Args  Deduced scalar argument types; must all be convertible to `T`.
+///
+/// The number of arguments must equal `R * C` exactly (enforced by
+/// `static_assert`).
+///
+/// @code
+/// // 2x3 matrix — equivalent to aggregate init
+/// static constexpr auto m = make_matrix<double, 2, 3>(1.0, 2.0, 3.0,
+///                                                     4.0, 5.0, 6.0);
+/// @endcode
+template <typename T, Size R, Size C, typename... Args>
+constexpr Matrix<T, R, C> make_matrix(Args... args)
+{
+    static_assert(sizeof...(Args) == R * C,
+                  "make_matrix: argument count must equal R * C");
+
+    Matrix<T, R, C> result{};
+    T flat[] = {static_cast<T>(args)...};
+
+    for (Size i{0}; i < R; i++)
+    {
+        for (Size j{0}; j < C; j++)
+        {
+            result(i, j) = flat[i * C + j];
+        }
+    }
+
+    return result;
+}
 
 } // namespace consteig
 #endif // MATRIX_HPP
