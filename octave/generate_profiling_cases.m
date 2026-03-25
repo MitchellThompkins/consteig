@@ -43,9 +43,10 @@ end
 % ---------- main generation ----------
 
 % Header file with all profiling matrices
-hdr = fopen('profiling/generated_profiling_cases.hpp', 'w');
+hdr_path = fullfile('profiling', 'generated_profiling_cases.hpp');
+hdr = fopen(hdr_path, 'w');
 if hdr == -1
-    error('Failed to open profiling/generated_profiling_cases.hpp for writing');
+    error('Failed to open %s for writing', hdr_path);
 end
 fprintf(hdr, '#ifndef GENERATED_PROFILING_CASES_HPP\n');
 fprintf(hdr, '#define GENERATED_PROFILING_CASES_HPP\n\n');

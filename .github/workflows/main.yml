@@ -138,6 +138,21 @@ jobs:
             - name: Cross-compile (static_assert is the test)
               run: make cross.${{ matrix.target }}
 
+    check-generated:
+        needs: build-and-publish-container
+        if: needs.build-and-publish-container.result == 'success'
+        runs-on: ubuntu-latest
+        container:
+          image: ghcr.io/mitchellthompkins/consteig_dev_image:${{ needs.build-and-publish-container.outputs.image_tag }}
+        permissions:
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Verify generated test cases are up to date
+              run: make check-generated
+
     dc-motor-fail:
         needs: build-and-publish-container
         if: needs.build-and-publish-container.result == 'success'

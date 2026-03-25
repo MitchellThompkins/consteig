@@ -167,6 +167,15 @@ test-dc-motor-fail:
 generate-test-cases:
 	octave octave/generate_test_cases.m
 
+.PHONY: check-generated
+check-generated: generate-test-cases
+	@if ! git diff --quiet -- eigen/tests/generated_cases.hpp eigen/tests/generated_*.test.cpp; then \
+		echo "ERROR: Generated test cases are out of date. Run 'make generate-test-cases' and commit the results."; \
+		git diff --stat -- eigen/tests/generated_cases.hpp eigen/tests/generated_*.test.cpp; \
+		exit 1; \
+	fi
+	@echo "Generated test cases are up to date."
+
 .PHONY: generate-profiling-cases
 generate-profiling-cases:
 	octave octave/generate_profiling_cases.m
