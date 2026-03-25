@@ -6,7 +6,7 @@ int main()
     std::cout << val << "\n";
 
     static constexpr int s{10};
-    static constexpr consteig::Matrix<double, s, s> mat{{{
+    static constexpr consteig::Matrix<double, s, s> mat{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
         {-0.42729, -0.47479, -0.28187, -0.6335, -0.84281, -0.88644, -0.77489,
@@ -27,7 +27,7 @@ int main()
          1.4777, -3.0378},
         {0.81169, 0.3244, 2.2287, -0.72454, -1.6842, -1.5909, -1.0693, 0.72293,
          -1.4584, 0.68517},
-    }}};
+    }};
 
     static constexpr consteig::Matrix<double, s, s> testHouse{house(mat)};
     static constexpr consteig::PHMatrix<double, s> testHess{hess(mat)};

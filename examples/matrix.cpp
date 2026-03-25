@@ -7,7 +7,7 @@ int main()
 
     // Create a 3x3 matrix
     static constexpr consteig::Matrix<int, x, x> mat1{
-        {{{5, -4, 2}, {-1, 2, 3}, {-2, 1, 0}}}};
+        {{5, -4, 2}, {-1, 2, 3}, {-2, 1, 0}}};
 
     // Create a matrix which is the transpose
     static constexpr consteig::Matrix<int, x, x> mat2{transpose(mat1)};
@@ -22,10 +22,10 @@ int main()
     // {3.4*static_cast<consteig::Matrix<float, x, x>>(mat2)};
 
     static constexpr consteig::Matrix<int, s, s> symmetricMat1{
-        {{{-5, -4, 2, 1}, {-4, 5, 7, 8}, {2, 7, 0, 3}, {1, 8, 3, 3}}}};
+        {{-5, -4, 2, 1}, {-4, 5, 7, 8}, {2, 7, 0, 3}, {1, 8, 3, 3}}};
 
     static constexpr consteig::Matrix<double, s, s> symmetricMat2{
-        {{{-5, -4, 2, 1}, {-4, 5, 7, 8}, {2, 7, 0, 3.32}, {1, 8, 3.32, 3.2}}}};
+        {{-5, -4, 2, 1}, {-4, 5, 7, 8}, {2, 7, 0, 3.32}, {1, 8, 3.32, 3.2}}};
 
     static constexpr bool checkSymmetryMat1{symmetricMat1.isSymmetric()};
     static constexpr bool checkSymmetryMat2{symmetricMat2.isSymmetric(0.1)};

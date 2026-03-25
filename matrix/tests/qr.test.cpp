@@ -53,7 +53,7 @@ TEST(qr_decomp, diagonal_matrix)
 {
     static constexpr Size s{3};
     static constexpr Matrix<double, s, s> mat = {
-        {{{2, 0, 0}, {0, 3, 0}, {0, 0, 4}}}};
+        {{2, 0, 0}, {0, 3, 0}, {0, 0, 4}}};
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
     static constexpr Matrix<double, s, s> ident = eye<double, s>();
@@ -78,7 +78,7 @@ TEST(qr_decomp, singular_matrix)
     static constexpr Size s{3};
     // Row 3 is sum of Row 1 and Row 2 -> Singular
     static constexpr Matrix<double, s, s> mat = {
-        {{{1, 2, 3}, {4, 5, 6}, {5, 7, 9}}}};
+        {{1, 2, 3}, {4, 5, 6}, {5, 7, 9}}};
     static constexpr QRMatrix<double, s> qrRes = qr(mat);
 
     static constexpr Matrix<double, s, s> recon = qrRes._q * qrRes._r;
@@ -98,7 +98,7 @@ TEST(qr_decomp, static_constexpr_even_mat)
     static constexpr Size x{3};
 
     static constexpr Matrix<double, x, x> mat{
-        {{{1.0, 1.0, 0.0}, {1.0, 0.0, 1.0}, {0.0, 1.0, 1.0}}}};
+        {{1.0, 1.0, 0.0}, {1.0, 0.0, 1.0}, {0.0, 1.0, 1.0}}};
 
     static constexpr QRMatrix<double, x> test{qr(mat)};
 
@@ -114,7 +114,7 @@ TEST(qr_decomp, static_constexpr_even_mat)
 TEST(qr_decomp, static_constexpr_random)
 {
     static constexpr Size s{10};
-    static constexpr Matrix<double, s, s> mat{{{
+    static constexpr Matrix<double, s, s> mat{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
         {-0.42729, -0.47479, -0.28187, -0.6335, -0.84281, -0.88644, -0.77489,
@@ -135,7 +135,7 @@ TEST(qr_decomp, static_constexpr_random)
          1.4777, -3.0378},
         {0.81169, 0.3244, 2.2287, -0.72454, -1.6842, -1.5909, -1.0693, 0.72293,
          -1.4584, 0.68517},
-    }}};
+    }};
 
     static constexpr auto test{qr(mat)};
 

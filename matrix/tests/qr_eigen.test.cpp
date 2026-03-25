@@ -10,7 +10,7 @@ TEST(qr_decomp, eigen_comparison)
 {
     static constexpr Size s{4};
     static constexpr Matrix<double, s, s> mat = {
-        {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}};
+        {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}};
 
     // Consteig QR (Calculate at compile time)
     static constexpr QRMatrix<double, s> qrRes = qr(mat);

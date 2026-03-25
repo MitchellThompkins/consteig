@@ -8,7 +8,7 @@ using namespace consteig;
 TEST(hessenberg, hess)
 {
     static constexpr Size s{10};
-    static constexpr Matrix<float, s, s> mat{{{
+    static constexpr Matrix<float, s, s> mat{{
         {-2.0114F, -0.52132F, -0.28604F, 2.2908F, -0.52351F, 2.4257F, -0.59398F,
          0.027539F, 0.2731F, 0.60314F},
         {-0.42729F, -0.47479F, -0.28187F, -0.6335F, -0.84281F, -0.88644F,
@@ -29,11 +29,11 @@ TEST(hessenberg, hess)
          -1.4377F, 1.4777F, -3.0378F},
         {0.81169F, 0.3244F, 2.2287F, -0.72454F, -1.6842F, -1.5909F, -1.0693F,
          0.72293F, -1.4584F, 0.68517F},
-    }}};
+    }};
 
     static constexpr PHMatrix<float, s> test{hess(mat)};
 
-    static constexpr Matrix<float, s, s> pAnswer{{{
+    static constexpr Matrix<float, s, s> pAnswer{{
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, -0.18117F, 0.44375F, -0.22824F, -0.34168F, 0.25395F, -0.37373F,
          0.013938F, -0.41826F, 0.4713F},
@@ -53,9 +53,9 @@ TEST(hessenberg, hess)
          0.37137F, -0.0078353F, -0.12251F},
         {0, 0.34416F, 0.085951F, -0.18211F, -0.56991F, 0.36958F, 0.52777F,
          0.14764F, -0.047875F, -0.27747F},
-    }}};
+    }};
 
-    static constexpr Matrix<float, s, s> hAnswer{{{
+    static constexpr Matrix<float, s, s> hAnswer{{
         {-2.0114F, 0.66518F, -0.25342F, -0.73737F, 0.79638F, -0.7923F, 2.703F,
          -0.15611F, -0.71645F, 1.5476F},
         {2.3585F, -1.2051F, -0.75753F, 1.228F, 0.83358F, 2.3645F, 0.14301F,
@@ -71,7 +71,7 @@ TEST(hessenberg, hess)
         {0, 0, 0, 0, 0, 0, -2.0585F, 1.2918F, 0.13721F, 0.21413F},
         {0, 0, 0, 0, 0, 0, 0, 0.77144F, 0.017001F, 0.96154F},
         {0, 0, 0, 0, 0, 0, 0, 0, -0.94249F, 0.14928F},
-    }}};
+    }};
 
     // P*H*P' = A where A is the input matrix
     static constexpr Matrix<float, s, s> hessCheck{test._p * test._h *
@@ -110,7 +110,7 @@ TEST(hessenberg, hess)
 TEST(hessenberg, hess_double_10x10)
 {
     static constexpr Size s{10};
-    static constexpr Matrix<double, s, s> mat{{{
+    static constexpr Matrix<double, s, s> mat{{
         {-2.0114, -0.52132, -0.28604, 2.2908, -0.52351, 2.4257, -0.59398,
          0.027539, 0.2731, 0.60314},
         {-0.42729, -0.47479, -0.28187, -0.6335, -0.84281, -0.88644, -0.77489,
@@ -131,9 +131,9 @@ TEST(hessenberg, hess_double_10x10)
          1.4777, -3.0378},
         {0.81169, 0.3244, 2.2287, -0.72454, -1.6842, -1.5909, -1.0693, 0.72293,
          -1.4584, 0.68517},
-    }}};
+    }};
 
-    static constexpr Matrix<double, s, s> hAnswer{{{
+    static constexpr Matrix<double, s, s> hAnswer{{
         {-2.011400000, 0.665190682, -0.253405342, -0.737285848, 0.796410871,
          -0.792480076, 2.702990155, -0.156257659, -0.716340054, 1.547604533},
         {2.358467821, -1.205092504, -0.757545400, 1.227954465, 0.833655497,
@@ -151,7 +151,7 @@ TEST(hessenberg, hess_double_10x10)
         {0, 0, 0, 0, 0, 0, -2.058448681, 1.291875568, 0.137167182, 0.214147063},
         {0, 0, 0, 0, 0, 0, 0, 0.771344211, 0.016916493, 0.961629657},
         {0, 0, 0, 0, 0, 0, 0, 0, -0.942471265, 0.149289433},
-    }}};
+    }};
 
     static constexpr PHMatrix<double, s> test{hess(mat)};
 

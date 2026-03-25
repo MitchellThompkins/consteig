@@ -19,10 +19,10 @@ TEST(eigenvectors, simple_symmetric)
         return m;
     }();
 
-    static constexpr Matrix<Complex<double>, s, 1> evals = eigvals(A);
+    static constexpr Matrix<Complex<double>, s, 1> evals = eigenvalues(A);
     // This static constexpr evaluation proves the algorithm runs at
     // compile-time
-    static constexpr Matrix<Complex<double>, s, s> V = eigvecs(A, evals);
+    static constexpr Matrix<Complex<double>, s, s> V = eigenvectors(A, evals);
 
     // Eigenvalues should be 3 and 1.
     bool found_3 = false;
@@ -92,8 +92,8 @@ TEST(eigenvectors, complex_rotation)
         return m;
     }();
 
-    static constexpr Matrix<Complex<double>, s, 1> evals = eigvals(A);
-    static constexpr Matrix<Complex<double>, s, s> V = eigvecs(A, evals);
+    static constexpr Matrix<Complex<double>, s, 1> evals = eigenvalues(A);
+    static constexpr Matrix<Complex<double>, s, s> V = eigenvectors(A, evals);
 
     // Verify Av = lambda * v for both eigenvalues
     for (Size j = 0; j < s; ++j)

@@ -14,7 +14,7 @@ using namespace consteig;
     template <Size INDEX>                                                      \
     constexpr bool check_single_##category##_##type##_##suffix()               \
     {                                                                          \
-        auto eigs = eigvals(mat_var[INDEX]);                                   \
+        auto eigs = eigenvalues(mat_var[INDEX]);                               \
         if (!checkEigenValues(mat_var[INDEX], eigs, static_cast<double>(tol))) \
         {                                                                      \
             return false;                                                      \
@@ -24,7 +24,7 @@ using namespace consteig;
         {                                                                      \
             return false;                                                      \
         }                                                                      \
-        auto vecs = eigvecs(mat_var[INDEX], eigs);                             \
+        auto vecs = eigenvectors(mat_var[INDEX], eigs);                        \
         if (!checkEigenVectorsInvariant(mat_var[INDEX], eigs, vecs,            \
                                         static_cast<double>(tol)))             \
         {                                                                      \

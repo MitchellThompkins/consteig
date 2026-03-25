@@ -58,7 +58,7 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
         eigs_all(:, n) = e;
         vecs_all(:, :, n) = V;
 
-        fprintf(fid, '    {{{\n');
+        fprintf(fid, '    {{\n');
         for i = 1:S
             fprintf(fid, '        {');
             for j = 1:S
@@ -74,9 +74,9 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             end
         end
         if n < num_cases
-            fprintf(fid, '    }}},\n\n');
+            fprintf(fid, '    }},\n\n');
         else
-            fprintf(fid, '    }}}\n');
+            fprintf(fid, '    }}\n');
         end
     end
     fprintf(fid, '};\n\n');
@@ -84,9 +84,9 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
     fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, 1> %s[%d] = {\n', S, eig_var_name, num_cases);
     for n = 1:num_cases
         e = eigs_all(:, n);
-        fprintf(fid, '    {{{\n');
+        fprintf(fid, '    {{\n');
         for i = 1:S
-            fprintf(fid, '        { { {%.16e, %.16e} } }', real(e(i)), imag(e(i)));
+            fprintf(fid, '        {{%.16e, %.16e}}', real(e(i)), imag(e(i)));
             if i < S
                 fprintf(fid, ',\n');
             else
@@ -94,9 +94,9 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
             end
         end
         if n < num_cases
-            fprintf(fid, '    }}},\n\n');
+            fprintf(fid, '    }},\n\n');
         else
-            fprintf(fid, '    }}}\n');
+            fprintf(fid, '    }}\n');
         end
     end
     fprintf(fid, '};\n\n');
@@ -105,9 +105,9 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
     fprintf(fid, 'static constexpr Matrix<Complex<double>, %d, %d> %s[%d] = {\n', S, S, eigvec_var_name, num_cases);
     for n = 1:num_cases
         V = vecs_all(:, :, n);
-        fprintf(fid, '    {{{\n');
+        fprintf(fid, '    {{\n');
         for i = 1:S
-            fprintf(fid, '        {{');
+            fprintf(fid, '        {');
             for j = 1:S
                 if j > 1
                     fprintf(fid, ', ');
@@ -115,15 +115,15 @@ function generate_cases(fid, type_str, S, num_cases, suffix, category)
                 fprintf(fid, '{%.16e, %.16e}', real(V(i,j)), imag(V(i,j)));
             end
             if i < S
-                fprintf(fid, '}},\n');
+                fprintf(fid, '},\n');
             else
-                fprintf(fid, '}}\n');
+                fprintf(fid, '}\n');
             end
         end
         if n < num_cases
-            fprintf(fid, '    }}},\n\n');
+            fprintf(fid, '    }},\n\n');
         else
-            fprintf(fid, '    }}}\n');
+            fprintf(fid, '    }}\n');
         end
     end
     fprintf(fid, '};\n\n');
@@ -147,7 +147,7 @@ end
 A_qr = randn(MATRIX_SIZE);
 [Q, R] = qr(A_qr);
 fprintf(fid, '// QR Decomposition Test Case\n');
-fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_qr\n{{{\n', MATRIX_SIZE, MATRIX_SIZE);
+fprintf(fid, 'static constexpr Matrix<double, %d, %d> mat_qr\n{{\n', MATRIX_SIZE, MATRIX_SIZE);
 for i = 1:MATRIX_SIZE
     fprintf(fid, '    {');
     for j = 1:MATRIX_SIZE
@@ -156,7 +156,7 @@ for i = 1:MATRIX_SIZE
     end
     if i < MATRIX_SIZE, fprintf(fid, '},\n'); else fprintf(fid, '}\n'); end
 end
-fprintf(fid, '}}};\n\n');
+fprintf(fid, '}};\n\n');
 
 fprintf(fid, '} // namespace consteig\n');
 fprintf(fid, '#endif\n');

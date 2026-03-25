@@ -29,8 +29,8 @@ TEST(lu_decomp, simple_system)
 {
     static constexpr Size s{3};
     static constexpr Matrix<double, s, s> mat = {
-        {{{1, 2, 3}, {0, 1, 4}, {5, 6, 0}}}};
-    static constexpr Matrix<double, s, 1> b = {{{{1}, {2}, {3}}}};
+        {{1, 2, 3}, {0, 1, 4}, {5, 6, 0}}};
+    static constexpr Matrix<double, s, 1> b = {{{1}, {2}, {3}}};
 
     static constexpr LUMatrix<double, s> luRes = lu(mat);
     static constexpr Matrix<double, s, 1> x = lu_solve(luRes, b);
@@ -49,8 +49,8 @@ TEST(lu_decomp, pivot_test)
 {
     static constexpr Size s{2};
     // Need to swap rows because (0,0) is 0
-    static constexpr Matrix<double, s, s> mat = {{{{0, 1}, {1, 1}}}};
-    static constexpr Matrix<double, s, 1> b = {{{{2}, {3}}}};
+    static constexpr Matrix<double, s, s> mat = {{{0, 1}, {1, 1}}};
+    static constexpr Matrix<double, s, 1> b = {{{2}, {3}}};
 
     static constexpr LUMatrix<double, s> luRes = lu(mat);
     static constexpr Matrix<double, s, 1> x = lu_solve(luRes, b);

@@ -25,9 +25,10 @@ constexpr Matrix<T, S, S> eig(
     Matrix<T, S, S> a,
     const T symmetryTolerance = CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE);
 
-// Algorithm: Balancing
-// Permutes and scales the matrix to reduce the norm of its rows and columns
-// to improve the accuracy and convergence rate of QR iterations.
+// Algorithm: Balancing (Parlett & Reinsch 1969)
+// Applies diagonal scaling only to reduce the norm of rows and columns
+// and improve the accuracy and convergence rate of QR iterations.
+// No permutation-based eigenvalue isolation is performed.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
 {
@@ -142,30 +143,30 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
             T beta = static_cast<T>(2) / v_sum_sq;
 
             // Left application: include column k-1 for k > l to chase the bulge
-            Size j_start = (k > l) ? k - 1 : k;
-            for (Size j = j_start; j < S; ++j)
+            Size col_start = (k > l) ? k - 1 : k;
+            for (Size col = col_start; col < S; ++col)
             {
-                T sum = beta * (v1 * H(k, j) + v2 * H(k + 1, j) +
-                                (m == 3 ? v3 * H(k + 2, j) : 0));
-                H(k, j) -= sum * v1;
-                H(k + 1, j) -= sum * v2;
+                T sum = beta * (v1 * H(k, col) + v2 * H(k + 1, col) +
+                                (m == 3 ? v3 * H(k + 2, col) : 0));
+                H(k, col) -= sum * v1;
+                H(k + 1, col) -= sum * v2;
                 if (m == 3)
                 {
-                    H(k + 2, j) -= sum * v3;
+                    H(k + 2, col) -= sum * v3;
                 }
             }
 
             // Right application
             Size upper_row = (k + 3 < n + 1) ? k + 3 : n;
-            for (Size i = 0; i <= upper_row && i < S; ++i)
+            for (Size row = 0; row <= upper_row && row < S; ++row)
             {
-                T sum = beta * (v1 * H(i, k) + v2 * H(i, k + 1) +
-                                (m == 3 ? v3 * H(i, k + 2) : 0));
-                H(i, k) -= sum * v1;
-                H(i, k + 1) -= sum * v2;
+                T sum = beta * (v1 * H(row, k) + v2 * H(row, k + 1) +
+                                (m == 3 ? v3 * H(row, k + 2) : 0));
+                H(row, k) -= sum * v1;
+                H(row, k + 1) -= sum * v2;
                 if (m == 3)
                 {
-                    H(i, k + 2) -= sum * v3;
+                    H(row, k + 2) -= sum * v3;
                 }
             }
 
@@ -192,6 +193,13 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
     }
 }
 
+// Real arithmetic implicit double-shift QR. Handles complex conjugate pairs
+// simultaneously via 2x2 bulge chasing, avoiding complex arithmetic in the
+// iteration loop. A single-shift complex QR would resolve clustered conjugate
+// pairs more cleanly but would roughly quadruple arithmetic in the inner loop:
+// each complex multiply requires 4 real multiplies and 2 adds ((a+bi)(c+di) =
+// ac-bd + (ad+bc)i), versus 1 multiply and 0 adds for a real multiply. This
+// significantly increases constexpr evaluation cost.
 template <typename T, Size S>
 constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
 {
@@ -365,14 +373,15 @@ constexpr Matrix<T, S, S> eig(Matrix<T, S, S> a, const T symmetryTolerance)
 }
 
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
+constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
 {
+    static_assert(is_float<T>(), "eigenvalues expects floating point type");
     Matrix<InternalScalar, S, S> a_internal{};
-    for (Size i = 0; i < S; ++i)
+    for (Size row = 0; row < S; ++row)
     {
-        for (Size j = 0; j < S; ++j)
+        for (Size col = 0; col < S; ++col)
         {
-            a_internal(i, j) = static_cast<InternalScalar>(a(i, j));
+            a_internal(row, col) = static_cast<InternalScalar>(a(row, col));
         }
     }
 
@@ -446,7 +455,7 @@ constexpr Matrix<Complex<T>, S, 1> eigvals(const Matrix<T, S, S> a)
 // determinant) invariants.
 template <typename T, Size R, Size C>
 static inline constexpr bool checkEigenValues(
-    const Matrix<T, R, C> a, const Matrix<Complex<T>, R, 1> lambda,
+    const Matrix<T, R, C> &a, const Matrix<Complex<T>, R, 1> &lambda,
     const T thresh)
 {
     T tr = trace(a);
@@ -467,7 +476,7 @@ static inline constexpr bool checkEigenValues(
 
     if constexpr (R <= 4)
     {
-        T d = det(a);
+        T d = determinant(a);
         Complex<T> prod_lambda{1, 0};
         for (Size i = 0; i < R; ++i)
         {
@@ -491,9 +500,10 @@ static inline constexpr bool checkEigenValues(
 // Computes the eigenvectors of a matrix A given its eigenvalues.
 // Solves (A - \lambda I)v = b iteratively to find the eigenvector v.
 template <typename T, Size S>
-constexpr Matrix<Complex<T>, S, S> eigvecs(
+constexpr Matrix<Complex<T>, S, S> eigenvectors(
     const Matrix<T, S, S> &A, const Matrix<Complex<T>, S, 1> &eigenvalues)
 {
+    static_assert(is_float<T>(), "eigenvectors expects floating point type");
     Matrix<Complex<T>, S, S> V{};
 
     for (Size i = 0; i < S; ++i)
@@ -521,9 +531,9 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
         // In a strict constexpr environment, we use a deterministic "random"
         // vector (e.g., all 1s).
         Matrix<Complex<T>, S, 1> b{};
-        for (Size j = 0; j < S; ++j)
+        for (Size row = 0; row < S; ++row)
         {
-            b(j, 0) = Complex<T>{1.0, 0.0};
+            b(row, 0) = Complex<T>{1.0, 0.0};
         }
 
         // Inverse iteration (usually 1 or 2 iterations is sufficient for
@@ -535,10 +545,10 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
             // Safe normalization to prevent overflow during Euclidean norm
             // calculation. First, scale by the maximum absolute component.
             T max_val = 0;
-            for (Size j = 0; j < S; ++j)
+            for (Size row = 0; row < S; ++row)
             {
-                T abs_real = consteig::abs(b(j, 0).real);
-                T abs_imag = consteig::abs(b(j, 0).imag);
+                T abs_real = consteig::abs(b(row, 0).real);
+                T abs_imag = consteig::abs(b(row, 0).imag);
                 if (abs_real > max_val)
                 {
                     max_val = abs_real;
@@ -552,27 +562,27 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
             if (max_val > 0)
             {
                 T inv_max = static_cast<T>(1) / max_val;
-                for (Size j = 0; j < S; ++j)
+                for (Size row = 0; row < S; ++row)
                 {
-                    b(j, 0) = b(j, 0) * inv_max;
+                    b(row, 0) = b(row, 0) * inv_max;
                 }
             }
 
             // Now compute Euclidean norm safely
             T norm_sq = 0;
-            for (Size j = 0; j < S; ++j)
+            for (Size row = 0; row < S; ++row)
             {
-                norm_sq = norm_sq + b(j, 0).real * b(j, 0).real +
-                          b(j, 0).imag * b(j, 0).imag;
+                norm_sq = norm_sq + b(row, 0).real * b(row, 0).real +
+                          b(row, 0).imag * b(row, 0).imag;
             }
             T norm = consteig::sqrt(norm_sq);
 
             if (norm > 0)
             {
                 T inv_norm = static_cast<T>(1) / norm;
-                for (Size j = 0; j < S; ++j)
+                for (Size row = 0; row < S; ++row)
                 {
-                    b(j, 0) = b(j, 0) * inv_norm;
+                    b(row, 0) = b(row, 0) * inv_norm;
                 }
             }
         }
@@ -586,6 +596,30 @@ constexpr Matrix<Complex<T>, S, S> eigvecs(
 
     return V;
 }
+
+template <typename T, Size S> class EigenSolver
+{
+  public:
+    constexpr EigenSolver(const Matrix<T, S, S> &mat)
+        : _evals(consteig::eigenvalues(mat)),
+          _evecs(consteig::eigenvectors(mat, _evals))
+    {
+    }
+
+    constexpr const Matrix<Complex<T>, S, 1> &eigenvalues() const
+    {
+        return _evals;
+    }
+
+    constexpr const Matrix<Complex<T>, S, S> &eigenvectors() const
+    {
+        return _evecs;
+    }
+
+  private:
+    Matrix<Complex<T>, S, 1> _evals;
+    Matrix<Complex<T>, S, S> _evecs;
+};
 
 } // namespace consteig
 
