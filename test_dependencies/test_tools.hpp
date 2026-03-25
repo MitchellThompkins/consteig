@@ -107,11 +107,11 @@ static constexpr bool equalWithinMat(consteig::Matrix<T, R, C> a,
                                      consteig::Matrix<T, R, C> b,
                                      const T thresh)
 {
-    for (consteig::Size i{0}; i < R; i++)
+    for (consteig::Size row{0}; row < R; row++)
     {
-        for (consteig::Size j{0}; j < C; j++)
+        for (consteig::Size col{0}; col < C; col++)
         {
-            if (!consteig::equalWithin(a(i, j), b(i, j), thresh))
+            if (!consteig::equalWithin(a(row, col), b(row, col), thresh))
             {
                 return false;
             }
@@ -165,20 +165,20 @@ static constexpr bool checkEigenVectorsInvariant(
     const consteig::Matrix<consteig::Complex<T>, S, S> &V, const T thresh)
 {
     // For each eigenvalue / eigenvector pair...
-    for (consteig::Size j = 0; j < S; ++j)
+    for (consteig::Size col = 0; col < S; ++col)
     {
-        consteig::Complex<T> lam = lambda(j, 0);
+        consteig::Complex<T> lam = lambda(col, 0);
 
-        // Check A * v = lambda * v for the j-th column
-        for (consteig::Size i = 0; i < S; ++i)
+        // Check A * v = lambda * v for the col-th column
+        for (consteig::Size row = 0; row < S; ++row)
         {
             consteig::Complex<T> Av_i{0, 0};
             for (consteig::Size k = 0; k < S; ++k)
             {
-                Av_i = Av_i + consteig::Complex<T>{A(i, k)} * V(k, j);
+                Av_i = Av_i + consteig::Complex<T>{A(row, k)} * V(k, col);
             }
 
-            consteig::Complex<T> lv_i = lam * V(i, j);
+            consteig::Complex<T> lv_i = lam * V(row, col);
 
             T diff_real = consteig::abs(Av_i.real - lv_i.real);
             T diff_imag = consteig::abs(Av_i.imag - lv_i.imag);

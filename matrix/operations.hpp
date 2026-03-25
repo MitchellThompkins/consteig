@@ -32,11 +32,11 @@ constexpr Matrix<T, R, C> operator+(const Matrix<T, R, C> &lhs,
 {
     Matrix<T, R, C> result{};
 
-    for (Size i{0}; i < R; ++i)
+    for (Size row{0}; row < R; ++row)
     {
-        for (Size j{0}; j < C; ++j)
+        for (Size col{0}; col < C; ++col)
         {
-            result(i, j) = lhs(i, j) + rhs(i, j);
+            result(row, col) = lhs(row, col) + rhs(row, col);
         }
     }
 
@@ -49,11 +49,11 @@ constexpr Matrix<T, R, C> operator-(const Matrix<T, R, C> &lhs,
 {
     Matrix<T, R, C> result{};
 
-    for (Size i{0}; i < R; ++i)
+    for (Size row{0}; row < R; ++row)
     {
-        for (Size j{0}; j < C; ++j)
+        for (Size col{0}; col < C; ++col)
         {
-            result(i, j) = lhs(i, j) - rhs(i, j);
+            result(row, col) = lhs(row, col) - rhs(row, col);
         }
     }
 
@@ -68,13 +68,13 @@ constexpr Matrix<T, R1, C2> operator*(const Matrix<T, R1, C1> &lhs,
     static_assert(C1 == R2, "Number of columns must equal number of rows");
     Matrix<T, R1, C2> result{};
 
-    for (Size i{0}; i < R1; i++)
+    for (Size row{0}; row < R1; row++)
     {
-        for (Size j{0}; j < C2; j++)
+        for (Size col{0}; col < C2; col++)
         {
             for (Size k{0}; k < C1; k++)
             {
-                result(i, j) += lhs(i, k) * rhs(k, j);
+                result(row, col) += lhs(row, k) * rhs(k, col);
             }
         }
     }
@@ -90,11 +90,11 @@ constexpr Matrix<T, R, C> operator*(const T &lhs, const Matrix<T, R, C> &rhs)
 {
     Matrix<T, R, C> result{};
 
-    for (Size i{0}; i < R; i++)
+    for (Size row{0}; row < R; row++)
     {
-        for (Size j{0}; j < C; j++)
+        for (Size col{0}; col < C; col++)
         {
-            result(i, j) = lhs * rhs(i, j);
+            result(row, col) = lhs * rhs(row, col);
         }
     }
 
@@ -117,11 +117,11 @@ constexpr Matrix<T, C, R> transpose(const Matrix<T, R, C> &mat)
 {
     Matrix<T, C, R> result{};
 
-    for (Size i{0}; i < R; i++)
+    for (Size row{0}; row < R; row++)
     {
-        for (Size j{0}; j < C; j++)
+        for (Size col{0}; col < C; col++)
         {
-            result(j, i) = mat(i, j);
+            result(col, row) = mat(row, col);
         }
     }
 
@@ -132,9 +132,9 @@ template <typename T, Size S> constexpr Matrix<T, S, S> diagonal(const T val)
 {
     Matrix<T, S, S> result{};
 
-    for (Size i{0}, j{0}; i < S; i++, j++)
+    for (Size row{0}, col{0}; row < S; row++, col++)
     {
-        result(i, j) = val;
+        result(row, col) = val;
     }
 
     return result;
@@ -151,11 +151,11 @@ constexpr T norm(const Matrix<T, R, C> &mat)
 {
     T result{};
 
-    for (Size i{0}; i < R; i++)
+    for (Size row{0}; row < R; row++)
     {
-        for (Size j{0}; j < C; j++)
+        for (Size col{0}; col < C; col++)
         {
-            result += (mat(i, j) * mat(i, j));
+            result += (mat(row, col) * mat(row, col));
         }
     }
 
@@ -167,12 +167,12 @@ template <typename T, Size R, Size C>
 constexpr T norm1(const Matrix<T, R, C> &mat)
 {
     T max_sum{static_cast<T>(0)};
-    for (Size j{0}; j < C; ++j)
+    for (Size col{0}; col < C; ++col)
     {
         T col_sum{static_cast<T>(0)};
-        for (Size i{0}; i < R; ++i)
+        for (Size row{0}; row < R; ++row)
         {
-            col_sum += consteig::abs(mat(i, j));
+            col_sum += consteig::abs(mat(row, col));
         }
         if (col_sum > max_sum)
         {
@@ -187,12 +187,12 @@ template <typename T, Size R, Size C>
 constexpr T normInf(const Matrix<T, R, C> &mat)
 {
     T max_sum{static_cast<T>(0)};
-    for (Size i{0}; i < R; ++i)
+    for (Size row{0}; row < R; ++row)
     {
         T row_sum{static_cast<T>(0)};
-        for (Size j{0}; j < C; ++j)
+        for (Size col{0}; col < C; ++col)
         {
-            row_sum += consteig::abs(mat(i, j));
+            row_sum += consteig::abs(mat(row, col));
         }
         if (row_sum > max_sum)
         {
@@ -207,11 +207,11 @@ constexpr Matrix<T, R, C> sqrt(const Matrix<T, R, C> &mat)
 {
     Matrix<T, R, C> result{};
 
-    for (Size i{0}; i < R; i++)
+    for (Size row{0}; row < R; row++)
     {
-        for (Size j{0}; j < C; j++)
+        for (Size col{0}; col < C; col++)
         {
-            result(i, j) = consteig::sqrt(mat(i, j));
+            result(row, col) = consteig::sqrt(mat(row, col));
         }
     }
 
@@ -238,24 +238,24 @@ constexpr T determinant(const Matrix<T, R, C> &mat)
     else
     {
         T result{static_cast<T>(0)};
-        for (Size i{0}; i < R; i++)
+        for (Size col{0}; col < R; col++)
         {
             Matrix<T, R - 1, C - 1> submat{};
-            for (Size j{1}; j < R; j++)
+            for (Size row{1}; row < R; row++)
             {
                 Size subj{0U};
                 for (Size k{0}; k < R; k++)
                 {
-                    if (k == i)
+                    if (k == col)
                     {
                         continue;
                     }
-                    submat(j - 1, subj) = mat(j, k);
+                    submat(row - 1, subj) = mat(row, k);
                     subj++;
                 }
             }
-            T sign = (i % 2 == 0) ? static_cast<T>(1) : static_cast<T>(-1);
-            result += (sign * mat(0, i) * determinant(submat));
+            T sign = (col % 2 == 0) ? static_cast<T>(1) : static_cast<T>(-1);
+            result += (sign * mat(0, col) * determinant(submat));
         }
         return result;
     }
