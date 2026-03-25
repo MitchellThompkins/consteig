@@ -27,14 +27,14 @@ constexpr T dot(const Matrix<T, R, C> &lhs, const Matrix<T, R, C> &rhs);
 template <typename T, Size R, Size C> class Matrix
 {
   public:
-    constexpr T &operator()(const Size i, const Size j)
+    constexpr T &operator()(const Size row, const Size col)
     {
-        return _data[i][j];
+        return _data[row][col];
     }
 
-    constexpr const T &operator()(const Size i, const Size j) const
+    constexpr const T &operator()(const Size row, const Size col) const
     {
-        return _data[i][j];
+        return _data[row][col];
     }
 
     // TODO(mthompkins): Need to handle the equal floats case
