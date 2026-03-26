@@ -14,7 +14,7 @@ steady-state distributions can live directly in source code rather than being
 derived externally and hard-coded. When parameters change, the compiler
 recomputes. When the math is wrong, `static_assert` catches it at build time.
 consteig is strictly freestanding and depends on no external libraries, not even
-the C++ stdlib.
+the C++ standard library.
 
 All at compile-time, consteig supports:
 
@@ -108,12 +108,14 @@ Compiler flags:
 
 ## Population Flow
 
-If a system's transition matrix is fixed at compile-time, its steady-state behavior never needs to be recomputed at runtime. Take the example from [Using Eigenvectors to Find Steady State Population
+If a system's transition matrix is fixed at compile-time, its steady-state
+behavior never needs to be recomputed at runtime. Take the example from [Using
+Eigenvectors to Find Steady State Population
 Flows](https://medium.com/@andrew.chamberlain/using-eigenvectors-to-find-steady-state-population-flows-cd938f124764)
 and apply it using consteig. The transition matrix is fixed at compile-time, so
-the steady-state fractions can be stored as `static constexpr` values. At runtime,
-computing the distribution for any total population is then a single multiply.
-There is no need to iterate the transition matrix until it converges.
+the steady-state fractions can be stored as `static constexpr` values. At
+runtime, computing the distribution for any total population is then a single
+multiply.  There is no need to iterate the transition matrix until it converges.
 
 The [`population.cpp`](examples/population.cpp) example demonstrates this:
 
@@ -146,7 +148,10 @@ The same compile-time eigenvectors drive both outputs; no matrix iteration happe
 
 ## Digital Filter Design
 
-Embedded filter design typically requires an offline tool like MATLAB or Python to compute coefficients, which then get hardcoded into source. With consteig, the transfer function lives in source and the compiler derives the coefficients directly. consteig can automatically generate IIR digital filter
+Embedded filter design typically requires an offline tool like MATLAB or Python
+to compute coefficients, which then get hardcoded into source. With consteig,
+the transfer function lives in source and the compiler derives the coefficients
+directly. consteig can automatically generate IIR digital filter
 coefficients from a time-domain transfer function. They are derived at
 compile-time and can be saved for use in the filter step when the actual
 filtering takes place. Consider the 2nd-order Butterworth low-pass transfer
@@ -251,7 +256,10 @@ K            d727 1cf8 5734 d03f  0.253194801611810
 
 ## Control Theory
 
-When system parameters and controller gains are known at compile-time, consteig can verify that the closed-loop poles meet performance requirements, turning a runtime failure into a build failure. At compile-time, consteig can validate that the chosen gains for a PID loop meet
+When system parameters and controller gains are known at compile-time, consteig
+can verify that the closed-loop poles meet performance requirements, turning a
+runtime failure into a build failure. At compile-time, consteig can validate
+that the chosen gains for a PID loop meet
 the performance requirements for a system. Consider the [DC Motor
 Position: PID Controller
 Design](https://ctms.engin.umich.edu/CTMS/index.php?example=MotorPosition&section=ControlPID)
@@ -376,7 +384,8 @@ these plots.
 
 ## With Docker (recommended)
 
-The only local dependency is Docker. All build tools are packaged in the dev container:
+All build dependicies are packaged inside the dev container, and make is used as
+a matter of convenience.
 
 ```bash
 make container.pull
@@ -387,6 +396,8 @@ make container.make.test
 ```
 
 Any make target can be run inside the container via `container.make.<target>`.
+
+The container can be dropped into with `make container.start`.
 
 ## Without Docker (native)
 
