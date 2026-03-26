@@ -92,22 +92,18 @@ the solver against the following categories of numerically challenging matrices:
 
 ## Robustness & Accuracy Limitations
 
-The library performs rigorous eigenvalue verification using both
-trace/determinant checks and direct comparison against reference values
-(generated via Octave/LAPACK).
+The library performs eigenvalue verification using both trace/determinant checks
+and direct comparison against reference values (generated via Octave/LAPACK).
 
 ### Defective Matrices
 
-For defective matrices (those with non-trivial Jordan blocks), the
-eigenvalue problem is inherently ill-conditioned. A perturbation of size
-$\epsilon$ in the matrix entries can result in a perturbation of size
-$\epsilon^{1/k}$ in the eigenvalues, where $k$ is the size of the Jordan block.
-This is described above.
+As discussed above, for defective matrices, the eigenvalue problem is
+inherently ill-conditioned. A perturbation of size $\epsilon$ in the matrix
+entries can result in a large perturbation of size in the eigenvalues.
 
-Consequently, tests for defective, nearly defective, and large Jordan
-block matrices use a relaxed tolerance (`0.03`) to account for this
-theoretical limit. As described above, this describes a fundamental limit of
-computing eigenvalues for such matrices using standard double-precision
+Consequently, tests for "pathological" matrices use a relaxed tolerance to account
+for this theoretical limit. As described above, this describes a fundamental
+limit of computing eigenvalues for such matrices using standard double-precision
 arithmetic.
 
 ### Standard Matrices
@@ -123,23 +119,16 @@ make container.make.build
 ```
 
 CI/CD Integration:
-* Granular Binaries: Non-symmetric test cases are split into individual
-  `.cpp` files. This ensures each `static_assert` gets a fresh "budget" of
-  compiler operations and limits the memory overhead to a single matrix solve
-  at a time.
-* Compiler Flags: Thanks to the deflation criterion, default
-  compiler constexpr limits are sufficient for the test suite. For very large
-  or pathological matrices, users may need to raise limits like
-  `-fconstexpr-ops-limit` (GCC) or `-fconstexpr-steps` (Clang) on their own
-  targets.
-* Spectral Limits & Matrix Size Constraints: While the algorithm is
-  algebraically sound for higher orders, random matrices of orders higher than
-  8x8 (and larger) frequently encounter particular arrangement, spacing, or
-  clustering of eigenvalues in the matrix configurations. They thusly fail to
-  converge within even an expanded `constexpr` operation budget (1BM+ steps).
-  Users working with matrices beyond 8x8 may need to raise compiler constexpr
-  limits (e.g., `-fconstexpr-ops-limit` for GCC, `-fconstexpr-steps` for
-  Clang) on their own targets.
+* Granular Binaries: Test cases are split into individual `.cpp` files. This
+  ensures each `static_assert` gets a fresh "budget" of compiler operations and
+  limits the memory overhead to a single matrix solve at a time.
+* Compiler Flags & Matrix Size Constraints: Thanks to the deflation criterion,
+  default compiler constexpr limits are sufficient for the test suite. However,
+  random matrices beyond 8x8 frequently encounter clustering or poor separation
+  of eigenvalues, causing QR iteration to fail to converge within even an
+  expanded `constexpr` operation budget (1B+ steps). Users working with larger
+  matrices may need to raise compiler constexpr limits on their own targets (see
+  the [Build Options](../README.md#build-options)).
 * From a numerical analysis perspective, the following factors have a
   significant impact:
     * Spectral Separation and Convergence Rate: The convergence rate of
@@ -159,9 +148,5 @@ CI/CD Integration:
       highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
       transient growth in the QR residual and further stall the convergence of
       sub-diagonal elements toward the Real Schur Form.
-    * Constexpr Step Budget: While 500M operations is significantly higher
-      than the compiler default (33,554,432 in GCC), it remains a finite
-      constraint. A stalled QR iteration on a 10x10 non-normal matrix can
-      easily exhaust this budget, causing a compilation failure.
 
 [^1]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
