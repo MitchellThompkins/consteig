@@ -181,6 +181,13 @@ check-generated:
 			CHANGED=1; \
 		fi; \
 	done; \
+	for f in eigen/tests/generated_cases.hpp eigen/tests/generated_*.test.cpp; do \
+		base=$$(basename "$$f"); \
+		if [ ! -f "$$SNAP/$$base" ]; then \
+			echo "  added: $$f"; \
+			CHANGED=1; \
+		fi; \
+	done; \
 	rm -rf "$$SNAP"; \
 	if [ "$$CHANGED" -ne 0 ]; then \
 		echo "ERROR: Generated test cases are out of date. Run 'make generate-test-cases' and commit the results."; \
