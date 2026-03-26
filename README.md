@@ -8,12 +8,12 @@ stored as `static constexpr` values, so no processor time is spent calculating
 them at runtime and no offline tool is needed to generate them.
 
 This is particularly useful when a system's parameters are fixed at
-compile-time. Filter coefficients, system eigenvalues, and steady-state
-distributions are among the values that can live directly in source code rather
-than being derived externally and hardcoded. When parameters change, the
-compiler recomputes. When the math is wrong, `static_assert` catches it at
-build time. consteig is strictly freestanding and depends on no external
-libraries, including the C++ standard library.
+compile-time. Information like filter coefficients, system eigenvalues, and
+steady-state distributions can live directly in source code rather than being
+derived externally and hard-coded. When parameters change, the compiler
+recomputes. When the math is wrong, `static_assert` catches it at build time.
+consteig is strictly freestanding and depends on no external libraries, not even
+the C++ stdlib.
 
 All at compile-time, consteig supports:
 
@@ -31,11 +31,11 @@ consume it via CMake with `add_subdirectory` or `FetchContent`).
 consteig also requires a C++ compiler which supports C++17.
 
 Quick reference examples:
-* [Declaring a matrix](examples/matrix.cpp)
-* [Matrix Arithmetic](examples/matrix.cpp)
+* [Working with matrices](examples/matrix.cpp)
 * [Finding eigenvalues](examples/eigen.cpp)
 * [Population flow](examples/population.cpp)
-* [Butterworth Filter Design](examples/butterworth/butterworth_core.hpp)
+* [Butterworth filter design](examples/butterworth/butterworth_core.hpp)
+* [DC motor control gain validation](examples/dc_motor_control.cpp)
 
 ## Build Options
 
