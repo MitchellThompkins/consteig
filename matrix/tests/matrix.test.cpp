@@ -419,3 +419,71 @@ TEST(matrix, check_symmetry)
     ASSERT_TRUE(checkSymmetryDouble);
     ASSERT_FALSE(checkAsymmetryDouble);
 }
+
+TEST(matrix, make_matrix_matches_aggregate)
+{
+    // make_matrix and aggregate init must produce identical results
+    static constexpr Matrix<int, 2, 3> agg{{{1, 2, 3}, {4, 5, 6}}};
+    static constexpr auto flat = make_matrix<int, 2, 3>(1, 2, 3, 4, 5, 6);
+
+    static_assert(agg == flat, MSG);
+    ASSERT_TRUE(agg == flat);
+}
+
+TEST(matrix, make_matrix_square_double)
+{
+    static constexpr auto m = make_matrix<double, 2, 2>(1.0, 2.0, 3.0, 4.0);
+
+    static_assert(m(0, 0) == 1.0, MSG);
+    static_assert(m(0, 1) == 2.0, MSG);
+    static_assert(m(1, 0) == 3.0, MSG);
+    static_assert(m(1, 1) == 4.0, MSG);
+
+    ASSERT_EQ(m(0, 0), 1.0);
+    ASSERT_EQ(m(0, 1), 2.0);
+    ASSERT_EQ(m(1, 0), 3.0);
+    ASSERT_EQ(m(1, 1), 4.0);
+}
+
+TEST(matrix, make_matrix_nonsquare_float)
+{
+    static constexpr auto m =
+        make_matrix<float, 3, 4>(1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F,
+                                 9.0F, 10.0F, 11.0F, 12.0F);
+
+    static_assert(m(0, 0) == 1.0F, MSG);
+    static_assert(m(0, 3) == 4.0F, MSG);
+    static_assert(m(1, 0) == 5.0F, MSG);
+    static_assert(m(2, 3) == 12.0F, MSG);
+
+    ASSERT_EQ(m(0, 0), 1.0F);
+    ASSERT_EQ(m(0, 3), 4.0F);
+    ASSERT_EQ(m(1, 0), 5.0F);
+    ASSERT_EQ(m(2, 3), 12.0F);
+}
+
+TEST(matrix, make_matrix_column_vector)
+{
+    static constexpr auto m = make_matrix<double, 4, 1>(1.0, 2.0, 3.0, 4.0);
+
+    static_assert(m(0, 0) == 1.0, MSG);
+    static_assert(m(1, 0) == 2.0, MSG);
+    static_assert(m(2, 0) == 3.0, MSG);
+    static_assert(m(3, 0) == 4.0, MSG);
+
+    ASSERT_EQ(m(0, 0), 1.0);
+    ASSERT_EQ(m(3, 0), 4.0);
+}
+
+TEST(matrix, make_matrix_row_vector)
+{
+    static constexpr auto m = make_matrix<double, 1, 4>(1.0, 2.0, 3.0, 4.0);
+
+    static_assert(m(0, 0) == 1.0, MSG);
+    static_assert(m(0, 1) == 2.0, MSG);
+    static_assert(m(0, 2) == 3.0, MSG);
+    static_assert(m(0, 3) == 4.0, MSG);
+
+    ASSERT_EQ(m(0, 0), 1.0);
+    ASSERT_EQ(m(0, 3), 4.0);
+}

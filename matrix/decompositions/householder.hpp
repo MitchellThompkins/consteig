@@ -56,9 +56,9 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
 
     // Compute ||x[1:]||^2 (sum of squares of subdiagonal entries)
     T alphaSum{0};
-    for (Size i{1}; i < R; i++)
+    for (Size row{1}; row < R; row++)
     {
-        alphaSum += (a(i, 0) * a(i, 0));
+        alphaSum += (a(row, 0) * a(row, 0));
     }
 
     // If the subdiagonal is already zero, no reflection needed
@@ -85,15 +85,15 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
 
     // Build the reflector vector v
     Matrix<T, R, 1> v{}; // Zero init
-    for (Size i = 0; i < R; ++i)
+    for (Size row = 0; row < R; ++row)
     {
-        v(i, 0) = 0;
+        v(row, 0) = 0;
     }
 
     v(1, 0) = (a(1, 0) - alpha) * oneOverTwoR;
-    for (Size i{2}; i < R; i++)
+    for (Size row{2}; row < R; row++)
     {
-        v(i, 0) = a(i, 0) * oneOverTwoR;
+        v(row, 0) = a(row, 0) * oneOverTwoR;
     }
 
     // H = I - 2*v*v^T
@@ -104,9 +104,9 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
 
 template <typename T> constexpr Matrix<T, 2, 2> house(Matrix<T, 2, 2> /*a*/)
 {
-    Matrix<T, 2, 2> i = eye<T, 2>();
-    i(1, 1) = i(1, 1) * static_cast<T>(-1);
-    return i;
+    Matrix<T, 2, 2> ident = eye<T, 2>();
+    ident(1, 1) = ident(1, 1) * static_cast<T>(-1);
+    return ident;
 }
 
 /// @}  // addtogroup decompositions

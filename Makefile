@@ -113,11 +113,11 @@ test: $(BUILD_PREFIX)/$(BUILD_FILE)
 
 .PHONY: format
 format:
-	find . \( -path "./test_dependencies/googletest" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format -i
+	find . \( -path "./test_dependencies/googletest" -o -path "./build" -o -path "./profiling/compile_time" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) ! -name "generated_*" -print | xargs clang-format -i
 
 .PHONY: check-format
 check-format:
-	find . \( -path "./test_dependencies/googletest" -o -path "./build" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) -print | xargs clang-format --dry-run --Werror
+	find . \( -path "./test_dependencies/googletest" -o -path "./build" -o -path "./profiling/compile_time" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) ! -name "generated_*" -print | xargs clang-format --dry-run --Werror
 
 .PHONY: remove
 remove:
