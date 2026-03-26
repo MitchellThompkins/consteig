@@ -167,6 +167,42 @@ test-dc-motor-fail:
 generate-test-cases:
 	octave octave/generate_test_cases.m
 
+.PHONY: check-generated
+check-generated:
+	@SNAP=$$(mktemp -d); \
+	cp eigen/tests/generated_cases.hpp "$$SNAP/"; \
+	cp eigen/tests/generated_*.test.cpp "$$SNAP/"; \
+	$(MAKE) generate-test-cases; \
+	CHANGED=0; \
+	for f in "$$SNAP"/*; do \
+		base=$$(basename "$$f"); \
+		if ! diff -q "$$f" "eigen/tests/$$base" >/dev/null 2>&1; then \
+			echo "  changed: eigen/tests/$$base"; \
+			CHANGED=1; \
+		fi; \
+	done; \
+	for f in eigen/tests/generated_cases.hpp eigen/tests/generated_*.test.cpp; do \
+		base=$$(basename "$$f"); \
+		if [ ! -f "$$SNAP/$$base" ]; then \
+			echo "  added: $$f"; \
+			CHANGED=1; \
+		fi; \
+	done; \
+	rm -rf "$$SNAP"; \
+	if [ "$$CHANGED" -ne 0 ]; then \
+		echo "ERROR: Generated test cases are out of date. Run 'make generate-test-cases' and commit the results."; \
+		exit 1; \
+	fi; \
+	echo "Generated test cases are up to date."
+
+.PHONY: generate-profiling-cases
+generate-profiling-cases:
+	octave octave/generate_profiling_cases.m
+
+.PHONY: profile
+profile: generate-profiling-cases
+	./profiling/run_profiling.sh $(CXX)
+
 $(BUILD_PREFIX)/$(BUILD_FILE):
 	# create the temporary build directory if needed
 	mkdir -p $(BUILD_PREFIX)

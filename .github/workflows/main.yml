@@ -29,12 +29,14 @@ jobs:
                       git fetch --unshallow origin
                       git fetch origin ${{ github.event.pull_request.base.ref }}
                       CHANGED_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD)
-                      echo "dockerfile_changed=$(echo "$CHANGED_FILES" | grep -q '^Dockerfile$' && echo true || echo false)" >> "$GITHUB_OUTPUT"
-                      echo "env_changed=$(echo "$CHANGED_FILES" | grep -q '^\.env$' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+                    elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                      git fetch --unshallow origin develop || true
+                      CHANGED_FILES=$(git diff --name-only origin/develop...HEAD 2>/dev/null || echo "")
                     else
-                      echo "dockerfile_changed=false" >> "$GITHUB_OUTPUT"
-                      echo "env_changed=false" >> "$GITHUB_OUTPUT"
+                      CHANGED_FILES=""
                     fi
+                    echo "dockerfile_changed=$(echo "$CHANGED_FILES" | grep -q '^Dockerfile$' && echo true || echo false)" >> "$GITHUB_OUTPUT"
+                    echo "env_changed=$(echo "$CHANGED_FILES" | grep -q '^\.env$' && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
             - name: Require Dockerfile and .env to change together
               if: steps.detect-changes.outputs.dockerfile_changed != steps.detect-changes.outputs.env_changed
@@ -137,6 +139,21 @@ jobs:
 
             - name: Cross-compile (static_assert is the test)
               run: make cross.${{ matrix.target }}
+
+    check-generated:
+        needs: build-and-publish-container
+        if: needs.build-and-publish-container.result == 'success'
+        runs-on: ubuntu-latest
+        container:
+          image: ghcr.io/mitchellthompkins/consteig_dev_image:${{ needs.build-and-publish-container.outputs.image_tag }}
+        permissions:
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Verify generated test cases are up to date
+              run: make check-generated
 
     dc-motor-fail:
         needs: build-and-publish-container
