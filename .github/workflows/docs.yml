@@ -2,7 +2,8 @@ name: docs
 
 on:
   push:
-    branches: [develop]
+    branches: [develop, main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -47,6 +48,7 @@ jobs:
 
   deploy:
     needs: build-docs
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
