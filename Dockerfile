@@ -13,7 +13,8 @@ RUN apk --no-cache add\
     linux-headers\
     git\
     octave\
-    python3
+    python3\
+    uv
 
 ARG ARM_GNU_VERSION="15.2"
 ARG ARM_GNU_RELEASE="rel1"

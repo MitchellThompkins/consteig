@@ -18,6 +18,7 @@ function(consteig_raise_compiler_limits)
     endforeach()
 endfunction()
 
+
 macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
@@ -106,6 +107,7 @@ endforeach()
 ################################################################################
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(examples EXCLUDE_FROM_ALL)
+    add_subdirectory(profiling EXCLUDE_FROM_ALL)
 
     if(CONSTEIG_BUILD_TESTS)
         add_subdirectory(array/tests)

@@ -9,12 +9,12 @@ stored as `static constexpr` values, so no processor time is spent calculating
 them at runtime and no offline tool is needed to generate them.
 
 This is particularly useful when a system's parameters are fixed at
-compile-time. Filter coefficients, system eigenvalues, and steady-state
-distributions are among the values that can live directly in source code rather
-than being derived externally and hardcoded. When parameters change, the
-compiler recomputes. When the math is wrong, `static_assert` catches it at
-build time. consteig is strictly freestanding and depends on no external
-libraries, including the C++ standard library.
+compile-time. Information like filter coefficients, system eigenvalues, and
+steady-state distributions can live directly in source code rather than being
+derived externally and hard-coded. When parameters change, the compiler
+recomputes. When the math is wrong, `static_assert` catches it at build time.
+consteig is strictly freestanding and depends on no external libraries, not even
+the C++ stdlib.
 
 All at compile-time, consteig supports:
 
@@ -25,18 +25,18 @@ All at compile-time, consteig supports:
 
 # How To Use consteig
 
-As consteig is a templated library and as such a user does not need to compile
-anything separately. Simply `#include "consteig.hpp"` into the project, or
-consume it via CMake with `add_subdirectory` or `FetchContent`.
+As consteig is a templated library a user does not need to compile anything
+separately. Simply `#include "consteig.hpp"` into the project (optionally
+consume it via CMake with `add_subdirectory` or `FetchContent`).
 
 consteig also requires a C++ compiler which supports C++17.
 
 Quick reference examples:
-* [Declaring a matrix](examples/matrix.cpp)
-* [Matrix Arithmetic](examples/matrix.cpp)
+* [Working with matrices](examples/matrix.cpp)
 * [Finding eigenvalues](examples/eigen.cpp)
 * [Population flow](examples/population.cpp)
-* [Butterworth Filter Design](examples/butterworth/butterworth_core.hpp)
+* [Butterworth filter design](examples/butterworth/butterworth_core.hpp)
+* [DC motor control gain validation](examples/dc_motor_control.cpp)
 
 ## Build Options
 
@@ -329,7 +329,7 @@ addresses both constraints.
 See [docs/methods.md](docs/methods.md) for a discussion on the implementation
 specifics for the numerical solvers implemented by consteig.
 
-# Verification, Accuracy and Performance
+# Verification and Accuracy
 
 consteig uses `8x8` matrices as its test basis and leverages 2 tolerances for
 verification. For all non-defective matrices it uses `1e-9` as an expectation
@@ -343,6 +343,22 @@ library and Eigen, but the consteig library core does not.
 See [docs/verification.md](docs/verification.md) for a detailed discussion on
 the accuracy and verification methods implemented to test this library.
 
+# Performance
+
+Compile times and peak compiler memory are measured by compiling individual
+`static constexpr auto result = eigvals(mat)` expressions across matrix sizes
+and categories. Each data point is the mean over 10 randomly generated matrices
+of that type. Exact numbers will vary by CPU, compiler version, and system load,
+but one should expect the trend to be consistent.
+
+The shaded region indicates where `consteig_raise_compiler_limits` was needed.
+Below that boundary the default compiler constexpr budget was sufficient.
+
+![Compilation Times](profiling/results/compile_times_gcc_15.2.0.png "compilation_times")
+![Compilation Memory](profiling/results/compile_times_gcc_15.2.0_memory.png "compilation_memory")
+
+See [profiling/README.md](profiling/README.md) for a discussion on generation of
+these plots.
 
 # When To Use consteig
 
