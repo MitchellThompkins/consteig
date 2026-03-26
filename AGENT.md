@@ -28,17 +28,33 @@ consteig/
 ├── matrix/                   # Matrix operations
 │   ├── matrix.hpp           # Matrix class definition
 │   ├── operations.hpp       # Matrix arithmetic and operations
-│   ├── decompositions/      # QR, LU, Hessenberg decompositions
-│   │   └── decompositions.hpp
+│   ├── decompositions.hpp   # Decomposition interface (includes subdir)
+│   ├── decompositions/      # Individual decomposition implementations
+│   │   ├── householder.hpp  # Householder reflections
+│   │   ├── hessenberg.hpp   # Hessenberg reduction
+│   │   ├── qr.hpp           # QR decomposition
+│   │   └── lu.hpp           # LU decomposition
 │   └── tests/               # Matrix operation tests
 ├── test_dependencies/        # Test utilities
 │   ├── test_tools.hpp       # Test tolerance constants and helpers
 │   ├── eigen_test_tools.hpp # Eigen library comparison utilities
+│   ├── gtest_stubs/         # Test stub utilities
 │   └── googletest/          # Google Test framework (submodule)
 ├── examples/                 # Usage examples
-├── docs/                     # Documentation
+├── docs/                     # Documentation (MkDocs site)
+│   ├── index.md             # Documentation home page
+│   ├── mkdocs.yml           # MkDocs configuration
 │   ├── methods.md           # Algorithm descriptions
-│   └── verification.md      # Testing methodology
+│   ├── verification.md      # Testing methodology
+│   ├── getting-started/     # Installation and first steps
+│   ├── guide/               # Detailed guides (matrix, eigensolvers, etc.)
+│   └── examples/            # Example walkthroughs
+├── profiling/                # Compile-time profiling
+│   ├── run_profiling.sh     # Profiling script
+│   ├── analyze_results.py   # Results analysis and plotting
+│   └── compile_time/        # Generated profiling source files
+├── cmake/                    # CMake support files
+│   └── toolchains/          # Cross-compiler toolchain files (ARM)
 └── octave/                   # Octave scripts for test generation
 ```
 
@@ -104,7 +120,6 @@ Defined in `test_dependencies/test_tools.hpp`:
 | `CONSTEIG_TEST_TOLERANCE` | double | `1e-9` | Standard double-precision comparisons |
 | `CONSTEIG_FLOAT_TEST_TOLERANCE` | float | `1e-7f` | Standard float-precision comparisons |
 | `CONSTEIG_ITERATIVE_FLOAT_TOLERANCE` | float | `3e-4f` | Iterative methods with float matrices |
-| `CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE` | double | `3e-4` | Iterative methods with double matrices |
 | `PATHOLOGICAL_TOL` | double | `0.03` | Defective/ill-conditioned matrices |
 | `LARGE_VAL_TOL` | double | `1.0` | Large magnitude value comparisons |
 
@@ -203,7 +218,7 @@ The `octave/` directory contains GNU Octave/MATLAB scripts used for two purposes
 ### Test Case Generation (`octave/generate_test_cases.m`)
 
 This script generates C++ test data (matrices and reference eigenvalues/eigenvectors) that are verified at compile time via `static_assert`. It produces:
-- `test_dependencies/generated_cases.hpp` — arrays of test matrices and expected results
+- `eigen/tests/generated_cases.hpp` — arrays of test matrices and expected results
 - `eigen/tests/generated_*.test.cpp` — individual test files (one per case to stay within constexpr budgets)
 
 Test categories generated include random symmetric/non-symmetric matrices plus robustness categories (defective, nearly defective, clustered eigenvalues, companion, Hamiltonian, etc.).

@@ -354,7 +354,7 @@ the accuracy and verification methods implemented to test this library.
 # Performance
 
 Compile times and peak compiler memory are measured by compiling individual
-`static constexpr auto result = eigvals(mat)` expressions across matrix sizes
+`static constexpr auto result = eigenvalues(mat)` expressions across matrix sizes
 and categories. Each data point is the mean over 10 randomly generated matrices
 of that type. Exact numbers will vary by CPU, compiler version, and system load,
 but one should expect the trend to be consistent.
@@ -384,7 +384,7 @@ these plots.
 
 ## With Docker (recommended)
 
-All build dependicies are packaged inside the dev container, and make is used as
+All build dependencies are packaged inside the dev container, and make is used as
 a matter of convenience.
 
 ```bash
