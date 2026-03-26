@@ -8,6 +8,18 @@ The library is verified through two primary methods:
    is provided to generate fresh matrix test data and expected results, which
    are automatically verified using `static_assert` at compile time.
 
+Running Robustness Tests:
+
+```bash
+make container.make.build
+make container.make.test
+```
+
+CI/CD Integration:
+* Granular Binaries: Test cases are split into individual `.cpp` files. This
+  ensures each `static_assert` gets a fresh "budget" of compiler operations and
+  limits the memory overhead to a single matrix solve at a time.
+
 ## Accuracy [^1]
 
 An eigenvalue solver is limited not only by the numerical algorithm it employs
@@ -112,41 +124,33 @@ For normal, symmetric, and well-conditioned non-symmetric matrices, the library
 maintains high-precision, typically matching reference values within `1e-9` or
 better.
 
-Running Robustness Tests:
+### Convergence Limits
 
-```bash
-make container.make.build
-```
+Thanks to the deflation criterion, default compiler constexpr limits are
+sufficient for the test suite. However, random matrices beyond 8x8 frequently
+encounter clustering or poor separation of eigenvalues, causing QR iteration to
+fail to converge within even an expanded `constexpr` operation budget (1B+
+steps). Users working with larger matrices may need to raise compiler constexpr
+limits on their own targets (see the [Build Options](../README.md#build-options)).
 
-CI/CD Integration:
-* Granular Binaries: Test cases are split into individual `.cpp` files. This
-  ensures each `static_assert` gets a fresh "budget" of compiler operations and
-  limits the memory overhead to a single matrix solve at a time.
-* Compiler Flags & Matrix Size Constraints: Thanks to the deflation criterion,
-  default compiler constexpr limits are sufficient for the test suite. However,
-  random matrices beyond 8x8 frequently encounter clustering or poor separation
-  of eigenvalues, causing QR iteration to fail to converge within even an
-  expanded `constexpr` operation budget (1B+ steps). Users working with larger
-  matrices may need to raise compiler constexpr limits on their own targets (see
-  the [Build Options](../README.md#build-options)).
-* From a numerical analysis perspective, the following factors have a
-  significant impact:
-    * Spectral Separation and Convergence Rate: The convergence rate of
-      the QR algorithm is intrinsically governed by the ratios of adjacent
-      eigenvalues $|\lambda_{i+1}/\lambda_i|$ in the ordered spectrum. As the
-      matrix dimension $n$ increases, the probability of encountering
-      "clustered" eigenvalues (where $\lambda_i \approx \lambda_{i+1}$) rises
-      sharply. In a random real 10x10 matrix, eigenvalues often distribute
-      near the unit circle with several close pairs or nearly equal
-      magnitudes.
-    * The Unit Convergence Factor: When eigenvalues are poorly separated,
-      the convergence factor $\rho = |\lambda_{i+1}/\lambda_i|$ approaches
-      unity. This results in slow linear convergence, requiring an explosive
-      number of iterations to satisfy the deflation criterion
-      $|{h_{k+1,k}}| \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)$
-    * Non-Normal Structure: Randomly generated matrices are typically
-      highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
-      transient growth in the QR residual and further stall the convergence of
-      sub-diagonal elements toward the Real Schur Form.
+From a numerical analysis perspective, the following factors have a significant
+impact:
+
+* Spectral Separation and Convergence Rate: The convergence rate of the QR
+  algorithm is intrinsically governed by the ratios of adjacent eigenvalues
+  $|\lambda_{i+1}/\lambda_i|$ in the ordered spectrum. As the matrix
+  dimension $n$ increases, the probability of encountering "clustered"
+  eigenvalues (where $\lambda_i \approx \lambda_{i+1}$) rises sharply. For
+  example, in a random real 10x10 matrix, eigenvalues often distribute near
+  the unit circle with several close pairs or nearly equal magnitudes.
+* The Unit Convergence Factor: When eigenvalues are poorly separated,
+  the convergence factor $\rho = |\lambda_{i+1}/\lambda_i|$ approaches
+  unity. This results in slow linear convergence, requiring an explosive
+  number of iterations to satisfy the deflation criterion
+  $|{h_{k+1,k}}| \le \epsilon (|h_{kk}| + |h_{k+1,k+1}|)$
+* Non-Normal Structure: Randomly generated matrices are typically
+  highly non-normal ($AA^* \neq A^*A$). Non-normality can lead to
+  transient growth in the QR residual and further stall the convergence of
+  sub-diagonal elements toward the Real Schur Form.
 
 [^1]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
