@@ -113,9 +113,9 @@ As discussed above, for defective matrices, the eigenvalue problem is
 inherently ill-conditioned. A perturbation of size $\epsilon$ in the matrix
 entries can result in a large perturbation of size in the eigenvalues.
 
-Consequently, tests for "pathological" matrices use a relaxed tolerance to account
-for this theoretical limit. As described above, this describes a fundamental
-limit of computing eigenvalues for such matrices using standard double-precision
+Consequently, tests for "pathological" matrices use a relaxed tolerance to
+account for this theoretical limit. This describes a fundamental limit of
+computing eigenvalues for such matrices using standard double-precision
 arithmetic.
 
 ### Standard Matrices
