@@ -1,12 +1,12 @@
 #!/bin/sh
 #
 # Compile-time profiling for consteig.
-# Times the compilation of individual .cpp files that force constexpr eigvals()
+# Times the compilation of individual .cpp files that force constexpr eigenvalues()
 # evaluation at various matrix sizes and categories.
 #
 # HOW IT WORKS
 # ------------
-# We want to time how long the compiler takes to evaluate constexpr eigvals()
+# We want to time how long the compiler takes to evaluate constexpr eigenvalues()
 # for each matrix type and size. Each profiling/compile_time/profile_*.cpp file
 # contains one matrix and one "static constexpr auto result = eigvals(mat)",
 # compiling it forces full constexpr evaluation.
@@ -26,14 +26,7 @@
 #
 #   3. Invoke the compiler directly for each file using those flags, timed with
 #      /usr/bin/time. This is fast with no cmake startup cost per file.
-#
-# Usage:
-#   ./profiling/run_profiling.sh [compiler] [timeout_sec]
-#
-# Examples:
-#   ./profiling/run_profiling.sh g++        # GCC, default 300s timeout
-#   ./profiling/run_profiling.sh clang++    # Clang
-#   ./profiling/run_profiling.sh g++ 600    # GCC with 10min timeout
+# See profiling/README.md for usage examples.
 
 set -eu
 
