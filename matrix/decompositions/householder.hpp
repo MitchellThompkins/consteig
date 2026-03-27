@@ -13,10 +13,10 @@ namespace consteig
 
 /// @brief Compute a Householder reflector for a square matrix.
 ///
-/// Returns an orthogonal matrix H = I - 2*v*v^T such that
-/// H * x = alpha * e1, where x is the first column of `a` (below the
-/// diagonal) and e1 is the first standard basis vector. This zeros all
-/// subdiagonal entries of the first column.
+/// Returns an orthogonal matrix H = I - 2*v*v^T that zeros the first
+/// column of `a` below the first subdiagonal. Row 0 of the first column
+/// is untouched; row 1 receives the reflected norm; rows 2 through R-1
+/// become zero.
 ///
 /// Used internally by @ref hess for Hessenberg reduction.
 ///

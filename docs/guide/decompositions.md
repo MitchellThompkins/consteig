@@ -2,7 +2,7 @@ title: Decompositions
 
 # Decompositions
 
-All decompositions require square matrices and floating-point element types.
+All decompositions require square matrices. Hessenberg reduction and Householder reflection additionally require floating-point element types.
 
 ## QR Decomposition
 
@@ -47,7 +47,7 @@ Computes a Householder reflector H = I - 2*v*v^T that zeros the subdiagonal entr
 ```cpp
 static constexpr auto H = consteig::house(A);
 // H is an R×R orthogonal matrix
-// H * A.col(0) = alpha * e1  (e1 is the first basis vector)
+// H * A zeros the first column below the first subdiagonal
 ```
 
 ## LU Decomposition
