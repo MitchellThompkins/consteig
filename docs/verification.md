@@ -4,6 +4,15 @@ title: Verification & Accuracy
 
 # Verification
 
+consteig uses `8x8` matrices as its test basis and leverages 2 tolerances for
+verification. For all non-defective matrices it uses `1e-9` as an expectation
+when comparing against a reference. For highly defective matrices, as is the
+case for Jordan blocks, it uses `0.03` [^1]. `0.03` approaches the numerical limit
+of verification accuracy for 64-bit types.
+
+Note that unit testing _does_ leverage components of the standard
+library and Eigen, but the consteig library core does not.
+
 The library is verified through two primary methods:
 1. Eigen Library Comparison: Unit tests link against the
    [Eigen](https://eigen.tuxfamily.org/) library to compare compile-time results
@@ -125,7 +134,7 @@ sufficient for the test suite. However, random matrices beyond 8x8 frequently
 encounter clustering or poor separation of eigenvalues, causing QR iteration to
 fail to converge within even an expanded `constexpr` operation budget (1B+
 steps). Users working with larger matrices may need to raise compiler constexpr
-limits on their own targets (see the [Build Options](../README.md#build-options)).
+limits on their own targets (see [Configuration](../guide/configuration.md)).
 
 From a numerical analysis perspective, the following factors have a significant
 impact:
