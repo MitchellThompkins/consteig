@@ -21,8 +21,6 @@ compile times and the likelihood of hitting compiler step limits.
 #include "consteig.hpp"
 ```
 
-**Default**: `500`
-
 ### CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE
 
 A routing threshold used to determine if a matrix is "symmetric enough" to use
@@ -35,8 +33,6 @@ heavier non-symmetric solver (`eig_double_shifted_qr`).
 #include "consteig.hpp"
 ```
 
-**Default**: `1e-6`
-
 ### CONSTEIG_BALANCE_CONVERGENCE_THRESHOLD
 
 Controls the stopping criterion for the matrix balancing step. A scaling is
@@ -45,27 +41,23 @@ by more than this factor. The default value of `0.95` is taken from Algorithm 2
 of James, Langou & Lowery [^1]. Increasing it toward `1.0` runs more balancing
 iterations; decreasing it stops earlier.
 
-**Default**: `0.95`
-
 ### CONSTEIG_TRIG_MAX_ITER
 
-Maximum Taylor series iterations for `sin`, `cos`, `tan`, etc.
-
-**Default**: `20` (14 suffice for `double` precision; 20 gives a comfortable margin)
+Maximum Taylor series iterations for `sin`, `cos`, `tan`, etc. 14 should suffice
+for `double` precision but the library here uses a slightly higher default for
+good margin.
 
 ### CONSTEIG_USE_LONG_DOUBLE
 
 Forces all internal constexpr eigenvalue calculations to use `long double`. This
 dramatically improves numerical stability for large or pathological matrices but
 is very resource-intensive for the compiler and will severely increase compile
-times.
+times. It is _NOT_ defined by default.
 
 ```cpp
 #define CONSTEIG_USE_LONG_DOUBLE
 #include "consteig.hpp"
 ```
-
-**Default**: Not defined.
 
 ## CMake Functions
 
@@ -131,11 +123,13 @@ Combine with `CONSTEIG_USE_LONG_DOUBLE` for maximum precision.
 
 ## When to Change Defaults
 
-The defaults work for the full test suite (8×8 matrices, including defective Jordan blocks) without modification. Consider changing them only if you encounter:
+The defaults work for the full test suite (8×8 matrices, including defective
+Jordan blocks) without modification. Consider changing them only if you
+encounter:
 
-- **Compile errors about constexpr step limits** → Raise `-fconstexpr-ops-limit` or `-fconstexpr-steps`
-- **Convergence failures on large matrices** → Increase `CONSTEIG_MAX_ITER`
-- **Poor accuracy on near-defective matrices** → Enable `CONSTEIG_USE_LONG_DOUBLE`
-- **Very tight symmetry requirements** → Tighten `CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE`
+- Compile errors about constexpr step limits: Raise `-fconstexpr-ops-limit` or `-fconstexpr-steps`
+- Convergence failures on large matrices:  Increase `CONSTEIG_MAX_ITER`
+- Poor accuracy on near-defective matrices:  Enable `CONSTEIG_USE_LONG_DOUBLE`
+- Very tight symmetry requirements: Tighten `CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE`
 
 [^1]: James, R., Langou, J., & Lowery, B. R. (2014). [On matrix balancing and eigenvector computation](https://arxiv.org/pdf/1401.5766)
