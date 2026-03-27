@@ -1,5 +1,5 @@
 PROJECT_NAME           = "consteig"
-PROJECT_BRIEF          = "Compile-time eigenvalue computation for C++17"
+PROJECT_BRIEF          = "Compile-time eigenvalue and eigenvector computation for C++17"
 PROJECT_NUMBER         =
 
 OUTPUT_DIRECTORY       = docs/api
