@@ -20,9 +20,9 @@ Quick reference examples:
 
 * [Working with matrices](https://github.com/mitchellthompkins/consteig/blob/develop/examples/matrix.cpp)
 * [Finding eigenvalues](https://github.com/mitchellthompkins/consteig/blob/develop/examples/eigen.cpp)
+* [DC motor control gain validation](https://github.com/mitchellthompkins/consteig/blob/develop/examples/dc_motor_control.cpp)
 * [Population flow](https://github.com/mitchellthompkins/consteig/blob/develop/examples/population.cpp)
 * [Butterworth filter design](https://github.com/mitchellthompkins/consteig/blob/develop/examples/butterworth/butterworth_core.hpp)
-* [DC motor control gain validation](https://github.com/mitchellthompkins/consteig/blob/develop/examples/dc_motor_control.cpp)
 
 ## Your First Eigenvalue Computation
 
@@ -95,6 +95,13 @@ Operations](../guide/matrix.md) for more detail.
 
 ## More Examples
 
+### Control Theory
+
+When system parameters and controller gains are known at compile-time, consteig
+can verify that the closed-loop poles meet performance requirements, turning a
+runtime failure into a build failure. See the [dc-motor
+example](https://mitchellthompkins.github.io/consteig/examples/dc-motor/).
+
 ### Population Flow
 
 If a system's transition matrix is fixed at compile-time, its steady-state
@@ -110,10 +117,3 @@ example](https://mitchellthompkins.github.io/consteig/examples/population/).
 IIR filter coefficients derived entirely at compile-time from a continuous-time
 transfer function. See the [butterworth
 example](https://mitchellthompkins.github.io/consteig/examples/butterworth/).
-
-### Control Theory
-
-When system parameters and controller gains are known at compile-time, consteig
-can verify that the closed-loop poles meet performance requirements, turning a
-runtime failure into a build failure. See the [dc-motor
-example](https://mitchellthompkins.github.io/consteig/examples/dc-motor/).

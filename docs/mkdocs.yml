@@ -47,9 +47,9 @@ nav:
       - Math Functions: guide/math-functions.md
       - Configuration: guide/configuration.md
   - Examples:
+      - DC Motor Control: examples/dc-motor.md
       - Population Flow: examples/population.md
       - Butterworth Filter: examples/butterworth.md
-      - DC Motor Control: examples/dc-motor.md
   - Algorithms:
       - Methods: methods.md
       - Verification & Accuracy: verification.md
