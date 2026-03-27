@@ -13,11 +13,11 @@ calculating them at runtime and no offline tool is needed to generate them.
 
 This is particularly useful when a system's parameters are fixed at
 compile-time. Information like filter coefficients, system eigenvalues, and
-steady-state distributions can live directly in source code rather than being
-derived externally and hard-coded. When parameters change, the compiler
-recomputes. When the math is wrong, `static_assert` catches it at build time.
-consteig is strictly freestanding and depends on no external libraries, not even
-the C++ standard library.
+steady-state distributions can be computed by the compiler and live directly in
+the program binary rather than being derived externally and hard-coded. When
+parameters change, the compiler recomputes. When the math is wrong,
+`static_assert` catches it at build time.  consteig is strictly freestanding and
+depends on no external libraries, not even the C++ standard library.
 
 All at compile-time, consteig supports:
 
@@ -40,7 +40,7 @@ static constexpr consteig::Matrix<double, 3, 3> M{{
 static constexpr auto eigenvalues = consteig::eigenvalues(M);
 ```
 
-See [Getting Started](getting-started/index.md) for installation and a full walkthrough.
+See [Getting Started](getting-started.md) for installation and a full walkthrough.
 
 ## When To Use consteig
 

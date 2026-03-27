@@ -74,7 +74,8 @@ static constexpr auto vecs = consteig::eigenvectors(A, eigs);
 
 ## Declaring Matrices
 
-Matrix dimensions are template parameters. Values are provided as nested initializer lists:
+Matrix dimensions are template parameters. Values are provided as nested
+initializer lists (alternatively there is a `consteig::make_matrix` function):
 
 ```cpp
 // 3x3 matrix
@@ -92,9 +93,27 @@ The double braces `{{...}}` are required: the outer pair initializes the
 `Matrix`, the inner pairs initialize each row. See [Matrix
 Operations](../guide/matrix.md) for more detail.
 
-## Next Steps
+## More Examples
 
-- [Matrix Operations](../guide/matrix.md) — construction, arithmetic, slicing
-- [Eigensolvers](../guide/eigensolvers.md) — `eigenvalues`, `eigenvectors`, verification
-- [Examples](../examples/population.md) — real-world use cases
-- [Configuration](../guide/configuration.md) — tuning for large or difficult matrices
+### Population Flow
+
+If a system's transition matrix is fixed at compile-time, its steady-state
+behavior never needs to be recomputed at runtime. The
+[`population.cpp`](examples/population.cpp) example computes steady-state
+population fractions as `static constexpr` values; at runtime, distributing any
+total population is a single multiply with no matrix iteration. See the
+[population
+example](https://mitchellthompkins.github.io/consteig/examples/population/).
+
+### Digital Filter Design
+
+IIR filter coefficients derived entirely at compile-time from a continuous-time
+transfer function. See the [butterworth
+example](https://mitchellthompkins.github.io/consteig/examples/butterworth/).
+
+### Control Theory
+
+When system parameters and controller gains are known at compile-time, consteig
+can verify that the closed-loop poles meet performance requirements, turning a
+runtime failure into a build failure. See the [dc-motor
+example](https://mitchellthompkins.github.io/consteig/examples/dc-motor/).
