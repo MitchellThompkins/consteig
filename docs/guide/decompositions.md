@@ -2,11 +2,13 @@ title: Decompositions
 
 # Decompositions
 
-All decompositions require square matrices. Hessenberg reduction and Householder reflection additionally require floating-point element types.
+All decompositions require square matrices. Hessenberg reduction and Householder
+reflection additionally require floating-point element types.
 
 ## QR Decomposition
 
-Factors A = Q * R where Q is orthogonal and R is upper triangular. Uses Givens rotations for numerical stability.
+Factors A = Q * R where Q is orthogonal and R is upper triangular. Uses Givens
+rotations for numerical stability.
 
 ```cpp
 static constexpr consteig::Matrix<double, 3, 3> A{{
@@ -18,10 +20,11 @@ static constexpr consteig::Matrix<double, 3, 3> A{{
 static constexpr auto result = consteig::qr(A);
 // result._q  — orthogonal factor (Q)
 // result._r  — upper-triangular factor (R)
-// A ≈ result._q * result._r
+// A ~= result._q * result._r
 ```
 
-For matrices already in upper Hessenberg form, `qr_hessenberg` is faster and is what the eigensolver uses internally:
+For matrices already in upper Hessenberg form, `qr_hessenberg` is faster and is
+what the eigensolver uses internally:
 
 ```cpp
 static constexpr auto result = consteig::qr_hessenberg(H);

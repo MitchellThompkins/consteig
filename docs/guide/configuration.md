@@ -8,7 +8,8 @@ compile times or numerical instability.
 
 ## User Macros
 
-All macros are guarded by `#ifndef` and can be overridden before including `consteig.hpp` or via compiler flags (`-DMACRO=value`).
+All macros are guarded by `#ifndef` and can be overridden before including
+`consteig.hpp` or via compiler flags (`-DMACRO=value`).
 
 ### CONSTEIG_MAX_ITER
 

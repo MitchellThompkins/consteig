@@ -2,7 +2,9 @@ title: Math Functions
 
 # Math Functions
 
-consteig provides a set of constexpr math functions that work without the standard library. All functions are in the `consteig` namespace and are included via `consteig.hpp`.
+consteig provides a set of constexpr math functions that work without the
+standard library. All functions are in the `consteig` namespace and are included
+via `consteig.hpp`.
 
 ## Basic Functions
 
@@ -15,6 +17,10 @@ consteig provides a set of constexpr math functions that work without the standa
 | `exp(x)`    | Exponential e^x                              |
 | `pow(x, n)` | x raised to integer power n                  |
 
+A number of these algorithms were inspired by GCEM [^1]. It was orginally a
+project dependency but was removed due to its dependence on the standard
+library.
+
 ## Trigonometric Functions
 
 | Function  | Description        |
@@ -22,12 +28,6 @@ consteig provides a set of constexpr math functions that work without the standa
 | `sin(x)`  | Sine               |
 | `cos(x)`  | Cosine             |
 | `tan(x)`  | Tangent            |
-| `asin(x)` | Arcsine            |
-| `acos(x)` | Arccosine          |
-| `atan(x)` | Arctangent         |
-| `sinh(x)` | Hyperbolic sine    |
-| `cosh(x)` | Hyperbolic cosine  |
-| `tanh(x)` | Hyperbolic tangent |
 
 Trigonometric functions use Taylor series expansion with `CONSTEIG_TRIG_MAX_ITER` iterations (default 20, sufficient for `double` precision).
 
@@ -79,3 +79,5 @@ error: 'force_compile_time_error_for_negative_sqrt' is not a constant expression
 ```
 
 At runtime, a NaN (or -1 for integer types) is returned as a safe poison value.
+
+[^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)

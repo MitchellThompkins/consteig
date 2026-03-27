@@ -89,8 +89,9 @@ static constexpr double d2 = A.determinant();
 static constexpr double t2 = A.trace();
 ```
 
-!!! warning "Determinant complexity"
-    `determinant()` uses Laplace expansion with O(n!) complexity. It is practical only for small matrices (n ≤ 4 or 5). For larger matrices it is used only internally for eigenvalue verification.
+**`determinant()` uses Laplace expansion with O(n!) complexity. It is practical
+only for small matrices (n ≤ 4 or 5). For larger matrices it is used only
+internally for eigenvalue verification.**
 
 ## Extracting Rows, Columns, and Submatrices
 
