@@ -46,9 +46,9 @@ iterations; decreasing it stops earlier.
 
 ### CONSTEIG_TRIG_MAX_ITER
 
-Maximum Taylor series iterations for `sin`, `cos`, `tan`, etc. 14 should suffice
-for `double` precision but the library here uses a slightly higher default for
-good margin.
+Maximum Taylor series iterations for `sin`, `cos`, `tan`, etc. (default: see
+`consteig_options.hpp`). 14 should suffice for `double` precision but the
+library uses a slightly higher default for good margin.
 
 ### CONSTEIG_USE_LONG_DOUBLE
 

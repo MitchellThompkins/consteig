@@ -9,7 +9,8 @@ namespace consteig
 /// @brief Fixed-size array with compile-time length.
 ///
 /// A freestanding alternative to `std::array` used as the internal storage
-/// type for @ref Matrix. All element-access operations are `constexpr`.
+/// type for @ref Matrix. Most element-access operations are `constexpr`;
+/// the `data()` overloads are non-`constexpr`.
 ///
 /// @tparam T  Element type.
 /// @tparam N  Number of elements (compile-time constant).

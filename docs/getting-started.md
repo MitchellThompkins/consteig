@@ -18,11 +18,11 @@ files in the repository are for testing and development only.
 
 Quick reference examples:
 
-* [Working with matrices](https://github.com/mitchellthompkins/consteig/blob/develop/examples/matrix.cpp)
-* [Finding eigenvalues](https://github.com/mitchellthompkins/consteig/blob/develop/examples/eigen.cpp)
-* [DC motor control gain validation](https://github.com/mitchellthompkins/consteig/blob/develop/examples/dc_motor_control.cpp)
-* [Population flow](https://github.com/mitchellthompkins/consteig/blob/develop/examples/population.cpp)
-* [Butterworth filter design](https://github.com/mitchellthompkins/consteig/blob/develop/examples/butterworth/butterworth_core.hpp)
+* [Working with matrices](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/matrix.cpp)
+* [Finding eigenvalues](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/eigen.cpp)
+* [DC motor control gain validation](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/dc_motor_control.cpp)
+* [Population flow](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/population.cpp)
+* [Butterworth filter design](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/butterworth/butterworth_core.hpp)
 
 ## Your First Eigenvalue Computation
 
@@ -106,7 +106,7 @@ example](https://mitchellthompkins.github.io/consteig/examples/dc-motor/).
 
 If a system's transition matrix is fixed at compile-time, its steady-state
 behavior never needs to be recomputed at runtime. The
-[`population.cpp`](examples/population.cpp) example computes steady-state
+[`population.cpp`](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/population.cpp) example computes steady-state
 population fractions as `static constexpr` values; at runtime, distributing any
 total population is a single multiply with no matrix iteration. See the
 [population

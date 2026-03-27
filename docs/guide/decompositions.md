@@ -43,11 +43,11 @@ static constexpr auto result = consteig::hess(A);
 // A ~= result._p * result._h * transpose(result._p)
 ```
 
-Hessenberg reduction is a key preprocessing step for the eigenvalue solver — it reduces the cost of each QR iteration from O(n^3) to O(n^2).
+Hessenberg reduction is a key preprocessing step for the eigenvalue solver — it reduces the cost of each QR iteration from $O(n^3)$ to $O(n^2)$.
 
 ## Householder Reflection
 
-Computes a Householder reflector H = I - 2*v*v^T that zeros the subdiagonal entries of the first column of a matrix. Used internally by Hessenberg reduction.
+Computes a Householder reflector $H = I - 2 v v^T$ that zeros the subdiagonal entries of the first column of a matrix. Used internally by Hessenberg reduction.
 
 ```cpp
 static constexpr auto H = consteig::house(A);
