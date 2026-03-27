@@ -1,6 +1,8 @@
 name: docs
 
 on:
+  push:
+    branches: [add-docs]
   pull_request:
   workflow_dispatch:
 
