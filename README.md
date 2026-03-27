@@ -84,7 +84,7 @@ they cannot compute eigenvalues at compile-time, and they depend on the
 standard library, which is unavailable on some embedded systems. This library
 addresses both constraints.
 
-# Algorithmic Approach and Optimizations [^3]
+# Algorithmic Approach and Optimizations
 
 See [docs/methods.md](docs/methods.md) for a discussion on the implementation
 specifics for the numerical solvers implemented by consteig.
@@ -113,34 +113,3 @@ indicates where `consteig_raise_compiler_limits` was needed.
 * Matrix dimensions are template parameters and must be compile-time constants.
 * Input matrices must be real-valued. Eigenvalue output may be complex, but `Matrix<consteig::Complex<T>, ...>` is not supported as input.
 * Only square matrices are supported for eigenvalue computation and decompositions.
-
-# Development
-
-## With Docker (recommended)
-
-```bash
-make container.pull
-export MY_UID=$(id -u)
-export MY_GID=$(id -g)
-make container.make.build
-make container.make.test
-```
-
-Any make target can be run inside the container via `container.make.<target>`.
-Drop into the container with `make container.start`.
-
-## Without Docker (native)
-
-Requires gcc/clang (C++17), cmake >= 3.13, make, and clang-format.
-
-```bash
-make build
-make test
-```
-
-# References
-
-[^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
-[^2]: James, R., Langou, J., & Lowery, B. R. (2014). [On matrix balancing and eigenvector computation](https://arxiv.org/pdf/1401.5766)
-[^3]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
-[^4]: Stewart, G. W., and J.-G. Sun. 1990. Matrix Perturbation Theory. Boston: Academic Press. §3.1.
