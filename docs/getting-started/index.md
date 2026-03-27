@@ -37,30 +37,29 @@ static constexpr consteig::Matrix<double, 2, 2> A{{
 
 // Compute eigenvalues at compile time
 static constexpr auto eigs = consteig::eigenvalues(A);
-
-// eigs is a Matrix<Complex<double>, 2, 1>
-// eigs(0,0).real ≈ 4.0,  eigs(0,0).imag ≈ 0.0
-// eigs(1,0).real ≈ 2.0,  eigs(1,0).imag ≈ 0.0
 ```
 
-## Verifying Results with static_assert
+## Sanity-Checking the Solver with checkEigenValues
 
-The most powerful pattern is to verify results at compile time. If the assertion fails, the build fails — no runtime needed:
+`checkEigenValues` verifies that the computed eigenvalues are self-consistent
+with the input matrix by checking two invariants: the sum of eigenvalues equals
+the matrix trace, and (for matrices up to 4x4) the product equals the
+determinant. This catches solver failures, but does not verify that the
+eigenvalues match any user-defined expectation.
 
 ```cpp
-#include "consteig.hpp"
-#include "test_dependencies/test_tools.hpp"  // for CONSTEIG_TEST_TOLERANCE
-
-static constexpr consteig::Matrix<double, 2, 2> A{{
-    {3.0, 1.0},
-    {1.0, 3.0}
-}};
-
 static constexpr auto eigs = consteig::eigenvalues(A);
-
-// checkEigenValues verifies trace and determinant invariants
 static_assert(consteig::checkEigenValues(A, eigs, 1e-9),
-              "Eigenvalue verification failed");
+              "Eigenvalue invariants failed");
+```
+
+To assert something meaningful about your specific problem, write your own
+`static_assert` against the computed values directly. For example, to confirm
+all poles are stable:
+
+```cpp
+static_assert(eigs(0, 0).real < 0.0 && eigs(1, 0).real < 0.0,
+              "System is unstable");
 ```
 
 ## Computing Eigenvectors
@@ -89,8 +88,9 @@ static constexpr consteig::Matrix<double, 3, 3> M{{
 static constexpr double val = M(1, 2);  // 6.0
 ```
 
-!!! note "Initializer syntax"
-    The double braces `{{...}}` are required: the outer pair initializes the `Matrix`, the inner pairs initialize each row. See [Matrix Operations](../guide/matrix.md) for more detail.
+The double braces `{{...}}` are required: the outer pair initializes the
+`Matrix`, the inner pairs initialize each row. See [Matrix
+Operations](../guide/matrix.md) for more detail.
 
 ## Next Steps
 
