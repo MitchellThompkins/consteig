@@ -39,7 +39,7 @@ HIDE_UNDOC_MEMBERS     = YES
 
 GENERATE_HTML          = YES
 GENERATE_LATEX         = NO
-HTML_OUTPUT            = html
+HTML_OUTPUT            = .
 
 USE_MATHJAX            = YES
 MATHJAX_VERSION        = MathJax_3

@@ -44,7 +44,7 @@ jobs:
         run: mkdocs build --config-file docs/mkdocs.yml --site-dir ../site
 
       - name: Copy Doxygen output into site
-        run: cp -r docs/api/html/ site/api/
+        run: cp -r docs/api/ site/api/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
