@@ -1,4 +1,6 @@
+---
 title: Performance
+---
 
 # Performance
 

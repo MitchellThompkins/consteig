@@ -1,4 +1,6 @@
+---
 title: Population Flow Example
+---
 
 # Population Flow
 

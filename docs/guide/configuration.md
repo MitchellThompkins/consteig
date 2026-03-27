@@ -1,4 +1,6 @@
+---
 title: Configuration
+---
 
 # Configuration
 

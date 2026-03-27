@@ -1,4 +1,6 @@
+---
 title: DC Motor Control
+---
 
 # Control Theory
 

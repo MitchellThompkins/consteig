@@ -1,4 +1,6 @@
+---
 title: Math Functions
+---
 
 # Math Functions
 
