@@ -4,9 +4,9 @@
 # consteig
 
 consteig is a header-only C++17 constexpr template library for computing
-eigenvalues and eigenvectors of constexpr  matrices at compile-time. Results are
-stored as `static constexpr` values, so no processor time is spent calculating
-them at runtime and no offline tool is needed to generate them.
+eigenvalues and eigenvectors of constexpr  matrices at compile-time. The results
+are stored as `static constexpr` values, so no processor time is spent
+calculating them at runtime and no offline tool is needed to generate them.
 
 This is particularly useful when a system's parameters are fixed at
 compile-time. Information like filter coefficients, system eigenvalues, and
