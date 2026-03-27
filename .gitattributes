@@ -1,2 +1,2 @@
-docs/imgs/step_response.png filter=lfs diff=lfs merge=lfs -text
 profiling/results/*.png filter=lfs diff=lfs merge=lfs -text
+docs/examples/step_response.png filter=lfs diff=lfs merge=lfs -text
