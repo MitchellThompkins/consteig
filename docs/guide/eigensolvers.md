@@ -79,10 +79,11 @@ See [Verification & Accuracy](../verification.md) for a detailed discussion.
 
 The solver automatically routes between two algorithms:
 
-- **Symmetric matrices** → single-shift QR (`eig_shifted_qr`): faster, assumes real eigenvalues
-- **Non-symmetric matrices** → double-shift QR (`eig_double_shifted_qr`): handles complex conjugate pairs
+- Symmetric matrices: single-shift QR (`eig_shifted_qr`): faster, assumes real eigenvalues
+- Non-symmetric matrices: double-shift QR (`eig_double_shifted_qr`): handles complex conjugate pairs
 
-The routing threshold is controlled by `CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE`. See [Configuration](configuration.md).
+The routing threshold is controlled by `CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE`.
+See [Configuration](configuration.md).
 
 ## Working with Complex Results
 
