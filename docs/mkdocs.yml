@@ -53,4 +53,5 @@ nav:
   - Algorithms:
       - Methods: methods.md
       - Verification & Accuracy: verification.md
+  - Performance: performance.md
   - API Reference: api/index.html
