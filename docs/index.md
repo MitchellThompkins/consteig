@@ -22,7 +22,7 @@ All at compile-time, consteig supports:
 * Computation of real and complex eigenvalues and eigenvectors for symmetric and
   non-symmetric matrices.
 * Matrix construction and manipulation, including common operations and decompositions.
-* A selection of mathematical functions, including complex arithmetic. [^1]
+* A selection of mathematical functions, including complex arithmetic [^1].
 
 ## Quick Start
 
@@ -49,8 +49,10 @@ See [Getting Started](getting-started/index.md) for installation and a full walk
 ## Constraints
 
 * Matrix dimensions are template parameters and must be compile-time constants.
-* Input matrices must be real-valued. Eigenvalue output may be complex, but `Matrix<consteig::Complex<T>, ...>` is not supported as input.
-* Only square matrices are supported for eigenvalue computation and decompositions.
+* Input matrices must be real-valued. Eigenvalue output may be complex, but
+  `Matrix<consteig::Complex<T>, ...>` is not supported as input.
+* Only square matrices are supported for eigenvalue computation and
+  decompositions.
 
 ## Why Does This Exist
 
@@ -70,4 +72,7 @@ they cannot compute eigenvalues at compile-time, and they depend on the
 standard library, which is unavailable on some embedded systems. This library
 addresses both constraints.
 
-[^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)
+[^1]: The original implementation of consteig relied on Keith O'Hara's GCE-Math
+    (Generalized Constant Expression Math)
+    [GCEM](https://github.com/kthohr/gcem). It relies on the standard library
+    and thus was removed as a dependency.

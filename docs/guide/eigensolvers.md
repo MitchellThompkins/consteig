@@ -22,7 +22,8 @@ Real eigenvalues have zero imaginary part. Complex eigenvalues appear as conjuga
 
 ## eigenvectors — Eigenvectors
 
-Given a matrix and its eigenvalues, compute the corresponding eigenvectors. Each column of the result is the eigenvector for the eigenvalue at the same index.
+Given a matrix and its eigenvalues, compute the corresponding eigenvectors. Each
+column of the result is the eigenvector for the eigenvalue at the same index.
 
 ```cpp
 static constexpr auto eigs = consteig::eigenvalues(A);
