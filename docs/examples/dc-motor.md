@@ -90,4 +90,4 @@ With properly tuned gains, the build completes and the system is guaranteed to
 meet requirements. The step response plot below shows the validated system
 behavior:
 
-![Motor Control Step Response](../imgs/step_response.png)
+![Motor Control Step Response](step_response.png)
