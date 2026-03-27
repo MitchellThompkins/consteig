@@ -25,7 +25,8 @@ namespace consteig
 /// @tparam C  Number of columns.
 /// @param  a  Square input matrix (only the first column is used).
 /// @return R×R Householder reflector matrix.
-/// @pre `R == C` and `T` must be floating-point (both enforced by `static_assert`).
+/// @pre `R == C` and `T` must be floating-point (both enforced by
+/// `static_assert`).
 template <typename T, Size R, Size C>
 constexpr Matrix<T, R, R> house(Matrix<T, R, C> a);
 

@@ -67,7 +67,8 @@ template <typename T> struct Complex
                 (imag * other.real - real * other.imag) / denom};
     }
 
-    /// @brief Exact equality (no tolerance). Prefer @ref equalWithin for floats.
+    /// @brief Exact equality (no tolerance). Prefer @ref equalWithin for
+    /// floats.
     constexpr bool operator==(const Complex &other) const
     {
         return real == other.real && imag == other.imag;

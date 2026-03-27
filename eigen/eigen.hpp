@@ -373,7 +373,8 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
 /// @tparam S  Matrix dimension.
 /// @param  a                  Real square matrix.
 /// @param  symmetryTolerance  Threshold for routing to the symmetric solver.
-///                            Default: @ref CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE.
+///                            Default: @ref
+///                            CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE.
 /// @return Quasi-upper-triangular matrix in real Schur form.
 /// @pre `T` must be a floating-point type (enforced by `static_assert`).
 template <typename T, Size S>
@@ -503,7 +504,8 @@ constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
 /// @brief Verify computed eigenvalues against matrix invariants.
 ///
 /// Checks two matrix invariants:
-/// 1. **Trace**: sum of eigenvalues must equal the matrix trace within `thresh`.
+/// 1. **Trace**: sum of eigenvalues must equal the matrix trace within
+/// `thresh`.
 /// 2. **Determinant** (only for `R <= 4`): product of eigenvalues must equal
 ///    `det(a)` within a scaled tolerance.
 ///
@@ -715,7 +717,8 @@ template <typename T, Size S> class EigenSolver
         return _evals;
     }
 
-    /// @brief Return the S×S eigenvector matrix (column `i` corresponds to eigenvalue `i`).
+    /// @brief Return the S×S eigenvector matrix (column `i` corresponds to
+    /// eigenvalue `i`).
     constexpr const Matrix<Complex<T>, S, S> &eigenvectors() const
     {
         return _evecs;

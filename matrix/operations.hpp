@@ -166,7 +166,8 @@ constexpr Matrix<T, C, R> transpose(const Matrix<T, R, C> &mat)
     return result;
 }
 
-/// @brief Create an S×S matrix with `val` on the main diagonal and zeros elsewhere.
+/// @brief Create an S×S matrix with `val` on the main diagonal and zeros
+/// elsewhere.
 ///
 /// @tparam T  Scalar type.
 /// @tparam S  Matrix dimension.

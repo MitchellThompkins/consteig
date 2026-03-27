@@ -21,7 +21,8 @@ namespace consteig
 /// @tparam T  Scalar element type.
 /// @tparam S  Matrix dimension.
 ///
-/// @var PHMatrix::_p  Accumulated product of Householder reflectors (S×S orthogonal).
+/// @var PHMatrix::_p  Accumulated product of Householder reflectors (S×S
+/// orthogonal).
 /// @var PHMatrix::_h  Upper Hessenberg form of the input matrix.
 template <typename T, Size S> struct PHMatrix
 {
@@ -54,7 +55,8 @@ template <typename T, Size S> struct PHMatrix
 /// @tparam L  Internal recursion parameter — do not specify (defaults to `R`).
 /// @param  a  Square input matrix.
 /// @return @ref PHMatrix containing `_p` (orthogonal) and `_h` (Hessenberg).
-/// @pre `R == C` and `T` must be floating-point (both enforced by `static_assert`).
+/// @pre `R == C` and `T` must be floating-point (both enforced by
+/// `static_assert`).
 template <typename T, Size R, Size C, Size L = R>
 constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a);
 

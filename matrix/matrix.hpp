@@ -68,7 +68,8 @@ template <typename T, Size R, Size C> class Matrix
     }
 
     // TODO(mthompkins): Need to handle the equal floats case
-    /// @brief Exact element-wise equality. Prefer @ref equalWithinMat for floats.
+    /// @brief Exact element-wise equality. Prefer @ref equalWithinMat for
+    /// floats.
     template <typename U>
     constexpr bool operator==(const Matrix<U, R, C> &rhs) const
     {
@@ -85,7 +86,8 @@ template <typename T, Size R, Size C> class Matrix
         return true;
     }
 
-    /// @brief Inequality (exact). Prefer negated @ref equalWithinMat for floats.
+    /// @brief Inequality (exact). Prefer negated @ref equalWithinMat for
+    /// floats.
     template <typename U>
     constexpr bool operator!=(const Matrix<U, R, C> &rhs) const
     {
@@ -172,8 +174,9 @@ template <typename T, Size R, Size C> class Matrix
 
     /// @brief Extract a rectangular submatrix.
     ///
-    /// Returns a `numRows × numCols` submatrix starting at `(startRow, startCol)`.
-    /// Dimensions are compile-time constants; start position is runtime.
+    /// Returns a `numRows × numCols` submatrix starting at `(startRow,
+    /// startCol)`. Dimensions are compile-time constants; start position is
+    /// runtime.
     ///
     /// @tparam numRows   Number of rows to extract (compile-time).
     /// @tparam numCols   Number of columns to extract (compile-time).

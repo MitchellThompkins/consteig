@@ -7,7 +7,8 @@ namespace consteig
 /// @addtogroup math
 /// @{
 
-/// @brief Raise `x` to an unsigned integer power via exponentiation by squaring.
+/// @brief Raise `x` to an unsigned integer power via exponentiation by
+/// squaring.
 ///
 /// @tparam T  Numeric type.
 /// @param  x  Base value.

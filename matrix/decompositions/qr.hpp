@@ -42,7 +42,8 @@ template <typename T, Size S> struct QRMatrix
 /// @tparam R  Number of rows.
 /// @tparam C  Number of columns.
 /// @param  a  Upper Hessenberg square matrix.
-/// @return @ref QRMatrix containing `_q` (orthogonal) and `_r` (upper-triangular).
+/// @return @ref QRMatrix containing `_q` (orthogonal) and `_r`
+/// (upper-triangular).
 /// @pre `R == C` (enforced by `static_assert`).
 // Algorithm: QR Decomposition (Hessenberg Optimized)
 // Factors an upper Hessenberg matrix A = QR using a sequence of Givens
@@ -114,7 +115,8 @@ constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a)
 /// @tparam R  Number of rows.
 /// @tparam C  Number of columns.
 /// @param  a  Square input matrix.
-/// @return @ref QRMatrix containing `_q` (orthogonal) and `_r` (upper-triangular).
+/// @return @ref QRMatrix containing `_q` (orthogonal) and `_r`
+/// (upper-triangular).
 /// @pre `R == C` (enforced by `static_assert`).
 ///
 /// @code
