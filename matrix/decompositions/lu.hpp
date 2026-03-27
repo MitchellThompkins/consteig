@@ -37,7 +37,7 @@ template <typename T, Size S> struct LUMatrix
 /// unit lower triangular, and U is upper triangular. Partial pivoting selects
 /// the largest magnitude element as the pivot to control rounding error growth.
 ///
-/// Used internally by @ref eigvecs for inverse iteration. Can also be used
+/// Used internally by @ref eigenvectors for inverse iteration. Can also be used
 /// directly for solving linear systems via @ref lu_solve.
 ///
 /// @tparam T  Scalar type (works with both real and @ref Complex types).
@@ -124,7 +124,7 @@ constexpr LUMatrix<T, S> lu(const Matrix<T, S, S> &a)
 /// 2. Backward substitution to solve Ux = y.
 ///
 /// Nearly singular systems (diagonal element of U below 1e-30) are handled
-/// gracefully to support inverse iteration in @ref eigvecs.
+/// gracefully to support inverse iteration in @ref eigenvectors.
 ///
 /// @tparam T  Scalar type.
 /// @tparam S  System dimension.

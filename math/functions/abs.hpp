@@ -4,6 +4,16 @@
 namespace consteig
 {
 
+/// @addtogroup math
+/// @{
+
+/// @brief Absolute value of a real number.
+///
+/// Returns `|x|`. Handles signed zero correctly (returns positive zero).
+///
+/// @tparam T  Numeric type.
+/// @param  x  Input value.
+/// @return Non-negative absolute value of `x`.
 template <typename T> constexpr T abs(const T x)
 {
     return (
@@ -13,6 +23,8 @@ template <typename T> constexpr T abs(const T x)
             x < T(0) ? -x
                      : x);
 }
+
+/// @}  // addtogroup math
 
 } // namespace consteig
 

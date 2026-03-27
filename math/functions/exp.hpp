@@ -8,6 +8,9 @@
 namespace consteig
 {
 
+/// @addtogroup math
+/// @{
+
 // Max iterations for continued fraction expansion
 constexpr int EXP_MAX_ITER = 50;
 
@@ -79,6 +82,8 @@ template <typename T> constexpr Complex<T> exp(const Complex<T> &z) noexcept
     // exp(x) uses the real version, exp(iy) uses the continued fraction
     return exp(z.real) * exp_cf(Complex<T>(0, z.imag));
 }
+
+/// @}  // addtogroup math
 
 } // namespace consteig
 

@@ -4,6 +4,14 @@
 namespace consteig
 {
 
+/// @addtogroup math
+/// @{
+
+/// @brief Signum function: returns +1, -1, or 0.
+///
+/// @tparam T  Numeric type.
+/// @param  x  Input value.
+/// @return `+1` if `x > 0`, `-1` if `x < 0`, `0` if `x == 0`.
 template <typename T> constexpr T sgn(const T x)
 {
     return ( // positive
@@ -14,6 +22,8 @@ template <typename T> constexpr T sgn(const T x)
                                   // else
             static_cast<T>(0));
 }
+
+/// @}  // addtogroup math
 
 } // namespace consteig
 

@@ -12,8 +12,8 @@ namespace consteig
 ///
 /// A lightweight complex number with no dependency on `<complex>`.
 /// All arithmetic operators and utility functions are `constexpr`, making
-/// it suitable for compile-time computation. Returned by @ref eigvals and
-/// @ref eigvecs for complex eigenvalue pairs.
+/// it suitable for compile-time computation. Returned by @ref eigenvalues and
+/// @ref eigenvectors for complex eigenvalue pairs.
 ///
 /// @tparam T  Floating-point scalar type for the real and imaginary parts.
 ///
