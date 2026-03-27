@@ -30,7 +30,7 @@ The double-brace syntax (`{{ }}`) is required: the outer `{}` initializes the `M
 Elements are accessed with `operator()(row, col)` using zero-based indices:
 
 ```cpp
-static constexpr double val = A(0, 1);  // row 0, col 1 → 2.0
+static constexpr double val = A(0, 1);  // row 0, col 1 = 2.0
 ```
 
 ## Arithmetic
@@ -73,7 +73,7 @@ static constexpr double frob2 = A.norm();             // same as consteig::norm(
 
 ## Dot Product
 
-For 1×N row vectors:
+For 1xN row vectors:
 
 ```cpp
 static constexpr consteig::Matrix<double, 1, 3> u{{{1.0, 2.0, 3.0}}};
@@ -92,7 +92,7 @@ static constexpr double t2 = A.trace();
 ```
 
 **`determinant()` uses Laplace expansion with O(n!) complexity. It is practical
-only for small matrices (n ≤ 4 or 5). For larger matrices it is used only
+only for small matrices (n <= 4 or 5). For larger matrices it is used only
 internally for eigenvalue verification.**
 
 ## Extracting Rows, Columns, and Submatrices

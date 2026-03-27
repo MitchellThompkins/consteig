@@ -46,7 +46,7 @@ static constexpr auto vecs = solver.eigenvectors(); // Matrix<Complex<double>, 3
 
 ## eig — Schur Form
 
-`eig()` returns the real Schur form of the matrix (quasi-upper-triangular). The diagonal entries are real eigenvalues; 2×2 diagonal blocks encode complex conjugate pairs. In most cases you want `eigenvalues` or `eigenvectors` instead.
+`eig()` returns the real Schur form of the matrix (quasi-upper-triangular). The diagonal entries are real eigenvalues; 2x2 diagonal blocks encode complex conjugate pairs. In most cases you want `eigenvalues` or `eigenvectors` instead.
 
 ```cpp
 static constexpr auto schur = consteig::eig(A);
@@ -57,7 +57,7 @@ static constexpr auto schur = consteig::eig(A);
 `checkEigenValues` verifies computed eigenvalues against two matrix invariants:
 
 1. The sum of eigenvalues equals the matrix trace.
-2. The product of eigenvalues equals the matrix determinant (only checked for matrices up to 4×4).
+2. The product of eigenvalues equals the matrix determinant (only checked for matrices up to 4x4).
 
 Use this in a `static_assert` to make the build fail if eigenvalues are wrong:
 

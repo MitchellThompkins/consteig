@@ -45,7 +45,7 @@ static_assert(check_overshoot(poles, ZETA_LIMIT_FOR_OVERSHOOT),
               "Overshoot less than 16% [FAILED]");
 ```
 
-## Bad Gains → Build Error
+## Bad Gains: Build Error
 
 ```bash
 make container.make.dc_motor_control.main
@@ -84,7 +84,7 @@ Validation:
   [PASS] No steady-state error (Enforced by integral action)
 ```
 
-## Good Gains → Build Succeeds
+## Good Gains: Build Succeeds
 
 With properly tuned gains, the build completes and the system is guaranteed to
 meet requirements. The step response plot below shows the validated system

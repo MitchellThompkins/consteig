@@ -126,7 +126,7 @@ Combine with `CONSTEIG_USE_LONG_DOUBLE` for maximum precision.
 
 ## When to Change Defaults
 
-The defaults work for the full test suite (8×8 matrices, including defective
+The defaults work for the full test suite (8x8 matrices, including defective
 Jordan blocks) without modification. Consider changing them only if you
 encounter:
 

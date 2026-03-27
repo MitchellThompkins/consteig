@@ -40,7 +40,7 @@ Reduces a square matrix to upper Hessenberg form via orthogonal similarity: H = 
 static constexpr auto result = consteig::hess(A);
 // result._h  — upper Hessenberg matrix
 // result._p  — accumulated orthogonal factor
-// A ≈ result._p * result._h * transpose(result._p)
+// A ~= result._p * result._h * transpose(result._p)
 ```
 
 Hessenberg reduction is a key preprocessing step for the eigenvalue solver — it reduces the cost of each QR iteration from O(n^3) to O(n^2).
@@ -51,7 +51,7 @@ Computes a Householder reflector H = I - 2*v*v^T that zeros the subdiagonal entr
 
 ```cpp
 static constexpr auto H = consteig::house(A);
-// H is an R×R orthogonal matrix
+// H is an RxR orthogonal matrix
 // H * A zeros the first column below the first subdiagonal
 ```
 

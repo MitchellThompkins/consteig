@@ -43,8 +43,8 @@ static constexpr consteig::Matrix<double, 2, 2> A{{
 
 // Eigenvalues computed at compile time
 static constexpr auto eigs = consteig::eigenvalues(A);
-// eigs(0,0).real ≈ 1.0   ← steady state
-// eigs(1,0).real ≈ 0.75  ← transient mode
+// eigs(0,0).real ~ 1.0   (steady state)
+// eigs(1,0).real ~ 0.75  (transient mode)
 
 // Verify at compile time
 static_assert(consteig::checkEigenValues(A, eigs, 1e-9), "Bad eigenvalues");
