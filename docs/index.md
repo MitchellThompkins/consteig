@@ -5,9 +5,9 @@ title: consteig
 ![CI](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
 
 consteig is a header-only C++17 constexpr template library for computing
-eigenvalues and eigenvectors of square matrices at compile-time. Results are
-stored as `static constexpr` values, so no processor time is spent calculating
-them at runtime and no offline tool is needed to generate them.
+eigenvalues and eigenvectors of constexpr matrices at compile-time. The results
+are stored as `static constexpr` values, so no processor time is spent
+calculating them at runtime and no offline tool is needed to generate them.
 
 This is particularly useful when a system's parameters are fixed at
 compile-time. Information like filter coefficients, system eigenvalues, and
@@ -24,15 +24,6 @@ All at compile-time, consteig supports:
 * Matrix construction and manipulation, including common operations and decompositions.
 * A selection of mathematical functions, including complex arithmetic. [^1]
 
-## Features
-
-- **Eigenvalues and eigenvectors** for real and complex spectra, symmetric and non-symmetric matrices
-- **Matrix operations**: arithmetic, norms, transpose, determinant, trace
-- **Decompositions**: QR, LU, Hessenberg, Householder
-- **Constexpr math functions**: sqrt, exp, pow, trig, complex arithmetic
-- **Freestanding core**: no dependency on the C++ standard library
-- **Header-only**: just `#include "consteig.hpp"`
-
 ## Quick Start
 
 ```cpp
@@ -45,7 +36,6 @@ static constexpr consteig::Matrix<double, 3, 3> M{{
 }};
 
 static constexpr auto eigenvalues = consteig::eigenvalues(M);
-// eigenvalues(0,0), (1,0), (2,0) are the three eigenvalues as Complex<double>
 ```
 
 See [Getting Started](getting-started/index.md) for installation and a full walkthrough.
