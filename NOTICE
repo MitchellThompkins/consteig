@@ -1,0 +1,8 @@
+consteig
+Copyright 2026 Timothy Mitchell Thompkins
+
+This product includes software developed by Keith O'Hara.
+
+Portions of the math functions in math/functions/ (sqrt, exp, pow, abs, sgn)
+were derived from GCE-Math (https://github.com/kthohr/gcem),
+Copyright (c) Keith O'Hara, licensed under the Apache License, Version 2.0.
