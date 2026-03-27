@@ -20,7 +20,7 @@ Increasing this may help difficult matrices converge, but significantly increase
 compile times and the likelihood of hitting compiler step limits.
 
 ```cpp
-#define CONSTEIG_MAX_ITER 1000  // increase for difficult matrices
+#define CONSTEIG_MAX_ITER 1000  // increase for difficult matrices (see consteig_options.hpp for default)
 #include "consteig.hpp"
 ```
 
@@ -32,7 +32,7 @@ symmetry exceeds this tolerance, the library falls back to the more robust but
 heavier non-symmetric solver (`eig_double_shifted_qr`).
 
 ```cpp
-#define CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE 1e-9  // tighter symmetry check
+#define CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE 1e-9  // tighter than default (see consteig_options.hpp for default)
 #include "consteig.hpp"
 ```
 

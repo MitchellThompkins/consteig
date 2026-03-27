@@ -32,6 +32,11 @@ template <typename T, Size N> class Array
     {
         return &_data[0];
     }
+    /// @brief Raw pointer to the first element (read-only).
+    const T *data() const
+    {
+        return &_data[0];
+    }
 
     /// @brief Number of elements in the array.
     static Size constexpr size()

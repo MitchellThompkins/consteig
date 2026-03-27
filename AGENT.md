@@ -126,7 +126,7 @@ Defined in `test_dependencies/test_tools.hpp`:
 ### Choosing the Right Tolerance
 
 1. **Direct computation tests** (non-iterative): Use `CONSTEIG_TEST_TOLERANCE` or `CONSTEIG_FLOAT_TEST_TOLERANCE`
-2. **Iterative method tests** (Hessenberg, QR iteration): Use `CONSTEIG_ITERATIVE_*_TOLERANCE`
+2. **Iterative method tests** (Hessenberg, QR iteration): Use `CONSTEIG_ITERATIVE_FLOAT_TOLERANCE` for float matrices; additional variants may be added for other types
 3. **Defective matrices**: Use `PATHOLOGICAL_TOL`
 
 ## Strict Build Mode
@@ -190,7 +190,7 @@ EXPECT_NEAR(computed, reference, TOLERANCE);
 
 2. **Missing explicit casts**: Forgetting `static_cast<Eigen::Index>()` when indexing Eigen matrices will fail strict builds
 
-3. **Wrong tolerance for iterative methods**: Hessenberg and QR tests accumulate error; use `ITERATIVE_*_TOLERANCE`
+3. **Wrong tolerance for iterative methods**: Hessenberg and QR tests accumulate error; use `CONSTEIG_ITERATIVE_FLOAT_TOLERANCE`
 
 4. **Modifying float/double test types**: Tests are intentionally typed; don't change `Matrix<float,...>` to `Matrix<double,...>`
 

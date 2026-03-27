@@ -34,7 +34,7 @@ static constexpr auto result = consteig::qr_hessenberg(H);
 
 ## Hessenberg Reduction
 
-Reduces a square matrix to upper Hessenberg form via orthogonal similarity: H = P^T * A * P. Hessenberg matrices have zeros below the first subdiagonal.
+Reduces a square matrix to upper Hessenberg form via orthogonal similarity: $H = P^T A P$. Hessenberg matrices have zeros below the first subdiagonal.
 
 ```cpp
 static constexpr auto result = consteig::hess(A);

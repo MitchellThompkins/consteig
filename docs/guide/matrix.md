@@ -16,10 +16,11 @@ static constexpr consteig::Matrix<double, 3, 3> A{{
     {7.0, 8.0, 9.0}
 }};
 
-// 2x3 float matrix
-static constexpr consteig::Matrix<float, 2, 3> B{{
-    {1.0f, 2.0f, 3.0f},
-    {4.0f, 5.0f, 6.0f}
+// 3x3 double matrix
+static constexpr consteig::Matrix<double, 3, 3> B{{
+    {1.0, 2.0, 3.0},
+    {4.0, 5.0, 6.0},
+    {7.0, 8.0, 9.0}
 }};
 ```
 
