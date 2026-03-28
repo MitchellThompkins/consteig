@@ -182,6 +182,7 @@ check-generated:
 		base=$$(basename "$$f"); \
 		if ! diff -q "$$f" "eigen/tests/$$base" >/dev/null 2>&1; then \
 			echo "  changed: eigen/tests/$$base"; \
+			diff -u "$$f" "eigen/tests/$$base" | head -40; \
 			CHANGED=1; \
 		fi; \
 	done; \
