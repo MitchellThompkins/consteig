@@ -8,7 +8,25 @@
 namespace consteig
 {
 
-///////////// FUNCTION DECLARATIONS /////////////
+/// @addtogroup decompositions
+/// @{
+
+/// @brief Compute a Householder reflector for a square matrix.
+///
+/// Returns an orthogonal matrix H = I - 2*v*v^T that zeros the first
+/// column of `a` below the first subdiagonal. Row 0 of the first column
+/// is untouched; row 1 receives the reflected norm; rows 2 through R-1
+/// become zero.
+///
+/// Used internally by @ref hess for Hessenberg reduction.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam R  Number of rows (must equal `C`).
+/// @tparam C  Number of columns.
+/// @param  a  Square input matrix (only the first column is used).
+/// @return R×R Householder reflector matrix.
+/// @pre `R == C` and `T` must be floating-point (both enforced by
+/// `static_assert`).
 template <typename T, Size R, Size C>
 constexpr Matrix<T, R, R> house(Matrix<T, R, C> a);
 
@@ -91,6 +109,8 @@ template <typename T> constexpr Matrix<T, 2, 2> house(Matrix<T, 2, 2> /*a*/)
     ident(1, 1) = ident(1, 1) * static_cast<T>(-1);
     return ident;
 }
+
+/// @}  // addtogroup decompositions
 
 } // namespace consteig
 #endif

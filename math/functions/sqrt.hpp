@@ -7,6 +7,9 @@
 namespace consteig
 {
 
+/// @addtogroup math
+/// @{
+
 template <typename T>
 constexpr T sqrt_recur(const T x, const T xn, const int count)
 {
@@ -50,9 +53,19 @@ template <typename T> constexpr T sqrt_int(const T x)
     return root;
 }
 
+/// @brief Constexpr square root.
+///
+/// For floating-point types, uses Newton's method with range reduction.
+/// For integer types, returns the floor of the exact square root.
+/// Negative inputs produce a poison value (compile-time error in constexpr
+/// context); use @ref csqrt if the input may be negative.
+///
+/// @tparam T  Numeric type.
+/// @param  x  Non-negative input value.
+/// @return Square root of `x`.
 template <typename T> constexpr T sqrt(const T x)
 {
-    // argument. Users should call csqrt(x) if x might be negative.
+    // Users should call csqrt(x) if x might be negative.
     if (x < static_cast<T>(0))
     {
         // We return a poison value (-1) as constexpr NaN is not portably
@@ -71,6 +84,8 @@ template <typename T> constexpr T sqrt(const T x)
         return sqrt_int(x);
     }
 }
+
+/// @}  // addtogroup math
 
 } // namespace consteig
 

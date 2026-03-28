@@ -1,4 +1,17 @@
+---
+title: Verification & Accuracy
+---
+
 # Verification
+
+consteig uses `8x8` matrices as its test basis and leverages 2 tolerances for
+verification. For all non-defective matrices it uses `1e-9` as an expectation
+when comparing against a reference. For highly defective matrices, as is the
+case for Jordan blocks, it uses `0.03` [^1]. `0.03` approaches the numerical limit
+of verification accuracy for 64-bit types.
+
+Note that unit testing _does_ leverage components of the standard
+library and Eigen, but the consteig library core does not.
 
 The library is verified through two primary methods:
 1. Eigen Library Comparison: Unit tests link against the
@@ -31,16 +44,12 @@ produce much larger perturbations in the eigenvalues.
 For a defective eigenvalue associated with a single $N\times N$ Jordan block,
 classical perturbation theory shows that eigenvalue perturbations scale as
 
-```math
-\delta \lambda| \sim \|E\|^{1/N}
-```
+$$|\delta \lambda| \sim \|E\|^{1/N}$$
 
 Modern dense eigenvalue algorithms (e.g., QR) are backward stable, meaning
 the perturbation they introduce is on the order of machine precision:
 
-```math
-\|E\|\lesssim \epsilon_{\text{mach}}\|A\|
-```
+$$\|E\|\lesssim \epsilon_{\text{mach}}\|A\|$$
 
 which says
 
@@ -49,15 +58,11 @@ size of the matrix.
 
 If the matrix is scaled so that its norm is about 1:
 
-```math
-\|A\| \approx 1
-```
+$$\|A\| \approx 1$$
 
 then the backward error simplifies to:
 
-```math
-\|E\| \approx \epsilon_{\text{mach}}
-```
+$$\|E\| \approx \epsilon_{\text{mach}}$$
 
 So the solver is effectively perturbing the matrix at the level of machine
 precision.
@@ -65,9 +70,7 @@ precision.
 For IEEE-754 double precision $\epsilon_{\text{mach}}=2^{-53}$ and a single
 $8\times8$ Jordan block this gives:
 
-```math
-(2^{-53})^{1\over8} \approx 0.010
-```
+$$(2^{-53})^{1/8} \approx 0.010$$
 
 Accordingly, for defective matrices of this type, eigenvalues cannot in general
 be expected to be accurate beyond the percent level in double precision. The
@@ -131,7 +134,7 @@ sufficient for the test suite. However, random matrices beyond 8x8 frequently
 encounter clustering or poor separation of eigenvalues, causing QR iteration to
 fail to converge within even an expanded `constexpr` operation budget (1B+
 steps). Users working with larger matrices may need to raise compiler constexpr
-limits on their own targets (see the [Build Options](../README.md#build-options)).
+limits on their own targets (see [Configuration](guide/configuration.md)).
 
 From a numerical analysis perspective, the following factors have a significant
 impact:

@@ -8,12 +8,43 @@
 namespace consteig
 {
 
+/// @defgroup decompositions Decompositions
+/// @brief Matrix factorizations: QR, LU, Hessenberg, Householder.
+/// @{
+
+/// @brief Result type for QR decomposition.
+///
+/// Holds the orthogonal factor `_q` and upper-triangular factor `_r`
+/// such that the original matrix satisfies `A ≈ _q * _r`.
+///
+/// @tparam T  Scalar element type.
+/// @tparam S  Matrix dimension.
+///
+/// @var QRMatrix::_q  Orthogonal (Q) factor — S×S.
+/// @var QRMatrix::_r  Upper-triangular (R) factor — S×S.
 template <typename T, Size S> struct QRMatrix
 {
     Matrix<T, S, S> _q;
     Matrix<T, S, S> _r;
 };
 
+/// @brief QR decomposition optimized for upper Hessenberg matrices.
+///
+/// Factors an upper Hessenberg matrix as A = Q * R using Givens rotations.
+/// Because A has at most one subdiagonal nonzero per column, each rotation
+/// only needs to update two adjacent rows of R and two adjacent columns of Q,
+/// giving better performance than the general `qr()` for Hessenberg inputs.
+///
+/// Used internally by the eigenvalue solver's QR iteration loop. Prefer
+/// the general @ref qr for non-Hessenberg matrices.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam R  Number of rows.
+/// @tparam C  Number of columns.
+/// @param  a  Upper Hessenberg square matrix.
+/// @return @ref QRMatrix containing `_q` (orthogonal) and `_r`
+/// (upper-triangular).
+/// @pre `R == C` (enforced by `static_assert`).
 // Algorithm: QR Decomposition (Hessenberg Optimized)
 // Factors an upper Hessenberg matrix A = QR using a sequence of Givens
 // rotations. Because A is Hessenberg, each column has at most one subdiagonal
@@ -71,6 +102,33 @@ constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a)
     return res;
 }
 
+/// @brief General QR decomposition using Givens rotations.
+///
+/// Factors a square matrix as A = Q * R where Q is orthogonal and R is
+/// upper triangular. Uses Givens rotations rather than Gram-Schmidt, avoiding
+/// the loss of orthogonality that Gram-Schmidt can suffer from floating-point
+/// cancellation.
+///
+/// For matrices already in Hessenberg form, @ref qr_hessenberg is faster.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam R  Number of rows.
+/// @tparam C  Number of columns.
+/// @param  a  Square input matrix.
+/// @return @ref QRMatrix containing `_q` (orthogonal) and `_r`
+/// (upper-triangular).
+/// @pre `R == C` (enforced by `static_assert`).
+///
+/// @code
+/// static constexpr consteig::Matrix<double, 3, 3> A{{
+///     {12.0, -51.0, 4.0},
+///     { 6.0, 167.0, -68.0},
+///     {-4.0,  24.0, -41.0}
+/// }};
+/// static constexpr auto qr_result = consteig::qr(A);
+/// // qr_result._q is orthogonal, qr_result._r is upper triangular
+/// // A ≈ qr_result._q * qr_result._r
+/// @endcode
 // Algorithm: QR Decomposition (General)
 // Factors a square matrix A = QR using a sequence of Givens rotations, working
 // column by column from bottom to top to zero all subdiagonal entries. Givens
@@ -131,6 +189,8 @@ constexpr QRMatrix<T, R> qr(const Matrix<T, R, C> a)
     res._r = r;
     return res;
 }
+
+/// @}  // defgroup decompositions
 
 } // namespace consteig
 #endif

@@ -1,3 +1,7 @@
+---
+title: Methods
+---
+
 # Algorithmic Approach and Optimizations [^1]
 
 consteig employs a hybrid approach to performance, balancing `constexpr`

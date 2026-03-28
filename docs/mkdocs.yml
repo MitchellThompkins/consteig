@@ -1,0 +1,59 @@
+site_name: consteig
+site_url: https://mitchellthompkins.github.io/consteig/
+repo_url: https://github.com/mitchellthompkins/consteig
+repo_name: mitchellthompkins/consteig
+docs_dir: .
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: indigo
+    accent: cyan
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - User Guide:
+      - Matrix Operations: guide/matrix.md
+      - Decompositions: guide/decompositions.md
+      - Eigensolvers: guide/eigensolvers.md
+      - Math Functions: guide/math-functions.md
+      - Configuration: guide/configuration.md
+  - Examples:
+      - DC Motor Control: examples/dc-motor.md
+      - Population Flow: examples/population.md
+      - Butterworth Filter: examples/butterworth.md
+  - Algorithms:
+      - Methods: methods.md
+      - Verification & Accuracy: verification.md
+  - Performance: performance.md
+  - Development: development.md
+  - API Reference: api/index.html

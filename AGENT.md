@@ -28,17 +28,33 @@ consteig/
 ├── matrix/                   # Matrix operations
 │   ├── matrix.hpp           # Matrix class definition
 │   ├── operations.hpp       # Matrix arithmetic and operations
-│   ├── decompositions/      # QR, LU, Hessenberg decompositions
-│   │   └── decompositions.hpp
+│   ├── decompositions.hpp   # Decomposition interface (includes subdir)
+│   ├── decompositions/      # Individual decomposition implementations
+│   │   ├── householder.hpp  # Householder reflections
+│   │   ├── hessenberg.hpp   # Hessenberg reduction
+│   │   ├── qr.hpp           # QR decomposition
+│   │   └── lu.hpp           # LU decomposition
 │   └── tests/               # Matrix operation tests
 ├── test_dependencies/        # Test utilities
 │   ├── test_tools.hpp       # Test tolerance constants and helpers
 │   ├── eigen_test_tools.hpp # Eigen library comparison utilities
+│   ├── gtest_stubs/         # Test stub utilities
 │   └── googletest/          # Google Test framework (submodule)
 ├── examples/                 # Usage examples
-├── docs/                     # Documentation
+├── docs/                     # Documentation (MkDocs site)
+│   ├── index.md             # Documentation home page
+│   ├── mkdocs.yml           # MkDocs configuration
 │   ├── methods.md           # Algorithm descriptions
-│   └── verification.md      # Testing methodology
+│   ├── verification.md      # Testing methodology
+│   ├── getting-started.md   # Installation and first steps
+│   ├── guide/               # Detailed guides (matrix, eigensolvers, etc.)
+│   └── examples/            # Example walkthroughs
+├── profiling/                # Compile-time profiling
+│   ├── run_profiling.sh     # Profiling script
+│   ├── analyze_results.py   # Results analysis and plotting
+│   └── compile_time/        # Generated profiling source files
+├── cmake/                    # CMake support files
+│   └── toolchains/          # Cross-compiler toolchain files (ARM)
 └── octave/                   # Octave scripts for test generation
 ```
 
@@ -99,19 +115,20 @@ This means:
 
 Defined in `test_dependencies/test_tools.hpp`:
 
-| Constant | Type | Value | Use Case |
-|----------|------|-------|----------|
-| `CONSTEIG_TEST_TOLERANCE` | double | `1e-9` | Standard double-precision comparisons |
-| `CONSTEIG_FLOAT_TEST_TOLERANCE` | float | `1e-7f` | Standard float-precision comparisons |
-| `CONSTEIG_ITERATIVE_FLOAT_TOLERANCE` | float | `3e-4f` | Iterative methods with float matrices |
-| `CONSTEIG_ITERATIVE_DOUBLE_TOLERANCE` | double | `3e-4` | Iterative methods with double matrices |
-| `PATHOLOGICAL_TOL` | double | `0.03` | Defective/ill-conditioned matrices |
-| `LARGE_VAL_TOL` | double | `1.0` | Large magnitude value comparisons |
+See `test_dependencies/test_tools.hpp` for current values.
+
+| Constant | Type | Use Case |
+|----------|------|----------|
+| `CONSTEIG_TEST_TOLERANCE` | double | Standard double-precision comparisons |
+| `CONSTEIG_FLOAT_TEST_TOLERANCE` | float | Standard float-precision comparisons |
+| `CONSTEIG_ITERATIVE_FLOAT_TOLERANCE` | float | Iterative methods with float matrices |
+| `PATHOLOGICAL_TOL` | double | Defective/ill-conditioned matrices |
+| `LARGE_VAL_TOL` | double | Large magnitude value comparisons |
 
 ### Choosing the Right Tolerance
 
 1. **Direct computation tests** (non-iterative): Use `CONSTEIG_TEST_TOLERANCE` or `CONSTEIG_FLOAT_TEST_TOLERANCE`
-2. **Iterative method tests** (Hessenberg, QR iteration): Use `CONSTEIG_ITERATIVE_*_TOLERANCE`
+2. **Iterative method tests** (Hessenberg, QR iteration): Use `CONSTEIG_ITERATIVE_FLOAT_TOLERANCE` for float matrices; use `CONSTEIG_TEST_TOLERANCE` for double matrices
 3. **Defective matrices**: Use `PATHOLOGICAL_TOL`
 
 ## Strict Build Mode
@@ -175,7 +192,7 @@ EXPECT_NEAR(computed, reference, TOLERANCE);
 
 2. **Missing explicit casts**: Forgetting `static_cast<Eigen::Index>()` when indexing Eigen matrices will fail strict builds
 
-3. **Wrong tolerance for iterative methods**: Hessenberg and QR tests accumulate error; use `ITERATIVE_*_TOLERANCE`
+3. **Wrong tolerance for iterative methods**: Hessenberg and QR tests accumulate error; use `CONSTEIG_ITERATIVE_FLOAT_TOLERANCE` for float, `CONSTEIG_TEST_TOLERANCE` for double
 
 4. **Modifying float/double test types**: Tests are intentionally typed; don't change `Matrix<float,...>` to `Matrix<double,...>`
 
@@ -203,7 +220,7 @@ The `octave/` directory contains GNU Octave/MATLAB scripts used for two purposes
 ### Test Case Generation (`octave/generate_test_cases.m`)
 
 This script generates C++ test data (matrices and reference eigenvalues/eigenvectors) that are verified at compile time via `static_assert`. It produces:
-- `test_dependencies/generated_cases.hpp` — arrays of test matrices and expected results
+- `eigen/tests/generated_cases.hpp` — arrays of test matrices and expected results
 - `eigen/tests/generated_*.test.cpp` — individual test files (one per case to stay within constexpr budgets)
 
 Test categories generated include random symmetric/non-symmetric matrices plus robustness categories (defective, nearly defective, clustered eigenvalues, companion, Hamiltonian, etc.).

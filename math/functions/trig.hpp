@@ -9,6 +9,9 @@
 namespace consteig
 {
 
+/// @addtogroup math
+/// @{
+
 // Reduce x to (-pi, pi] by removing integer multiples of 2*pi.
 // NOTE: the cast of (x / two_pi) to long long is undefined behavior for
 // |x| > ~5.8e19 (where x / two_pi exceeds LLONG_MAX), and also for non-finite
@@ -112,6 +115,8 @@ template <typename T> constexpr auto tan(const T x) noexcept
         return sin_series(r) / cos_series(r);
     }
 }
+
+/// @}  // addtogroup math
 
 } // namespace consteig
 

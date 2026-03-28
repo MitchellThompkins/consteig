@@ -9,6 +9,21 @@
 namespace consteig
 {
 
+/// @addtogroup decompositions
+/// @{
+
+/// @brief Result type for LU decomposition with partial pivoting.
+///
+/// Holds factors L, U, and permutation P such that PA = LU, where P is
+/// represented as a pivot index array rather than a full matrix.
+///
+/// @tparam T  Scalar element type.
+/// @tparam S  Matrix dimension.
+///
+/// @var LUMatrix::_l  Unit lower-triangular factor (S×S).
+/// @var LUMatrix::_u  Upper-triangular factor (S×S).
+/// @var LUMatrix::_p  Permutation vector: row `i` of the permuted matrix
+///                    corresponds to row `_p[i]` of the original.
 template <typename T, Size S> struct LUMatrix
 {
     Matrix<T, S, S> _l;
@@ -16,6 +31,19 @@ template <typename T, Size S> struct LUMatrix
     Array<Size, S> _p;
 };
 
+/// @brief LU decomposition with partial pivoting.
+///
+/// Factors a square matrix as PA = LU where P is a row permutation, L is
+/// unit lower triangular, and U is upper triangular. Partial pivoting selects
+/// the largest magnitude element as the pivot to control rounding error growth.
+///
+/// Used internally by @ref eigenvectors for inverse iteration. Can also be used
+/// directly for solving linear systems via @ref lu_solve.
+///
+/// @tparam T  Scalar type (works with both real and @ref Complex types).
+/// @tparam S  Matrix dimension.
+/// @param  a  Square input matrix.
+/// @return @ref LUMatrix containing `_l`, `_u`, and permutation `_p`.
 // Algorithm: LU Decomposition with Partial Pivoting
 // Factors a square matrix A such that PA = LU, where P is a permutation matrix,
 // L is unit lower triangular, and U is upper triangular. Partial pivoting
@@ -89,6 +117,20 @@ constexpr LUMatrix<T, S> lu(const Matrix<T, S, S> &a)
     return res;
 }
 
+/// @brief Solve the linear system Ax = b given the LU factorization of A.
+///
+/// Uses the result of @ref lu to solve in two triangular passes:
+/// 1. Forward substitution to solve Ly = Pb.
+/// 2. Backward substitution to solve Ux = y.
+///
+/// Nearly singular systems (diagonal element of U below 1e-30) are handled
+/// gracefully to support inverse iteration in @ref eigenvectors.
+///
+/// @tparam T  Scalar type.
+/// @tparam S  System dimension.
+/// @param  lu  LU factorization from @ref lu.
+/// @param  b   Right-hand side vector (S×1).
+/// @return Solution vector x (S×1) satisfying Ax = b.
 // Solves Ax = b using the LU factorization PA = LU.
 // 1. Solve Ly = Pb for y (Forward Substitution)
 // 2. Solve Ux = y for x (Backward Substitution)
@@ -139,6 +181,8 @@ constexpr Matrix<T, S, 1> lu_solve(const LUMatrix<T, S> &lu,
     }
     return x;
 }
+
+/// @}  // addtogroup decompositions
 
 } // namespace consteig
 

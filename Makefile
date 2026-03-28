@@ -165,7 +165,11 @@ test-dc-motor-fail:
 
 .PHONY: generate-test-cases
 generate-test-cases:
-	octave octave/generate_test_cases.m
+	# Force single-threaded BLAS so that qr() and eig() produce bit-identical
+	# results across runs. Multithreaded OpenBLAS uses non-deterministic
+	# floating-point reduction order, which causes check-generated to fail
+	# intermittently in CI.
+	OPENBLAS_NUM_THREADS=1 octave octave/generate_test_cases.m
 
 .PHONY: check-generated
 check-generated:
