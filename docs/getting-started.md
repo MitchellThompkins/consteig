@@ -24,6 +24,31 @@ Quick reference examples:
 * [Population flow](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/population.cpp)
 * [Butterworth filter design](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/butterworth/butterworth_core.hpp)
 
+## Full Examples
+
+### Control Theory
+
+When system parameters and controller gains are known at compile-time, consteig
+can verify that the closed-loop poles meet performance requirements, turning a
+runtime failure into a build failure. See the [dc-motor
+example](https://mitchellthompkins.github.io/consteig/examples/dc-motor/).
+
+### Population Flow
+
+If a system's transition matrix is fixed at compile-time, its steady-state
+behavior never needs to be recomputed at runtime. The
+[`population.cpp`](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/population.cpp) example computes steady-state
+population fractions as `static constexpr` values; at runtime, distributing any
+total population is a single multiply with no matrix iteration. See the
+[population
+example](https://mitchellthompkins.github.io/consteig/examples/population/).
+
+### Digital Filter Design
+
+IIR filter coefficients derived entirely at compile-time from a continuous-time
+transfer function. See the [butterworth
+example](https://mitchellthompkins.github.io/consteig/examples/butterworth/).
+
 ## Your First Eigenvalue Computation
 
 ```cpp
@@ -92,28 +117,3 @@ static constexpr double val = M(1, 2);  // 6.0
 The double braces `{{...}}` are required: the outer pair initializes the
 `Matrix`, the inner pairs initialize each row. See [Matrix
 Operations](../guide/matrix.md) for more detail.
-
-## More Examples
-
-### Control Theory
-
-When system parameters and controller gains are known at compile-time, consteig
-can verify that the closed-loop poles meet performance requirements, turning a
-runtime failure into a build failure. See the [dc-motor
-example](https://mitchellthompkins.github.io/consteig/examples/dc-motor/).
-
-### Population Flow
-
-If a system's transition matrix is fixed at compile-time, its steady-state
-behavior never needs to be recomputed at runtime. The
-[`population.cpp`](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/population.cpp) example computes steady-state
-population fractions as `static constexpr` values; at runtime, distributing any
-total population is a single multiply with no matrix iteration. See the
-[population
-example](https://mitchellthompkins.github.io/consteig/examples/population/).
-
-### Digital Filter Design
-
-IIR filter coefficients derived entirely at compile-time from a continuous-time
-transfer function. See the [butterworth
-example](https://mitchellthompkins.github.io/consteig/examples/butterworth/).
