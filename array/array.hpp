@@ -33,7 +33,7 @@ template <typename T, Size N> class Array
     {
         return &_data[0];
     }
-    /// @brief Raw pointer to the first element (read-only).
+    /// @brief Raw pointer to the first element (read-only, non-constexpr).
     const T *data() const
     {
         return &_data[0];
