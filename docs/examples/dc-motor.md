@@ -22,7 +22,7 @@ from the University of Michigan. The information known at compile-time is:
 When building the system with gains that do not meet the performance requirements,
 `static_assert` can validate system gains by preventing compilation.
 
-Full source: [`examples/dc_motor_control.cpp`](https://github.com/mitchellthompkins/consteig/blob/develop/examples/dc_motor_control.cpp).
+Full source: [`examples/dc_motor_control.cpp`](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/dc_motor_control.cpp).
 
 ## How it Works
 

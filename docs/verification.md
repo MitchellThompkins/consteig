@@ -134,7 +134,7 @@ sufficient for the test suite. However, random matrices beyond 8x8 frequently
 encounter clustering or poor separation of eigenvalues, causing QR iteration to
 fail to converge within even an expanded `constexpr` operation budget (1B+
 steps). Users working with larger matrices may need to raise compiler constexpr
-limits on their own targets (see [Configuration](../guide/configuration.md)).
+limits on their own targets (see [Configuration](guide/configuration.md)).
 
 From a numerical analysis perspective, the following factors have a significant
 impact:

@@ -13,7 +13,7 @@ the steady-state fractions can be stored as `static constexpr` values. At
 runtime, computing the distribution for any total population is then a single
 multiply. There is no need to iterate the transition matrix until it converges.
 
-The [`population.cpp`](https://github.com/mitchellthompkins/consteig/blob/develop/examples/population.cpp)
+The [`population.cpp`](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/population.cpp)
 example demonstrates this:
 
 ## Problem

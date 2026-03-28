@@ -23,7 +23,7 @@ use the Matched Z-Transform (matched-pole mapping):
 3. Map these poles directly to the Z-domain using $z = e^{sT}$ (Matched Z-Transform).
 4. Reconstruct the digital filter's characteristic polynomial from the mapped poles.
 
-The [`butterworth_core.hpp`](https://github.com/mitchellthompkins/consteig/blob/develop/examples/butterworth/butterworth_core.hpp)
+The [`butterworth_core.hpp`](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/butterworth/butterworth_core.hpp)
 example generates the following design for a 100Hz cutoff at 1kHz sampling:
 
 ```bash
