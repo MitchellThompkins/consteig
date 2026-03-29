@@ -108,7 +108,8 @@ constexpr LUMatrix<T, S> lu(const Matrix<T, S, S> &a)
                 res._l(row, diag) = res._u(row, diag) / res._u(diag, diag);
                 for (Size col = diag; col < S; ++col)
                 {
-                    res._u(row, col) = res._u(row, col) - res._l(row, diag) * res._u(diag, col);
+                    res._u(row, col) = res._u(row, col) -
+                                       res._l(row, diag) * res._u(diag, col);
                 }
             }
         }

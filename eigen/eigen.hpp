@@ -147,7 +147,8 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
             T v_sum_sq = v1 * v1 + v2 * v2 + v3 * v3;
             T beta = static_cast<T>(2) / v_sum_sq;
 
-            // Left application: include column pos-1 for pos > l to chase the bulge
+            // Left application: include column pos-1 for pos > l to chase the
+            // bulge
             Size col_start = (pos > l) ? pos - 1 : pos;
             for (Size col = col_start; col < S; ++col)
             {
@@ -481,7 +482,8 @@ constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
             {
                 InternalScalar sq = consteig::sqrt(disc);
                 result(diag, 0) = Complex<T>{static_cast<T>((tr + sq) / 2), 0};
-                result(diag + 1, 0) = Complex<T>{static_cast<T>((tr - sq) / 2), 0};
+                result(diag + 1, 0) =
+                    Complex<T>{static_cast<T>((tr - sq) / 2), 0};
             }
             else
             {
