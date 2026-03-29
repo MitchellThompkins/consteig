@@ -70,10 +70,10 @@ endfunction()
 ################################################################################
 # Library
 ################################################################################
-add_subdirectory(array)
 add_subdirectory(math)
 add_subdirectory(matrix)
 add_subdirectory(eigen)
+
 
 ################################################################################
 # Development mode (skipped when consumed via add_subdirectory/FetchContent)
@@ -169,7 +169,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
 
     if(CONSTEIG_BUILD_TESTS)
-        add_subdirectory(array/tests)
         add_subdirectory(math/tests)
         add_subdirectory(matrix/tests)
         add_subdirectory(eigen/tests)

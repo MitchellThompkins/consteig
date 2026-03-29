@@ -178,6 +178,13 @@ generate-test-cases:
 	#                              all modern x86-64 CPUs used in CI.
 	OPENBLAS_NUM_THREADS=1 OPENBLAS_CORETYPE=ZEN3 octave octave/generate_test_cases.m
 
+# check-generated was removed from CI because it was non-deterministic (~1/5 runs
+# would fail) even with OPENBLAS_NUM_THREADS=1 and OPENBLAS_CORETYPE=ZEN3 set in
+# generate-test-cases. The matrix entries are reproducible (fixed RNG seed), but
+# the reference eigenvalues/eigenvectors in generated_cases.hpp come from Octave's
+# eig(), which calls LAPACK internally. LAPACK's eigensolver (dgeev/dsyev) can
+# produce bit-different results across runs due to internal scheduling and FMA
+# contraction behavior that OpenBLAS environment variables do not fully control.
 .PHONY: check-generated
 check-generated:
 	@SNAP=$$(mktemp -d); \
