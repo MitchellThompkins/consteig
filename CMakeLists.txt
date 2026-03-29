@@ -72,22 +72,21 @@ endfunction()
 ################################################################################
 add_library(consteig_math INTERFACE)
 target_include_directories(consteig_math INTERFACE
-    ${CMAKE_SOURCE_DIR}/include/consteig/math
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/consteig/math
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 add_library(consteig_matrix INTERFACE)
 target_include_directories(consteig_matrix INTERFACE
-    ${CMAKE_SOURCE_DIR}/include/consteig/matrix
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/consteig/matrix
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 add_library(consteig_eigen INTERFACE)
 target_include_directories(consteig_eigen INTERFACE
-    ${CMAKE_SOURCE_DIR}/include/consteig/eigen
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/consteig/eigen
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-
 
 ################################################################################
 # Development mode (skipped when consumed via add_subdirectory/FetchContent)
