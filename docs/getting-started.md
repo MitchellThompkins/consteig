@@ -10,7 +10,7 @@ consteig requires a C++17 compiler. No separate compilation step is needed.
 
 ### Git submodule
 
-Add the repository as a submodule and add the repo root to your include path:
+Add the repository as a submodule:
 
 ```sh
 git submodule add https://github.com/mitchellthompkins/consteig.git third_party/consteig
@@ -18,7 +18,7 @@ git submodule add https://github.com/mitchellthompkins/consteig.git third_party/
 
 Alternatively, the headers can be copied directly into your project.
 
-### CMake submodule
+With CMake, add the submodule to your build:
 
 ```cmake
 add_subdirectory(third_party/consteig)
@@ -36,6 +36,31 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(consteig)
 
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
+### vcpkg
+
+```sh
+vcpkg install consteig
+```
+
+```cmake
+find_package(consteig REQUIRED)
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
+### System install
+
+To install consteig system-wide and use it via `find_package`:
+
+```sh
+cmake -S /path/to/consteig -B build
+cmake --install build --prefix /usr/local
+```
+
+```cmake
+find_package(consteig REQUIRED)
 target_link_libraries(your_target PRIVATE consteig::consteig)
 ```
 
