@@ -1,4 +1,4 @@
-![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
+![example workflow](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg?branch=main)
 [![Documentation](https://img.shields.io/badge/docs-online-blue)](https://mitchellthompkins.github.io/consteig/)
 
 # consteig
