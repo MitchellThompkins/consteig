@@ -169,9 +169,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
 
     if(CONSTEIG_BUILD_TESTS)
-        add_subdirectory(math/tests)
-        add_subdirectory(matrix/tests)
-        add_subdirectory(eigen/tests)
+        add_subdirectory(tests)
     endif()
 
 endif()

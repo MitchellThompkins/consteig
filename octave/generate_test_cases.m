@@ -1,6 +1,6 @@
 % Script to generate C++ test cases for consteig
-% Run this in Octave/Matlab to generate 'eigen/tests/generated_cases.hpp'
-% and individual test files in 'eigen/tests/'
+% Run this in Octave/Matlab to generate 'tests/eigen/generated_cases.hpp'
+% and individual test files in 'tests/eigen/'
 
 addpath(fileparts(mfilename('fullpath')));
 
@@ -9,7 +9,7 @@ addpath(fileparts(mfilename('fullpath')));
 rand('seed', 42);
 randn('seed', 42);
 
-output_cases_file = fullfile('eigen', 'tests', 'generated_cases.hpp');
+output_cases_file = fullfile('tests', 'eigen', 'generated_cases.hpp');
 fid = fopen(output_cases_file, 'w');
 
 fprintf(fid, '#ifndef GENERATED_CASES_HPP\n');
@@ -163,7 +163,7 @@ fprintf(fid, '#endif\n');
 fclose(fid);
 
 % Now generate the C++ test files
-old_tests = dir(fullfile('eigen', 'tests', 'generated_*.test.cpp'));
+old_tests = dir(fullfile('tests', 'eigen', 'generated_*.test.cpp'));
 for k = 1:length(old_tests)
     delete(fullfile(old_tests(k).folder, old_tests(k).name));
 end
@@ -185,18 +185,18 @@ end
 
 % Random sym (one file per case, matrix size inside)
 for i = 0:NUM_RANDOM_CASES-1
-    write_test_file(fullfile('eigen', 'tests', sprintf('generated_sym_%d.test.cpp', i)), 'random', 'sym', i, MATRIX_SIZE);
+    write_test_file(fullfile('tests', 'eigen', sprintf('generated_sym_%d.test.cpp', i)), 'random', 'sym', i, MATRIX_SIZE);
 end
 
 % Random nonsym (one file per case, matrix size inside)
 for i = 0:NUM_RANDOM_CASES-1
-    write_test_file(fullfile('eigen', 'tests', sprintf('generated_nonsym_%d.test.cpp', i)), 'random', 'nonsym', i, MATRIX_SIZE);
+    write_test_file(fullfile('tests', 'eigen', sprintf('generated_nonsym_%d.test.cpp', i)), 'random', 'nonsym', i, MATRIX_SIZE);
 end
 
 % Robust cases (one file per category+index, matrix size inside)
 for c = 1:length(ROBUST_CATEGORIES)
     cat = ROBUST_CATEGORIES{c};
     for i = 0:NUM_ROBUST_CASES-1
-        write_test_file(fullfile('eigen', 'tests', sprintf('generated_robust_%s_%d.test.cpp', cat, i)), cat, 'nonsym', i, MATRIX_SIZE);
+        write_test_file(fullfile('tests', 'eigen', sprintf('generated_robust_%s_%d.test.cpp', cat, i)), cat, 'nonsym', i, MATRIX_SIZE);
     end
 end

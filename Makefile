@@ -188,19 +188,19 @@ generate-test-cases:
 .PHONY: check-generated
 check-generated:
 	@SNAP=$$(mktemp -d); \
-	cp eigen/tests/generated_cases.hpp "$$SNAP/"; \
-	cp eigen/tests/generated_*.test.cpp "$$SNAP/"; \
+	cp tests/eigen/generated_cases.hpp "$$SNAP/"; \
+	cp tests/eigen/generated_*.test.cpp "$$SNAP/"; \
 	$(MAKE) generate-test-cases; \
 	CHANGED=0; \
 	for f in "$$SNAP"/*; do \
 		base=$$(basename "$$f"); \
-		if ! diff -q "$$f" "eigen/tests/$$base" >/dev/null 2>&1; then \
-			echo "  changed: eigen/tests/$$base"; \
-			diff -u "$$f" "eigen/tests/$$base" | head -40; \
+		if ! diff -q "$$f" "tests/eigen/$$base" >/dev/null 2>&1; then \
+			echo "  changed: tests/eigen/$$base"; \
+			diff -u "$$f" "tests/eigen/$$base" | head -40; \
 			CHANGED=1; \
 		fi; \
 	done; \
-	for f in eigen/tests/generated_cases.hpp eigen/tests/generated_*.test.cpp; do \
+	for f in tests/eigen/generated_cases.hpp tests/eigen/generated_*.test.cpp; do \
 		base=$$(basename "$$f"); \
 		if [ ! -f "$$SNAP/$$base" ]; then \
 			echo "  added: $$f"; \

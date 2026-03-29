@@ -17,8 +17,8 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include <consteig/matrix/matrix.hpp>
 #include "test_tools.hpp"
+#include <consteig/matrix/matrix.hpp>
 
 template <typename T, consteig::Size R, consteig::Size C>
 Eigen::Matrix<T, R, C> toEigen(const consteig::Matrix<T, R, C> &mat)
