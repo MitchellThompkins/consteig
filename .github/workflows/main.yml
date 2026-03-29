@@ -1,4 +1,4 @@
-name: containerized_ci
+name: build-and-test
 
 on:
   push:
