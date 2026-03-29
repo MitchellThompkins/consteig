@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../consteig.hpp"
+#include <consteig/consteig.hpp>
 #include "generated_cases.hpp"
 #include "test_tools.hpp"
 

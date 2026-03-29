@@ -7,8 +7,8 @@
 #include <cmath>
 #include <limits>
 
-#include "../consteig.hpp"
-#include "../consteig_options.hpp"
+#include <consteig/consteig.hpp>
+#include <consteig/consteig_options.hpp>
 
 #define MSG "Not constexpr or wrong output"
 

@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "../consteig.hpp"
+#include <consteig/consteig.hpp>
 #include "test_tools.hpp"
 
 using namespace consteig;

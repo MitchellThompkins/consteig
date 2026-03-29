@@ -1,4 +1,4 @@
-#include "../consteig.hpp"
+#include <consteig/consteig.hpp>
 #include "example_helper.hpp"
 
 int main()

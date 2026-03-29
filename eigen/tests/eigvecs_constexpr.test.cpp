@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../eigen.hpp"
+#include "eigen.hpp"
 #include "test_tools.hpp"
 
 using namespace consteig;

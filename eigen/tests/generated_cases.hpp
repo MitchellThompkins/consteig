@@ -1,7 +1,7 @@
 #ifndef GENERATED_CASES_HPP
 #define GENERATED_CASES_HPP
 
-#include "../../consteig.hpp"
+#include <consteig/consteig.hpp>
 
 namespace consteig
 {

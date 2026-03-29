@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "../consteig.hpp"
+#include <consteig/consteig.hpp>
 
 template <typename T, consteig::Size R, consteig::Size C>
 void printMat(const std::string name, const consteig::Matrix<T, R, C> &mat)

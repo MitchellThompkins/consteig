@@ -140,7 +140,7 @@ example](https://mitchellthompkins.github.io/consteig/examples/butterworth/).
 ## Your First Eigenvalue Computation
 
 ```cpp
-#include "consteig.hpp"
+#include <consteig/consteig.hpp>
 
 // Define a matrix — all values must be known at compile time
 static constexpr consteig::Matrix<double, 2, 2> A{{

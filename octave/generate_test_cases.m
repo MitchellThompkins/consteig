@@ -14,7 +14,7 @@ fid = fopen(output_cases_file, 'w');
 
 fprintf(fid, '#ifndef GENERATED_CASES_HPP\n');
 fprintf(fid, '#define GENERATED_CASES_HPP\n\n');
-fprintf(fid, '#include "../../consteig.hpp"\n\n');
+fprintf(fid, '#include <consteig/consteig.hpp>\n\n');
 fprintf(fid, 'namespace consteig\n{\n\n');
 
 NUM_RANDOM_CASES = 50;

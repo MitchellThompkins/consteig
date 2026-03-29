@@ -45,7 +45,7 @@ include(GNUInstallDirs)
 ################################################################################
 add_library(consteig INTERFACE)
 target_include_directories(consteig INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_compile_features(consteig INTERFACE cxx_std_17)
@@ -185,20 +185,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     install(TARGETS consteig EXPORT consteigTargets)
 
-    install(FILES
-        consteig.hpp
-        consteig_options.hpp
-        consteig_types.hpp
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    )
-    install(DIRECTORY array/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/array FILES_MATCHING PATTERN "*.hpp"
-        PATTERN "tests" EXCLUDE)
-    install(DIRECTORY math/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/math FILES_MATCHING PATTERN "*.hpp"
-        PATTERN "tests" EXCLUDE)
-    install(DIRECTORY matrix/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/matrix FILES_MATCHING PATTERN "*.hpp"
-        PATTERN "tests" EXCLUDE)
-    install(DIRECTORY eigen/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/eigen FILES_MATCHING PATTERN "*.hpp"
-        PATTERN "tests" EXCLUDE)
+    install(DIRECTORY include/consteig DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
     install(EXPORT consteigTargets
         FILE consteigTargets.cmake

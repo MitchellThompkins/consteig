@@ -17,7 +17,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include "../matrix/matrix.hpp"
+#include <consteig/matrix/matrix.hpp>
 #include "test_tools.hpp"
 
 template <typename T, consteig::Size R, consteig::Size C>
