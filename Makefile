@@ -165,11 +165,18 @@ test-dc-motor-fail:
 
 .PHONY: generate-test-cases
 generate-test-cases:
-	# Force single-threaded BLAS so that qr() and eig() produce bit-identical
-	# results across runs. Multithreaded OpenBLAS uses non-deterministic
-	# floating-point reduction order, which causes check-generated to fail
-	# intermittently in CI.
-	OPENBLAS_NUM_THREADS=1 octave octave/generate_test_cases.m
+	# Force deterministic BLAS behavior so that qr() and eig() produce
+	# bit-identical results across runs:
+	#   OPENBLAS_NUM_THREADS=1  -- disables parallel reductions, whose
+	#                              non-deterministic summation order produces
+	#                              1-2 ULP variation in results.
+	#   OPENBLAS_CORETYPE=ZEN3    -- overrides runtime CPU detection so the
+	#                              same AVX2+FMA kernel is used regardless of
+	#                              host CPU. Different kernels use different FMA
+	#                              widths, producing different rounding in the
+	#                              last digit. ZEN3 (AVX2+FMA) is supported by
+	#                              all modern x86-64 CPUs used in CI.
+	OPENBLAS_NUM_THREADS=1 OPENBLAS_CORETYPE=ZEN3 octave octave/generate_test_cases.m
 
 .PHONY: check-generated
 check-generated:
@@ -182,6 +189,7 @@ check-generated:
 		base=$$(basename "$$f"); \
 		if ! diff -q "$$f" "eigen/tests/$$base" >/dev/null 2>&1; then \
 			echo "  changed: eigen/tests/$$base"; \
+			diff -u "$$f" "eigen/tests/$$base" | head -40; \
 			CHANGED=1; \
 		fi; \
 	done; \

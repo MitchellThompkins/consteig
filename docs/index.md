@@ -14,9 +14,9 @@ calculating them at runtime and no offline tool is needed to generate them.
 This is particularly useful when a system's parameters are fixed at
 compile-time. Information like filter coefficients, system eigenvalues, and
 steady-state distributions can be computed by the compiler and live directly in
-the program binary rather than being derived externally and hard-coded. When
-parameters change, the compiler recomputes the related outputs. When the math is
-wrong, `static_assert` can catch it at build time. consteig is strictly
+the program binary rather than being derived externally and hard-coded. If
+parameters change, the compiler recomputes the dependent outputs. When the math
+is wrong, `static_assert` can catch it at build time. consteig is strictly
 freestanding and depends on no external libraries, not even the C++ standard
 library.
 
