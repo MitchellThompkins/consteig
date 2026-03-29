@@ -24,7 +24,7 @@ static constexpr consteig::Matrix<double, 3, 3> B{{
 }};
 ```
 
-The double-brace syntax (`{{ }}`) is required: the outer `{}` initializes the `Matrix`, and the inner `{}` initializes each row as an `Array`.
+The double-brace syntax (`{{ }}`) is required: the outer `{}` initializes the `Matrix`, and the inner `{}` initializes each row.
 
 ## Element Access
 

@@ -16,7 +16,6 @@ consteig/
 ├── consteig.hpp              # Main include file
 ├── consteig_options.hpp      # User-configurable options
 ├── consteig_types.hpp        # Core type definitions (Size, etc.)
-├── array/                    # Fixed-size array implementation
 ├── eigen/                    # Eigenvalue/eigenvector solvers
 │   ├── eigen.hpp            # Core eigenvalue algorithms
 │   └── tests/               # Eigen-related tests

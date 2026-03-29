@@ -85,9 +85,9 @@ constexpr Matrix<T, R1, C2> operator*(const Matrix<T, R1, C1> &lhs,
     {
         for (Size col{0}; col < C2; col++)
         {
-            for (Size k{0}; k < C1; k++)
+            for (Size inner{0}; inner < C1; inner++)
             {
-                result(row, col) += lhs(row, k) * rhs(k, col);
+                result(row, col) += lhs(row, inner) * rhs(inner, col);
             }
         }
     }
@@ -341,13 +341,13 @@ constexpr T determinant(const Matrix<T, R, C> &mat)
             for (Size row{1}; row < R; row++)
             {
                 Size subj{0U};
-                for (Size k{0}; k < R; k++)
+                for (Size src_col{0}; src_col < R; src_col++)
                 {
-                    if (k == col)
+                    if (src_col == col)
                     {
                         continue;
                     }
-                    submat(row - 1, subj) = mat(row, k);
+                    submat(row - 1, subj) = mat(row, src_col);
                     subj++;
                 }
             }
@@ -372,9 +372,9 @@ constexpr T trace(const Matrix<T, R, C> &mat)
     static_assert(R == C, "Trace expects a square matrix");
 
     T result{static_cast<T>(0)};
-    for (Size i{0}; i < R; ++i)
+    for (Size diag{0}; diag < R; ++diag)
     {
-        result += mat(i, i);
+        result += mat(diag, diag);
     }
     return result;
 }
