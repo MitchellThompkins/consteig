@@ -1,6 +1,30 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(consteig)
+# Derive the project version from the nearest Git tag rather than hardcoding
+# it here. This keeps GitHub release tags as the single source of truth:
+# tagging a release (e.g. "1.2.3") is all that's needed to update the version
+# exposed to find_package(consteig 1.2 CONFIG REQUIRED). Falls back to "0.0.0"
+# in shallow clones or source tarballs where tags are unavailable.
+find_package(Git QUIET)
+if(GIT_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT_VARIABLE _consteig_git_tag
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        RESULT_VARIABLE _git_result
+    )
+    if(_git_result EQUAL 0)
+        string(REGEX REPLACE "^v" "" _consteig_version "${_consteig_git_tag}")
+    else()
+        set(_consteig_version "0.0.0")
+    endif()
+else()
+    set(_consteig_version "0.0.0")
+endif()
+
+project(consteig VERSION ${_consteig_version})
 
 ################################################################################
 # Public INTERFACE target (the only target external consumers need)
@@ -174,8 +198,15 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
     )
 
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/consteigConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
+
     install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/consteigConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/consteigConfigVersion.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
     )
 endif()
