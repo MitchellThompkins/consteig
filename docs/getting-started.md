@@ -45,6 +45,14 @@ target_link_libraries(your_target PRIVATE consteig::consteig)
 vcpkg install consteig
 ```
 
+Configure CMake with the vcpkg toolchain file so `find_package` can locate installed packages:
+
+```sh
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=<vcpkg-root>/scripts/buildsystems/vcpkg.cmake
+```
+
+Alternatively, use [vcpkg manifest mode](https://learn.microsoft.com/en-us/vcpkg/users/manifests) with a `vcpkg.json` and a `CMakePresets.json` that sets the toolchain.
+
 ```cmake
 find_package(consteig REQUIRED)
 target_link_libraries(your_target PRIVATE consteig::consteig)
