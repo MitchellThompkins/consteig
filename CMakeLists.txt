@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.13)
 project(consteig VERSION 1.0.0)
 
 ################################################################################
-# Public INTERFACE target — the only target external consumers need
+# Public INTERFACE target (the only target external consumers need)
 ################################################################################
 add_library(consteig INTERFACE)
 target_include_directories(consteig INTERFACE
