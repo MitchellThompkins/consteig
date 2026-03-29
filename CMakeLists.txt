@@ -30,13 +30,10 @@ function(consteig_raise_compiler_limits)
 endfunction()
 
 
-option(CONSTEIG_INSTALL "Generate install rules (pass -DCONSTEIG_INSTALL=ON for vcpkg/packaging)" OFF)
-
 ################################################################################
-# Development mode (skipped when consumed via add_subdirectory/FetchContent,
-# or when install rules are requested via CONSTEIG_INSTALL=ON)
+# Development mode (skipped when consumed via add_subdirectory/FetchContent)
 ################################################################################
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND NOT CONSTEIG_INSTALL)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     macro(create_test target)
         add_test(NAME ${target} COMMAND ${target})
@@ -63,7 +60,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND NOT CONSTEIG_INSTALL)
         endmacro()
     endif()
 
-    option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" ON)
+    option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" OFF)
 
     # Test dependencies are fetched before consteig_warnings is defined so
     # third-party code is not compiled with strict warnings.
@@ -113,7 +110,7 @@ add_subdirectory(eigen)
 ################################################################################
 # Examples and tests (dev mode only)
 ################################################################################
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND NOT CONSTEIG_INSTALL)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(examples EXCLUDE_FROM_ALL)
     add_subdirectory(profiling EXCLUDE_FROM_ALL)
 
@@ -127,9 +124,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND NOT CONSTEIG_INSTALL)
 endif()
 
 ################################################################################
-# Install rules (active when CONSTEIG_INSTALL=ON, e.g. for vcpkg)
+# Install rules (top-level only)
 ################################################################################
-if(CONSTEIG_INSTALL)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CMakePackageConfigHelpers)
     include(GNUInstallDirs)
 
