@@ -92,13 +92,12 @@ endif()
 ################################################################################
 # Library
 ################################################################################
-add_subdirectory(array)
 add_subdirectory(math)
 add_subdirectory(matrix)
 add_subdirectory(eigen)
 
 # Require C++17 minimum from consumers without overriding their standard
-foreach(lib array math matrix consteig_eigen)
+foreach(lib math matrix consteig_eigen)
     target_compile_features(${lib} INTERFACE cxx_std_17)
 endforeach()
 
@@ -110,7 +109,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(profiling EXCLUDE_FROM_ALL)
 
     if(CONSTEIG_BUILD_TESTS)
-        add_subdirectory(array/tests)
         add_subdirectory(math/tests)
         add_subdirectory(matrix/tests)
         add_subdirectory(eigen/tests)

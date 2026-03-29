@@ -1,7 +1,6 @@
 #ifndef LU_DECOMP_HPP
 #define LU_DECOMP_HPP
 
-#include "../../array/array.hpp"
 #include "../../math/constmath.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"
@@ -28,7 +27,7 @@ template <typename T, Size S> struct LUMatrix
 {
     Matrix<T, S, S> _l;
     Matrix<T, S, S> _u;
-    Array<Size, S> _p;
+    Size _p[S];
 };
 
 /// @brief LU decomposition with partial pivoting.

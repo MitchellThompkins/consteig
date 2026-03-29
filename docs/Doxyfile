@@ -7,7 +7,6 @@ OUTPUT_DIRECTORY       = docs/api
 INPUT                  = consteig.hpp \
                          consteig_types.hpp \
                          consteig_options.hpp \
-                         array/array.hpp \
                          math/complex.hpp \
                          math/functions/abs.hpp \
                          math/functions/csqrt.hpp \
