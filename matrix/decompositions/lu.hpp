@@ -56,59 +56,59 @@ constexpr LUMatrix<T, S> lu(const Matrix<T, S, S> &a)
     LUMatrix<T, S> res{};
     res._u = a;
     res._l = eye<T, S>();
-    for (Size i = 0; i < S; ++i)
+    for (Size row = 0; row < S; ++row)
     {
-        res._p[i] = i;
+        res._p[row] = row;
     }
 
-    for (Size i = 0; i < S; ++i)
+    for (Size diag = 0; diag < S; ++diag)
     {
         // Pivot
-        Size max_row = i;
-        auto max_val = consteig::abs(res._u(i, i));
-        for (Size k = i + 1; k < S; ++k)
+        Size max_row = diag;
+        auto max_val = consteig::abs(res._u(diag, diag));
+        for (Size search_row = diag + 1; search_row < S; ++search_row)
         {
-            auto val = consteig::abs(res._u(k, i));
+            auto val = consteig::abs(res._u(search_row, diag));
             if (val > max_val)
             {
                 max_val = val;
-                max_row = k;
+                max_row = search_row;
             }
         }
 
-        if (max_row != i)
+        if (max_row != diag)
         {
             // Swap rows in U
-            for (Size j = 0; j < S; ++j)
+            for (Size col = 0; col < S; ++col)
             {
-                T tmp = res._u(i, j);
-                res._u(i, j) = res._u(max_row, j);
-                res._u(max_row, j) = tmp;
+                T tmp = res._u(diag, col);
+                res._u(diag, col) = res._u(max_row, col);
+                res._u(max_row, col) = tmp;
             }
             // Swap rows in L (elements below diagonal)
-            for (Size j = 0; j < i; ++j)
+            for (Size col = 0; col < diag; ++col)
             {
-                T tmp = res._l(i, j);
-                res._l(i, j) = res._l(max_row, j);
-                res._l(max_row, j) = tmp;
+                T tmp = res._l(diag, col);
+                res._l(diag, col) = res._l(max_row, col);
+                res._l(max_row, col) = tmp;
             }
             // Swap pivots
-            Size tmp_p = res._p[i];
-            res._p[i] = res._p[max_row];
+            Size tmp_p = res._p[diag];
+            res._p[diag] = res._p[max_row];
             res._p[max_row] = tmp_p;
         }
 
-        for (Size j = i + 1; j < S; ++j)
+        for (Size row = diag + 1; row < S; ++row)
         {
             // Note: In inverse iteration, we might encounter nearly singular
             // matrices. We use a small epsilon to avoid exact division by zero.
-            auto pivot_abs = consteig::abs(res._u(i, i));
+            auto pivot_abs = consteig::abs(res._u(diag, diag));
             if (pivot_abs > 1e-30)
             {
-                res._l(j, i) = res._u(j, i) / res._u(i, i);
-                for (Size k = i; k < S; ++k)
+                res._l(row, diag) = res._u(row, diag) / res._u(diag, diag);
+                for (Size col = diag; col < S; ++col)
                 {
-                    res._u(j, k) = res._u(j, k) - res._l(j, i) * res._u(i, k);
+                    res._u(row, col) = res._u(row, col) - res._l(row, diag) * res._u(diag, col);
                 }
             }
         }
@@ -139,43 +139,43 @@ constexpr Matrix<T, S, 1> lu_solve(const LUMatrix<T, S> &lu,
 {
     // Solve Ly = Pb
     Matrix<T, S, 1> pb{};
-    for (Size i = 0; i < S; ++i)
+    for (Size row = 0; row < S; ++row)
     {
-        pb(i, 0) = b(lu._p[i], 0);
+        pb(row, 0) = b(lu._p[row], 0);
     }
 
     Matrix<T, S, 1> y{};
-    for (Size i = 0; i < S; ++i)
+    for (Size row = 0; row < S; ++row)
     {
         T sum = static_cast<T>(0);
-        for (Size j = 0; j < i; ++j)
+        for (Size col = 0; col < row; ++col)
         {
-            sum = sum + lu._l(i, j) * y(j, 0);
+            sum = sum + lu._l(row, col) * y(col, 0);
         }
-        y(i, 0) = pb(i, 0) - sum;
+        y(row, 0) = pb(row, 0) - sum;
     }
 
     // Solve Ux = y
     Matrix<T, S, 1> x{};
     for (Size i = S; i > 0; --i)
     {
-        Size idx = i - 1;
+        Size row = i - 1;
         T sum = static_cast<T>(0);
-        for (Size j = idx + 1; j < S; ++j)
+        for (Size col = row + 1; col < S; ++col)
         {
-            sum = sum + lu._u(idx, j) * x(j, 0);
+            sum = sum + lu._u(row, col) * x(col, 0);
         }
 
-        auto diag_abs = consteig::abs(lu._u(idx, idx));
+        auto diag_abs = consteig::abs(lu._u(row, row));
         if (diag_abs > 1e-30)
         {
-            x(idx, 0) = (y(idx, 0) - sum) / lu._u(idx, idx);
+            x(row, 0) = (y(row, 0) - sum) / lu._u(row, row);
         }
         else
         {
             // If nearly singular, we use a very small value instead of zero to
             // encourage the "explosion" required by Inverse Iteration.
-            x(idx, 0) = (y(idx, 0) - sum) / static_cast<T>(1e-30);
+            x(row, 0) = (y(row, 0) - sum) / static_cast<T>(1e-30);
         }
     }
     return x;

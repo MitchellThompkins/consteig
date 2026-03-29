@@ -63,11 +63,11 @@ constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a)
     Matrix<T, R, R> q = eye<T, R>();
     Matrix<T, R, R> r = a;
 
-    for (Size i = 0; i < R - 1; ++i)
+    for (Size col = 0; col < R - 1; ++col)
     {
-        // Compute Givens rotation to zero r(i+1, i)
-        T x = r(i, i);
-        T y = r(i + 1, i);
+        // Compute Givens rotation to zero r(col+1, col)
+        T x = r(col, col);
+        T y = r(col + 1, col);
 
         if (consteig::abs(y) > static_cast<T>(1e-15))
         {
@@ -76,23 +76,23 @@ constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a)
             T s = y / mag;
 
             // R = G * R
-            for (Size j = i; j < R; ++j)
+            for (Size k = col; k < R; ++k)
             {
-                T r_i = r(i, j);
-                T r_ip1 = r(i + 1, j);
-                r(i, j) = c * r_i + s * r_ip1;
-                r(i + 1, j) = -s * r_i + c * r_ip1;
+                T r_cur = r(col, k);
+                T r_next = r(col + 1, k);
+                r(col, k) = c * r_cur + s * r_next;
+                r(col + 1, k) = -s * r_cur + c * r_next;
             }
 
             // Q = Q * G^T
-            for (Size j = 0; j < R; ++j)
+            for (Size row = 0; row < R; ++row)
             {
-                T q_i = q(j, i);
-                T q_ip1 = q(j, i + 1);
-                q(j, i) = c * q_i + s * q_ip1;
-                q(j, i + 1) = -s * q_i + c * q_ip1;
+                T q_cur = q(row, col);
+                T q_next = q(row, col + 1);
+                q(row, col) = c * q_cur + s * q_next;
+                q(row, col + 1) = -s * q_cur + c * q_next;
             }
-            r(i + 1, i) = 0;
+            r(col + 1, col) = 0;
         }
     }
 
@@ -144,13 +144,13 @@ constexpr QRMatrix<T, R> qr(const Matrix<T, R, C> a)
     Matrix<T, R, R> q = eye<T, R>();
     Matrix<T, R, R> r = a;
 
-    for (Size j = 0; j < C; ++j)
+    for (Size col = 0; col < C; ++col)
     {
-        for (Size i = R - 1; i > j; --i)
+        for (Size row = R - 1; row > col; --row)
         {
-            // Compute Givens rotation to zero r(i, j) using r(i-1, j)
-            T x = r(i - 1, j);
-            T y = r(i, j);
+            // Compute Givens rotation to zero r(row, col) using r(row-1, col)
+            T x = r(row - 1, col);
+            T y = r(row, col);
 
             if (consteig::abs(y) > static_cast<T>(1e-15))
             {
@@ -161,24 +161,24 @@ constexpr QRMatrix<T, R> qr(const Matrix<T, R, C> a)
                     T s = y / mag;
 
                     // R = G * R
-                    // Only need to update columns from j to C-1
-                    for (Size k = j; k < C; ++k)
+                    // Only need to update columns from col to C-1
+                    for (Size k = col; k < C; ++k)
                     {
-                        T r_im1_k = r(i - 1, k);
-                        T r_i_k = r(i, k);
-                        r(i - 1, k) = c * r_im1_k + s * r_i_k;
-                        r(i, k) = -s * r_im1_k + c * r_i_k;
+                        T r_above = r(row - 1, k);
+                        T r_cur = r(row, k);
+                        r(row - 1, k) = c * r_above + s * r_cur;
+                        r(row, k) = -s * r_above + c * r_cur;
                     }
 
                     // Q = Q * G^T
                     for (Size k = 0; k < R; ++k)
                     {
-                        T q_k_im1 = q(k, i - 1);
-                        T q_k_i = q(k, i);
-                        q(k, i - 1) = c * q_k_im1 + s * q_k_i;
-                        q(k, i) = -s * q_k_im1 + c * q_k_i;
+                        T q_above = q(k, row - 1);
+                        T q_cur = q(k, row);
+                        q(k, row - 1) = c * q_above + s * q_cur;
+                        q(k, row) = -s * q_above + c * q_cur;
                     }
-                    r(i, j) = 0;
+                    r(row, col) = 0;
                 }
             }
         }
