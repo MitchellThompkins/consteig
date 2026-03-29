@@ -129,7 +129,7 @@ remove:
 
 .PHONY: run-examples
 run-examples:
-	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_EXAMPLES=ON -DCONSTEIG_BUILD_TESTS=OFF -DCONSTEIG_BUILD_PROFILING=OFF
 	@set -e; \
 	cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
 	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
@@ -142,7 +142,7 @@ run-examples:
 
 .PHONY: test-dc-motor-fail
 test-dc-motor-fail:
-	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_EXAMPLES=ON -DCONSTEIG_BUILD_TESTS=OFF -DCONSTEIG_BUILD_PROFILING=OFF
 	@echo "========================================"; \
 	echo "Building dc_motor_control.main (expected to fail)"; \
 	echo "========================================"; \
@@ -222,7 +222,7 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	# run CMake to generate and configure the build scripts
 	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json && \
 	cd $(BUILD_PREFIX) && \
-	cmake .. $(CMAKE_OPTIONS); \
+	cmake .. $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=ON; \
 
 # Other (custom) targets are passed through to the cmake-generated $(BUILD_FILE)
 # Note: when no targets are passed from the commanding the special variable $@
@@ -260,7 +260,8 @@ container.start:
 build.gcc:
 	cmake -S . -B $(BUILD_PREFIX)-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
-		-DCMAKE_CXX_COMPILER=g++
+		-DCMAKE_CXX_COMPILER=g++ \
+		-DCONSTEIG_BUILD_TESTS=ON
 	cmake --build $(BUILD_PREFIX)-gcc --target all -- $(JOB_FLAG)
 
 .PHONY: test.gcc
@@ -272,7 +273,9 @@ examples.gcc:
 	cmake -S . -B $(BUILD_PREFIX)-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++ \
-		-DCONSTEIG_BUILD_TESTS=OFF
+		-DCONSTEIG_BUILD_EXAMPLES=ON \
+		-DCONSTEIG_BUILD_TESTS=OFF \
+		-DCONSTEIG_BUILD_PROFILING=OFF
 	cmake --build $(BUILD_PREFIX)-gcc --target examples -- $(JOB_FLAG)
 	@set -e; \
 	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
@@ -288,7 +291,8 @@ examples.gcc:
 build.clang:
 	cmake -S . -B $(BUILD_PREFIX)-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
-		-DCMAKE_CXX_COMPILER=clang++
+		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCONSTEIG_BUILD_TESTS=ON
 	cmake --build $(BUILD_PREFIX)-clang --target all -- $(JOB_FLAG)
 
 .PHONY: test.clang
@@ -300,7 +304,9 @@ examples.clang:
 	cmake -S . -B $(BUILD_PREFIX)-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
 		-DCMAKE_CXX_COMPILER=clang++ \
-		-DCONSTEIG_BUILD_TESTS=OFF
+		-DCONSTEIG_BUILD_EXAMPLES=ON \
+		-DCONSTEIG_BUILD_TESTS=OFF \
+		-DCONSTEIG_BUILD_PROFILING=OFF
 	cmake --build $(BUILD_PREFIX)-clang --target examples -- $(JOB_FLAG)
 	@set -e; \
 	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
@@ -316,6 +322,7 @@ examples.clang:
 cross.arm-gcc:
 	cmake -S . -B $(BUILD_PREFIX)-arm-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-gcc.cmake \
+		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_COMPILE_ONLY=ON
 	cmake --build $(BUILD_PREFIX)-arm-gcc --target all -- $(JOB_FLAG)
 
@@ -324,6 +331,7 @@ cross.arm-gcc:
 cross.arm-clang:
 	cmake -S . -B $(BUILD_PREFIX)-arm-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-clang.cmake \
+		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_COMPILE_ONLY=ON
 	cmake --build $(BUILD_PREFIX)-arm-clang --target all -- $(JOB_FLAG)
 

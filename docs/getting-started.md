@@ -6,17 +6,73 @@ title: Getting Started
 
 ## Installation
 
-As consteig is a templated library a user does not need to compile anything
-separately. Simply `#include "consteig.hpp"` into the project (optionally
-consume it via CMake with `add_subdirectory` or `FetchContent`).
+consteig requires a C++17 compiler. No separate compilation step is needed.
 
-consteig also requires a C++ compiler which supports C++17.
+### Git submodule
 
-Copy `consteig.hpp` and the rest of the headers into your project (or add the
-repository as a submodule). No separate compilation step is needed. The CMake
-files in the repository are for testing and development only.
+Add the repository as a submodule:
 
-Quick reference examples:
+```sh
+git submodule add https://github.com/mitchellthompkins/consteig.git third_party/consteig
+```
+
+Alternatively, the headers can be copied directly into your project.
+
+With CMake, add the submodule to your build:
+
+```cmake
+add_subdirectory(third_party/consteig)
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
+### CMake FetchContent
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    consteig
+    GIT_REPOSITORY https://github.com/mitchellthompkins/consteig.git
+    GIT_TAG        main
+)
+FetchContent_MakeAvailable(consteig)
+
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
+### vcpkg
+
+```sh
+vcpkg install consteig
+```
+
+Configure CMake with the vcpkg toolchain file so `find_package` can locate installed packages:
+
+```sh
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=<vcpkg-root>/scripts/buildsystems/vcpkg.cmake
+```
+
+Alternatively, use [vcpkg manifest mode](https://learn.microsoft.com/en-us/vcpkg/users/manifests) with a `vcpkg.json` and a `CMakePresets.json` that sets the toolchain.
+
+```cmake
+find_package(consteig REQUIRED)
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
+### System install
+
+To install consteig system-wide and use it via `find_package`:
+
+```sh
+cmake -S /path/to/consteig -B build
+cmake --install build --prefix /usr/local
+```
+
+```cmake
+find_package(consteig REQUIRED)
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
+## Quick Reference Examples
 
 * [Working with matrices](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/matrix.cpp)
 * [Finding eigenvalues](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/eigen.cpp)
