@@ -42,16 +42,16 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
     for (Size iter = 0; iter < 10 && !converged; ++iter)
     {
         converged = true;
-        for (Size i = 0; i < S; ++i)
+        for (Size row = 0; row < S; ++row)
         {
             T row_norm = 0;
             T col_norm = 0;
-            for (Size j = 0; j < S; ++j)
+            for (Size col = 0; col < S; ++col)
             {
-                if (i != j)
+                if (row != col)
                 {
-                    row_norm += consteig::abs(a(i, j));
-                    col_norm += consteig::abs(a(j, i));
+                    row_norm += consteig::abs(a(row, col));
+                    col_norm += consteig::abs(a(col, row));
                 }
             }
 
@@ -80,13 +80,13 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
                     CONSTEIG_BALANCE_CONVERGENCE_THRESHOLD * s)
                 {
                     converged = false;
-                    for (Size j = 0; j < S; ++j)
+                    for (Size col = 0; col < S; ++col)
                     {
-                        a(i, j) *= f;
+                        a(row, col) *= f;
                     }
-                    for (Size j = 0; j < S; ++j)
+                    for (Size scale_row = 0; scale_row < S; ++scale_row)
                     {
-                        a(j, i) /= f;
+                        a(scale_row, row) /= f;
                     }
                 }
             }
@@ -122,9 +122,9 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
     T p2 = H(l + 1, l) * (H(l, l) + H(l + 1, l + 1) - s);
     T p3 = (l + 2 <= n) ? H(l + 1, l) * H(l + 2, l + 1) : static_cast<T>(0);
 
-    for (Size k = l; k < n; ++k)
+    for (Size pos = l; pos < n; ++pos)
     {
-        Size m = (k + 2 <= n) ? 3 : 2;
+        Size m = (pos + 2 <= n) ? 3 : 2;
         T v1 = 0, v2 = 0, v3 = 0, norm = 0;
 
         if (m == 3)
@@ -147,52 +147,52 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
             T v_sum_sq = v1 * v1 + v2 * v2 + v3 * v3;
             T beta = static_cast<T>(2) / v_sum_sq;
 
-            // Left application: include column k-1 for k > l to chase the bulge
-            Size col_start = (k > l) ? k - 1 : k;
+            // Left application: include column pos-1 for pos > l to chase the bulge
+            Size col_start = (pos > l) ? pos - 1 : pos;
             for (Size col = col_start; col < S; ++col)
             {
-                T sum = beta * (v1 * H(k, col) + v2 * H(k + 1, col) +
-                                (m == 3 ? v3 * H(k + 2, col) : 0));
-                H(k, col) -= sum * v1;
-                H(k + 1, col) -= sum * v2;
+                T sum = beta * (v1 * H(pos, col) + v2 * H(pos + 1, col) +
+                                (m == 3 ? v3 * H(pos + 2, col) : 0));
+                H(pos, col) -= sum * v1;
+                H(pos + 1, col) -= sum * v2;
                 if (m == 3)
                 {
-                    H(k + 2, col) -= sum * v3;
+                    H(pos + 2, col) -= sum * v3;
                 }
             }
 
             // Right application
-            Size upper_row = (k + 3 < n + 1) ? k + 3 : n;
+            Size upper_row = (pos + 3 < n + 1) ? pos + 3 : n;
             for (Size row = 0; row <= upper_row && row < S; ++row)
             {
-                T sum = beta * (v1 * H(row, k) + v2 * H(row, k + 1) +
-                                (m == 3 ? v3 * H(row, k + 2) : 0));
-                H(row, k) -= sum * v1;
-                H(row, k + 1) -= sum * v2;
+                T sum = beta * (v1 * H(row, pos) + v2 * H(row, pos + 1) +
+                                (m == 3 ? v3 * H(row, pos + 2) : 0));
+                H(row, pos) -= sum * v1;
+                H(row, pos + 1) -= sum * v2;
                 if (m == 3)
                 {
-                    H(row, k + 2) -= sum * v3;
+                    H(row, pos + 2) -= sum * v3;
                 }
             }
 
             // Explicitly zero bulge elements for numerical stability
-            if (k > l)
+            if (pos > l)
             {
-                H(k + 1, k - 1) = 0;
+                H(pos + 1, pos - 1) = 0;
                 if (m == 3)
                 {
-                    H(k + 2, k - 1) = 0;
+                    H(pos + 2, pos - 1) = 0;
                 }
             }
         }
 
-        if (k < n - 1)
+        if (pos < n - 1)
         {
-            p1 = H(k + 1, k);
-            p2 = H(k + 2, k);
-            if (k < n - 2)
+            p1 = H(pos + 1, pos);
+            p2 = H(pos + 2, pos);
+            if (pos < n - 2)
             {
-                p3 = H(k + 3, k);
+                p3 = H(pos + 3, pos);
             }
         }
     }
@@ -442,16 +442,16 @@ constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
     InternalScalar eps = consteig::epsilon<InternalScalar>() *
                          (norm1(out) + static_cast<InternalScalar>(1.0));
 
-    for (Size i = 0; i < S; ++i)
+    for (Size diag = 0; diag < S; ++diag)
     {
         // If subdiag is essentially zero (smaller than eps), we have a 1x1 *
         // block.  If subdiag is significantly larger than zero, it means the
         // current row and the next row are "tangled" together, forming a 2x2
         // block (which means there should be complex conjugate eigen values.
         bool found_2x2 = false;
-        if (i < S - 1)
+        if (diag < S - 1)
         {
-            InternalScalar subdiag = out(i + 1, i);
+            InternalScalar subdiag = out(diag + 1, diag);
             if (consteig::abs(subdiag) > eps)
             {
                 found_2x2 = true;
@@ -470,32 +470,32 @@ constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
             //
             // This simplifies to: L^2 - tr(A)L + det(A) = 0.  Solving via
             // quadratic formula: L = (tr +/- sqrt(tr^2 - 4*det)) / 2
-            InternalScalar a00 = out(i, i);
-            InternalScalar a01 = out(i, i + 1);
-            InternalScalar a10 = out(i + 1, i);
-            InternalScalar a11 = out(i + 1, i + 1);
+            InternalScalar a00 = out(diag, diag);
+            InternalScalar a01 = out(diag, diag + 1);
+            InternalScalar a10 = out(diag + 1, diag);
+            InternalScalar a11 = out(diag + 1, diag + 1);
             InternalScalar tr = a00 + a11;
             InternalScalar d = a00 * a11 - a01 * a10;
             InternalScalar disc = tr * tr - 4 * d;
             if (disc >= 0)
             {
                 InternalScalar sq = consteig::sqrt(disc);
-                result(i, 0) = Complex<T>{static_cast<T>((tr + sq) / 2), 0};
-                result(i + 1, 0) = Complex<T>{static_cast<T>((tr - sq) / 2), 0};
+                result(diag, 0) = Complex<T>{static_cast<T>((tr + sq) / 2), 0};
+                result(diag + 1, 0) = Complex<T>{static_cast<T>((tr - sq) / 2), 0};
             }
             else
             {
                 InternalScalar sq = consteig::sqrt(-disc);
-                result(i, 0) =
+                result(diag, 0) =
                     Complex<T>{static_cast<T>(tr / 2), static_cast<T>(sq / 2)};
-                result(i + 1, 0) =
+                result(diag + 1, 0) =
                     Complex<T>{static_cast<T>(tr / 2), static_cast<T>(-sq / 2)};
             }
-            i++;
+            diag++;
         }
         else
         {
-            result(i, 0) = Complex<T>{static_cast<T>(out(i, i)), 0};
+            result(diag, 0) = Complex<T>{static_cast<T>(out(diag, diag)), 0};
         }
     }
     return result;
@@ -532,9 +532,9 @@ static inline constexpr bool checkEigenValues(
 {
     T tr = trace(a);
     Complex<T> sum_lambda{};
-    for (Size i = 0; i < R; ++i)
+    for (Size row = 0; row < R; ++row)
     {
-        sum_lambda = sum_lambda + lambda(i, 0);
+        sum_lambda = sum_lambda + lambda(row, 0);
     }
 
     if (consteig::abs(sum_lambda.real - tr) > thresh)
@@ -550,9 +550,9 @@ static inline constexpr bool checkEigenValues(
     {
         T d = determinant(a);
         Complex<T> prod_lambda{1, 0};
-        for (Size i = 0; i < R; ++i)
+        for (Size row = 0; row < R; ++row)
         {
-            prod_lambda = prod_lambda * lambda(i, 0);
+            prod_lambda = prod_lambda * lambda(row, 0);
         }
         T det_tol = thresh * (static_cast<T>(1) + consteig::abs(d));
         if (consteig::abs(prod_lambda.real - d) > det_tol)
@@ -597,20 +597,20 @@ constexpr Matrix<Complex<T>, S, S> eigenvectors(
     static_assert(is_float<T>(), "eigenvectors expects floating point type");
     Matrix<Complex<T>, S, S> V{};
 
-    for (Size i = 0; i < S; ++i)
+    for (Size eig_col = 0; eig_col < S; ++eig_col)
     {
-        Complex<T> lambda = eigenvalues(i, 0);
+        Complex<T> lambda = eigenvalues(eig_col, 0);
 
         // Form shifted matrix: (A - \lambda I)
         Matrix<Complex<T>, S, S> shifted_A{};
-        for (Size r = 0; r < S; ++r)
+        for (Size row = 0; row < S; ++row)
         {
-            for (Size c = 0; c < S; ++c)
+            for (Size col = 0; col < S; ++col)
             {
-                shifted_A(r, c) = Complex<T>{A(r, c), 0};
-                if (r == c)
+                shifted_A(row, col) = Complex<T>{A(row, col), 0};
+                if (row == col)
                 {
-                    shifted_A(r, c) = shifted_A(r, c) - lambda;
+                    shifted_A(row, col) = shifted_A(row, col) - lambda;
                 }
             }
         }
@@ -678,10 +678,10 @@ constexpr Matrix<Complex<T>, S, S> eigenvectors(
             }
         }
 
-        // Store the computed eigenvector in the i-th column of V
-        for (Size r = 0; r < S; ++r)
+        // Store the computed eigenvector in the eig_col-th column of V
+        for (Size row = 0; row < S; ++row)
         {
-            V(r, i) = b(r, 0);
+            V(row, eig_col) = b(row, 0);
         }
     }
 
