@@ -34,9 +34,16 @@ macro(create_test target)
 endmacro()
 
 ################################################################################
-# Top-level-only settings (skipped when consumed via add_subdirectory/FetchContent)
+# Development mode (skipped when consumed via add_subdirectory/FetchContent,
+# or when explicitly disabled via -DCONSTEIG_DEV=OFF e.g. for vcpkg installs)
 ################################################################################
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    option(CONSTEIG_DEV "Enable development mode (sets global CMake variables, builds tests)" ON)
+else()
+    option(CONSTEIG_DEV "Enable development mode (sets global CMake variables, builds tests)" OFF)
+endif()
+
+if(CONSTEIG_DEV)
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
@@ -57,7 +64,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         macro(add_test)
         endmacro()
     endif()
-
 
     option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" ON)
 
@@ -95,8 +101,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             -Wlogical-op
         )
     endif()
-else()
-    option(CONSTEIG_BUILD_TESTS "Build tests and fetch test dependencies (Eigen, GoogleTest)" OFF)
 endif()
 
 ################################################################################
@@ -109,9 +113,9 @@ add_subdirectory(eigen)
 
 
 ################################################################################
-# Examples and tests (top-level only)
+# Examples and tests (dev mode only)
 ################################################################################
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if(CONSTEIG_DEV)
     add_subdirectory(examples EXCLUDE_FROM_ALL)
     add_subdirectory(profiling EXCLUDE_FROM_ALL)
 
@@ -124,3 +128,43 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 endif()
 
+################################################################################
+# Install rules (active when CONSTEIG_DEV=OFF, e.g. for vcpkg)
+################################################################################
+if(NOT CONSTEIG_DEV)
+    include(CMakePackageConfigHelpers)
+    include(GNUInstallDirs)
+
+    install(TARGETS consteig EXPORT consteigTargets)
+
+    install(FILES
+        consteig.hpp
+        consteig_options.hpp
+        consteig_types.hpp
+        DESTINATION include
+    )
+    install(DIRECTORY array/ DESTINATION include/array FILES_MATCHING PATTERN "*.hpp")
+    install(DIRECTORY math/ DESTINATION include/math FILES_MATCHING PATTERN "*.hpp"
+        PATTERN "tests" EXCLUDE)
+    install(DIRECTORY matrix/ DESTINATION include/matrix FILES_MATCHING PATTERN "*.hpp"
+        PATTERN "tests" EXCLUDE)
+    install(DIRECTORY eigen/ DESTINATION include/eigen FILES_MATCHING PATTERN "*.hpp"
+        PATTERN "tests" EXCLUDE)
+
+    install(EXPORT consteigTargets
+        FILE consteigTargets.cmake
+        NAMESPACE consteig::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
+    )
+
+    configure_package_config_file(
+        cmake/consteigConfig.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/consteigConfig.cmake"
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
+    )
+
+    install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/consteigConfig.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
+    )
+endif()
