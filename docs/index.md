@@ -4,7 +4,7 @@ title: consteig
 
 # consteig
 
-![CI](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg)
+![CI](https://github.com/mitchellthompkins/consteig/actions/workflows/main.yml/badge.svg?branch=main)
 
 consteig is a header-only C++17 constexpr template library for computing
 eigenvalues and eigenvectors of constexpr matrices at compile-time. The results

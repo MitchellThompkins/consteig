@@ -237,9 +237,9 @@ A DC motor position control example that demonstrates a real-world use case for 
 
 ## Merge Conflict Resolution Guidelines
 
-When resolving conflicts between strict-build branches and develop:
+When resolving conflicts between strict-build branches and main:
 
 1. **Keep explicit casts** from strict-build for Eigen indexing
-2. **Use tolerance constants** from develop (not hardcoded values)
+2. **Use tolerance constants** from main (not hardcoded values)
 3. **Preserve float/double type distinctions** in tests
 4. **Add new tolerance constants** to `test_tools.hpp` if needed for type consistency
