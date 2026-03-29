@@ -584,7 +584,7 @@ static inline constexpr bool checkEigenValues(
 /// @param  A            Real S×S matrix.
 /// @param  eigenvalues  S×1 eigenvalue vector from @ref eigenvalues.
 /// @return S×S matrix whose columns are the eigenvectors (as @ref Complex<T>).
-///         Column `i` corresponds to `eigenvalues(i,0)`.
+///         Column `eig_col` corresponds to `eigenvalues(eig_col,0)`.
 ///
 /// @code
 /// static constexpr auto eigs = consteig::eigenvalues(A);
@@ -719,8 +719,8 @@ template <typename T, Size S> class EigenSolver
         return _evals;
     }
 
-    /// @brief Return the S×S eigenvector matrix (column `i` corresponds to
-    /// eigenvalue `i`).
+    /// @brief Return the S×S eigenvector matrix (column `eig_col` corresponds
+    /// to eigenvalue `eig_col`).
     constexpr const Matrix<Complex<T>, S, S> &eigenvectors() const
     {
         return _evecs;
