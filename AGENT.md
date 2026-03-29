@@ -7,35 +7,40 @@
 Consteig is a **C++17 constexpr template library** for computing eigenvalues and eigenvectors of square matrices at compile time. The library is designed to be:
 - **Freestanding**: No dependency on the C++ standard library in the core
 - **Compile-time**: All computations can be done as `static constexpr`
-- **Header-only**: Just `#include "consteig.hpp"`
+- **Header-only**: Just `#include <consteig/consteig.hpp>`
 
 ## Directory Structure
 
 ```
 consteig/
-├── consteig.hpp              # Main include file
-├── consteig_options.hpp      # User-configurable options
-├── consteig_types.hpp        # Core type definitions (Size, etc.)
-├── eigen/                    # Eigenvalue/eigenvector solvers
-│   └── eigen.hpp            # Core eigenvalue algorithms
-├── math/                     # Constexpr math functions
-│   ├── complex.hpp          # Complex number support
-│   ├── constmath.hpp        # Math function includes
-│   └── functions/           # Individual math functions (sqrt, exp, etc.)
-├── matrix/                   # Matrix operations
-│   ├── matrix.hpp           # Matrix class definition
-│   ├── operations.hpp       # Matrix arithmetic and operations
-│   ├── decompositions.hpp   # Decomposition interface (includes subdir)
-│   └── decompositions/      # Individual decomposition implementations
-│       ├── householder.hpp  # Householder reflections
-│       ├── hessenberg.hpp   # Hessenberg reduction
-│       ├── qr.hpp           # QR decomposition
-│       └── lu.hpp           # LU decomposition
+├── include/
+│   └── consteig/
+│       ├── consteig.hpp              # Main include file
+│       ├── consteig_options.hpp      # User-configurable options
+│       ├── consteig_types.hpp        # Core type definitions (Size, etc.)
+│       ├── eigen/
+│       │   └── eigen.hpp            # Core eigenvalue algorithms
+│       ├── math/
+│       │   ├── complex.hpp          # Complex number support
+│       │   ├── constmath.hpp        # Math function includes
+│       │   └── functions/           # Individual math functions (sqrt, exp, etc.)
+│       └── matrix/
+│           ├── matrix.hpp           # Matrix class definition
+│           ├── operations.hpp       # Matrix arithmetic and operations
+│           ├── decompositions.hpp   # Decomposition interface (includes subdir)
+│           └── decompositions/      # Individual decomposition implementations
+│               ├── householder.hpp  # Householder reflections
+│               ├── hessenberg.hpp   # Hessenberg reduction
+│               ├── qr.hpp           # QR decomposition
+│               └── lu.hpp           # LU decomposition
+├── eigen/                    # Eigenvalue/eigenvector solvers (CMakeLists.txt only)
+├── math/                     # Constexpr math functions (CMakeLists.txt only)
+├── matrix/                   # Matrix operations (CMakeLists.txt only)
 ├── tests/                    # All tests
 │   ├── CMakeLists.txt       # Adds math, matrix, and eigen subdirs
 │   ├── math/                # Math function tests
 │   ├── matrix/              # Matrix operation tests
-│   └── eigen/               # Eigenvalue/eigenvector tests
+│   └── eigen/               # Eigenvalue/eigenvector tests (includes generated)
 ├── test_dependencies/        # Test utilities
 │   ├── test_tools.hpp       # Test tolerance constants and helpers
 │   ├── eigen_test_tools.hpp # Eigen library comparison utilities
