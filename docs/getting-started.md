@@ -39,7 +39,7 @@ FetchContent_MakeAvailable(consteig)
 target_link_libraries(your_target PRIVATE consteig::consteig)
 ```
 
-Quick reference examples:
+## Quick Reference Examples
 
 * [Working with matrices](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/matrix.cpp)
 * [Finding eigenvalues](https://github.com/mitchellthompkins/consteig/blob/HEAD/examples/eigen.cpp)
