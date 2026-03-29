@@ -7,7 +7,8 @@ project(consteig)
 ################################################################################
 add_library(consteig INTERFACE)
 target_include_directories(consteig INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
 )
 target_compile_features(consteig INTERFACE cxx_std_17)
 add_library(consteig::consteig ALIAS consteig)
@@ -29,10 +30,6 @@ function(consteig_raise_compiler_limits)
 endfunction()
 
 
-macro(create_test target)
-    add_test(NAME ${target} COMMAND ${target})
-endmacro()
-
 ################################################################################
 # Development mode (skipped when consumed via add_subdirectory/FetchContent,
 # or when explicitly disabled via -DCONSTEIG_DEV=OFF e.g. for vcpkg installs)
@@ -44,6 +41,10 @@ else()
 endif()
 
 if(CONSTEIG_DEV)
+    macro(create_test target)
+        add_test(NAME ${target} COMMAND ${target})
+    endmacro()
+
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
