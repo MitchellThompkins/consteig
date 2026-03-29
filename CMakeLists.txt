@@ -1,6 +1,17 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(consteig)
+project(consteig VERSION 1.0.0)
+
+################################################################################
+# Public INTERFACE target — the only target external consumers need
+################################################################################
+add_library(consteig INTERFACE)
+target_include_directories(consteig INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
+)
+target_compile_features(consteig INTERFACE cxx_std_17)
+add_library(consteig::consteig ALIAS consteig)
 
 # Convenience function for raising constexpr limits on a specific target. Not
 # used by default — the library's deflation criterion keeps iteration counts
@@ -97,10 +108,6 @@ add_subdirectory(math)
 add_subdirectory(matrix)
 add_subdirectory(eigen)
 
-# Require C++17 minimum from consumers without overriding their standard
-foreach(lib array math matrix consteig_eigen)
-    target_compile_features(${lib} INTERFACE cxx_std_17)
-endforeach()
 
 ################################################################################
 # Examples and tests (top-level only)
@@ -117,3 +124,48 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
 
 endif()
+
+################################################################################
+# Install rules
+################################################################################
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
+install(TARGETS consteig EXPORT consteigTargets)
+
+install(FILES
+    consteig.hpp
+    consteig_options.hpp
+    consteig_types.hpp
+    DESTINATION include
+)
+install(DIRECTORY array/ DESTINATION include/array FILES_MATCHING PATTERN "*.hpp")
+install(DIRECTORY math/ DESTINATION include/math FILES_MATCHING PATTERN "*.hpp"
+    PATTERN "tests" EXCLUDE)
+install(DIRECTORY matrix/ DESTINATION include/matrix FILES_MATCHING PATTERN "*.hpp"
+    PATTERN "tests" EXCLUDE)
+install(DIRECTORY eigen/ DESTINATION include/eigen FILES_MATCHING PATTERN "*.hpp"
+    PATTERN "tests" EXCLUDE)
+
+install(EXPORT consteigTargets
+    FILE consteigTargets.cmake
+    NAMESPACE consteig::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
+)
+
+configure_package_config_file(
+    cmake/consteigConfig.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/consteigConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
+)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/consteigConfigVersion.cmake"
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/consteigConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/consteigConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
+)
