@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(consteig VERSION 1.0.0)
+project(consteig)
 
 ################################################################################
 # Public INTERFACE target (the only target external consumers need)
@@ -159,13 +159,7 @@ configure_package_config_file(
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
 )
 
-write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/consteigConfigVersion.cmake"
-    COMPATIBILITY SameMajorVersion
-)
-
 install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/consteigConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/consteigConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
 )
