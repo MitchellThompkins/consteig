@@ -30,17 +30,14 @@ function(consteig_raise_compiler_limits)
 endfunction()
 
 
+option(CONSTEIG_INSTALL "Generate install rules (pass -DCONSTEIG_INSTALL=ON for vcpkg/packaging)" OFF)
+
 ################################################################################
 # Development mode (skipped when consumed via add_subdirectory/FetchContent,
-# or when explicitly disabled via -DCONSTEIG_DEV=OFF e.g. for vcpkg installs)
+# or when install rules are requested via CONSTEIG_INSTALL=ON)
 ################################################################################
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    option(CONSTEIG_DEV "Enable development mode (sets global CMake variables, builds tests)" ON)
-else()
-    option(CONSTEIG_DEV "Enable development mode (sets global CMake variables, builds tests)" OFF)
-endif()
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND NOT CONSTEIG_INSTALL)
 
-if(CONSTEIG_DEV)
     macro(create_test target)
         add_test(NAME ${target} COMMAND ${target})
     endmacro()
@@ -116,7 +113,7 @@ add_subdirectory(eigen)
 ################################################################################
 # Examples and tests (dev mode only)
 ################################################################################
-if(CONSTEIG_DEV)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND NOT CONSTEIG_INSTALL)
     add_subdirectory(examples EXCLUDE_FROM_ALL)
     add_subdirectory(profiling EXCLUDE_FROM_ALL)
 
@@ -130,9 +127,9 @@ if(CONSTEIG_DEV)
 endif()
 
 ################################################################################
-# Install rules (active when CONSTEIG_DEV=OFF, e.g. for vcpkg)
+# Install rules (active when CONSTEIG_INSTALL=ON, e.g. for vcpkg)
 ################################################################################
-if(NOT CONSTEIG_DEV)
+if(CONSTEIG_INSTALL)
     include(CMakePackageConfigHelpers)
     include(GNUInstallDirs)
 
