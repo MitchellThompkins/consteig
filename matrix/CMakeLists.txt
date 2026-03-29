@@ -1,5 +1,5 @@
 ################################################################################
 # Library
 ################################################################################
-add_library(matrix INTERFACE)
-target_include_directories(matrix INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(consteig_matrix INTERFACE)
+target_include_directories(consteig_matrix INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
