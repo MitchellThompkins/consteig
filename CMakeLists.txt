@@ -26,13 +26,15 @@ endif()
 
 project(consteig VERSION ${_consteig_version})
 
+include(GNUInstallDirs)
+
 ################################################################################
 # Public INTERFACE target (the only target external consumers need)
 ################################################################################
 add_library(consteig INTERFACE)
 target_include_directories(consteig INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_compile_features(consteig INTERFACE cxx_std_17)
 add_library(consteig::consteig ALIAS consteig)
@@ -168,7 +170,6 @@ endif()
 ################################################################################
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CMakePackageConfigHelpers)
-    include(GNUInstallDirs)
 
     install(TARGETS consteig EXPORT consteigTargets)
 
@@ -176,14 +177,14 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         consteig.hpp
         consteig_options.hpp
         consteig_types.hpp
-        DESTINATION include
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
-    install(DIRECTORY array/ DESTINATION include/array FILES_MATCHING PATTERN "*.hpp")
-    install(DIRECTORY math/ DESTINATION include/math FILES_MATCHING PATTERN "*.hpp"
+    install(DIRECTORY array/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/array FILES_MATCHING PATTERN "*.hpp")
+    install(DIRECTORY math/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/math FILES_MATCHING PATTERN "*.hpp"
         PATTERN "tests" EXCLUDE)
-    install(DIRECTORY matrix/ DESTINATION include/matrix FILES_MATCHING PATTERN "*.hpp"
+    install(DIRECTORY matrix/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/matrix FILES_MATCHING PATTERN "*.hpp"
         PATTERN "tests" EXCLUDE)
-    install(DIRECTORY eigen/ DESTINATION include/eigen FILES_MATCHING PATTERN "*.hpp"
+    install(DIRECTORY eigen/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/eigen FILES_MATCHING PATTERN "*.hpp"
         PATTERN "tests" EXCLUDE)
 
     install(EXPORT consteigTargets
