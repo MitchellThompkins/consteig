@@ -6,19 +6,26 @@ title: Getting Started
 
 ## Installation
 
-As consteig is a templated library a user does not need to compile anything
-separately. Simply `#include "consteig.hpp"` into the project (optionally
-consume it via CMake with `add_subdirectory` or `FetchContent`).
+consteig requires a C++17 compiler. No separate compilation step is needed.
 
-consteig also requires a C++ compiler which supports C++17.
+### Git submodule
 
-No separate compilation step is needed. There are several ways to consume the library:
+Add the repository as a submodule and add the repo root to your include path:
 
-Copy headers directly: copy `consteig.hpp` and the rest of the headers into
-your project (or add the repository as a submodule) and add the root to your
-include path.
+```sh
+git submodule add https://github.com/mitchellthompkins/consteig.git third_party/consteig
+```
 
-Via CMake FetchContent, add to your `CMakeLists.txt`:
+Alternatively, the headers can be copied directly into your project.
+
+### CMake submodule
+
+```cmake
+add_subdirectory(third_party/consteig)
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
+### CMake FetchContent
 
 ```cmake
 include(FetchContent)
@@ -29,13 +36,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(consteig)
 
-target_link_libraries(your_target PRIVATE consteig::consteig)
-```
-
-Via CMake with the repo as a submodule at `third_party/consteig`:
-
-```cmake
-add_subdirectory(third_party/consteig)
 target_link_libraries(your_target PRIVATE consteig::consteig)
 ```
 
