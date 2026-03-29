@@ -129,7 +129,7 @@ remove:
 
 .PHONY: run-examples
 run-examples:
-	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_EXAMPLES=ON
 	@set -e; \
 	cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
 	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
@@ -142,7 +142,7 @@ run-examples:
 
 .PHONY: test-dc-motor-fail
 test-dc-motor-fail:
-	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=OFF
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_EXAMPLES=ON
 	@echo "========================================"; \
 	echo "Building dc_motor_control.main (expected to fail)"; \
 	echo "========================================"; \
@@ -273,7 +273,7 @@ examples.gcc:
 	cmake -S . -B $(BUILD_PREFIX)-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++ \
-		-DCONSTEIG_BUILD_TESTS=OFF
+		-DCONSTEIG_BUILD_EXAMPLES=ON
 	cmake --build $(BUILD_PREFIX)-gcc --target examples -- $(JOB_FLAG)
 	@set -e; \
 	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
@@ -302,7 +302,7 @@ examples.clang:
 	cmake -S . -B $(BUILD_PREFIX)-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
 		-DCMAKE_CXX_COMPILER=clang++ \
-		-DCONSTEIG_BUILD_TESTS=OFF
+		-DCONSTEIG_BUILD_EXAMPLES=ON
 	cmake --build $(BUILD_PREFIX)-clang --target examples -- $(JOB_FLAG)
 	@set -e; \
 	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \

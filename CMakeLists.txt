@@ -108,11 +108,19 @@ add_subdirectory(eigen)
 
 
 ################################################################################
-# Examples and tests (dev mode only)
+# Examples, profiling, and tests (top-level only)
 ################################################################################
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    add_subdirectory(examples EXCLUDE_FROM_ALL)
-    add_subdirectory(profiling EXCLUDE_FROM_ALL)
+    option(CONSTEIG_BUILD_EXAMPLES "Build examples" OFF)
+    option(CONSTEIG_BUILD_PROFILING "Build profiling targets" OFF)
+
+    if(CONSTEIG_BUILD_EXAMPLES)
+        add_subdirectory(examples EXCLUDE_FROM_ALL)
+    endif()
+
+    if(CONSTEIG_BUILD_PROFILING)
+        add_subdirectory(profiling EXCLUDE_FROM_ALL)
+    endif()
 
     if(CONSTEIG_BUILD_TESTS)
         add_subdirectory(array/tests)

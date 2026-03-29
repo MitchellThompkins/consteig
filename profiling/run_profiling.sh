@@ -94,6 +94,7 @@ echo "Configuring CMake (to extract compiler flags)..."
 cmake -S "$REPO_ROOT" -B "$BUILD_DIR" \
     -DCMAKE_CXX_COMPILER="$COMPILER" \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -DCONSTEIG_BUILD_PROFILING=ON \
     -DCONSTEIG_BUILD_TESTS=OFF \
     > /dev/null 2>&1 \
     || { echo "CMake configuration failed"; exit 1; }
