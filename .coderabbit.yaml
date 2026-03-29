@@ -3,6 +3,7 @@ language: "en-US"
 tone_instructions: "Post all suggestions as inline review comments that can be resolved, not as nits embedded in the walkthrough summary."
 early_access: false
 reviews:
+  autofix: false
   profile: "assertive"
   request_changes_workflow: false
   high_level_summary: true
