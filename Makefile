@@ -318,6 +318,7 @@ examples.clang:
 cross.arm-gcc:
 	cmake -S . -B $(BUILD_PREFIX)-arm-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-gcc.cmake \
+		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_COMPILE_ONLY=ON
 	cmake --build $(BUILD_PREFIX)-arm-gcc --target all -- $(JOB_FLAG)
 
@@ -326,6 +327,7 @@ cross.arm-gcc:
 cross.arm-clang:
 	cmake -S . -B $(BUILD_PREFIX)-arm-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-clang.cmake \
+		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_COMPILE_ONLY=ON
 	cmake --build $(BUILD_PREFIX)-arm-clang --target all -- $(JOB_FLAG)
 
