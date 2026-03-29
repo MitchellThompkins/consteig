@@ -58,6 +58,38 @@ find_package(consteig REQUIRED)
 target_link_libraries(your_target PRIVATE consteig::consteig)
 ```
 
+### Conan
+
+Add consteig to your `conanfile.txt`:
+
+```ini
+[requires]
+consteig/1.0.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+```
+
+Or in a `conanfile.py`:
+
+```python
+def requirements(self):
+    self.requires("consteig/1.0.0")
+```
+
+Then install and configure CMake:
+
+```sh
+conan install . --output-folder=build --build=missing
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+```
+
+```cmake
+find_package(consteig REQUIRED)
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
 ### System install
 
 To install consteig system-wide and use it via `find_package`:
