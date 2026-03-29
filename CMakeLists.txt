@@ -7,8 +7,7 @@ project(consteig)
 ################################################################################
 add_library(consteig INTERFACE)
 target_include_directories(consteig INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include>
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_compile_features(consteig INTERFACE cxx_std_17)
 add_library(consteig::consteig ALIAS consteig)
@@ -125,41 +124,3 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 endif()
 
-################################################################################
-# Install rules
-################################################################################
-include(CMakePackageConfigHelpers)
-include(GNUInstallDirs)
-
-install(TARGETS consteig EXPORT consteigTargets)
-
-install(FILES
-    consteig.hpp
-    consteig_options.hpp
-    consteig_types.hpp
-    DESTINATION include
-)
-install(DIRECTORY array/ DESTINATION include/array FILES_MATCHING PATTERN "*.hpp")
-install(DIRECTORY math/ DESTINATION include/math FILES_MATCHING PATTERN "*.hpp"
-    PATTERN "tests" EXCLUDE)
-install(DIRECTORY matrix/ DESTINATION include/matrix FILES_MATCHING PATTERN "*.hpp"
-    PATTERN "tests" EXCLUDE)
-install(DIRECTORY eigen/ DESTINATION include/eigen FILES_MATCHING PATTERN "*.hpp"
-    PATTERN "tests" EXCLUDE)
-
-install(EXPORT consteigTargets
-    FILE consteigTargets.cmake
-    NAMESPACE consteig::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
-)
-
-configure_package_config_file(
-    cmake/consteigConfig.cmake.in
-    "${CMAKE_CURRENT_BINARY_DIR}/consteigConfig.cmake"
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
-)
-
-install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/consteigConfig.cmake"
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/consteig
-)
