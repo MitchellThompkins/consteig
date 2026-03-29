@@ -170,13 +170,13 @@ generate-test-cases:
 	#   OPENBLAS_NUM_THREADS=1  -- disables parallel reductions, whose
 	#                              non-deterministic summation order produces
 	#                              1-2 ULP variation in results.
-	#   OPENBLAS_CORETYPE=NEHALEM -- overrides runtime CPU detection so the
-	#                              same SSE4.2 kernel is used regardless of
-	#                              host SIMD capabilities (AVX2, AVX-512, etc).
-	#                              Different kernels use different FMA widths,
-	#                              producing different rounding in the last digit.
-	#                              NEHALEM (SSE4.2) is safe on any modern x86-64.
-	OPENBLAS_NUM_THREADS=1 OPENBLAS_CORETYPE=NEHALEM octave octave/generate_test_cases.m
+	#   OPENBLAS_CORETYPE=ZEN3    -- overrides runtime CPU detection so the
+	#                              same AVX2+FMA kernel is used regardless of
+	#                              host CPU. Different kernels use different FMA
+	#                              widths, producing different rounding in the
+	#                              last digit. ZEN3 (AVX2+FMA) is supported by
+	#                              all modern x86-64 CPUs used in CI.
+	OPENBLAS_NUM_THREADS=1 OPENBLAS_CORETYPE=ZEN3 octave octave/generate_test_cases.m
 
 .PHONY: check-generated
 check-generated:
