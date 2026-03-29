@@ -1,124 +1,122 @@
 #ifndef HESSENBERG_HPP
 #define HESSENBERG_HPP
 
-#include "householder.hpp"
-
+#include "../../math/constmath.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"
+#include "householder.hpp"
 
 namespace consteig
 {
 
-/*
- * The implementation here warrants an explantation. The hessenberg reduction
- * returns two matrices, a P and an H. P is a unitary matrix and H is "nearly"
- * an upper triangular matrix. Most implementations are iterative, but as
- * iterative implementations in constexpr functions are difficult or impossible,
- * that leaves recursion. The hessenberg implementation requires the original
- * matrix A to be modified at each step, stepping down through the matrix
- * dimensions. This proves to be a problem for a recursive implementation
- * because the matrix which gets modified must be continuously decreasing in
- * its dimension, but if it is required to multiply by A at each step, A _can't_
- * get smaller. This is why L is passed in as a template parameter, so that the
- * A continuously sized A matrix can be passed at each recursive step all the
- * while the sub matrix by which it's multiplied can decrease in size.
- *
- * Of course, recursive implementations in templated functions must be provided
- * an explicit specialization to end the recursion. Unfortunately because we
- * know that recursion should end with the matrix by which we are going to
- * multiply is of size 2x2, but b/c A isn't changing in size, it forces us to
- * require a partially specialized templated function, which isn't possible.
- * Instead, we use the trick here:
- * https://www.fluentcpp.com/2017/08/11/how-to-do-partial-template-specialization-in-c/
- *
- * Partial specialization of structs _is_ allowed, so we exploit that fact and
- * have a function return a struct, where the struct is nothing more than the
- * specialized implementation.
- */
+/// @addtogroup decompositions
+/// @{
 
-///////////// TYPES /////////////
-template<typename T, size_t S>
-struct PHMatrix
+/// @brief Result type for Hessenberg reduction.
+///
+/// Holds the accumulated orthogonal factor `_p` and the upper Hessenberg
+/// matrix `_h` such that `_h = _p^T * A * _p` (similarity transformation
+/// preserving eigenvalues).
+///
+/// @tparam T  Scalar element type.
+/// @tparam S  Matrix dimension.
+///
+/// @var PHMatrix::_p  Accumulated product of Householder reflectors (S×S
+/// orthogonal).
+/// @var PHMatrix::_h  Upper Hessenberg form of the input matrix.
+template <typename T, Size S> struct PHMatrix
 {
-    Matrix<T,S,S> _p;
-    Matrix<T,S,S> _h;
+    Matrix<T, S, S> _p;
+    Matrix<T, S, S> _h;
 
-    constexpr void operator=(const PHMatrix<T, S> &rhs)
-    {
-        for( size_t i{0}; i<S; i++ )
-            for( size_t j{0}; j<S; j++ )
-            {
-                (*this._p)(i,j) = rhs._p(i,j);
-                (*this._h)(i,j) = rhs._h(i,j);
-            }
-    }
+    constexpr PHMatrix() = default;
+    constexpr PHMatrix(const PHMatrix &) = default;
+    constexpr PHMatrix(PHMatrix &&) = default;
+    constexpr PHMatrix &operator=(const PHMatrix &) = default;
+    constexpr PHMatrix &operator=(PHMatrix &&) = default;
 };
 
-///////////// FUNCTION DECLARATIONS /////////////
-template<typename T, size_t R, size_t C, size_t L=R>
-constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a);
-
+/// @brief Reduce a square matrix to upper Hessenberg form.
+///
+/// Computes H = P^T * A * P where H is upper Hessenberg (zero below the
+/// first subdiagonal) and P is an orthogonal matrix accumulated from
+/// Householder reflectors. This is a similarity transformation: H and A
+/// have the same eigenvalues.
+///
+/// Reducing to Hessenberg form before QR iteration cuts the cost of each
+/// QR step from O(n^3) to O(n^2), making the overall eigenvalue solver O(n^3).
+///
+/// Used internally by @ref eig, @ref eig_shifted_qr, and
+/// @ref eig_double_shifted_qr.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam R  Number of rows (must equal `C`).
+/// @tparam C  Number of columns.
+/// @tparam L  Internal recursion parameter — do not specify (defaults to `R`).
+/// @param  a  Square input matrix.
+/// @return @ref PHMatrix containing `_p` (orthogonal) and `_h` (Hessenberg).
+/// @pre `R == C` and `T` must be floating-point (both enforced by
+/// `static_assert`).
+template <typename T, Size R, Size C, Size L = R>
+constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a);
 
 ///////////// IMPLEMENTATIONS /////////////
-template<typename T, size_t R, size_t C, size_t L=R>
-struct hess_impl
+
+// Algorithm: Hessenberg Reduction
+// Reduces a square matrix A to upper Hessenberg form H via orthogonal
+// similarity: H = P^T * A * P, where P is the accumulated product of
+// Householder reflectors. H has zeros below the first subdiagonal.
+//
+// Reducing to Hessenberg form before QR iteration cuts the cost of each
+// QR step from O(n^3) to O(n^2), making the overall solver O(n^3).
+//
+// The reduction is implemented recursively. At each level, a Householder
+// reflector P is computed from the trailing submatrix and applied as a
+// similarity transformation P^T * A * P, preserving eigenvalues. The template
+// parameter L tracks the remaining submatrix size, bottoming out at L <= 2
+// when no further reduction is needed.
+//
+// Reference: Golub & Van Loan, "Matrix Computations" (4th ed.), sec. 7.4
+template <typename T, Size R, Size C, Size L>
+constexpr PHMatrix<T, R> hess(Matrix<T, R, C> a)
 {
-    static constexpr PHMatrix<T,R> _(Matrix<T,R,C> a)
+    static_assert(is_float<T>(), "hess expects floating point");
+    static_assert(R == C, "Hessenberg reduction expects a square matrix");
+
+    if constexpr (L <= 2)
     {
-        static_assert( R==C, "Hessenberg reduction expects a square matrix");
-
-        constexpr size_t size {R};
-        constexpr size_t houseSize {L};
-        constexpr size_t end {R-1};
-
-        Matrix<T,L,L> subA
-        {
-            a.template sub<
-                R-houseSize,
-                R-houseSize,
-                end,
-                end>()
-        };
-        Matrix<T,L,L> m {house(subA)};
-
-        Matrix<T,size,size> p {eye<T,R>()};
-        p.template setSub<
-            R-houseSize+1,
-            R-houseSize+1,
-            end,
-            end>(m.template sub<1,1,houseSize-1,houseSize-1>());
-
-        PHMatrix<T,R> out = hess<T,R,R,houseSize-1>(p*a*p);
-
-        Matrix<T,size,size> pRtn { (houseSize>3) ? p*out._p : p };
-
-        return
-        {
-            ._p = pRtn,
-            ._h = out._h
-        };
+        // Base case: submatrix is 2x2 or smaller, already Hessenberg
+        PHMatrix<T, R> result{};
+        result._h = a;
+        return result;
     }
-};
-
-template<typename T, size_t R, size_t C>
-struct hess_impl<T, R, C, 2>
-{
-    static constexpr PHMatrix<T,R> _(Matrix<T,R,C> a)
+    else
     {
-        return
-        {
-            ._p = {0},
-            ._h = a
-        };
+        constexpr Size size{R};
+        constexpr Size houseSize{L};
+
+        // Extract the trailing submatrix and compute its Householder reflector
+        Matrix<T, L, L> subA{a.template block<houseSize, houseSize>(
+            R - houseSize, R - houseSize)};
+        Matrix<T, L, L> m{house(subA)};
+
+        // Embed the reflector into a full-size identity matrix
+        Matrix<T, size, size> p{eye<T, R>()};
+        p.template setBlock<houseSize - 1, houseSize - 1>(
+            m.template block<houseSize - 1, houseSize - 1>(1, 1),
+            R - houseSize + 1, R - houseSize + 1);
+
+        // Apply the similarity transformation P * A * P and recurse
+        PHMatrix<T, R> out = hess<T, R, R, houseSize - 1>(p * a * p);
+
+        // Accumulate the orthogonal factor P
+        Matrix<T, size, size> pRtn = (houseSize > 3) ? p * out._p : p;
+
+        return {pRtn, out._h};
     }
-};
+}
 
-template<typename T, size_t R, size_t C, size_t L=R>
-constexpr PHMatrix<T,R> hess(Matrix<T,R,C> a)
-{
-    static_assert( is_float<T>(), "hess expects floating point");
-    return hess_impl<T,R,C,L>::_(a);
-};
+/// @}  // addtogroup decompositions
 
-} //end namespace
+} // namespace consteig
 #endif

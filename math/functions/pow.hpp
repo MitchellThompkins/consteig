@@ -4,21 +4,39 @@
 namespace consteig
 {
 
-template<typename T>
-constexpr T pow(
-        const T x,
-        const unsigned int n )
+/// @addtogroup math
+/// @{
+
+/// @brief Raise `x` to an unsigned integer power via exponentiation by
+/// squaring.
+///
+/// @tparam T  Numeric type.
+/// @param  x  Base value.
+/// @param  n  Non-negative exponent.
+/// @return `x^n`.
+template <typename T> constexpr T pow(const T x, const unsigned int n)
 {
-    //https://docs.microsoft.com/en-us/cpp/cpp/constexpr-cpp?view=msvc-160
-    //TODO(mthompkins): Need to find a better error handling method than just
-    //returning 0 for negavie numbers. Should really handle negative numbers
-    return
-        n<0 ? static_cast<T>(0) :
-        n == 0 ? 1 :
-        n % 2 == 0 ? consteig::pow(x * x, n / 2) :
-        consteig::pow(x * x, (n - 1) / 2) * x;
+    return n == 0       ? static_cast<T>(1)
+           : n % 2 == 0 ? pow(x * x, n / 2)
+                        : pow(x * x, (n - 1) / 2) * x;
 }
 
-} //end namespace
+/// @brief Raise `x` to a signed integer power.
+///
+/// Negative exponents compute `1 / x^|n|`.
+///
+/// @tparam T  Numeric type.
+/// @param  x  Base value.
+/// @param  n  Integer exponent (may be negative).
+/// @return `x^n`.
+template <typename T> constexpr T pow(const T x, const int n)
+{
+    return n < 0 ? static_cast<T>(1) / pow(x, static_cast<unsigned int>(-n))
+                 : pow(x, static_cast<unsigned int>(n));
+}
+
+/// @}  // addtogroup math
+
+} // namespace consteig
 
 #endif

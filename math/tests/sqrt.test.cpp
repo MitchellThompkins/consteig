@@ -1,65 +1,240 @@
+#include <cmath>
 #include <gtest/gtest.h>
+
 #include <limits>
-#include "math.h"
-#include "test_tools.hpp"
 
 #include "constmath.hpp"
+#include "test_tools.hpp"
 
 using namespace consteig;
 
-template<typename T>
-static constexpr T thresh()
+template <typename T> static constexpr T thresh()
 {
     return std::numeric_limits<T>::epsilon();
 }
 
-TEST(sqrt_function, sqrt_test)
+TEST(sqrt_function, sqrt_basic_double)
 {
-    static constexpr double a {4.2375};
-    static constexpr double aConsteig {consteig::sqrt(a)};
-    static constexpr double aStd {std::sqrt(a)};
-    static_assert(compareFloats(aConsteig,aStd,thresh<double>()), MSG);
-    ASSERT_TRUE(compareFloats(aConsteig,aStd,thresh<double>()));
+    static constexpr double a{4.2375};
+    static constexpr double aConsteig{consteig::sqrt(a)};
+    static constexpr double aStd{2.058518885}; // approx
+    static_assert(
+        consteig::equalWithin(aConsteig, aStd, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(aConsteig, aStd, CONSTEIG_TEST_TOLERANCE);
 
-    static constexpr double b {58582.28485};
-    static constexpr double bConsteig {consteig::sqrt(b)};
-    static constexpr double bStd {std::sqrt(b)};
-    static_assert(compareFloats(bConsteig,bStd,thresh<double>()), MSG);
-    ASSERT_TRUE(compareFloats(bConsteig,bStd,thresh<double>()));
+    static constexpr double b{58582.28485};
+    static constexpr double bConsteig{consteig::sqrt(b)};
+    static constexpr double bStd{242.0377756673646}; // highly precise
+    static_assert(
+        consteig::equalWithin(bConsteig, bStd, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(bConsteig, bStd, CONSTEIG_TEST_TOLERANCE);
+}
 
-    static constexpr int c {16};
-    static constexpr int cConsteig {consteig::sqrt(c)};
-    static constexpr int cAnswer {4};
-    static_assert(cConsteig==cAnswer, MSG);
-    ASSERT_TRUE(cConsteig==cAnswer);
+TEST(sqrt_function, sqrt_int)
+{
+    static constexpr int c{16};
+    static constexpr int cConsteig{consteig::sqrt(c)};
+    static_assert(cConsteig == 4, MSG);
+    ASSERT_EQ(cConsteig, 4);
 
-    static constexpr int d {34225};
-    static constexpr int dConsteig {consteig::sqrt(d)};
-    static constexpr int dAnswer {185};
-    static_assert(dConsteig==dAnswer, MSG);
-    ASSERT_TRUE(dConsteig==dAnswer);
+    static constexpr int d{34225};
+    static constexpr int dConsteig{consteig::sqrt(d)};
+    static_assert(dConsteig == 185, MSG);
+    ASSERT_EQ(dConsteig, 185);
 
-    static constexpr long double e {58582.28485};
-    static constexpr long double eConsteig {consteig::sqrt(e)};
-    static constexpr long double eStd {std::sqrt(e)};
-    static constexpr long double threshhold {1e-16};
-    // TODO(mthompkins): This doesn't work for long double, and I'm not totally
-    // sure why, but 1e-16 seems close enough for now....
-    //static constexpr long double threshhold {thresh<long double>()};
-    static_assert(compareFloats(eConsteig,eStd,threshhold), MSG);
-    ASSERT_TRUE( compareFloats(eConsteig,eStd,threshhold) );
+    // Test non-perfect square floor behavior for int
+    static constexpr int e{17};
+    static constexpr int eConsteig{consteig::sqrt(e)}; // floor(sqrt(17)) = 4
+    static_assert(eConsteig == 4, MSG);
+    ASSERT_EQ(eConsteig, 4);
 
-    static constexpr float f {4.2375};
-    static constexpr float fConsteig {consteig::sqrt(f)};
-    static constexpr float fStd {std::sqrt(f)};
-    static_assert(compareFloats(fConsteig,fStd,thresh<float>()), MSG);
-    ASSERT_TRUE(compareFloats(fConsteig,fStd,thresh<float>()));
+    static constexpr int f{0};
+    static constexpr int fConsteig{consteig::sqrt(f)};
+    static_assert(fConsteig == 0, MSG);
+    ASSERT_EQ(fConsteig, 0);
 
-    static constexpr float g {-22.2};
-    static constexpr float gConsteig {consteig::sqrt(g)};
-    static constexpr float gAnswer {-1.0};
-    // TODO(mthompkins): This should be NaN, but for now it's this.
-    //static constexpr float gAnswer {std::numeric_limits<float>::quiet_NaN()};
-    static_assert(compareFloats(fConsteig,fStd,thresh<float>()), MSG);
-    ASSERT_TRUE(compareFloats(fConsteig,fStd,thresh<float>()));
+    static constexpr int g{1};
+    static constexpr int gConsteig{consteig::sqrt(g)};
+    static_assert(gConsteig == 1, MSG);
+    ASSERT_EQ(gConsteig, 1);
+}
+
+TEST(sqrt_function, sqrt_long_double)
+{
+    static constexpr long double e{58582.28485L};
+    static constexpr long double eConsteig{consteig::sqrt(e)};
+    // Using simple double precision comparison as long double precision varies
+    static_assert(consteig::equalWithin(static_cast<double>(eConsteig),
+                                        242.0377756673646,
+                                        CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_NEAR(static_cast<double>(eConsteig), 242.0377756673646,
+                CONSTEIG_TEST_TOLERANCE);
+}
+
+TEST(sqrt_function, sqrt_float)
+{
+    static constexpr float f{4.2375f};
+    static constexpr float fConsteig{consteig::sqrt(f)};
+    static_assert(consteig::equalWithin(fConsteig, 2.0585189f,
+                                        CONSTEIG_FLOAT_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_NEAR(fConsteig, 2.0585189f, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(sqrt_function, csqrt_positive_float)
+{
+    static constexpr float g{22.2f};
+    static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
+    static_assert(consteig::equalWithin(gConsteig.real, 4.711687595f,
+                                        CONSTEIG_FLOAT_TEST_TOLERANCE),
+                  MSG);
+    static_assert(gConsteig.imag == 0.0f, MSG);
+    ASSERT_NEAR(gConsteig.real, 4.711687595f, CONSTEIG_FLOAT_TEST_TOLERANCE);
+    ASSERT_EQ(gConsteig.imag, 0.0f);
+}
+
+TEST(sqrt_function, csqrt_negative_float)
+{
+    static constexpr float g{-22.2f};
+    static constexpr Complex<float> gConsteig{consteig::csqrt(g)};
+    static_assert(gConsteig.real == 0.0f, MSG);
+    static_assert(consteig::equalWithin(gConsteig.imag, 4.711687595f,
+                                        CONSTEIG_FLOAT_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_EQ(gConsteig.real, 0.0f);
+    ASSERT_NEAR(gConsteig.imag, 4.711687595f, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(sqrt_function, sqrt_negative_float)
+{
+    float g{-4.0f};
+    float gConsteig{consteig::sqrt(g)};
+    ASSERT_TRUE(consteig::is_poison_nan(gConsteig));
+}
+
+TEST(sqrt_function, csqrt_positive_double)
+{
+    static constexpr double g{22.2};
+    static constexpr Complex<double> gConsteig{consteig::csqrt(g)};
+    static_assert(consteig::equalWithin(gConsteig.real, 4.711687595674061,
+                                        CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    static_assert(gConsteig.imag == 0.0, MSG);
+    ASSERT_NEAR(gConsteig.real, 4.711687595674061, CONSTEIG_TEST_TOLERANCE);
+    ASSERT_EQ(gConsteig.imag, 0.0);
+}
+
+TEST(sqrt_function, csqrt_negative_double)
+{
+    static constexpr double g{-22.2};
+    static constexpr Complex<double> gConsteig{consteig::csqrt(g)};
+    static_assert(gConsteig.real == 0.0, MSG);
+    static_assert(consteig::equalWithin(gConsteig.imag, 4.711687595674061,
+                                        CONSTEIG_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_EQ(gConsteig.real, 0.0);
+    ASSERT_NEAR(gConsteig.imag, 4.711687595674061, CONSTEIG_TEST_TOLERANCE);
+}
+
+TEST(sqrt_function, sqrt_negative_double)
+{
+    double g{-4.0};
+    double gConsteig{consteig::sqrt(g)};
+    ASSERT_TRUE(consteig::is_poison_nan(gConsteig));
+}
+
+TEST(sqrt_function, sqrt_negative_int)
+{
+    int h{-5};
+    int hConsteig{consteig::sqrt(h)};
+    ASSERT_TRUE(consteig::is_poison_nan(hConsteig));
+}
+
+TEST(sqrt_function, csqrt_negative_int)
+{
+    static constexpr int h{-4};
+    static constexpr Complex<int> hConsteig{consteig::csqrt(h)};
+    static_assert(hConsteig.real == 0, MSG);
+    static_assert(hConsteig.imag == 2, MSG);
+    ASSERT_EQ(hConsteig.real, 0);
+    ASSERT_EQ(hConsteig.imag, 2);
+}
+
+TEST(sqrt_function, sqrt_zero_one)
+{
+    static constexpr double z{0.0};
+    static constexpr double zRes{consteig::sqrt(z)};
+    static_assert(zRes == 0.0, MSG);
+    ASSERT_EQ(zRes, 0.0);
+
+    static constexpr double o{1.0};
+    static constexpr double oRes{consteig::sqrt(o)};
+    static_assert(oRes == 1.0, MSG);
+    ASSERT_EQ(oRes, 1.0);
+}
+
+TEST(sqrt_function, sqrt_large)
+{
+    // sqrt(1e20) = 1e10
+    static constexpr double l{1e20};
+    static constexpr double lRes{consteig::sqrt(l)};
+    static_assert(consteig::equalWithin(lRes, 1e10, LARGE_VAL_TOL), MSG);
+    ASSERT_NEAR(lRes, 1e10,
+                LARGE_VAL_TOL); // Allow some error for large numbers
+}
+
+TEST(sqrt_int, large_int)
+{
+    const int expected =
+        static_cast<int>(std::sqrt(std::numeric_limits<int>::max()));
+    const int val = expected * expected;
+    auto result = consteig::sqrt(val);
+    EXPECT_EQ(result, expected);
+}
+
+// Note: this test is why sqrt.test runs ~10x slower than other tests. sqrt_int
+// uses a linear search loop, so sqrt(val) near INT64_MAX iterates ~3 billion
+// times.
+TEST(sqrt_int, large_int64)
+{
+    const long long expected = static_cast<long long>(
+        std::sqrt(std::numeric_limits<long long>::max()));
+    const long long val = expected * expected;
+    auto result = consteig::sqrt(val);
+    EXPECT_EQ(result, expected);
+}
+
+TEST(sqrt_function, sqrt_negative_int64)
+{
+    // Evaluated at runtime to avoid the intentional constexpr compilation
+    // failure
+    long long min_ll = std::numeric_limits<long long>::min();
+    long long result = consteig::sqrt(min_ll);
+
+    // Ensure it correctly triggers the non-constexpr poison_nan and returns -1
+    ASSERT_TRUE(consteig::is_poison_nan(result));
+    ASSERT_EQ(result, -1LL);
+}
+
+TEST(sqrt_function, csqrt_int_min)
+{
+    const int min_i = std::numeric_limits<int>::min();
+    const int expected_imag =
+        static_cast<int>(std::sqrt(-static_cast<double>(min_i)));
+    auto result = consteig::csqrt(min_i);
+    EXPECT_EQ(result.real, 0);
+    EXPECT_EQ(result.imag, expected_imag);
+}
+
+TEST(sqrt_function, csqrt_int64_min)
+{
+    const long long min_ll = std::numeric_limits<long long>::min();
+    // 2^63 is perfectly representable in double's 53-bit mantissa, meaning
+    // std::sqrt won't suffer precision loss here
+    const long long expected_imag =
+        static_cast<long long>(std::sqrt(-static_cast<double>(min_ll)));
+    auto result = consteig::csqrt(min_ll);
+    EXPECT_EQ(result.real, 0);
+    EXPECT_EQ(result.imag, expected_imag);
 }

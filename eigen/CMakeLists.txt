@@ -1,10 +1,5 @@
 ################################################################################
 # Library
 ################################################################################
-add_library(eigen INTERFACE)
-target_include_directories(eigen INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-
-################################################################################
-# Test
-################################################################################
-add_subdirectory(tests)
+add_library(consteig_eigen INTERFACE)
+target_include_directories(consteig_eigen INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

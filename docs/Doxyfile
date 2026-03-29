@@ -1,0 +1,63 @@
+PROJECT_NAME           = "consteig"
+PROJECT_BRIEF          = "Compile-time eigenvalue and eigenvector computation for C++17"
+PROJECT_NUMBER         =
+
+OUTPUT_DIRECTORY       = docs/api
+
+INPUT                  = consteig.hpp \
+                         consteig_types.hpp \
+                         consteig_options.hpp \
+                         array/array.hpp \
+                         math/complex.hpp \
+                         math/functions/abs.hpp \
+                         math/functions/csqrt.hpp \
+                         math/functions/exp.hpp \
+                         math/functions/pow.hpp \
+                         math/functions/sgn.hpp \
+                         math/functions/sqrt.hpp \
+                         math/functions/trig.hpp \
+                         math/functions/utilities.hpp \
+                         matrix/matrix.hpp \
+                         matrix/operations.hpp \
+                         matrix/decompositions/householder.hpp \
+                         matrix/decompositions/qr.hpp \
+                         matrix/decompositions/hessenberg.hpp \
+                         matrix/decompositions/lu.hpp \
+                         eigen/eigen.hpp
+
+RECURSIVE              = NO
+
+EXCLUDE_PATTERNS       = */tests/* */googletest/* */Testing/* */build/*
+
+FILE_PATTERNS          = *.hpp
+
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+HIDE_UNDOC_CLASSES     = YES
+HIDE_UNDOC_MEMBERS     = YES
+
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HTML_OUTPUT            = .
+
+USE_MATHJAX            = YES
+MATHJAX_VERSION        = MathJax_3
+
+HAVE_DOT               = YES
+DOT_GRAPH_MAX_NODES    = 50
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
+TEMPLATE_RELATIONS     = YES
+
+BUILTIN_STL_SUPPORT    = NO
+SORT_MEMBER_DOCS       = NO
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+
+SHOW_FILES             = YES
+SHOW_NAMESPACES        = YES
+SHOW_INCLUDE_FILES     = YES
+
+TYPEDEF_HIDES_STRUCT   = NO

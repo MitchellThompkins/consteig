@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
+
 #include "array.hpp"
 
 using namespace consteig;
 
 TEST(array1d, static)
 {
-    static constexpr int s {3};
-    const Array<int, s> array {0, 1, 2};
+    static constexpr int s{3};
+    const Array<int, s> array{0, 1, 2};
 
     int j = 0;
     for (auto i : array)
@@ -16,30 +17,29 @@ TEST(array1d, static)
     }
 
     j = 0;
-    for (const auto& i : array)
+    for (const auto &i : array)
     {
         ASSERT_EQ(j, i);
         j++;
     }
 
     j = 0;
-    for( size_t i {0}; i<s; i++ )
+    for (Size i{0}; i < s; i++)
     {
-        ASSERT_EQ(j,array[i]);
+        ASSERT_EQ(j, array[i]);
         j++;
     }
 }
 
 TEST(array2d, static)
 {
-
-    static constexpr int s {2};
-    const Array<Array<int, s>, s> array {{{0, 1}, {2, 3}}};
+    static constexpr int s{2};
+    const Array<Array<int, s>, s> array{{{0, 1}, {2, 3}}};
 
     int m = 0;
-    for(auto i : array)
+    for (auto i : array)
     {
-        for(auto j : i)
+        for (auto j : i)
         {
             ASSERT_EQ(m, j);
             m++;
@@ -47,9 +47,9 @@ TEST(array2d, static)
     }
 
     m = 0;
-    for(const auto& i : array)
+    for (const auto &i : array)
     {
-        for(auto j : i)
+        for (auto j : i)
         {
             ASSERT_EQ(m, j);
             m++;
@@ -57,11 +57,11 @@ TEST(array2d, static)
     }
 
     m = 0;
-    for( size_t i {0}; i<s; i++ )
+    for (Size i{0}; i < s; i++)
     {
-        for( size_t j {0}; j<s; j++ )
+        for (Size j{0}; j < s; j++)
         {
-            ASSERT_EQ(m,array[i][j]);
+            ASSERT_EQ(m, array[i][j]);
             m++;
         }
     }

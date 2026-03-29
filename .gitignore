@@ -1,8 +1,19 @@
-# created by Makefile
+# Makefile
 build/
-
-# linked by Makefile
+build-clang/
+build-gcc/
+build-arm-clang/
+build-arm-gcc/
 compile_commands.json
 
-# Created by vim
-*.swp
+# container
+.ash_history
+
+# development
+*.sw[op]
+tags
+.DS_Store
+
+# profiling — generated files (recreated by make profile)
+profiling/compile_time/*.cpp
+profiling/generated_profiling_cases.hpp

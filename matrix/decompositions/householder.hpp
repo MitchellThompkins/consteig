@@ -1,56 +1,116 @@
 #ifndef HOUSEHOLDER_HPP
 #define HOUSEHOLDER_HPP
 
+#include "../../math/constmath.hpp"
 #include "../matrix.hpp"
 #include "../operations.hpp"
 
 namespace consteig
 {
 
-///////////// FUNCTION DECLARATIONS /////////////
-template<typename T, size_t R, size_t C>
-constexpr Matrix<T,R,R> house(Matrix<T,R,C> a);
+/// @addtogroup decompositions
+/// @{
 
+/// @brief Compute a Householder reflector for a square matrix.
+///
+/// Returns an orthogonal matrix H = I - 2*v*v^T that zeros the first
+/// column of `a` below the first subdiagonal. Row 0 of the first column
+/// is untouched; row 1 receives the reflected norm; rows 2 through R-1
+/// become zero.
+///
+/// Used internally by @ref hess for Hessenberg reduction.
+///
+/// @tparam T  Floating-point scalar type.
+/// @tparam R  Number of rows (must equal `C`).
+/// @tparam C  Number of columns.
+/// @param  a  Square input matrix (only the first column is used).
+/// @return R×R Householder reflector matrix.
+/// @pre `R == C` and `T` must be floating-point (both enforced by
+/// `static_assert`).
+template <typename T, Size R, Size C>
+constexpr Matrix<T, R, R> house(Matrix<T, R, C> a);
+
+// Algorithm: Householder Reflection
+// Computes a Householder reflector H = I - 2*v*v^T such that H*x = alpha*e1,
+// where x is the first column of the input matrix (below the diagonal), e1 is
+// the first standard basis vector, and alpha = -sign(x[1]) * ||x[1:]||_2.
+//
+// This zeros out all subdiagonal entries of the first column, which is used
+// repeatedly by hessenberg reduction and QR decomposition.
+//
+// The reflector vector v is computed as:
+//   alpha = -sign(x[1]) * ||x[1:]||
+//   r     = sqrt(0.5 * (alpha^2 - x[1]*alpha))
+//   v[1]  = (x[1] - alpha) / (2r)
+//   v[i]  = x[i] / (2r)   for i > 1
+//
+// Reference: Golub & Van Loan, "Matrix Computations" (4th ed.), sec. 5
+// See also:
 // https://pages.mtu.edu/~struther/Courses/OLD/Other/Sp2012/5627/BlockQR/Work/MA5629%20presentation.pdf
 ///////////// IMPLEMENTATIONS /////////////
-template<typename T, size_t R, size_t C>
-constexpr Matrix<T,R,R> house(Matrix<T,R,C> a)
+template <typename T, Size R, Size C>
+constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
 {
-    static_assert( R==C, "Householder expects a square matrix");
-    static_assert( is_float<T>(), "Householder Reflection expects floating point");
+    static_assert(R == C, "Householder expects a square matrix");
+    static_assert(is_float<T>(),
+                  "Householder Reflection expects floating point");
 
-    T alphaSum {0};
-    for(size_t i {1}; i<R; i++)
-        alphaSum += (a(i,0)*a(i,0));
+    // Compute ||x[1:]||^2 (sum of squares of subdiagonal entries)
+    T alphaSum{0};
+    for (Size row{1}; row < R; row++)
+    {
+        alphaSum += (a(row, 0) * a(row, 0));
+    }
 
-    T alpha { static_cast<T>(-1)
-        * consteig::sgn(a(1,0))
-        * consteig::sqrt(alphaSum) };
+    // If the subdiagonal is already zero, no reflection needed
+    if (consteig::abs(alphaSum) < consteig::epsilon<T>())
+    {
+        return eye<T, R>();
+    }
 
-    T r { consteig::sqrt(
-            static_cast<T>(0.5)
-            * ((alpha*alpha) - (a(1,0)*alpha)) ) };
+    // alpha = -sign(x[1]) * ||x[1:]||
+    T sign =
+        (a(1, 0) < static_cast<T>(0)) ? static_cast<T>(-1) : static_cast<T>(1);
+    T alpha{static_cast<T>(-1) * sign * consteig::sqrt(alphaSum)};
 
-    T oneOverTwoR {1/(static_cast<T>(2)*r)};
+    // r = sqrt(0.5 * (alpha^2 - x[1]*alpha)), the normalization factor for v
+    T r_sq{static_cast<T>(0.5) * ((alpha * alpha) - (a(1, 0) * alpha))};
 
-    Matrix<T,R,1> v {static_cast<T>(0)};
-    v(1,0) = (a(1,0) - alpha) * oneOverTwoR;
-    for(size_t i {2}; i<R; i++)
-        v(i,0) = a(i,0) * oneOverTwoR;
+    if (consteig::abs(r_sq) < consteig::epsilon<T>())
+    {
+        return eye<T, R>();
+    }
 
-    Matrix<T,R,R> p { eye<T,R>() -
-        (static_cast<T>(2) * v * transpose(v)) };
+    T r = consteig::sqrt(r_sq);
+    T oneOverTwoR{1 / (static_cast<T>(2) * r)};
+
+    // Build the reflector vector v
+    Matrix<T, R, 1> v{}; // Zero init
+    for (Size row = 0; row < R; ++row)
+    {
+        v(row, 0) = 0;
+    }
+
+    v(1, 0) = (a(1, 0) - alpha) * oneOverTwoR;
+    for (Size row{2}; row < R; row++)
+    {
+        v(row, 0) = a(row, 0) * oneOverTwoR;
+    }
+
+    // H = I - 2*v*v^T
+    Matrix<T, R, R> p = eye<T, R>() - (static_cast<T>(2) * v * transpose(v));
 
     return p;
 }
 
-template<typename T>
-constexpr Matrix<T,2,2> house(Matrix<T,2,2> a)
+template <typename T> constexpr Matrix<T, 2, 2> house(Matrix<T, 2, 2> /*a*/)
 {
-    Matrix<T,2,2> i { eye<T,2>() };
-    i(1,1) = i(1,1)*static_cast<T>(-1);
-    return i;
+    Matrix<T, 2, 2> ident = eye<T, 2>();
+    ident(1, 1) = ident(1, 1) * static_cast<T>(-1);
+    return ident;
 }
 
-}
+/// @}  // addtogroup decompositions
+
+} // namespace consteig
 #endif
