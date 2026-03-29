@@ -24,7 +24,7 @@ else()
     set(_consteig_version "0.0.0")
 endif()
 
-project(consteig VERSION ${_consteig_version})
+project(consteig VERSION ${_consteig_version} LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
