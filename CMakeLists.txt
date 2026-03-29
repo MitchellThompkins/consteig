@@ -3,25 +3,37 @@ cmake_minimum_required(VERSION 3.13)
 # Derive the project version from the nearest Git tag rather than hardcoding
 # it here. This keeps GitHub release tags as the single source of truth:
 # tagging a release (e.g. "1.2.3") is all that's needed to update the version
-# exposed to find_package(consteig 1.2 CONFIG REQUIRED). Falls back to "0.0.0"
-# in shallow clones or source tarballs where tags are unavailable.
-find_package(Git QUIET)
-if(GIT_FOUND)
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT_VARIABLE _consteig_git_tag
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_QUIET
-        RESULT_VARIABLE _git_result
-    )
-    if(_git_result EQUAL 0)
-        string(REGEX REPLACE "^v" "" _consteig_version "${_consteig_git_tag}")
+# exposed to find_package(consteig 1.2 CONFIG REQUIRED).
+#
+# vcpkg port maintainer note: vcpkg builds from a tarball or shallow clone
+# where git tags are unavailable, so the git detection below will fall back to
+# "0.0.0". Pass -DCONSTEIG_VERSION=<version> in the portfile's
+# vcpkg_cmake_configure call to inject the correct version. End users set
+# nothing — this is handled entirely in the portfile.
+#
+# Falls back to "0.0.0" when neither CONSTEIG_VERSION nor a git tag is
+# available.
+if(DEFINED CONSTEIG_VERSION)
+    set(_consteig_version "${CONSTEIG_VERSION}")
+else()
+    find_package(Git QUIET)
+    if(GIT_FOUND)
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            OUTPUT_VARIABLE _consteig_git_tag
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+            RESULT_VARIABLE _git_result
+        )
+        if(_git_result EQUAL 0)
+            string(REGEX REPLACE "^v" "" _consteig_version "${_consteig_git_tag}")
+        else()
+            set(_consteig_version "0.0.0")
+        endif()
     else()
         set(_consteig_version "0.0.0")
     endif()
-else()
-    set(_consteig_version "0.0.0")
 endif()
 
 project(consteig VERSION ${_consteig_version} LANGUAGES CXX)
