@@ -11,7 +11,8 @@ int main()
 
     // Alternatively, use make_matrix with flat row-major arguments
     static constexpr consteig::Matrix<double, x, x> mat1Flat{
-        consteig::make_matrix<double, x, x>(5.0, -4.0, 2.0, -1.0, 2.0, 3.0, -2.0, 1.0, 0.0)};
+        consteig::make_matrix<double, x, x>(5.0, -4.0, 2.0, -1.0, 2.0, 3.0,
+                                            -2.0, 1.0, 0.0)};
 
     // Create a matrix which is the transpose
     static constexpr consteig::Matrix mat2{transpose(mat1)};
@@ -22,8 +23,8 @@ int main()
     // Multiply by a scalar
     static constexpr consteig::Matrix<int, x, x> mat4{-3 * mat2};
 
-    static constexpr consteig::Matrix<float, x, x> mat5
-    {3.4f * consteig::matrix_cast<float>(mat2)};
+    static constexpr consteig::Matrix<float, x, x> mat5{
+        3.4f * consteig::matrix_cast<float>(mat2)};
 
     static constexpr consteig::Matrix<int, s, s> symmetricMat1{
         {{-5, -4, 2, 1}, {-4, 5, 7, 8}, {2, 7, 0, 3}, {1, 8, 3, 3}}};
