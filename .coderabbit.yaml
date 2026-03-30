@@ -13,6 +13,9 @@ reviews:
     enabled: true
     auto_incremental_review: true
     drafts: false
+  path_filters:
+    - "!**/generated_*.hpp"
+    - "!**/generated_*.cpp"
   path_instructions:
     - path: "**/*.hpp"
       instructions: |
