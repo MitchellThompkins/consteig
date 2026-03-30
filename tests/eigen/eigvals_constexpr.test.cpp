@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-#include "../consteig.hpp"
 #include "test_tools.hpp"
+#include <consteig/consteig.hpp>
 
 using namespace consteig;
 

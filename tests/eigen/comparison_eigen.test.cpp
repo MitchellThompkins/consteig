@@ -4,8 +4,8 @@
 #include <random>
 #include <vector>
 
-#include "../consteig.hpp"
 #include "eigen_test_tools.hpp"
+#include <consteig/consteig.hpp>
 
 using namespace consteig;
 

@@ -1,5 +1,5 @@
-#include "../consteig.hpp"
 #include "example_helper.hpp"
+#include <consteig/consteig.hpp>
 
 int main()
 {

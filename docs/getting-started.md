@@ -51,7 +51,39 @@ Configure CMake with the vcpkg toolchain file so `find_package` can locate insta
 cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=<vcpkg-root>/scripts/buildsystems/vcpkg.cmake
 ```
 
+```cmake
+find_package(consteig REQUIRED)
+target_link_libraries(your_target PRIVATE consteig::consteig)
+```
+
 Alternatively, use [vcpkg manifest mode](https://learn.microsoft.com/en-us/vcpkg/users/manifests) with a `vcpkg.json` and a `CMakePresets.json` that sets the toolchain.
+
+### Conan
+
+Add consteig to your `conanfile.txt`:
+
+```ini
+[requires]
+consteig/1.0.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+```
+
+Or in a `conanfile.py`:
+
+```python
+def requirements(self):
+    self.requires("consteig/1.0.0")
+```
+
+Then install and configure CMake:
+
+```sh
+conan install . --output-folder=build --build=missing
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+```
 
 ```cmake
 find_package(consteig REQUIRED)
@@ -108,7 +140,7 @@ example](https://mitchellthompkins.github.io/consteig/examples/butterworth/).
 ## Your First Eigenvalue Computation
 
 ```cpp
-#include "consteig.hpp"
+#include <consteig/consteig.hpp>
 
 // Define a matrix — all values must be known at compile time
 static constexpr consteig::Matrix<double, 2, 2> A{{

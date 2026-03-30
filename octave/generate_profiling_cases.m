@@ -50,7 +50,7 @@ if hdr == -1
 end
 fprintf(hdr, '#ifndef GENERATED_PROFILING_CASES_HPP\n');
 fprintf(hdr, '#define GENERATED_PROFILING_CASES_HPP\n\n');
-fprintf(hdr, '#include "../consteig.hpp"\n\n');
+fprintf(hdr, '#include <consteig/consteig.hpp>\n\n');
 fprintf(hdr, 'namespace consteig\n{\n\n');
 
 % Ensure output directory exists and clean old generated .cpp files
@@ -92,7 +92,7 @@ for si = 1:length(SIZES)
             if cpp == -1
                 error('Failed to open %s for writing', cpp_name);
             end
-            fprintf(cpp, '#include "../../consteig.hpp"\n\n');
+            fprintf(cpp, '#include <consteig/consteig.hpp>\n\n');
             fprintf(cpp, 'using namespace consteig;\n\n');
             fprintf(cpp, 'static constexpr Matrix<double, %d, %d> mat\n', S, S);
             write_matrix(cpp, A, S);

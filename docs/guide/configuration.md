@@ -21,7 +21,7 @@ compile times and the likelihood of hitting compiler step limits.
 
 ```cpp
 #define CONSTEIG_MAX_ITER 1000  // increase for difficult matrices (see consteig_options.hpp for default)
-#include "consteig.hpp"
+#include <consteig/consteig.hpp>
 ```
 
 ### CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE
@@ -33,7 +33,7 @@ heavier non-symmetric solver (`eig_double_shifted_qr`).
 
 ```cpp
 #define CONSTEIG_DEFAULT_SYMMETRIC_TOLERANCE 1e-9  // tighter than default (see consteig_options.hpp for default)
-#include "consteig.hpp"
+#include <consteig/consteig.hpp>
 ```
 
 ### CONSTEIG_BALANCE_CONVERGENCE_THRESHOLD
@@ -59,7 +59,7 @@ times. It is _NOT_ defined by default.
 
 ```cpp
 #define CONSTEIG_USE_LONG_DOUBLE
-#include "consteig.hpp"
+#include <consteig/consteig.hpp>
 ```
 
 ## CMake Functions

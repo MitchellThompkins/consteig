@@ -30,7 +30,7 @@ All at compile-time, consteig supports:
 ## Quick Start
 
 ```cpp
-#include "consteig.hpp"
+#include <consteig/consteig.hpp>
 
 static constexpr consteig::Matrix<double, 3, 3> M{{
     { 2.0, -1.0,  0.0},

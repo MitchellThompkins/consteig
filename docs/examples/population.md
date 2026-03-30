@@ -34,7 +34,7 @@ The steady-state distribution is the eigenvector corresponding to eigenvalue 1.
 ## Solution with consteig
 
 ```cpp
-#include "consteig.hpp"
+#include <consteig/consteig.hpp>
 
 static constexpr consteig::Matrix<double, 2, 2> A{{
     {0.95, 0.20},

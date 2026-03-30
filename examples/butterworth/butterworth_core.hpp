@@ -1,7 +1,7 @@
 #ifndef BUTTERWORTH_CORE_HPP
 #define BUTTERWORTH_CORE_HPP
 
-#include "../consteig.hpp"
+#include <consteig/consteig.hpp>
 
 namespace butterworth
 {

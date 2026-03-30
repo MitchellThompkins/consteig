@@ -60,7 +60,7 @@ Trigonometric functions use Taylor series expansion with `CONSTEIG_TRIG_MAX_ITER
 ## Usage Example
 
 ```cpp
-#include "consteig.hpp"
+#include <consteig/consteig.hpp>
 
 static constexpr double angle = PI_CONST / 4.0;         // 45 degrees
 static constexpr double s = consteig::sin(angle);       // ~ 0.7071
