@@ -318,8 +318,9 @@ template <typename T, Size R, Size C> class Matrix
                     bool eq{false};
                     if constexpr (is_float<T>())
                     {
-                        eq = equalWithin((*this)(row, col), (*this)(col, row),
-                                         epsilon<T>());
+                        eq = consteig::equalWithin((*this)(row, col),
+                                                   (*this)(col, row),
+                                                   epsilon<T>());
                     }
                     else
                     {
@@ -362,8 +363,8 @@ template <typename T, Size R, Size C> class Matrix
             {
                 for (Size col{0}; col < row; col++)
                 {
-                    if (!equalWithin((*this)(row, col), (*this)(col, row),
-                                     thresh))
+                    if (!consteig::equalWithin((*this)(row, col),
+                                              (*this)(col, row), thresh))
                     {
                         return false;
                     }
