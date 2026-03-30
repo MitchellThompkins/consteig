@@ -9,6 +9,10 @@ int main()
     static constexpr consteig::Matrix<int, x, x> mat1{
         {{5, -4, 2}, {-1, 2, 3}, {-2, 1, 0}}};
 
+    // Alternatively, use make_matrix with flat row-major arguments
+    static constexpr consteig::Matrix<double, x, x> mat1Flat{
+        consteig::make_matrix<double, x, x>(5.0, -4.0, 2.0, -1.0, 2.0, 3.0, -2.0, 1.0, 0.0)};
+
     // Create a matrix which is the transpose
     static constexpr consteig::Matrix<int, x, x> mat2{transpose(mat1)};
 
@@ -31,6 +35,7 @@ int main()
     static constexpr bool checkSymmetryMat2{symmetricMat2.isSymmetric(0.1)};
 
     printMat("Mat1", mat1);
+    printMat("Mat1 (via make_matrix)", mat1Flat);
     printMat("Mat2", mat2);
     printMat("Mat3", mat3);
     printMat("Mat4", mat4);
