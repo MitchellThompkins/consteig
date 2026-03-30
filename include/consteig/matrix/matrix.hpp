@@ -510,6 +510,39 @@ constexpr Matrix<T, R, C> make_matrix(Args... args)
     return result;
 }
 
+/// @brief Convert a matrix from one element type to another.
+///
+/// Performs an element-wise `static_cast<To>` on each element. This is the
+/// preferred way to change element type (e.g. `double` to `float`) since
+/// `Matrix` has no converting constructor in order to preserve aggregate
+/// initialization.
+///
+/// @tparam To    Target element type.
+/// @tparam From  Source element type.
+/// @tparam R     Number of rows (compile-time).
+/// @tparam C     Number of columns (compile-time).
+/// @param  src   Input matrix with element type `From`.
+/// @return New matrix with element type `To` and the same dimensions.
+///
+/// @code
+/// static constexpr auto fmat = consteig::matrix_cast<float>(dmat);
+/// @endcode
+template <typename To, typename From, Size R, Size C>
+constexpr Matrix<To, R, C> matrix_cast(const Matrix<From, R, C> &src)
+{
+    Matrix<To, R, C> result{};
+
+    for (Size row{0}; row < R; row++)
+    {
+        for (Size col{0}; col < C; col++)
+        {
+            result(row, col) = static_cast<To>(src(row, col));
+        }
+    }
+
+    return result;
+}
+
 /// @}  // defgroup matrix
 
 } // namespace consteig

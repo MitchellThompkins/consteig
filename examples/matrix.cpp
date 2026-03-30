@@ -11,20 +11,19 @@ int main()
 
     // Alternatively, use make_matrix with flat row-major arguments
     static constexpr consteig::Matrix<double, x, x> mat1Flat{
-        consteig::make_matrix<double, x, x>(5.0, -4.0, 2.0, -1.0, 2.0, 3.0,
-                                            -2.0, 1.0, 0.0)};
+        consteig::make_matrix<double, x, x>(5.0, -4.0, 2.0, -1.0, 2.0, 3.0, -2.0, 1.0, 0.0)};
 
     // Create a matrix which is the transpose
-    static constexpr consteig::Matrix<int, x, x> mat2{transpose(mat1)};
+    static constexpr consteig::Matrix mat2{transpose(mat1)};
 
     // Multiply the two
     static constexpr consteig::Matrix<int, x, x> mat3{mat1 * mat2};
 
     // Multiply by a scalar
     static constexpr consteig::Matrix<int, x, x> mat4{-3 * mat2};
-    // TODO(mthompkins): Investigate this
-    // static constexpr consteig::Matrix<float, x, x> mat4
-    // {3.4*static_cast<consteig::Matrix<float, x, x>>(mat2)};
+
+    static constexpr consteig::Matrix<float, x, x> mat5
+    {3.4f * consteig::matrix_cast<float>(mat2)};
 
     static constexpr consteig::Matrix<int, s, s> symmetricMat1{
         {{-5, -4, 2, 1}, {-4, 5, 7, 8}, {2, 7, 0, 3}, {1, 8, 3, 3}}};
@@ -40,6 +39,7 @@ int main()
     printMat("Mat2", mat2);
     printMat("Mat3", mat3);
     printMat("Mat4", mat4);
+    printMat("Mat5", mat5);
 
     if (checkSymmetryMat1)
         std::cout << "\nsymmetricMat1 is symmetric!\n";
