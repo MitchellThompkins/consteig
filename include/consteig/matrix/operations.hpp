@@ -379,6 +379,27 @@ constexpr T trace(const Matrix<T, R, C> &mat)
     return result;
 }
 
+/// @brief Element-wise approximate equality within an absolute tolerance.
+///
+/// Returns `true` if every element satisfies
+/// `|a(i,j) - b(i,j)| < thresh`. Prefer this over `operator==` for
+/// floating-point matrices. Can also be called as a member function via
+/// @ref Matrix::equalWithin.
+///
+/// @tparam T      Scalar element type.
+/// @tparam R      Number of rows.
+/// @tparam C      Number of columns.
+/// @param  a      First matrix.
+/// @param  b      Second matrix.
+/// @param  thresh Absolute per-element tolerance.
+/// @return `true` if all elements are within `thresh` of each other.
+template <typename T, Size R, Size C>
+constexpr bool equalWithinMat(const Matrix<T, R, C> &a,
+                              const Matrix<T, R, C> &b, const T thresh)
+{
+    return a.equalWithin(b, thresh);
+}
+
 /// @}  // addtogroup matrix
 
 } // namespace consteig

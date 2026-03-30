@@ -4,25 +4,25 @@ PROJECT_NUMBER         =
 
 OUTPUT_DIRECTORY       = docs/api
 
-INPUT                  = consteig.hpp \
-                         consteig_types.hpp \
-                         consteig_options.hpp \
-                         math/complex.hpp \
-                         math/functions/abs.hpp \
-                         math/functions/csqrt.hpp \
-                         math/functions/exp.hpp \
-                         math/functions/pow.hpp \
-                         math/functions/sgn.hpp \
-                         math/functions/sqrt.hpp \
-                         math/functions/trig.hpp \
-                         math/functions/utilities.hpp \
-                         matrix/matrix.hpp \
-                         matrix/operations.hpp \
-                         matrix/decompositions/householder.hpp \
-                         matrix/decompositions/qr.hpp \
-                         matrix/decompositions/hessenberg.hpp \
-                         matrix/decompositions/lu.hpp \
-                         eigen/eigen.hpp
+INPUT                  = include/consteig/consteig.hpp \
+                         include/consteig/consteig_types.hpp \
+                         include/consteig/consteig_options.hpp \
+                         include/consteig/math/complex.hpp \
+                         include/consteig/math/functions/abs.hpp \
+                         include/consteig/math/functions/csqrt.hpp \
+                         include/consteig/math/functions/exp.hpp \
+                         include/consteig/math/functions/pow.hpp \
+                         include/consteig/math/functions/sgn.hpp \
+                         include/consteig/math/functions/sqrt.hpp \
+                         include/consteig/math/functions/trig.hpp \
+                         include/consteig/math/functions/utilities.hpp \
+                         include/consteig/matrix/matrix.hpp \
+                         include/consteig/matrix/operations.hpp \
+                         include/consteig/matrix/decompositions/householder.hpp \
+                         include/consteig/matrix/decompositions/qr.hpp \
+                         include/consteig/matrix/decompositions/hessenberg.hpp \
+                         include/consteig/matrix/decompositions/lu.hpp \
+                         include/consteig/eigen/eigen.hpp
 
 RECURSIVE              = NO
 

@@ -487,3 +487,81 @@ TEST(matrix, make_matrix_row_vector)
     ASSERT_EQ(m(0, 0), 1.0);
     ASSERT_EQ(m(0, 3), 4.0);
 }
+
+TEST(matrix, equal_within_member_true)
+{
+    static constexpr Matrix<double, 2, 2> a{{{1.0, 2.0}, {3.0, 4.0}}};
+    static constexpr Matrix<double, 2, 2> b{
+        {{1.0 + 1e-10, 2.0}, {3.0, 4.0 - 1e-10}}};
+
+    static_assert(a.equalWithin(b, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(a.equalWithin(b, CONSTEIG_TEST_TOLERANCE));
+}
+
+TEST(matrix, equal_within_member_false)
+{
+    static constexpr Matrix<double, 2, 2> a{{{1.0, 2.0}, {3.0, 4.0}}};
+    static constexpr Matrix<double, 2, 2> b{{{1.0, 2.0}, {3.0, 5.0}}};
+
+    static_assert(!a.equalWithin(b, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_FALSE(a.equalWithin(b, CONSTEIG_TEST_TOLERANCE));
+}
+
+TEST(matrix, equal_within_mat_free_function)
+{
+    static constexpr Matrix<float, 2, 3> a{
+        {{1.0F, 2.0F, 3.0F}, {4.0F, 5.0F, 6.0F}}};
+    static constexpr Matrix<float, 2, 3> b{
+        {{1.0F, 2.0F, 3.0F}, {4.0F, 5.0F, 6.0F + 1e-8F}}};
+
+    static_assert(equalWithinMat(a, b, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithinMat(a, b, CONSTEIG_FLOAT_TEST_TOLERANCE));
+}
+
+TEST(matrix, matrix_cast_double_to_float)
+{
+    static constexpr int s{2};
+    static constexpr Matrix<double, s, s> src{{{1.0, 2.0}, {3.0, 4.0}}};
+    static constexpr Matrix<float, s, s> answer{{{1.0f, 2.0f}, {3.0f, 4.0f}}};
+
+    static constexpr Matrix<float, s, s> result{matrix_cast<float>(src)};
+
+    static_assert(equalWithinMat(result, answer, CONSTEIG_FLOAT_TEST_TOLERANCE),
+                  MSG);
+    ASSERT_TRUE(equalWithinMat(result, answer, CONSTEIG_FLOAT_TEST_TOLERANCE));
+}
+
+TEST(matrix, matrix_cast_float_to_double)
+{
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> src{{{1.0f, 2.0f}, {3.0f, 4.0f}}};
+    static constexpr Matrix<double, s, s> answer{{{1.0, 2.0}, {3.0, 4.0}}};
+
+    static constexpr Matrix<double, s, s> result{matrix_cast<double>(src)};
+
+    static_assert(equalWithinMat(result, answer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithinMat(result, answer, CONSTEIG_TEST_TOLERANCE));
+}
+
+TEST(matrix, matrix_cast_int_to_double)
+{
+    static constexpr int s{2};
+    static constexpr Matrix<int, s, s> src{{{1, 2}, {3, 4}}};
+    static constexpr Matrix<double, s, s> answer{{{1.0, 2.0}, {3.0, 4.0}}};
+
+    static constexpr Matrix<double, s, s> result{matrix_cast<double>(src)};
+
+    static_assert(equalWithinMat(result, answer, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithinMat(result, answer, CONSTEIG_TEST_TOLERANCE));
+}
+
+TEST(matrix, matrix_cast_same_type)
+{
+    static constexpr int s{2};
+    static constexpr Matrix<double, s, s> src{{{1.0, 2.0}, {3.0, 4.0}}};
+
+    static constexpr Matrix<double, s, s> result{matrix_cast<double>(src)};
+
+    static_assert(equalWithinMat(result, src, CONSTEIG_TEST_TOLERANCE), MSG);
+    ASSERT_TRUE(equalWithinMat(result, src, CONSTEIG_TEST_TOLERANCE));
+}

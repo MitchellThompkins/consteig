@@ -67,9 +67,8 @@ template <typename T, Size R, Size C> class Matrix
         return _data[row][col];
     }
 
-    // TODO(mthompkins): Need to handle the equal floats case
-    /// @brief Exact element-wise equality. Prefer @ref equalWithinMat for
-    /// floats.
+    /// @brief Exact element-wise equality. Prefer @ref equalWithin(rhs, thresh)
+    /// for floats.
     template <typename U>
     constexpr bool operator==(const Matrix<U, R, C> &rhs) const
     {
@@ -86,8 +85,8 @@ template <typename T, Size R, Size C> class Matrix
         return true;
     }
 
-    /// @brief Inequality (exact). Prefer negated @ref equalWithinMat for
-    /// floats.
+    /// @brief Inequality (exact). Prefer negated @ref equalWithin(rhs, thresh)
+    /// for floats.
     template <typename U>
     constexpr bool operator!=(const Matrix<U, R, C> &rhs) const
     {
@@ -319,8 +318,8 @@ template <typename T, Size R, Size C> class Matrix
                     bool eq{false};
                     if constexpr (is_float<T>())
                     {
-                        eq = equalWithin((*this)(row, col), (*this)(col, row),
-                                         epsilon<T>());
+                        eq = consteig::equalWithin(
+                            (*this)(row, col), (*this)(col, row), epsilon<T>());
                     }
                     else
                     {
@@ -363,8 +362,8 @@ template <typename T, Size R, Size C> class Matrix
             {
                 for (Size col{0}; col < row; col++)
                 {
-                    if (!equalWithin((*this)(row, col), (*this)(col, row),
-                                     thresh))
+                    if (!consteig::equalWithin((*this)(row, col),
+                                               (*this)(col, row), thresh))
                     {
                         return false;
                     }
@@ -372,6 +371,30 @@ template <typename T, Size R, Size C> class Matrix
             }
         }
 
+        return true;
+    }
+
+    /// @brief Returns `true` if every element of `rhs` is within `thresh` of
+    /// the corresponding element of `*this`.
+    ///
+    /// The free function @ref equalWithinMat delegates to this. Prefer this
+    /// over `operator==` for floating-point matrices.
+    ///
+    /// @param  rhs    Matrix to compare against.
+    /// @param  thresh Absolute per-element tolerance.
+    constexpr bool equalWithin(const Matrix<T, R, C> &rhs, const T thresh) const
+    {
+        for (Size row{0}; row < R; row++)
+        {
+            for (Size col{0}; col < C; col++)
+            {
+                if (!consteig::equalWithin((*this)(row, col), rhs(row, col),
+                                           thresh))
+                {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -480,6 +503,39 @@ constexpr Matrix<T, R, C> make_matrix(Args... args)
         for (Size col{0}; col < C; col++)
         {
             result(row, col) = flat[row * C + col];
+        }
+    }
+
+    return result;
+}
+
+/// @brief Convert a matrix from one element type to another.
+///
+/// Performs an element-wise `static_cast<To>` on each element. This is the
+/// preferred way to change element type (e.g. `double` to `float`) since
+/// `Matrix` has no converting constructor in order to preserve aggregate
+/// initialization.
+///
+/// @tparam To    Target element type.
+/// @tparam From  Source element type.
+/// @tparam R     Number of rows (compile-time).
+/// @tparam C     Number of columns (compile-time).
+/// @param  src   Input matrix with element type `From`.
+/// @return New matrix with element type `To` and the same dimensions.
+///
+/// @code
+/// static constexpr auto fmat = consteig::matrix_cast<float>(dmat);
+/// @endcode
+template <typename To, typename From, Size R, Size C>
+constexpr Matrix<To, R, C> matrix_cast(const Matrix<From, R, C> &src)
+{
+    Matrix<To, R, C> result{};
+
+    for (Size row{0}; row < R; row++)
+    {
+        for (Size col{0}; col < C; col++)
+        {
+            result(row, col) = static_cast<To>(src(row, col));
         }
     }
 

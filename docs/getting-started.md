@@ -32,7 +32,7 @@ include(FetchContent)
 FetchContent_Declare(
     consteig
     GIT_REPOSITORY https://github.com/mitchellthompkins/consteig.git
-    GIT_TAG        main
+    GIT_TAG        1.0.0
 )
 FetchContent_MakeAvailable(consteig)
 
