@@ -30,8 +30,8 @@ examples, verification, and performance are described in the
 
 # Usage
 
-Simply `#include "consteig.hpp"` (optionally consume via CMake with
-`add_subdirectory` or `FetchContent`). Requires C++17.
+Simply `#include <consteig/consteig.hpp>` (optionally consume via CMake with
+`add_subdirectory`, `FetchContent`, vcpkg, or Conan). Requires C++17.
 
 For a quick reference on getting started, including examples, see
 [getting-started](https://mitchellthompkins.github.io/consteig/getting-started/).
