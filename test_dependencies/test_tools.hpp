@@ -102,24 +102,6 @@ constexpr bool nearlyEqual(T a, T b,
     return diff < std::max(relth, epsilon * norm);
 }
 
-template <typename T, consteig::Size R, consteig::Size C>
-static constexpr bool equalWithinMat(consteig::Matrix<T, R, C> a,
-                                     consteig::Matrix<T, R, C> b,
-                                     const T thresh)
-{
-    for (consteig::Size row{0}; row < R; row++)
-    {
-        for (consteig::Size col{0}; col < C; col++)
-        {
-            if (!consteig::equalWithin(a(row, col), b(row, col), thresh))
-            {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
 template <typename T, consteig::Size S>
 static constexpr bool compareEigenValues(
     consteig::Matrix<consteig::Complex<T>, S, 1> a,

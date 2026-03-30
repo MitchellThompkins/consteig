@@ -11,7 +11,8 @@ int main()
 
     // Alternatively, use make_matrix with flat row-major arguments
     static constexpr consteig::Matrix<double, x, x> mat1Flat{
-        consteig::make_matrix<double, x, x>(5.0, -4.0, 2.0, -1.0, 2.0, 3.0, -2.0, 1.0, 0.0)};
+        consteig::make_matrix<double, x, x>(5.0, -4.0, 2.0, -1.0, 2.0, 3.0,
+                                            -2.0, 1.0, 0.0)};
 
     // Create a matrix which is the transpose
     static constexpr consteig::Matrix<int, x, x> mat2{transpose(mat1)};

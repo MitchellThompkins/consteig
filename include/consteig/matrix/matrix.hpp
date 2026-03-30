@@ -67,9 +67,8 @@ template <typename T, Size R, Size C> class Matrix
         return _data[row][col];
     }
 
-    // TODO(mthompkins): Need to handle the equal floats case
-    /// @brief Exact element-wise equality. Prefer @ref equalWithinMat for
-    /// floats.
+    /// @brief Exact element-wise equality. Prefer @ref equalWithin(rhs, thresh)
+    /// for floats.
     template <typename U>
     constexpr bool operator==(const Matrix<U, R, C> &rhs) const
     {
@@ -86,8 +85,8 @@ template <typename T, Size R, Size C> class Matrix
         return true;
     }
 
-    /// @brief Inequality (exact). Prefer negated @ref equalWithinMat for
-    /// floats.
+    /// @brief Inequality (exact). Prefer negated @ref equalWithin(rhs, thresh)
+    /// for floats.
     template <typename U>
     constexpr bool operator!=(const Matrix<U, R, C> &rhs) const
     {
@@ -372,6 +371,30 @@ template <typename T, Size R, Size C> class Matrix
             }
         }
 
+        return true;
+    }
+
+    /// @brief Returns `true` if every element of `rhs` is within `thresh` of
+    /// the corresponding element of `*this`.
+    ///
+    /// The free function @ref equalWithinMat delegates to this. Prefer this
+    /// over `operator==` for floating-point matrices.
+    ///
+    /// @param  rhs    Matrix to compare against.
+    /// @param  thresh Absolute per-element tolerance.
+    constexpr bool equalWithin(const Matrix<T, R, C> &rhs, const T thresh) const
+    {
+        for (Size row{0}; row < R; row++)
+        {
+            for (Size col{0}; col < C; col++)
+            {
+                if (!consteig::equalWithin((*this)(row, col), rhs(row, col),
+                                           thresh))
+                {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
