@@ -57,6 +57,15 @@ help:
 	@echo 'cross.arm-gcc / cross.arm-clang / cross'
 	@echo '    cross-compile for ARM (compile-only, static_assert is the test)'
 	@echo
+	@echo 'build.gcc.gcem / test.gcc.gcem / build.clang.gcem / test.clang.gcem'
+	@echo '    build or test with gcem math (freestanding, no stdlib)'
+	@echo
+	@echo 'build.gcc.gcem-stdlib / test.gcc.gcem-stdlib / build.clang.gcem-stdlib / test.clang.gcem-stdlib'
+	@echo '    build or test with gcem math (stdlib enabled)'
+	@echo
+	@echo 'cross.arm-gcc.gcem / cross.arm-clang.gcem'
+	@echo '    cross-compile for ARM with gcem math (freestanding only)'
+	@echo
 	@echo 'build / test'
 	@echo '    build or test using the default compiler'
 	@echo
@@ -113,11 +122,11 @@ test: $(BUILD_PREFIX)/$(BUILD_FILE)
 
 .PHONY: format
 format:
-	find . \( -path "./test_dependencies/googletest" -o -path "./build" -o -path "./profiling/compile_time" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) ! -name "generated_*" -print | xargs clang-format -i
+	find . \( -path "./test_dependencies/googletest" -o -path "./build" -o -path "./profiling/compile_time" -o -path "./include/consteig/optional_dependencies" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) ! -name "generated_*" -print | xargs clang-format -i
 
 .PHONY: check-format
 check-format:
-	find . \( -path "./test_dependencies/googletest" -o -path "./build" -o -path "./profiling/compile_time" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) ! -name "generated_*" -print | xargs clang-format --dry-run --Werror
+	find . \( -path "./test_dependencies/googletest" -o -path "./build" -o -path "./profiling/compile_time" -o -path "./include/consteig/optional_dependencies" \) -prune -o -type f \( -name "*.hpp" -o -name "*.cpp" -o -name "*.h" -o -name "*.c" \) ! -name "generated_*" -print | xargs clang-format --dry-run --Werror
 
 .PHONY: remove
 remove:
@@ -126,6 +135,12 @@ remove:
 	rm -rf build-clang/
 	rm -rf build-arm-gcc/
 	rm -rf build-arm-clang/
+	rm -rf build-gcc-gcem/
+	rm -rf build-gcc-gcem-stdlib/
+	rm -rf build-clang-gcem/
+	rm -rf build-clang-gcem-stdlib/
+	rm -rf build-arm-gcc-gcem/
+	rm -rf build-arm-clang-gcem/
 
 .PHONY: run-examples
 run-examples:
@@ -324,6 +339,68 @@ examples.clang:
 		$(BUILD_PREFIX)-clang/bin/$$ex; \
 	done
 
+################################################################################
+# gcem math backend variants
+################################################################################
+
+# GCC + gcem (freestanding, no stdlib)
+.PHONY: build.gcc.gcem
+build.gcc.gcem:
+	cmake -S . -B $(BUILD_PREFIX)-gcc-gcem -G $(CMAKE_GENERATOR) \
+		-DCMAKE_C_COMPILER=gcc \
+		-DCMAKE_CXX_COMPILER=g++ \
+		-DCONSTEIG_BUILD_TESTS=ON \
+		-DCONSTEIG_USE_GCEM=ON
+	cmake --build $(BUILD_PREFIX)-gcc-gcem --target all -- $(JOB_FLAG)
+
+.PHONY: test.gcc.gcem
+test.gcc.gcem: build.gcc.gcem
+	ctest --test-dir $(BUILD_PREFIX)-gcc-gcem -j$$(getconf _NPROCESSORS_ONLN)
+
+# GCC + gcem + stdlib
+.PHONY: build.gcc.gcem-stdlib
+build.gcc.gcem-stdlib:
+	cmake -S . -B $(BUILD_PREFIX)-gcc-gcem-stdlib -G $(CMAKE_GENERATOR) \
+		-DCMAKE_C_COMPILER=gcc \
+		-DCMAKE_CXX_COMPILER=g++ \
+		-DCONSTEIG_BUILD_TESTS=ON \
+		-DCONSTEIG_USE_GCEM=ON \
+		-DCONSTEIG_GCEM_USE_STDLIB=ON
+	cmake --build $(BUILD_PREFIX)-gcc-gcem-stdlib --target all -- $(JOB_FLAG)
+
+.PHONY: test.gcc.gcem-stdlib
+test.gcc.gcem-stdlib: build.gcc.gcem-stdlib
+	ctest --test-dir $(BUILD_PREFIX)-gcc-gcem-stdlib -j$$(getconf _NPROCESSORS_ONLN)
+
+# Clang + gcem (freestanding, no stdlib)
+.PHONY: build.clang.gcem
+build.clang.gcem:
+	cmake -S . -B $(BUILD_PREFIX)-clang-gcem -G $(CMAKE_GENERATOR) \
+		-DCMAKE_C_COMPILER=clang \
+		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCONSTEIG_BUILD_TESTS=ON \
+		-DCONSTEIG_USE_GCEM=ON
+	cmake --build $(BUILD_PREFIX)-clang-gcem --target all -- $(JOB_FLAG)
+
+.PHONY: test.clang.gcem
+test.clang.gcem: build.clang.gcem
+	ctest --test-dir $(BUILD_PREFIX)-clang-gcem -j$$(getconf _NPROCESSORS_ONLN)
+
+# Clang + gcem + stdlib
+.PHONY: build.clang.gcem-stdlib
+build.clang.gcem-stdlib:
+	cmake -S . -B $(BUILD_PREFIX)-clang-gcem-stdlib -G $(CMAKE_GENERATOR) \
+		-DCMAKE_C_COMPILER=clang \
+		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCONSTEIG_BUILD_TESTS=ON \
+		-DCONSTEIG_USE_GCEM=ON \
+		-DCONSTEIG_GCEM_USE_STDLIB=ON
+	cmake --build $(BUILD_PREFIX)-clang-gcem-stdlib --target all -- $(JOB_FLAG)
+
+.PHONY: test.clang.gcem-stdlib
+test.clang.gcem-stdlib: build.clang.gcem-stdlib
+	ctest --test-dir $(BUILD_PREFIX)-clang-gcem-stdlib -j$$(getconf _NPROCESSORS_ONLN)
+
 # ARM GCC cross-compiler (compile-only — static_assert is the test)
 .PHONY: cross.arm-gcc
 cross.arm-gcc:
@@ -345,6 +422,26 @@ cross.arm-clang:
 # Build with all cross-compilers
 .PHONY: cross
 cross: cross.arm-gcc cross.arm-clang
+
+# ARM GCC cross-compiler + gcem (compile-only, no stdlib)
+.PHONY: cross.arm-gcc.gcem
+cross.arm-gcc.gcem:
+	cmake -S . -B $(BUILD_PREFIX)-arm-gcc-gcem -G $(CMAKE_GENERATOR) \
+		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-gcc.cmake \
+		-DCONSTEIG_BUILD_TESTS=ON \
+		-DCONSTEIG_COMPILE_ONLY=ON \
+		-DCONSTEIG_USE_GCEM=ON
+	cmake --build $(BUILD_PREFIX)-arm-gcc-gcem --target all -- $(JOB_FLAG)
+
+# ARM Clang cross-compiler + gcem (compile-only, no stdlib)
+.PHONY: cross.arm-clang.gcem
+cross.arm-clang.gcem:
+	cmake -S . -B $(BUILD_PREFIX)-arm-clang-gcem -G $(CMAKE_GENERATOR) \
+		-DCMAKE_TOOLCHAIN_FILE=$(THIS_DIR)/cmake/toolchains/arm-none-eabi-clang.cmake \
+		-DCONSTEIG_BUILD_TESTS=ON \
+		-DCONSTEIG_COMPILE_ONLY=ON \
+		-DCONSTEIG_USE_GCEM=ON
+	cmake --build $(BUILD_PREFIX)-arm-clang-gcem --target all -- $(JOB_FLAG)
 
 container.make.%:
 	docker compose -f docker-compose.yml run --rm dev_env 'make CC=$(CC) CXX=$(CXX) $*'

@@ -6,6 +6,8 @@
 #include "../../consteig_options.hpp"
 #include "utilities.hpp"
 
+#ifndef CONSTEIG_USE_GCEM
+
 namespace consteig
 {
 
@@ -119,5 +121,7 @@ template <typename T> constexpr auto tan(const T x) noexcept
 /// @}  // addtogroup math
 
 } // namespace consteig
+
+#endif // CONSTEIG_USE_GCEM
 
 #endif

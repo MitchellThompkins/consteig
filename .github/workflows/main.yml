@@ -95,7 +95,7 @@ jobs:
               run: make check-format
 
     build-and-test:
-        name: ${{ matrix.compiler }}-${{ matrix.mode }}
+        name: ${{ matrix.compiler }}-${{ matrix.mode }}${{ matrix.math != 'builtin' && format('-{0}', matrix.math) || '' }}
         needs: build-and-publish-container
         if: needs.build-and-publish-container.result == 'success'
         runs-on: ubuntu-latest
@@ -107,22 +107,38 @@ jobs:
           matrix:
             compiler: [gcc, clang]
             mode: [test, examples]
+            math: [builtin, gcem, gcem-stdlib]
+            exclude:
+              # Examples are tested with builtin only — gcem variants exercise
+              # the same code paths and would only add CI cost without coverage.
+              - mode: examples
+                math: gcem
+              - mode: examples
+                math: gcem-stdlib
         steps:
             - name: Checkout
               uses: actions/checkout@v6
               with:
                 submodules: recursive
 
-            - name: Build and test
-              if: matrix.mode == 'test'
+            - name: Build and test (builtin)
+              if: matrix.mode == 'test' && matrix.math == 'builtin'
               run: make test.${{ matrix.compiler }}
+
+            - name: Build and test (gcem)
+              if: matrix.mode == 'test' && matrix.math == 'gcem'
+              run: make test.${{ matrix.compiler }}.gcem
+
+            - name: Build and test (gcem-stdlib)
+              if: matrix.mode == 'test' && matrix.math == 'gcem-stdlib'
+              run: make test.${{ matrix.compiler }}.gcem-stdlib
 
             - name: Build and run examples
               if: matrix.mode == 'examples'
               run: make examples.${{ matrix.compiler }}
 
     cross-compile:
-        name: cross-${{ matrix.target }}
+        name: cross-${{ matrix.target }}${{ matrix.math != 'builtin' && format('-{0}', matrix.math) || '' }}
         needs: build-and-publish-container
         if: needs.build-and-publish-container.result == 'success'
         runs-on: ubuntu-latest
@@ -133,14 +149,22 @@ jobs:
         strategy:
           matrix:
             target: [arm-gcc, arm-clang]
+            math: [builtin, gcem]
+            # gcem-stdlib is excluded for cross-compilation: stdlib is not
+            # available in the bare-metal ARM freestanding environment.
         steps:
             - name: Checkout
               uses: actions/checkout@v6
               with:
                 submodules: recursive
 
-            - name: Cross-compile (static_assert is the test)
+            - name: Cross-compile builtin (static_assert is the test)
+              if: matrix.math == 'builtin'
               run: make cross.${{ matrix.target }}
+
+            - name: Cross-compile gcem (static_assert is the test)
+              if: matrix.math == 'gcem'
+              run: make cross.${{ matrix.target }}.gcem
 
     dc-motor-fail:
         needs: build-and-publish-container

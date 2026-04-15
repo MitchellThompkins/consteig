@@ -1,6 +1,10 @@
 #ifndef CONSTMATH_SGN_HPP
 #define CONSTMATH_SGN_HPP
 
+#include "../../consteig_options.hpp"
+
+#ifndef CONSTEIG_USE_GCEM
+
 namespace consteig
 {
 
@@ -26,5 +30,7 @@ template <typename T> constexpr T sgn(const T x)
 /// @}  // addtogroup math
 
 } // namespace consteig
+
+#endif // CONSTEIG_USE_GCEM
 
 #endif

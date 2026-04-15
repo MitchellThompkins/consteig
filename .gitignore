@@ -4,6 +4,12 @@ build-clang/
 build-gcc/
 build-arm-clang/
 build-arm-gcc/
+build-gcc-gcem/
+build-gcc-gcem-stdlib/
+build-clang-gcem/
+build-clang-gcem-stdlib/
+build-arm-gcc-gcem/
+build-arm-clang-gcem/
 compile_commands.json
 
 # container

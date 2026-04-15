@@ -1,9 +1,12 @@
 #ifndef CONSTMATH_EXP_HPP
 #define CONSTMATH_EXP_HPP
 
+#include "../../consteig_options.hpp"
 #include "../complex.hpp"
 #include "pow.hpp"
 #include "utilities.hpp"
+
+#ifndef CONSTEIG_USE_GCEM
 
 namespace consteig
 {
@@ -86,5 +89,7 @@ template <typename T> constexpr Complex<T> exp(const Complex<T> &z) noexcept
 /// @}  // addtogroup math
 
 } // namespace consteig
+
+#endif // CONSTEIG_USE_GCEM
 
 #endif

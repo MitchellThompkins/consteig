@@ -1,8 +1,15 @@
 #ifndef COMPLEX_HPP
 #define COMPLEX_HPP
 
+#include "../consteig_options.hpp"
+
+// In gcem mode, abs and sqrt are provided by gcem_wrapper.hpp which is
+// included before complex.hpp. The functions are found via argument-dependent
+// lookup at template instantiation time, so no forward declarations are needed.
+#ifndef CONSTEIG_USE_GCEM
 #include "functions/abs.hpp"
 #include "functions/sqrt.hpp"
+#endif
 #include "functions/utilities.hpp"
 
 namespace consteig

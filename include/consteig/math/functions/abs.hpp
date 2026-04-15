@@ -1,6 +1,10 @@
 #ifndef CONSTMATH_ABS_HPP
 #define CONSTMATH_ABS_HPP
 
+#include "../../consteig_options.hpp"
+
+#ifndef CONSTEIG_USE_GCEM
+
 namespace consteig
 {
 
@@ -27,5 +31,7 @@ template <typename T> constexpr T abs(const T x)
 /// @}  // addtogroup math
 
 } // namespace consteig
+
+#endif // CONSTEIG_USE_GCEM
 
 #endif
