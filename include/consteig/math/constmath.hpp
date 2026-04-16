@@ -38,10 +38,10 @@ using gcem::tan;
 // Ordering matters: sqrt must precede complex.hpp (abs(Complex<T>) calls sqrt),
 // and exp/trig must precede complex_exp.hpp (Complex exp calls exp/cos/sin).
 #include "functions/abs.hpp"
-#include "functions/sqrt.hpp"
+#include "functions/exp.hpp"
 #include "functions/pow.hpp"
 #include "functions/sgn.hpp"
-#include "functions/exp.hpp"
+#include "functions/sqrt.hpp"
 #include "functions/trig.hpp"
 
 #endif

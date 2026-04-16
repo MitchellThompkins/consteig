@@ -45,8 +45,7 @@ template <typename T> constexpr T find_fraction(const T x) noexcept
 
 template <typename T> constexpr T exp_split(const T x) noexcept
 {
-    return pow(static_cast<T>(E_CONST),
-                         static_cast<int>(find_whole(x))) *
+    return pow(static_cast<T>(E_CONST), static_cast<int>(find_whole(x))) *
            exp_cf(find_fraction(x));
 }
 

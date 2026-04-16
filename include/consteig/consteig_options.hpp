@@ -83,20 +83,23 @@
 // #define CONSTEIG_USE_LONG_DOUBLE
 
 /// @def CONSTEIG_USE_GCEM
-/// @brief Use gcem math functions instead of consteig's built-in implementations.
+/// @brief Use gcem math functions instead of consteig's built-in
+/// implementations.
 ///
 /// When defined, `consteig::sqrt()`, `consteig::abs()`, `consteig::exp()`,
 /// `consteig::sin()`, `consteig::cos()`, `consteig::tan()`, `consteig::pow()`,
 /// and `consteig::sgn()` delegate to their `gcem::` counterparts.
 /// Requires gcem to be vendored into
-/// `include/consteig/optional_dependencies/gcem/` (run `scripts/vendor_gcem.sh`).
+/// `include/consteig/optional_dependencies/gcem/` (run
+/// `scripts/vendor_gcem.sh`).
 ///
 /// By default, gcem is configured to use compiler builtins only (freestanding).
 /// Define `CONSTEIG_GCEM_USE_STDLIB` to allow gcem to use stdlib headers.
 // #define CONSTEIG_USE_GCEM
 
 /// @def CONSTEIG_GCEM_USE_STDLIB
-/// @brief Allow gcem to use `<limits>` and `<type_traits>` from the standard library.
+/// @brief Allow gcem to use `<limits>` and `<type_traits>` from the standard
+/// library.
 ///
 /// Only meaningful when `CONSTEIG_USE_GCEM` is defined. When NOT defined (the
 /// default), gcem operates in freestanding mode using compiler builtins

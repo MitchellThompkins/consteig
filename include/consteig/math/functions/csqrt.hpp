@@ -33,8 +33,7 @@ template <typename T> constexpr Complex<T> csqrt(const T x)
             // absolute value of x, even if x is INT_MIN or INT64_MIN, avoiding
             // overflow.
             return {static_cast<T>(0),
-                    static_cast<T>(
-                        sqrt(-static_cast<unsigned long long>(x)))};
+                    static_cast<T>(sqrt(-static_cast<unsigned long long>(x)))};
         }
     }
     else

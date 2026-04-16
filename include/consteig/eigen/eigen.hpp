@@ -232,8 +232,7 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
         Size l = n;
         while (l > 0)
         {
-            T diagonal_sum =
-                abs(a(l, l)) + abs(a(l - 1, l - 1));
+            T diagonal_sum = abs(a(l, l)) + abs(a(l - 1, l - 1));
             // Algorithm: Robust Deflation
             // Checks for convergence by monitoring the sub-diagonal elements.
             // Deflates when an element becomes negligible relative to its
@@ -284,8 +283,7 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
             if (its % 20 == 0)
             {
                 // Bottom-based exceptional shift
-                sshift =
-                    abs(a(n, n - 1)) + abs(a(n - 1, n - 2));
+                sshift = abs(a(n, n - 1)) + abs(a(n - 1, n - 2));
             }
             else
             {
@@ -341,8 +339,7 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
     while (n > 1 && iter < max_iter)
     {
         if (abs(a(n - 1, n - 2)) <=
-            eps * (abs(a(n - 1, n - 1)) +
-                   abs(a(n - 2, n - 2))))
+            eps * (abs(a(n - 1, n - 1)) + abs(a(n - 2, n - 2))))
         {
             a(n - 1, n - 2) = 0;
             n--;

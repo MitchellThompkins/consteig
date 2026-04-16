@@ -16,8 +16,7 @@ namespace consteig
 /// Requires exp(T), cos(T), and sin(T) to be declared in namespace consteig
 /// before this header is included. constmath.hpp guarantees this for both
 /// the built-in and gcem backends.
-template <typename T>
-constexpr Complex<T> exp(const Complex<T> &z) noexcept
+template <typename T> constexpr Complex<T> exp(const Complex<T> &z) noexcept
 {
     const T ex = exp(z.real);
     return {ex * cos(z.imag), ex * sin(z.imag)};
