@@ -2,7 +2,6 @@
 #define CONSTMATH_EXP_HPP
 
 #include "../../consteig_options.hpp"
-#include "../complex.hpp"
 #include "pow.hpp"
 #include "utilities.hpp"
 
@@ -71,17 +70,6 @@ template <typename T> constexpr auto exp(const T x) noexcept
     {
         return exp_check(x);
     }
-}
-
-/**
- * @brief Computes the exponential of a complex number.
- * exp(z) = exp(x + iy) = exp(x) * (cos(y) + i*sin(y))
- */
-template <typename T> constexpr Complex<T> exp(const Complex<T> &z) noexcept
-{
-    // We use the identity exp(z) = exp(x) * exp(iy)
-    // exp(x) uses the real version, exp(iy) uses the continued fraction
-    return exp(z.real) * exp_cf(Complex<T>(0, z.imag));
 }
 
 /// @}  // addtogroup math

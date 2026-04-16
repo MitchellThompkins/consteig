@@ -33,40 +33,21 @@ using gcem::tan;
 
 } // namespace consteig
 
-#include "complex.hpp"
-
-namespace consteig
-{
-
-/// @addtogroup math
-/// @{
-
-/// @brief Exponential of a complex number using Euler's formula.
-///
-/// exp(x + iy) = exp(x) * (cos(y) + i*sin(y))
-template <typename T>
-constexpr Complex<T> exp(const Complex<T> &z) noexcept
-{
-    const T ex = exp(z.real);
-    return {ex * cos(z.imag), ex * sin(z.imag)};
-}
-
-/// @}  // addtogroup math
-
-} // namespace consteig
-
 #else
 
+// Ordering matters: sqrt must precede complex.hpp (abs(Complex<T>) calls sqrt),
+// and exp/trig must precede complex_exp.hpp (Complex exp calls exp/cos/sin).
 #include "functions/abs.hpp"
-#include "functions/exp.hpp"
+#include "functions/sqrt.hpp"
 #include "functions/pow.hpp"
 #include "functions/sgn.hpp"
-#include "functions/sqrt.hpp"
+#include "functions/exp.hpp"
 #include "functions/trig.hpp"
-#include "complex.hpp"
 
 #endif
 
+#include "complex.hpp"
+#include "functions/complex_exp.hpp"
 #include "functions/csqrt.hpp"
 #include "functions/utilities.hpp"
 
