@@ -3,13 +3,6 @@
 
 #include "../consteig_options.hpp"
 
-// In gcem mode, abs and sqrt are provided by gcem_wrapper.hpp which is
-// included before complex.hpp. The functions are found via argument-dependent
-// lookup at template instantiation time, so no forward declarations are needed.
-#ifndef CONSTEIG_USE_GCEM
-#include "functions/abs.hpp"
-#include "functions/sqrt.hpp"
-#endif
 #include "functions/utilities.hpp"
 
 namespace consteig
@@ -142,7 +135,7 @@ constexpr Complex<T> operator*(const Complex<T> &c, const T &scalar)
 /// @return Non-negative real magnitude.
 template <typename T> constexpr T abs(const Complex<T> &c)
 {
-    return consteig::sqrt(c.real * c.real + c.imag * c.imag);
+    return sqrt(c.real * c.real + c.imag * c.imag);
 }
 
 /// @brief Complex conjugate: negates the imaginary part.

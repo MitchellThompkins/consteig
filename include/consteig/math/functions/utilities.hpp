@@ -1,8 +1,6 @@
 #ifndef CONSTMATH_UTILITIES_HPP
 #define CONSTMATH_UTILITIES_HPP
 
-#include "abs.hpp"
-
 namespace consteig
 {
 
@@ -81,7 +79,7 @@ template <typename T> constexpr bool is_float()
 template <typename T, typename U>
 static constexpr bool equalWithin(T a, T b, U thresh)
 {
-    return consteig::abs(a - b) < static_cast<T>(thresh);
+    return abs(a - b) < static_cast<T>(thresh);
 }
 
 /// @brief Machine epsilon for type `T`.

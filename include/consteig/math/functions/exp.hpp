@@ -6,8 +6,6 @@
 #include "pow.hpp"
 #include "utilities.hpp"
 
-#ifndef CONSTEIG_USE_GCEM
-
 namespace consteig
 {
 
@@ -48,7 +46,7 @@ template <typename T> constexpr T find_fraction(const T x) noexcept
 
 template <typename T> constexpr T exp_split(const T x) noexcept
 {
-    return consteig::pow(static_cast<T>(E_CONST),
+    return pow(static_cast<T>(E_CONST),
                          static_cast<int>(find_whole(x))) *
            exp_cf(find_fraction(x));
 }
@@ -89,7 +87,5 @@ template <typename T> constexpr Complex<T> exp(const Complex<T> &z) noexcept
 /// @}  // addtogroup math
 
 } // namespace consteig
-
-#endif // CONSTEIG_USE_GCEM
 
 #endif

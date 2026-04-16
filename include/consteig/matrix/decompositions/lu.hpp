@@ -65,10 +65,10 @@ constexpr LUMatrix<T, S> lu(const Matrix<T, S, S> &a)
     {
         // Pivot
         Size max_row = diag;
-        auto max_val = consteig::abs(res._u(diag, diag));
+        auto max_val = abs(res._u(diag, diag));
         for (Size search_row = diag + 1; search_row < S; ++search_row)
         {
-            auto val = consteig::abs(res._u(search_row, diag));
+            auto val = abs(res._u(search_row, diag));
             if (val > max_val)
             {
                 max_val = val;
@@ -102,7 +102,7 @@ constexpr LUMatrix<T, S> lu(const Matrix<T, S, S> &a)
         {
             // Note: In inverse iteration, we might encounter nearly singular
             // matrices. We use a small epsilon to avoid exact division by zero.
-            auto pivot_abs = consteig::abs(res._u(diag, diag));
+            auto pivot_abs = abs(res._u(diag, diag));
             if (pivot_abs > 1e-30)
             {
                 res._l(row, diag) = res._u(row, diag) / res._u(diag, diag);
@@ -167,7 +167,7 @@ constexpr Matrix<T, S, 1> lu_solve(const LUMatrix<T, S> &lu,
             sum = sum + lu._u(row, col) * x(col, 0);
         }
 
-        auto diag_abs = consteig::abs(lu._u(row, row));
+        auto diag_abs = abs(lu._u(row, row));
         if (diag_abs > 1e-30)
         {
             x(row, 0) = (y(row, 0) - sum) / lu._u(row, row);

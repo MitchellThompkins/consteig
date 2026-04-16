@@ -220,7 +220,7 @@ constexpr T norm(const Matrix<T, R, C> &mat)
         }
     }
 
-    return consteig::sqrt(result);
+    return sqrt(result);
 }
 
 /// @brief 1-norm (maximum absolute column sum).
@@ -240,7 +240,7 @@ constexpr T norm1(const Matrix<T, R, C> &mat)
         T col_sum{static_cast<T>(0)};
         for (Size row{0}; row < R; ++row)
         {
-            col_sum += consteig::abs(mat(row, col));
+            col_sum += abs(mat(row, col));
         }
         if (col_sum > max_sum)
         {
@@ -267,7 +267,7 @@ constexpr T normInf(const Matrix<T, R, C> &mat)
         T row_sum{static_cast<T>(0)};
         for (Size col{0}; col < C; ++col)
         {
-            row_sum += consteig::abs(mat(row, col));
+            row_sum += abs(mat(row, col));
         }
         if (row_sum > max_sum)
         {
@@ -279,7 +279,7 @@ constexpr T normInf(const Matrix<T, R, C> &mat)
 
 /// @brief Element-wise square root.
 ///
-/// Applies @ref consteig::sqrt to every element. Each element must be
+/// Applies @ref sqrt to every element. Each element must be
 /// non-negative; a negative element triggers a compile-time error.
 ///
 /// @tparam T  Floating-point scalar type.
@@ -296,7 +296,7 @@ constexpr Matrix<T, R, C> sqrt(const Matrix<T, R, C> &mat)
     {
         for (Size col{0}; col < C; col++)
         {
-            result(row, col) = consteig::sqrt(mat(row, col));
+            result(row, col) = sqrt(mat(row, col));
         }
     }
 

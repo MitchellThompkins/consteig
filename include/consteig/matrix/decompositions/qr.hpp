@@ -69,9 +69,9 @@ constexpr QRMatrix<T, R> qr_hessenberg(const Matrix<T, R, C> a)
         T x = r(col, col);
         T y = r(col + 1, col);
 
-        if (consteig::abs(y) > static_cast<T>(1e-15))
+        if (abs(y) > static_cast<T>(1e-15))
         {
-            T mag = consteig::sqrt(x * x + y * y);
+            T mag = sqrt(x * x + y * y);
             T c = x / mag;
             T s = y / mag;
 
@@ -152,9 +152,9 @@ constexpr QRMatrix<T, R> qr(const Matrix<T, R, C> a)
             T x = r(row - 1, col);
             T y = r(row, col);
 
-            if (consteig::abs(y) > static_cast<T>(1e-15))
+            if (abs(y) > static_cast<T>(1e-15))
             {
-                T mag = consteig::sqrt(x * x + y * y);
+                T mag = sqrt(x * x + y * y);
                 if (mag > static_cast<T>(1e-18))
                 {
                     T c = x / mag;

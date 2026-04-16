@@ -1,10 +1,6 @@
 #ifndef CONSTMATH_POW_HPP
 #define CONSTMATH_POW_HPP
 
-#include "../../consteig_options.hpp"
-
-#ifndef CONSTEIG_USE_GCEM
-
 namespace consteig
 {
 
@@ -42,7 +38,5 @@ template <typename T> constexpr T pow(const T x, const int n)
 /// @}  // addtogroup math
 
 } // namespace consteig
-
-#endif // CONSTEIG_USE_GCEM
 
 #endif

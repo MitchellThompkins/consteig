@@ -4,8 +4,6 @@
 #include "../../consteig_options.hpp"
 #include "utilities.hpp" // For epsilon
 
-#ifndef CONSTEIG_USE_GCEM
-
 namespace consteig
 {
 
@@ -90,7 +88,5 @@ template <typename T> constexpr T sqrt(const T x)
 /// @}  // addtogroup math
 
 } // namespace consteig
-
-#endif // CONSTEIG_USE_GCEM
 
 #endif
