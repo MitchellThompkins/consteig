@@ -16,6 +16,7 @@ reviews:
   path_filters:
     - "!**/generated_*.hpp"
     - "!**/generated_*.cpp"
+    - "!**/optional_dependencies/**"
   path_instructions:
     - path: "**/*.hpp"
       instructions: |
