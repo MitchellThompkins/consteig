@@ -68,8 +68,8 @@ template <typename T> constexpr bool is_float()
 /// @brief Compare two scalar values within an absolute tolerance.
 ///
 /// Returns `true` if `|a - b| < thresh`. Defined in operations.hpp after the
-/// math backend is configured so that `abs` is in scope at the definition point.
-/// Declared here so matrix.hpp member functions can reference it.
+/// math backend is configured so that `abs` is in scope at the definition
+/// point. Declared here so matrix.hpp member functions can reference it.
 template <typename T, typename U>
 constexpr bool equalWithin(T a, T b, U thresh);
 
