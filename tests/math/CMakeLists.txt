@@ -26,11 +26,6 @@ target_include_directories(sqrt.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependen
 target_link_libraries(sqrt.test consteig_math gtest_main consteig_warnings)
 create_test(sqrt.test)
 
-add_executable(utilities.test ${CMAKE_CURRENT_SOURCE_DIR}/utilities.test.cpp)
-target_include_directories(utilities.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
-target_link_libraries(utilities.test consteig_math gtest_main consteig_warnings)
-create_test(utilities.test)
-
 add_executable(complex.test ${CMAKE_CURRENT_SOURCE_DIR}/complex.test.cpp)
 target_include_directories(complex.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
 target_link_libraries(complex.test consteig_math gtest_main consteig_warnings)

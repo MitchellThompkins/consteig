@@ -36,6 +36,11 @@ target_include_directories(lu.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependenci
 target_link_libraries(lu.test consteig_matrix gtest_main consteig_warnings)
 create_test(lu.test)
 
+add_executable(utilities.test ${CMAKE_CURRENT_SOURCE_DIR}/utilities.test.cpp)
+target_include_directories(utilities.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(utilities.test consteig_matrix gtest_main consteig_warnings)
+create_test(utilities.test)
+
 if(NOT CONSTEIG_COMPILE_ONLY)
     add_executable(operations_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/operations_eigen.test.cpp)
     target_include_directories(operations_eigen.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)

@@ -65,23 +65,6 @@ template <typename T> constexpr bool is_float()
     return is_float_impl<T>::_();
 }
 
-/// @brief Compare two values within an absolute tolerance.
-///
-/// Returns `true` if `|a - b| < thresh`. Does not use relative tolerance,
-/// so be careful when comparing values with very different magnitudes.
-///
-/// @tparam T      Type of the values being compared.
-/// @tparam U      Type of the threshold (converted to `T` internally).
-/// @param  a      First value.
-/// @param  b      Second value.
-/// @param  thresh Absolute tolerance.
-/// @return `true` if the values are within `thresh` of each other.
-template <typename T, typename U>
-static constexpr bool equalWithin(T a, T b, U thresh)
-{
-    return abs(a - b) < static_cast<T>(thresh);
-}
-
 /// @brief Machine epsilon for type `T`.
 ///
 /// Returns the smallest value `eps` such that `1 + eps != 1` in type `T`.
