@@ -390,8 +390,7 @@ constexpr T trace(const Matrix<T, R, C> &mat)
 /// @param  b      Second value.
 /// @param  thresh Absolute tolerance.
 /// @return `true` if the values are within `thresh` of each other.
-template <typename T, typename U>
-constexpr bool equalWithin(T a, T b, U thresh)
+template <typename T, typename U> constexpr bool equalWithin(T a, T b, U thresh)
 {
     return abs(a - b) < static_cast<T>(thresh);
 }
