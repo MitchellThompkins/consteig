@@ -4,17 +4,13 @@
 # Usage:
 #   ./scripts/vendor_gcem.sh [REPO_URL] [REF]
 #
-# Defaults:
-#   REPO_URL  https://github.com/MitchellThompkins/gcem.git
-#   REF       add-optional-no-stdlib
-#
 # To update to a new branch or tag, pass different arguments:
 #   ./scripts/vendor_gcem.sh https://github.com/MitchellThompkins/gcem.git v2.0.0
 
 set -e
 
 REPO_URL="${1:-https://github.com/MitchellThompkins/gcem.git}"
-REF="${2:-add-optional-no-stdlib}"
+REF="${2:-develop}"
 DEST="include/consteig/optional_dependencies/gcem"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

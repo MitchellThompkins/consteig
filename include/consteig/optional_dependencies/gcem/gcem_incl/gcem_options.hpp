@@ -18,9 +18,9 @@
   ##
   ################################################################################*/
 
-#include "gcem_type_traits.hpp"
-
-// undef some functions from math.h
+// undef some functions from math.h before including the trait headers so that
+// any platform macros already active do not mangle member function declarations
+// (e.g. gcem_limits<T>::min() / ::max()) or the <limits> include in stdlib mode.
 // see issue #29
 
 #ifdef abs
@@ -42,6 +42,9 @@
 #ifdef signbit
     #undef signbit
 #endif
+
+#include "gcem_type_traits.hpp"
+#include "gcem_limits.hpp"
 
 //
 // version
