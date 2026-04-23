@@ -138,6 +138,18 @@ template <typename T> constexpr T abs(const Complex<T> &c)
     return sqrt(c.real * c.real + c.imag * c.imag);
 }
 
+/// @brief Exponential of a complex number using Euler's formula.
+///
+/// exp(x + iy) = exp(x) * (cos(y) + i*sin(y))
+///
+/// @tparam T  Floating-point element type.
+/// @param  z  Input complex number.
+template <typename T> constexpr Complex<T> exp(const Complex<T> &z) noexcept
+{
+    const T ex = exp(z.real);
+    return {ex * cos(z.imag), ex * sin(z.imag)};
+}
+
 /// @brief Complex conjugate: negates the imaginary part.
 /// @tparam T  Element type.
 /// @param  c  Input complex number.
