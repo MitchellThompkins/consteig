@@ -379,22 +379,6 @@ constexpr T trace(const Matrix<T, R, C> &mat)
     return result;
 }
 
-/// @brief Compare two scalar values within an absolute tolerance.
-///
-/// Returns `true` if `|a - b| < thresh`. Does not use relative tolerance,
-/// so be careful when comparing values with very different magnitudes.
-///
-/// @tparam T      Type of the values being compared.
-/// @tparam U      Type of the threshold (converted to `T` internally).
-/// @param  a      First value.
-/// @param  b      Second value.
-/// @param  thresh Absolute tolerance.
-/// @return `true` if the values are within `thresh` of each other.
-template <typename T, typename U> constexpr bool equalWithin(T a, T b, U thresh)
-{
-    return abs(a - b) < static_cast<T>(thresh);
-}
-
 /// @brief Element-wise approximate equality within an absolute tolerance.
 ///
 /// Returns `true` if every element satisfies
