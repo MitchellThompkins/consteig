@@ -1,8 +1,8 @@
 #ifndef CONSTMATH_CSQRT_HPP
 #define CONSTMATH_CSQRT_HPP
 
+#include "../math_backend.hpp"
 #include "../complex.hpp"
-#include "utilities.hpp"
 
 namespace consteig
 {

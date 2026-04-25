@@ -2,7 +2,8 @@
 #define CONSTMATH_SQRT_HPP
 
 #include "../../consteig_options.hpp"
-#include "utilities.hpp" // For epsilon
+#include "abs.hpp"
+#include "utilities.hpp"
 
 namespace consteig
 {
