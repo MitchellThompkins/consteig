@@ -56,15 +56,26 @@ add_library(consteig::consteig ALIAS consteig)
 ################################################################################
 option(CONSTEIG_USE_GCEM "Use gcem math instead of built-in constexpr math" OFF)
 option(CONSTEIG_GCEM_USE_STDLIB "Allow gcem to use stdlib headers (only with CONSTEIG_USE_GCEM)" OFF)
+option(CONSTEIG_GCEM_USE_CUSTOM_TRAITS "Let user supply gcem trait definitions in namespace gcem (only with CONSTEIG_USE_GCEM)" OFF)
 
 if(CONSTEIG_GCEM_USE_STDLIB AND NOT CONSTEIG_USE_GCEM)
     message(WARNING "CONSTEIG_GCEM_USE_STDLIB has no effect without CONSTEIG_USE_GCEM")
+endif()
+
+if(CONSTEIG_GCEM_USE_CUSTOM_TRAITS AND NOT CONSTEIG_USE_GCEM)
+    message(WARNING "CONSTEIG_GCEM_USE_CUSTOM_TRAITS has no effect without CONSTEIG_USE_GCEM")
+endif()
+
+if(CONSTEIG_GCEM_USE_STDLIB AND CONSTEIG_GCEM_USE_CUSTOM_TRAITS)
+    message(FATAL_ERROR "CONSTEIG_GCEM_USE_STDLIB and CONSTEIG_GCEM_USE_CUSTOM_TRAITS are mutually exclusive")
 endif()
 
 if(CONSTEIG_USE_GCEM)
     target_compile_definitions(consteig INTERFACE CONSTEIG_USE_GCEM)
     if(CONSTEIG_GCEM_USE_STDLIB)
         target_compile_definitions(consteig INTERFACE CONSTEIG_GCEM_USE_STDLIB)
+    elseif(CONSTEIG_GCEM_USE_CUSTOM_TRAITS)
+        target_compile_definitions(consteig INTERFACE CONSTEIG_GCEM_USE_CUSTOM_TRAITS)
     endif()
     target_include_directories(consteig SYSTEM INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/consteig/optional_dependencies>

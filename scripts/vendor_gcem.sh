@@ -38,6 +38,7 @@ mkdir -p "$REPO_ROOT/$DEST"
 echo "Copying headers..."
 cp "$TMPDIR_CLONE/include/gcem.hpp" "$REPO_ROOT/$DEST/gcem.hpp"
 cp -r "$TMPDIR_CLONE/include/gcem_incl" "$REPO_ROOT/$DEST/gcem_incl"
+cp "$TMPDIR_CLONE/LICENSE" "$REPO_ROOT/$DEST/LICENSE"
 
 NFILES=$(find "$REPO_ROOT/$DEST" -name "*.hpp" | wc -l | tr -d ' ')
 echo ""

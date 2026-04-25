@@ -7,13 +7,23 @@
 #ifdef CONSTEIG_USE_GCEM
 
 // Configure gcem's type-traits mode BEFORE including any gcem header.
-// Without CONSTEIG_GCEM_USE_STDLIB, gcem uses compiler builtins only
-// (freestanding). With it, gcem uses <limits> and <type_traits>.
-#ifndef CONSTEIG_GCEM_USE_STDLIB
+// Default: freestanding builtin traits (no stdlib required).
+// Opt-in: define CONSTEIG_GCEM_USE_STDLIB to use hosted <limits>/<type_traits>.
+// Opt-in: define CONSTEIG_GCEM_USE_CUSTOM_TRAITS to supply your own trait
+//         definitions in namespace gcem before including consteig headers.
+// NOTE: the mode must be uniform across all translation units (ODR).
+#ifdef CONSTEIG_GCEM_USE_STDLIB
+// hosted stdlib mode — no macro needed, gcem defaults to this
+#elif defined(CONSTEIG_GCEM_USE_CUSTOM_TRAITS)
+#define GCEM_TRAITS_CUSTOM
+#else
 #define GCEM_TRAITS_BUILTIN
 #endif
 
 #include "../optional_dependencies/gcem/gcem.hpp"
+
+#undef GCEM_TRAITS_BUILTIN
+#undef GCEM_TRAITS_CUSTOM
 
 namespace consteig
 {

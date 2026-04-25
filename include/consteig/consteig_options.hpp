@@ -106,7 +106,35 @@
 /// (`GCEM_TRAITS_BUILTIN`), preserving consteig's no-stdlib property.
 /// Define this macro to allow gcem to use stdlib type traits, which may
 /// improve compatibility on hosted platforms.
+///
+/// Mutually exclusive with `CONSTEIG_GCEM_USE_CUSTOM_TRAITS`.
 // #define CONSTEIG_GCEM_USE_STDLIB
+
+/// @def CONSTEIG_GCEM_USE_CUSTOM_TRAITS
+/// @brief Supply your own gcem type trait definitions.
+///
+/// Only meaningful when `CONSTEIG_USE_GCEM` is defined. When defined, gcem
+/// skips all built-in trait definitions and expects the following to be
+/// provided in `namespace gcem` before any consteig header is included:
+///
+/// @code
+/// namespace gcem {
+///     template<typename T> T&& declval() noexcept;
+///     template<class T> struct gcem_limits;
+///     template<bool B, typename T=void> struct enable_if;
+///     template<typename T> struct is_integral;
+///     template<typename T> struct is_signed;
+///     template<bool B, typename T, typename F> struct conditional;
+///     template<typename... T> struct common_type;
+/// }
+/// @endcode
+///
+/// @warning The trait mode must be **uniform across all translation units**.
+/// Mixing modes violates the One Definition Rule and produces silent undefined
+/// behaviour.
+///
+/// Mutually exclusive with `CONSTEIG_GCEM_USE_STDLIB`.
+// #define CONSTEIG_GCEM_USE_CUSTOM_TRAITS
 
 /// @}  // defgroup config
 
