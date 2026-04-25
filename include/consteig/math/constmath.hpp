@@ -26,7 +26,7 @@ template <typename T> constexpr T abs(const Complex<T> &c)
 ///
 /// @tparam T  Floating-point element type.
 /// @param  z  Input complex number.
-template <typename T> constexpr Complex<T> exp(const Complex<T> &z) noexcept
+template <typename T> constexpr Complex<T> exp(const Complex<T> &z)
 {
     const T ex = exp(z.real);
     return {ex * cos(z.imag), ex * sin(z.imag)};
