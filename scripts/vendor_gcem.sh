@@ -32,7 +32,7 @@ echo "Cloning..."
 git clone --quiet --depth=1 --branch "$REF" "$REPO_URL" "$TMPDIR_CLONE"
 
 echo "Removing old vendored files..."
-rm -rf "$REPO_ROOT/$DEST"
+rm -rf "${REPO_ROOT:?}/${DEST:?}"
 mkdir -p "$REPO_ROOT/$DEST"
 
 echo "Copying headers..."
