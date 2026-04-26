@@ -204,4 +204,4 @@ static constexpr double val = M(1, 2);  // 6.0
 
 The double braces `{{...}}` are required: the outer pair initializes the
 `Matrix`, the inner pairs initialize each row. See [Matrix
-Operations](../guide/matrix.md) for more detail.
+Operations](../guide/matrix/) for more detail.
