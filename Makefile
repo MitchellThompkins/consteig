@@ -54,6 +54,10 @@ help:
 	@echo 'examples.gcc / examples.clang'
 	@echo '    build and run examples with a specific native compiler'
 	@echo
+	@echo 'coverage.gcc'
+	@echo '    build with coverage instrumentation, run tests, and generate lcov HTML report'
+	@echo '    report is written to build-coverage/coverage_html/index.html'
+	@echo
 	@echo 'cross.arm-gcc / cross.arm-clang / cross'
 	@echo '    cross-compile for ARM (compile-only, static_assert is the test)'
 	@echo
@@ -133,6 +137,7 @@ remove:
 	rm -rf build/
 	rm -rf build-gcc/
 	rm -rf build-clang/
+	rm -rf build-coverage/
 	rm -rf build-arm-gcc/
 	rm -rf build-arm-clang/
 	rm -rf build-gcc-gcem/
@@ -400,6 +405,22 @@ build.clang.gcem-stdlib:
 .PHONY: test.clang.gcem-stdlib
 test.clang.gcem-stdlib: build.clang.gcem-stdlib
 	ctest --test-dir $(BUILD_PREFIX)-clang-gcem-stdlib -j$$(getconf _NPROCESSORS_ONLN)
+
+################################################################################
+# Coverage
+################################################################################
+
+.PHONY: coverage.gcc
+coverage.gcc:
+	cmake -S . -B $(BUILD_PREFIX)-coverage -G $(CMAKE_GENERATOR) \
+		-DCMAKE_C_COMPILER=gcc \
+		-DCMAKE_CXX_COMPILER=g++ \
+		-DCONSTEIG_BUILD_TESTS=ON \
+		-DCONSTEIG_COVERAGE=ON \
+		-DCMAKE_BUILD_TYPE=Debug
+	cmake --build $(BUILD_PREFIX)-coverage --target all -- $(JOB_FLAG)
+	ctest --test-dir $(BUILD_PREFIX)-coverage -j$$(getconf _NPROCESSORS_ONLN)
+	cmake --build $(BUILD_PREFIX)-coverage --target coverage
 
 # ARM GCC cross-compiler (compile-only — static_assert is the test)
 .PHONY: cross.arm-gcc

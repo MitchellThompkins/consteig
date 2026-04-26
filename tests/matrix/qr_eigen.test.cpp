@@ -65,8 +65,8 @@ TEST(qr_decomp, eigen_comparison)
     // (each row is an arithmetic progression, so rows 3 and 4 are linear
     // combinations of rows 1 and 2). This means two of the four Q columns
     // span the null space. For null-space columns, the Householder process
-    // has no unique answer — any orthonormal completion of the column space
-    // is valid — so consteig and Eigen will freely disagree. We detect these
+    // has no unique answer; any orthonormal completion of the column space
+    // is valid, so consteig and Eigen will freely disagree. We detect these
     // columns by checking whether the matching R diagonal entry is
     // effectively zero (< QR_RANK_CUTOFF) and skip them.
     for (Size j = 0; j < s; ++j)

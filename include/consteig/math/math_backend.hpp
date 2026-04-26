@@ -13,7 +13,7 @@
 //         definitions in namespace gcem before including consteig headers.
 // NOTE: the mode must be uniform across all translation units (ODR).
 #ifdef CONSTEIG_GCEM_USE_STDLIB
-// hosted stdlib mode — no macro needed, gcem defaults to this
+// hosted stdlib mode; no macro needed, gcem defaults to this
 #elif defined(CONSTEIG_GCEM_USE_CUSTOM_TRAITS)
 #define GCEM_TRAITS_CUSTOM
 #else

@@ -4,7 +4,7 @@ title: Eigensolvers
 
 # Eigensolvers
 
-## eigenvalues — Eigenvalues Only
+## eigenvalues: Eigenvalues Only
 
 The primary entry point for most use cases. Returns all eigenvalues as a column vector of `Complex<T>`.
 
@@ -22,7 +22,7 @@ static constexpr auto eigs = consteig::eigenvalues(A);
 
 Real eigenvalues have zero imaginary part. Complex eigenvalues appear as conjugate pairs.
 
-## eigenvectors — Eigenvectors
+## eigenvectors: Eigenvectors
 
 Given a matrix and its eigenvalues, compute the corresponding eigenvectors. Each
 column of the result is the eigenvector for the eigenvalue at the same index.
@@ -34,7 +34,7 @@ static constexpr auto vecs = consteig::eigenvectors(A, eigs);
 // vecs.col(i) is the eigenvector for eigs(i, 0)
 ```
 
-## EigenSolver — Combined Class
+## EigenSolver: Combined Class
 
 `EigenSolver<T, S>` computes both eigenvalues and eigenvectors in one object. Use it when you need both and want to avoid calling `eigenvalues` twice.
 
@@ -44,7 +44,7 @@ static constexpr auto eigs = solver.eigenvalues();  // Matrix<Complex<double>, 3
 static constexpr auto vecs = solver.eigenvectors(); // Matrix<Complex<double>, 3, 3>
 ```
 
-## eig — Schur Form
+## eig: Schur Form
 
 `eig()` returns the real Schur form of the matrix (quasi-upper-triangular). The diagonal entries are real eigenvalues; 2x2 diagonal blocks encode complex conjugate pairs. In most cases you want `eigenvalues` or `eigenvectors` instead.
 

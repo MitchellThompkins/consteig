@@ -142,7 +142,7 @@ example](https://mitchellthompkins.github.io/consteig/examples/butterworth/).
 ```cpp
 #include <consteig/consteig.hpp>
 
-// Define a matrix — all values must be known at compile time
+// Define a matrix (all values must be known at compile time)
 static constexpr consteig::Matrix<double, 2, 2> A{{
     {3.0, 1.0},
     {1.0, 3.0}

@@ -20,8 +20,8 @@ namespace consteig
 /// @tparam T  Scalar element type.
 /// @tparam S  Matrix dimension.
 ///
-/// @var QRMatrix::_q  Orthogonal (Q) factor — S×S.
-/// @var QRMatrix::_r  Upper-triangular (R) factor — S×S.
+/// @var QRMatrix::_q  Orthogonal (Q) factor, S×S.
+/// @var QRMatrix::_r  Upper-triangular (R) factor, S×S.
 template <typename T, Size S> struct QRMatrix
 {
     Matrix<T, S, S> _q;

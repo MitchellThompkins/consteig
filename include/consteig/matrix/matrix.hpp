@@ -421,7 +421,7 @@ template <typename T, Size R, Size C> class Matrix
         return &_data[0][0];
     }
 
-    /// @brief Member convenience wrappers — delegate to free functions.
+    /// @brief Member convenience wrappers that delegate to free functions.
     /// @{
 
     /// @brief Returns the transpose. Delegates to @ref consteig::transpose.
@@ -458,7 +458,7 @@ template <typename T, Size R, Size C> class Matrix
 
     // Public for aggregate initialization only. C++17 aggregates require all
     // data members to be public; making this private breaks the {{...}} syntax.
-    // Treat as an implementation detail — use operator() for element access.
+    // Treat as an implementation detail; use operator() for element access.
     //
     // Row-major storage: _data[row][col]. This differs from Eigen and LAPACK,
     // which default to column-major. The tradeoff is intentional: row-major
@@ -473,7 +473,7 @@ template <typename T, Size R, Size C> class Matrix
 /// order.
 ///
 /// Alternative to aggregate initialization when nested braces are inconvenient.
-/// Arguments are filled row by row, left to right — identical to how values
+/// Arguments are filled row by row, left to right, identical to how values
 /// appear when written out as a matrix on paper.
 ///
 /// @tparam T     Scalar element type.
@@ -485,7 +485,7 @@ template <typename T, Size R, Size C> class Matrix
 /// `static_assert`).
 ///
 /// @code
-/// // 2x3 matrix — equivalent to aggregate init
+/// // 2x3 matrix, equivalent to aggregate init
 /// static constexpr auto m = make_matrix<double, 2, 3>(1.0, 2.0, 3.0,
 ///                                                     4.0, 5.0, 6.0);
 /// @endcode
