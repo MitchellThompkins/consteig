@@ -190,6 +190,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             add_custom_target(coverage
                 COMMAND ${LCOV_EXECUTABLE}
                     --capture
+                    --ignore-errors inconsistent
                     --directory ${CMAKE_BINARY_DIR}
                     --output-file ${CMAKE_BINARY_DIR}/coverage.info
                 COMMAND ${LCOV_EXECUTABLE}
