@@ -190,11 +190,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             add_custom_target(coverage
                 COMMAND ${LCOV_EXECUTABLE}
                     --capture
-                    --ignore-errors inconsistent
+                    --ignore-errors inconsistent,unused
                     --directory ${CMAKE_BINARY_DIR}
                     --output-file ${CMAKE_BINARY_DIR}/coverage.info
                 COMMAND ${LCOV_EXECUTABLE}
                     --remove ${CMAKE_BINARY_DIR}/coverage.info
+                    --ignore-errors inconsistent,unused
                     "${CMAKE_BINARY_DIR}/_deps/*"
                     "/usr/*"
                     "${PROJECT_SOURCE_DIR}/test_dependencies/googletest/*"
