@@ -20,8 +20,8 @@ static constexpr consteig::Matrix<double, 3, 3> A{{
 }};
 
 static constexpr auto result = consteig::qr(A);
-// result._q  — orthogonal factor (Q)
-// result._r  — upper-triangular factor (R)
+// result._q: orthogonal factor (Q)
+// result._r: upper-triangular factor (R)
 // A ~= result._q * result._r
 ```
 
@@ -38,12 +38,12 @@ Reduces a square matrix to upper Hessenberg form via orthogonal similarity: $H =
 
 ```cpp
 static constexpr auto result = consteig::hess(A);
-// result._h  — upper Hessenberg matrix
-// result._p  — accumulated orthogonal factor
+// result._h: upper Hessenberg matrix
+// result._p: accumulated orthogonal factor
 // A ~= result._p * result._h * transpose(result._p)
 ```
 
-Hessenberg reduction is a key preprocessing step for the eigenvalue solver — it reduces the cost of each QR iteration from $O(n^3)$ to $O(n^2)$.
+Hessenberg reduction is a key preprocessing step for the eigenvalue solver, reducing the cost of each QR iteration from $O(n^3)$ to $O(n^2)$.
 
 ## Householder Reflection
 
@@ -67,9 +67,9 @@ static constexpr consteig::Matrix<double, 3, 3> A{{
 }};
 
 static constexpr auto result = consteig::lu(A);
-// result._l  — unit lower triangular
-// result._u  — upper triangular
-// result._p  — pivot index array (not a matrix)
+// result._l: unit lower triangular
+// result._u: upper triangular
+// result._p: pivot index array (not a matrix)
 ```
 
 ## Solving Linear Systems with LU

@@ -20,7 +20,7 @@ via `consteig.hpp`.
 | `pow(x, n)` | x raised to integer power n                  |
 
 consteig's built-in implementations were inspired by GCEM [^1]. GCEM is also
-available as an optional drop-in math backend — see [Optional gcem Backend](#optional-gcem-backend) below.
+available as an optional drop-in math backend. See [Optional gcem Backend](#optional-gcem-backend) below.
 
 ## Trigonometric Functions
 
@@ -86,19 +86,19 @@ At runtime, a NaN (or -1 for integer types) is returned as a safe poison value.
 consteig ships with gcem vendored under `include/consteig/optional_dependencies/gcem/`.
 Defining `CONSTEIG_USE_GCEM` before including consteig (or passing
 `-DCONSTEIG_USE_GCEM=ON` to CMake) replaces the built-in math implementations
-with gcem's equivalents. All `consteig::` math names remain the same — the
+with gcem's equivalents. All `consteig::` math names remain the same; the
 switch is transparent to user code.
 
 ### Type Traits Mode
 
 gcem needs type traits to operate. Three modes are available, selected by
 defining a macro before any consteig header is included. The mode must be
-**uniform across all translation units** — mixing modes violates the One
+**uniform across all translation units**; mixing modes violates the One
 Definition Rule and produces silent undefined behaviour.
 
 | Macro | Effect |
 |-------|--------|
-| _(none, default)_ | Freestanding — uses compiler builtins. No stdlib required. |
+| _(none, default)_ | Freestanding. Uses compiler builtins. No stdlib required. |
 | `CONSTEIG_GCEM_USE_STDLIB` | Uses `<limits>` and `<type_traits>` from the hosted stdlib. |
 | `CONSTEIG_GCEM_USE_CUSTOM_TRAITS` | You supply trait definitions in `namespace gcem` (see below). |
 

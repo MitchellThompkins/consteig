@@ -45,7 +45,7 @@ static constexpr auto E = A * B;   // matrix multiplication (dimensions must be 
 static constexpr auto F = 2.0 * A; // scalar multiplication
 ```
 
-Matrix multiplication requires the column count of the left operand to equal the row count of the right operand — this is enforced by `static_assert` at compile time.
+Matrix multiplication requires the column count of the left operand to equal the row count of the right operand, enforced by `static_assert` at compile time.
 
 ## Transpose
 
@@ -85,7 +85,7 @@ static constexpr double d = consteig::dot(u, v);  // 32.0
 ## Determinant and Trace
 
 ```cpp
-static constexpr double d = consteig::determinant(A);  // Laplace expansion — O(n!), small matrices only
+static constexpr double d = consteig::determinant(A);  // Laplace expansion, O(n!), small matrices only
 static constexpr double t = consteig::trace(A);        // sum of diagonal elements
 // Or via member functions:
 static constexpr double d2 = A.determinant();
@@ -106,7 +106,7 @@ static constexpr auto col1 = A.col(1);          // 3x1 matrix
 // Partial row/column (compile-time bounds)
 static constexpr auto partial = A.row<0, 1>(0); // columns 0..1 of row 0
 
-// Rectangular submatrix — compile-time size, runtime start position
+// Rectangular submatrix: compile-time size, runtime start position
 // block<numRows, numCols>(startRow, startCol)
 static constexpr auto sub = A.template block<2, 2>(0, 1); // 2x2 block starting at (0,1)
 ```
@@ -122,7 +122,7 @@ M.setRow(newRow, 1);  // overwrite row 1
 static constexpr consteig::Matrix<double, 3, 1> newCol{{{1.0}, {2.0}, {3.0}}};
 M.setCol(newCol, 2);  // overwrite column 2
 
-// Overwrite a rectangular subregion — compile-time size, runtime start
+// Overwrite a rectangular subregion: compile-time size, runtime start
 static constexpr consteig::Matrix<double, 2, 2> patch{{{1.0, 2.0}, {3.0, 4.0}}};
 M.template setBlock<2, 2>(patch, 0, 1);  // write patch starting at (0,1)
 ```
