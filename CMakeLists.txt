@@ -184,8 +184,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             endif()
             target_link_options(consteig_coverage INTERFACE --coverage)
 
-            find_program(LCOV_EXECUTABLE lcov REQUIRED)
-            find_program(GENHTML_EXECUTABLE genhtml REQUIRED)
+            find_program(LCOV_EXECUTABLE lcov)
+            find_program(GENHTML_EXECUTABLE genhtml)
+            if(NOT LCOV_EXECUTABLE OR NOT GENHTML_EXECUTABLE)
+                message(FATAL_ERROR
+                    "CONSTEIG_COVERAGE requires lcov and genhtml on PATH")
+            endif()
 
             add_custom_target(coverage
                 COMMAND ${LCOV_EXECUTABLE}
