@@ -12,6 +12,9 @@ RUN apk --no-cache add\
     libc-dev\
     linux-headers\
     git\
+    bash\
+    curl\
+    gnupg\
     gzip\
     lcov\
     octave\
