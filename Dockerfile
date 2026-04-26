@@ -12,6 +12,7 @@ RUN apk --no-cache add\
     libc-dev\
     linux-headers\
     git\
+    gzip\
     lcov\
     octave\
     python3\
