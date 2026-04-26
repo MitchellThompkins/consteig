@@ -38,7 +38,15 @@ template <typename T> constexpr Complex<T> csqrt(const T x)
     }
     else
     {
-        return {sqrt(x), static_cast<T>(0)};
+        if constexpr (is_float<T>())
+        {
+            return {sqrt(x), static_cast<T>(0)};
+        }
+        else
+        {
+            return {static_cast<T>(sqrt(static_cast<unsigned long long>(x))),
+                    static_cast<T>(0)};
+        }
     }
 }
 

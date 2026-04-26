@@ -79,6 +79,7 @@ if(CONSTEIG_USE_GCEM)
     endif()
     target_include_directories(consteig SYSTEM INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/consteig/optional_dependencies>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/consteig/optional_dependencies>
     )
 endif()
 
