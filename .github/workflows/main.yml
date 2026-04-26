@@ -182,3 +182,26 @@ jobs:
 
             - name: Verify dc_motor_control build fails
               run: make test-dc-motor-fail
+
+    coverage:
+        needs: build-and-publish-container
+        if: needs.build-and-publish-container.result == 'success'
+        runs-on: ubuntu-latest
+        container:
+          image: ghcr.io/mitchellthompkins/consteig_dev_image:${{ needs.build-and-publish-container.outputs.image_tag }}
+        permissions:
+          contents: read
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+
+            - name: Build, test, and generate coverage report
+              run: make coverage.gcc
+
+            - name: Upload coverage reports to Codecov
+              uses: codecov/codecov-action@v5
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  files: build-coverage/coverage_filtered.info
