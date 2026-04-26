@@ -52,7 +52,7 @@ template <typename T, Size S> struct PHMatrix
 /// @tparam T  Floating-point scalar type.
 /// @tparam R  Number of rows (must equal `C`).
 /// @tparam C  Number of columns.
-/// @tparam L  Internal recursion parameter — do not specify (defaults to `R`).
+/// @tparam L  Internal recursion parameter; do not specify (defaults to `R`).
 /// @param  a  Square input matrix.
 /// @return @ref PHMatrix containing `_p` (orthogonal) and `_h` (Hessenberg).
 /// @pre `R == C` and `T` must be floating-point (both enforced by
