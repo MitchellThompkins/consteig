@@ -40,3 +40,8 @@ add_executable(trig.test ${CMAKE_CURRENT_SOURCE_DIR}/trig.test.cpp)
 target_include_directories(trig.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
 target_link_libraries(trig.test consteig_math gtest_main consteig_warnings)
 create_test(trig.test)
+
+add_executable(math_backend.test ${CMAKE_CURRENT_SOURCE_DIR}/math_backend.test.cpp)
+target_include_directories(math_backend.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(math_backend.test consteig_math gtest_main consteig_warnings)
+create_test(math_backend.test)

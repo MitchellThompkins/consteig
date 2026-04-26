@@ -287,3 +287,131 @@ TEST(matrix, member_dot)
     static_assert(d == answer, MSG);
     ASSERT_EQ(d, answer);
 }
+
+// ---------------------------------------------------------------------------
+// norm1 and normInf — these functions now use unqualified abs() dispatch from
+// math_backend.hpp. Verify correctness including negative-valued matrices.
+// ---------------------------------------------------------------------------
+
+TEST(matrix, norm1_positive_matrix)
+{
+    // 1-norm = max column sum of absolute values
+    // mat = [[1, 2], [3, 4]]: col sums = 4, 6 -> norm1 = 6
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> mat{{{1.0F, 2.0F}, {3.0F, 4.0F}}};
+    static constexpr float n{norm1(mat)};
+    static_assert(equalWithin(n, 6.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n, 6.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, norm1_negative_values)
+{
+    // Columns with negative entries: abs is required
+    // mat = [[-1, -2], [-3, -4]]: col sums = 4, 6 -> norm1 = 6
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> mat{{{-1.0F, -2.0F}, {-3.0F, -4.0F}}};
+    static constexpr float n{norm1(mat)};
+    static_assert(equalWithin(n, 6.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n, 6.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, norm1_mixed_sign_matrix)
+{
+    // mat = [[5, -4], [-1, 2]]: col1 abs sum = 6, col2 abs sum = 6 -> norm1 = 6
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> mat{{{5.0F, -4.0F}, {-1.0F, 2.0F}}};
+    static constexpr float n{norm1(mat)};
+    static_assert(equalWithin(n, 6.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n, 6.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, norm1_identity)
+{
+    // For an identity matrix, each column has sum 1 -> norm1 = 1
+    static constexpr int s{3};
+    static constexpr Matrix<float, s, s> mat{
+        {{1.0F, 0.0F, 0.0F}, {0.0F, 1.0F, 0.0F}, {0.0F, 0.0F, 1.0F}}};
+    static constexpr float n{norm1(mat)};
+    static_assert(equalWithin(n, 1.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n, 1.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, norm1_constexpr_double)
+{
+    // Check constexpr evaluation for double type
+    // mat = [[3, 0], [0, 4]]: col sums = 3, 4 -> norm1 = 4
+    static constexpr int s{2};
+    static constexpr Matrix<double, s, s> mat{{{3.0, 0.0}, {0.0, 4.0}}};
+    static constexpr double n{norm1(mat)};
+    static_assert(n == 4.0, MSG);
+    ASSERT_EQ(n, 4.0);
+}
+
+TEST(matrix, normInf_positive_matrix)
+{
+    // Inf-norm = max row sum of absolute values
+    // mat = [[1, 2], [3, 4]]: row sums = 3, 7 -> normInf = 7
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> mat{{{1.0F, 2.0F}, {3.0F, 4.0F}}};
+    static constexpr float n{normInf(mat)};
+    static_assert(equalWithin(n, 7.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n, 7.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, normInf_negative_values)
+{
+    // abs is required for correct row sums
+    // mat = [[-1, -2], [-3, -4]]: row sums = 3, 7 -> normInf = 7
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> mat{{{-1.0F, -2.0F}, {-3.0F, -4.0F}}};
+    static constexpr float n{normInf(mat)};
+    static_assert(equalWithin(n, 7.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n, 7.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, normInf_mixed_sign_matrix)
+{
+    // mat = [[5, -4, 2], [-1, 2, 3], [-2, 1, 0]]
+    // row abs sums: 11, 6, 3 -> normInf = 11
+    static constexpr int x{3};
+    static constexpr Matrix<float, x, x> mat{
+        {{5.0F, -4.0F, 2.0F}, {-1.0F, 2.0F, 3.0F}, {-2.0F, 1.0F, 0.0F}}};
+    static constexpr float n{normInf(mat)};
+    static_assert(equalWithin(n, 11.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n, 11.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, normInf_identity)
+{
+    // For an identity matrix, each row has sum 1 -> normInf = 1
+    static constexpr int s{3};
+    static constexpr Matrix<float, s, s> mat{
+        {{1.0F, 0.0F, 0.0F}, {0.0F, 1.0F, 0.0F}, {0.0F, 0.0F, 1.0F}}};
+    static constexpr float n{normInf(mat)};
+    static_assert(equalWithin(n, 1.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n, 1.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
+
+TEST(matrix, normInf_constexpr_double)
+{
+    // mat = [[3, 0], [0, 4]]: row sums = 3, 4 -> normInf = 4
+    static constexpr int s{2};
+    static constexpr Matrix<double, s, s> mat{{{3.0, 0.0}, {0.0, 4.0}}};
+    static constexpr double n{normInf(mat)};
+    static_assert(n == 4.0, MSG);
+    ASSERT_EQ(n, 4.0);
+}
+
+TEST(matrix, norm1_vs_normInf_differ)
+{
+    // Confirm that norm1 and normInf are not equivalent in general
+    // mat = [[1, 3], [2, 0]]: col sums = 3, 3 -> norm1 = 3; row sums = 4, 2 -> normInf = 4
+    static constexpr int s{2};
+    static constexpr Matrix<float, s, s> mat{{{1.0F, 3.0F}, {2.0F, 0.0F}}};
+    static constexpr float n1{norm1(mat)};
+    static constexpr float nInf{normInf(mat)};
+    static_assert(equalWithin(n1, 3.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    static_assert(equalWithin(nInf, 4.0F, CONSTEIG_FLOAT_TEST_TOLERANCE), MSG);
+    ASSERT_NEAR(n1, 3.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+    ASSERT_NEAR(nInf, 4.0F, CONSTEIG_FLOAT_TEST_TOLERANCE);
+}
