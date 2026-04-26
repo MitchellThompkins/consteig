@@ -1,8 +1,8 @@
 #ifndef COMPLEX_HPP
 #define COMPLEX_HPP
 
-#include "functions/abs.hpp"
-#include "functions/sqrt.hpp"
+#include "../consteig_options.hpp"
+
 #include "functions/utilities.hpp"
 
 namespace consteig
@@ -127,15 +127,6 @@ template <typename T>
 constexpr Complex<T> operator*(const Complex<T> &c, const T &scalar)
 {
     return scalar * c;
-}
-
-/// @brief Absolute value (modulus) of a complex number: `sqrt(re^2 + im^2)`.
-/// @tparam T  Floating-point element type.
-/// @param  c  Input complex number.
-/// @return Non-negative real magnitude.
-template <typename T> constexpr T abs(const Complex<T> &c)
-{
-    return consteig::sqrt(c.real * c.real + c.imag * c.imag);
 }
 
 /// @brief Complex conjugate: negates the imaginary part.

@@ -19,9 +19,8 @@ via `consteig.hpp`.
 | `exp(x)`    | Exponential e^x                              |
 | `pow(x, n)` | x raised to integer power n                  |
 
-A number of these algorithms were inspired by GCEM [^1]. It was orginally a
-project dependency but was removed due to its dependence on the standard
-library.
+consteig's built-in implementations were inspired by GCEM [^1]. GCEM is also
+available as an optional drop-in math backend — see [Optional gcem Backend](#optional-gcem-backend) below.
 
 ## Trigonometric Functions
 
@@ -81,5 +80,61 @@ error: 'force_compile_time_error_for_negative_sqrt' is not a constant expression
 ```
 
 At runtime, a NaN (or -1 for integer types) is returned as a safe poison value.
+
+## Optional gcem Backend
+
+consteig ships with gcem vendored under `include/consteig/optional_dependencies/gcem/`.
+Defining `CONSTEIG_USE_GCEM` before including consteig (or passing
+`-DCONSTEIG_USE_GCEM=ON` to CMake) replaces the built-in math implementations
+with gcem's equivalents. All `consteig::` math names remain the same — the
+switch is transparent to user code.
+
+### Type Traits Mode
+
+gcem needs type traits to operate. Three modes are available, selected by
+defining a macro before any consteig header is included. The mode must be
+**uniform across all translation units** — mixing modes violates the One
+Definition Rule and produces silent undefined behaviour.
+
+| Macro | Effect |
+|-------|--------|
+| _(none, default)_ | Freestanding — uses compiler builtins. No stdlib required. |
+| `CONSTEIG_GCEM_USE_STDLIB` | Uses `<limits>` and `<type_traits>` from the hosted stdlib. |
+| `CONSTEIG_GCEM_USE_CUSTOM_TRAITS` | You supply trait definitions in `namespace gcem` (see below). |
+
+`CONSTEIG_GCEM_USE_STDLIB` and `CONSTEIG_GCEM_USE_CUSTOM_TRAITS` are mutually exclusive.
+
+### Custom Traits
+
+When `CONSTEIG_GCEM_USE_CUSTOM_TRAITS` is defined, define the following in
+`namespace gcem` **before** including any consteig header:
+
+```cpp
+namespace gcem {
+    template<typename T> T&& declval() noexcept;
+    template<class T> struct gcem_limits;
+    template<bool B, typename T=void> struct enable_if;
+    template<typename T> struct is_integral;
+    template<typename T> struct is_signed;
+    template<bool B, typename T, typename F> struct conditional;
+    template<typename... T> struct common_type;
+}
+#define CONSTEIG_GCEM_USE_CUSTOM_TRAITS
+#include <consteig/consteig.hpp>
+```
+
+### CMake
+
+```cmake
+# Default freestanding mode
+target_link_libraries(my_target PRIVATE consteig::consteig)
+cmake -DCONSTEIG_USE_GCEM=ON ..
+
+# Hosted stdlib traits
+cmake -DCONSTEIG_USE_GCEM=ON -DCONSTEIG_GCEM_USE_STDLIB=ON ..
+
+# Custom traits
+cmake -DCONSTEIG_USE_GCEM=ON -DCONSTEIG_GCEM_USE_CUSTOM_TRAITS=ON ..
+```
 
 [^1]: O'Hara, Keith. GCE-Math (Generalized Constant Expression Math) [GCEM](https://github.com/kthohr/gcem)

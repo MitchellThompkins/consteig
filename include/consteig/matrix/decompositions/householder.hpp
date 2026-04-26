@@ -63,7 +63,7 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
     }
 
     // If the subdiagonal is already zero, no reflection needed
-    if (consteig::abs(alphaSum) < consteig::epsilon<T>())
+    if (abs(alphaSum) < consteig::epsilon<T>())
     {
         return eye<T, R>();
     }
@@ -71,17 +71,17 @@ constexpr Matrix<T, R, R> house(Matrix<T, R, C> a)
     // alpha = -sign(x[1]) * ||x[1:]||
     T sign =
         (a(1, 0) < static_cast<T>(0)) ? static_cast<T>(-1) : static_cast<T>(1);
-    T alpha{static_cast<T>(-1) * sign * consteig::sqrt(alphaSum)};
+    T alpha{static_cast<T>(-1) * sign * sqrt(alphaSum)};
 
     // r = sqrt(0.5 * (alpha^2 - x[1]*alpha)), the normalization factor for v
     T r_sq{static_cast<T>(0.5) * ((alpha * alpha) - (a(1, 0) * alpha))};
 
-    if (consteig::abs(r_sq) < consteig::epsilon<T>())
+    if (abs(r_sq) < consteig::epsilon<T>())
     {
         return eye<T, R>();
     }
 
-    T r = consteig::sqrt(r_sq);
+    T r = sqrt(r_sq);
     T oneOverTwoR{1 / (static_cast<T>(2) * r)};
 
     // Build the reflector vector v

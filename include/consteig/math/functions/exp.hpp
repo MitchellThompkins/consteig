@@ -1,7 +1,7 @@
 #ifndef CONSTMATH_EXP_HPP
 #define CONSTMATH_EXP_HPP
 
-#include "../complex.hpp"
+#include "../../consteig_options.hpp"
 #include "pow.hpp"
 #include "utilities.hpp"
 
@@ -45,8 +45,7 @@ template <typename T> constexpr T find_fraction(const T x) noexcept
 
 template <typename T> constexpr T exp_split(const T x) noexcept
 {
-    return consteig::pow(static_cast<T>(E_CONST),
-                         static_cast<int>(find_whole(x))) *
+    return pow(static_cast<T>(E_CONST), static_cast<int>(find_whole(x))) *
            exp_cf(find_fraction(x));
 }
 
@@ -70,17 +69,6 @@ template <typename T> constexpr auto exp(const T x) noexcept
     {
         return exp_check(x);
     }
-}
-
-/**
- * @brief Computes the exponential of a complex number.
- * exp(z) = exp(x + iy) = exp(x) * (cos(y) + i*sin(y))
- */
-template <typename T> constexpr Complex<T> exp(const Complex<T> &z) noexcept
-{
-    // We use the identity exp(z) = exp(x) * exp(iy)
-    // exp(x) uses the real version, exp(iy) uses the continued fraction
-    return exp(z.real) * exp_cf(Complex<T>(0, z.imag));
 }
 
 /// @}  // addtogroup math

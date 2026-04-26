@@ -50,6 +50,36 @@ Maximum Taylor series iterations for `sin`, `cos`, `tan`, etc. (default: see
 `consteig_options.hpp`). 14 should suffice for `double` precision but the
 library uses a slightly higher default for good margin.
 
+### CONSTEIG_USE_GCEM
+
+Replaces consteig's built-in math implementations with gcem's equivalents.
+All `consteig::` math names remain the same. See [Math Functions](math-functions.md#optional-gcem-backend) for full details.
+
+```cpp
+#define CONSTEIG_USE_GCEM
+#include <consteig/consteig.hpp>
+```
+
+### CONSTEIG_GCEM_USE_STDLIB
+
+Only meaningful with `CONSTEIG_USE_GCEM`. Switches gcem's type traits to use
+`<limits>` and `<type_traits>` from the hosted stdlib instead of the default
+freestanding compiler builtins. Mutually exclusive with
+`CONSTEIG_GCEM_USE_CUSTOM_TRAITS`.
+
+```cpp
+#define CONSTEIG_USE_GCEM
+#define CONSTEIG_GCEM_USE_STDLIB
+#include <consteig/consteig.hpp>
+```
+
+### CONSTEIG_GCEM_USE_CUSTOM_TRAITS
+
+Only meaningful with `CONSTEIG_USE_GCEM`. Tells gcem to skip all built-in
+trait definitions so you can supply your own in `namespace gcem`. See
+[Math Functions](math-functions.md#custom-traits) for the required interface.
+Mutually exclusive with `CONSTEIG_GCEM_USE_STDLIB`.
+
 ### CONSTEIG_USE_LONG_DOUBLE
 
 Forces all internal constexpr eigenvalue calculations to use `long double`. This

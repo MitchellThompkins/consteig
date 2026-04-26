@@ -1,3 +1,5 @@
-add_subdirectory(math)
+if(NOT CONSTEIG_USE_GCEM)
+    add_subdirectory(math)
+endif()
 add_subdirectory(matrix)
 add_subdirectory(eigen)

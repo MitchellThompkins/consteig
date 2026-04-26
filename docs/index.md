@@ -26,6 +26,7 @@ All at compile-time, consteig supports:
   non-symmetric matrices.
 * Matrix construction and manipulation, including common operations and decompositions.
 * A selection of mathematical functions, including complex arithmetic.
+* Optional [gcem](https://github.com/MitchellThompkins/gcem) as an alternative constexpr math backend.
 
 ## Quick Start
 

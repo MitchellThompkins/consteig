@@ -50,8 +50,8 @@ constexpr Matrix<T, S, S> balance(Matrix<T, S, S> a)
             {
                 if (row != col)
                 {
-                    row_norm += consteig::abs(a(row, col));
-                    col_norm += consteig::abs(a(col, row));
+                    row_norm += abs(a(row, col));
+                    col_norm += abs(a(col, row));
                 }
             }
 
@@ -108,7 +108,7 @@ constexpr T wilkinsonShift(const T a, const T b, const T c)
         delta = consteig::epsilon<T>();
     }
     T disc = delta * delta + b * b;
-    T s = (delta < 0) ? -consteig::sqrt(disc) : consteig::sqrt(disc);
+    T s = (delta < 0) ? -sqrt(disc) : sqrt(disc);
     return c - (b * b) / (delta + s);
 }
 
@@ -129,14 +129,14 @@ constexpr void francis_qr_step(Matrix<T, S, S> &H, Size l, Size n, T s, T t)
 
         if (m == 3)
         {
-            norm = consteig::sqrt(p1 * p1 + p2 * p2 + p3 * p3);
+            norm = sqrt(p1 * p1 + p2 * p2 + p3 * p3);
             v1 = p1 + (p1 < 0 ? -norm : norm);
             v2 = p2;
             v3 = p3;
         }
         else
         {
-            norm = consteig::sqrt(p1 * p1 + p2 * p2);
+            norm = sqrt(p1 * p1 + p2 * p2);
             v1 = p1 + (p1 < 0 ? -norm : norm);
             v2 = p2;
             v3 = 0;
@@ -232,8 +232,7 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
         Size l = n;
         while (l > 0)
         {
-            T diagonal_sum =
-                consteig::abs(a(l, l)) + consteig::abs(a(l - 1, l - 1));
+            T diagonal_sum = abs(a(l, l)) + abs(a(l - 1, l - 1));
             // Algorithm: Robust Deflation
             // Checks for convergence by monitoring the sub-diagonal elements.
             // Deflates when an element becomes negligible relative to its
@@ -246,8 +245,8 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
             // abs(subdiag) <= eps' allows these blocks to deflate early,
             // reducing build times from ~40m to ~7m even with more complex
             // robustness tests.
-            if (consteig::abs(a(l, l - 1)) <= eps * diagonal_sum ||
-                consteig::abs(a(l, l - 1)) <= eps)
+            if (abs(a(l, l - 1)) <= eps * diagonal_sum ||
+                abs(a(l, l - 1)) <= eps)
             {
                 a(l, l - 1) = 0;
                 break;
@@ -284,16 +283,15 @@ constexpr Matrix<T, S, S> eig_double_shifted_qr(Matrix<T, S, S> a)
             if (its % 20 == 0)
             {
                 // Bottom-based exceptional shift
-                sshift =
-                    consteig::abs(a(n, n - 1)) + consteig::abs(a(n - 1, n - 2));
+                sshift = abs(a(n, n - 1)) + abs(a(n - 1, n - 2));
             }
             else
             {
                 // Top-based exceptional shift
-                sshift = consteig::abs(a(l + 1, l));
+                sshift = abs(a(l + 1, l));
                 if (l + 2 <= n)
                 {
-                    sshift += consteig::abs(a(l + 2, l + 1));
+                    sshift += abs(a(l + 2, l + 1));
                 }
             }
             T h11 = static_cast<T>(0.75) * sshift + a(n, n);
@@ -340,9 +338,8 @@ constexpr Matrix<T, S, S> eig_shifted_qr(Matrix<T, S, S> a)
 
     while (n > 1 && iter < max_iter)
     {
-        if (consteig::abs(a(n - 1, n - 2)) <=
-            eps * (consteig::abs(a(n - 1, n - 1)) +
-                   consteig::abs(a(n - 2, n - 2))))
+        if (abs(a(n - 1, n - 2)) <=
+            eps * (abs(a(n - 1, n - 1)) + abs(a(n - 2, n - 2))))
         {
             a(n - 1, n - 2) = 0;
             n--;
@@ -453,7 +450,7 @@ constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
         if (diag < S - 1)
         {
             InternalScalar subdiag = out(diag + 1, diag);
-            if (consteig::abs(subdiag) > eps)
+            if (abs(subdiag) > eps)
             {
                 found_2x2 = true;
             }
@@ -480,14 +477,14 @@ constexpr Matrix<Complex<T>, S, 1> eigenvalues(const Matrix<T, S, S> &a)
             InternalScalar disc = tr * tr - 4 * d;
             if (disc >= 0)
             {
-                InternalScalar sq = consteig::sqrt(disc);
+                InternalScalar sq = sqrt(disc);
                 result(diag, 0) = Complex<T>{static_cast<T>((tr + sq) / 2), 0};
                 result(diag + 1, 0) =
                     Complex<T>{static_cast<T>((tr - sq) / 2), 0};
             }
             else
             {
-                InternalScalar sq = consteig::sqrt(-disc);
+                InternalScalar sq = sqrt(-disc);
                 result(diag, 0) =
                     Complex<T>{static_cast<T>(tr / 2), static_cast<T>(sq / 2)};
                 result(diag + 1, 0) =
@@ -539,11 +536,11 @@ static inline constexpr bool checkEigenValues(
         sum_lambda = sum_lambda + lambda(row, 0);
     }
 
-    if (consteig::abs(sum_lambda.real - tr) > thresh)
+    if (abs(sum_lambda.real - tr) > thresh)
     {
         return false;
     }
-    if (consteig::abs(sum_lambda.imag) > thresh)
+    if (abs(sum_lambda.imag) > thresh)
     {
         return false;
     }
@@ -556,12 +553,12 @@ static inline constexpr bool checkEigenValues(
         {
             prod_lambda = prod_lambda * lambda(row, 0);
         }
-        T det_tol = thresh * (static_cast<T>(1) + consteig::abs(d));
-        if (consteig::abs(prod_lambda.real - d) > det_tol)
+        T det_tol = thresh * (static_cast<T>(1) + abs(d));
+        if (abs(prod_lambda.real - d) > det_tol)
         {
             return false;
         }
-        if (consteig::abs(prod_lambda.imag) > det_tol)
+        if (abs(prod_lambda.imag) > det_tol)
         {
             return false;
         }
@@ -640,8 +637,8 @@ constexpr Matrix<Complex<T>, S, S> eigenvectors(
             T max_val = 0;
             for (Size row = 0; row < S; ++row)
             {
-                T abs_real = consteig::abs(b(row, 0).real);
-                T abs_imag = consteig::abs(b(row, 0).imag);
+                T abs_real = abs(b(row, 0).real);
+                T abs_imag = abs(b(row, 0).imag);
                 if (abs_real > max_val)
                 {
                     max_val = abs_real;
@@ -668,7 +665,7 @@ constexpr Matrix<Complex<T>, S, S> eigenvectors(
                 norm_sq = norm_sq + b(row, 0).real * b(row, 0).real +
                           b(row, 0).imag * b(row, 0).imag;
             }
-            T norm = consteig::sqrt(norm_sq);
+            T norm = sqrt(norm_sq);
 
             if (norm > 0)
             {

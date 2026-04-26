@@ -2,7 +2,7 @@
 #define MATRIX_HPP
 
 #include "../consteig_types.hpp"
-#include "../math/functions/utilities.hpp"
+#include "../math/math_backend.hpp"
 
 namespace consteig
 {
