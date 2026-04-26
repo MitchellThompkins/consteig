@@ -12,6 +12,7 @@ RUN apk --no-cache add\
     libc-dev\
     linux-headers\
     git\
+    lcov\
     octave\
     python3\
     uv

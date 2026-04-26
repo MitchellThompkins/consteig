@@ -148,6 +148,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     if(CONSTEIG_BUILD_TESTS)
         macro(create_test target)
             add_test(NAME ${target} COMMAND ${target})
+            if(CONSTEIG_COVERAGE)
+                target_link_libraries(${target} consteig_coverage)
+            endif()
         endmacro()
 
         # For bare-metal cross-compilation there is no C runtime to link against,
@@ -161,6 +164,48 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
             endmacro()
             macro(add_test)
             endmacro()
+        endif()
+
+        option(CONSTEIG_COVERAGE "Enable gcov/lcov code coverage instrumentation" OFF)
+
+        if(CONSTEIG_COVERAGE)
+            if(NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+                message(FATAL_ERROR "CONSTEIG_COVERAGE requires GCC or Clang")
+            endif()
+
+            add_library(consteig_coverage INTERFACE)
+
+            if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+                target_compile_options(consteig_coverage INTERFACE
+                    --coverage -O0 -fno-inline -fno-inline-small-functions -fno-default-inline)
+            else()
+                target_compile_options(consteig_coverage INTERFACE
+                    --coverage -O0 -fno-inline)
+            endif()
+            target_link_options(consteig_coverage INTERFACE --coverage)
+
+            find_program(LCOV_EXECUTABLE lcov REQUIRED)
+            find_program(GENHTML_EXECUTABLE genhtml REQUIRED)
+
+            add_custom_target(coverage
+                COMMAND ${LCOV_EXECUTABLE}
+                    --capture
+                    --directory ${CMAKE_BINARY_DIR}
+                    --output-file ${CMAKE_BINARY_DIR}/coverage.info
+                COMMAND ${LCOV_EXECUTABLE}
+                    --remove ${CMAKE_BINARY_DIR}/coverage.info
+                    "${CMAKE_BINARY_DIR}/_deps/*"
+                    "/usr/*"
+                    "${PROJECT_SOURCE_DIR}/test_dependencies/googletest/*"
+                    --output-file ${CMAKE_BINARY_DIR}/coverage_filtered.info
+                COMMAND ${GENHTML_EXECUTABLE}
+                    ${CMAKE_BINARY_DIR}/coverage_filtered.info
+                    --output-directory ${CMAKE_BINARY_DIR}/coverage_html
+                COMMAND ${CMAKE_COMMAND} -E echo
+                    "Coverage report: ${CMAKE_BINARY_DIR}/coverage_html/index.html"
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                COMMENT "Generating HTML coverage report"
+            )
         endif()
 
         # Test dependencies are fetched before consteig_warnings is defined so
