@@ -24,17 +24,24 @@ jobs:
       - name: Pull LFS objects
         run: git lfs pull
 
-      - name: Install Doxygen and Graphviz
-        run: sudo apt-get install -y doxygen graphviz
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
+
+      # Ubuntu 24.04 packages Doxygen 1.9.8 which generates HTML that loads from
+      # the compromised polyfill.io domain. The fix landed in 1.10.0. Install
+      # from upstream until Ubuntu ships a patched version.
+      # See: https://bugs.launchpad.net/ubuntu/+source/doxygen/+bug/2154796
+      - name: Install Doxygen 1.10.0 from upstream
+        run: |
+          wget -q https://github.com/doxygen/doxygen/releases/download/Release_1_10_0/doxygen-1.10.0.linux.bin.tar.gz
+          tar -xzf doxygen-1.10.0.linux.bin.tar.gz
+          sudo cp doxygen-1.10.0/bin/doxygen /usr/local/bin/doxygen
 
       - name: Print Doxygen version
         run: doxygen --version
 
       - name: Generate Doxygen HTML
         run: doxygen docs/Doxyfile
-
-      - name: Remove polyfill.io from Doxygen output
-        run: find docs/api -name "*.html" -exec sed -i 's|<script src="https://polyfill\.io[^"]*"></script>||g' {} +
 
       - name: Set up Python
         uses: actions/setup-python@v5
