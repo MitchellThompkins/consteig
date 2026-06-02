@@ -34,6 +34,7 @@ jobs:
       - name: Install Doxygen 1.10.0 from upstream
         run: |
           wget -q https://github.com/doxygen/doxygen/releases/download/Release_1_10_0/doxygen-1.10.0.linux.bin.tar.gz
+          echo "dcfc9aa4cc05aef1f0407817612ad9e9201d9bf2ce67cecf95a024bba7d39747  doxygen-1.10.0.linux.bin.tar.gz" | sha256sum -c -
           tar -xzf doxygen-1.10.0.linux.bin.tar.gz
           sudo cp doxygen-1.10.0/bin/doxygen /usr/local/bin/doxygen
 
