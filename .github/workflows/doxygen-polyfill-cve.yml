@@ -1,0 +1,106 @@
+name: polyfill-repro
+
+on:
+  push:
+
+jobs:
+  vulnerable:
+    name: Vulnerable (apt doxygen 1.9.8)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen
+
+      - name: Ubuntu release and package version
+        run: |
+          lsb_release -rd
+          apt-cache policy doxygen
+
+      - name: Print Doxygen version
+        run: doxygen --version
+
+      - name: Create minimal header
+        run: |
+          mkdir -p repro/src
+          cat > repro/src/example.hpp << 'EOF'
+          /// A minimal documented function.
+          void example();
+          EOF
+
+      - name: Create minimal Doxyfile
+        run: |
+          cat > repro/Doxyfile << 'EOF'
+          PROJECT_NAME     = repro
+          INPUT            = src/
+          OUTPUT_DIRECTORY = out
+          HTML_OUTPUT      = .
+          GENERATE_HTML    = YES
+          GENERATE_LATEX   = NO
+          USE_MATHJAX      = YES
+          MATHJAX_VERSION  = MathJax_3
+          HAVE_DOT         = NO
+          QUIET            = YES
+          EOF
+
+      - name: Run Doxygen
+        run: cd repro && doxygen Doxyfile
+
+      - name: Check for polyfill.io in generated HTML
+        run: |
+          echo "Searching for polyfill.io"
+          grep -r "polyfill.io" repro/out/ && echo "FOUND polyfill.io" || echo "NOT FOUND"
+          echo ""
+          echo "All external script tags"
+          grep -rh '<script src="http' repro/out/ | sort -u
+
+  patched:
+    name: Patched (upstream doxygen 1.10.0)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Doxygen 1.10.0 from upstream
+        run: |
+          wget -q https://github.com/doxygen/doxygen/releases/download/Release_1_10_0/doxygen-1.10.0.linux.bin.tar.gz
+          tar -xzf doxygen-1.10.0.linux.bin.tar.gz
+          sudo cp doxygen-1.10.0/bin/doxygen /usr/local/bin/doxygen
+
+      - name: Ubuntu release and package version
+        run: |
+          lsb_release -rd
+          apt-cache policy doxygen
+
+      - name: Print Doxygen version
+        run: doxygen --version
+
+      - name: Create minimal header
+        run: |
+          mkdir -p repro/src
+          cat > repro/src/example.hpp << 'EOF'
+          /// A minimal documented function.
+          void example();
+          EOF
+
+      - name: Create minimal Doxyfile
+        run: |
+          cat > repro/Doxyfile << 'EOF'
+          PROJECT_NAME     = repro
+          INPUT            = src/
+          OUTPUT_DIRECTORY = out
+          HTML_OUTPUT      = .
+          GENERATE_HTML    = YES
+          GENERATE_LATEX   = NO
+          USE_MATHJAX      = YES
+          MATHJAX_VERSION  = MathJax_3
+          HAVE_DOT         = NO
+          QUIET            = YES
+          EOF
+
+      - name: Run Doxygen
+        run: cd repro && doxygen Doxyfile
+
+      - name: Check for polyfill.io in generated HTML
+        run: |
+          echo "Searching for polyfill.io"
+          grep -r "polyfill.io" repro/out/ && echo "FOUND polyfill.io" || echo "NOT FOUND"
+          echo ""
+          echo "All external script tags"
+          grep -rh '<script src="http' repro/out/ | sort -u
