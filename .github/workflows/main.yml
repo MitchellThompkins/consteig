@@ -202,7 +202,7 @@ jobs:
               run: make coverage.gcc
 
             - name: Upload coverage reports to Codecov
-              uses: codecov/codecov-action@v7
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # codecov/codecov-action@v7
               with:
                   use_oidc: true
                   files: build-coverage/coverage_filtered.info
