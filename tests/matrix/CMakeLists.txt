@@ -36,6 +36,12 @@ target_include_directories(lu.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependenci
 target_link_libraries(lu.test consteig_matrix gtest_main consteig_warnings)
 create_test(lu.test)
 
+add_executable(char_poly.test ${CMAKE_CURRENT_SOURCE_DIR}/char_poly.test.cpp)
+target_include_directories(char_poly.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
+target_link_libraries(char_poly.test consteig_matrix gtest_main consteig_warnings)
+create_test(char_poly.test)
+
+
 if(NOT CONSTEIG_COMPILE_ONLY)
     add_executable(operations_eigen.test ${CMAKE_CURRENT_SOURCE_DIR}/operations_eigen.test.cpp)
     target_include_directories(operations_eigen.test PRIVATE ${PROJECT_SOURCE_DIR}/test_dependencies)
