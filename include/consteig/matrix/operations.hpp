@@ -379,30 +379,17 @@ constexpr T trace(const Matrix<T, R, C> &mat)
     return result;
 }
 
-/// @brief Characteristic polynomial via the Faddeev-LeVerrier algorithm.
+/// @brief Monic characteristic polynomial via the Faddeev-LeVerrier algorithm.
 ///
-/// Computes the monic characteristic polynomial of a square matrix A:
-///   det(lam*I - A) = lam^N + c_1*lam^(N-1) + c_2*lam^(N-2) + ... + c_N
-///
-/// Returns a column vector of N+1 coefficients in descending power order:
-///   result(0,0) = 1  (monic leading term)
-///   result(k,0) = c_k  for k = 1..N
-///
-/// Algorithm (Faddeev-LeVerrier):
-///   M_0 = I
-///   For k = 1..N:
-///     B    = A * M_{k-1}
-///     c_k  = -tr(B) / k
-///     M_k  = B + c_k * I
-///
-/// Uses only matrix multiplications and traces, no eigenvalues, no complex
-/// arithmetic. Susceptible to catastrophic cancellation for matrices with
-/// near-repeated eigenvalues; prefer eigenvalue-based methods for those cases.
+/// Computes det(lam*I - A) = lam^N + c_1*lam^(N-1) + ... + c_N using only
+/// matrix multiplications and traces; no eigenvalues, no complex arithmetic.
+/// Susceptible to catastrophic cancellation for near-repeated eigenvalues.
 ///
 /// @tparam T  Scalar type.
 /// @tparam N  Matrix dimension.
 /// @param  A  Square NxN matrix.
-/// @return Column vector of N+1 coefficients, highest degree first.
+/// @return Column vector of N+1 coefficients in descending power order,
+///         with result(0,0) = 1 (monic leading term).
 template <typename T, Size N>
 constexpr Matrix<T, N + 1u, 1u> char_poly(const Matrix<T, N, N> &A)
 {
