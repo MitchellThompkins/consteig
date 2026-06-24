@@ -141,7 +141,7 @@ static constexpr bool sq = A.isSquare();
 using the Faddeev-LeVerrier algorithm [^1]. It returns a column vector of N+1
 coefficients in descending power order, where the polynomial is:
 
-```
+```text
 det(lam*I - A) = lam^N + c_1*lam^(N-1) + ... + c_N
 ```
 
