@@ -19,7 +19,7 @@ jobs:
           packages: write
           contents: read
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # actions/checkout@v6.0.3
 
             - name: Load container tag from .env
               run: grep ^CONTAINER_TAG .env >> $GITHUB_ENV
@@ -89,7 +89,7 @@ jobs:
           contents: read
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # actions/checkout@v6.0.3
 
             - name: Check formatting
               run: make check-format
@@ -117,7 +117,7 @@ jobs:
                 math: gcem-stdlib
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # actions/checkout@v6.0.3
               with:
                 submodules: recursive
 
@@ -154,7 +154,7 @@ jobs:
             # available in the bare-metal ARM freestanding environment.
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # actions/checkout@v6.0.3
               with:
                 submodules: recursive
 
@@ -176,7 +176,7 @@ jobs:
           contents: read
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # actions/checkout@v6.0.3
               with:
                 submodules: recursive
 
@@ -194,7 +194,7 @@ jobs:
           id-token: write
         steps:
             - name: Checkout
-              uses: actions/checkout@v6
+              uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # actions/checkout@v6.0.3
               with:
                 submodules: recursive
 
