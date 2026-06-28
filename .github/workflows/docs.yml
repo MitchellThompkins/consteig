@@ -17,9 +17,10 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # actions/checkout@v6.0.3
         with:
           lfs: true
+          persist-credentials: false
 
       - name: Pull LFS objects
         run: git lfs pull
@@ -42,7 +43,7 @@ jobs:
         run: doxygen docs/Doxyfile
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # actions/setup-python@v6.2.0
         with:
           python-version: '3.12'
 
@@ -56,7 +57,7 @@ jobs:
         run: cp -r docs/api/ site/api/
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # actions/upload-pages-artifact@v5.0.0
         with:
           path: site/
 
@@ -73,4 +74,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # actions/deploy-pages@v5.0.0
