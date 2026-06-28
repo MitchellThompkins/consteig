@@ -18,6 +18,8 @@ JOB_FLAG := -j 8
 
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build )
 
+CXX_STANDARD ?= 17
+
 # If CC/CXX are set, pass them to CMake
 ifneq "$(CC)" ""
     CMAKE_OPTIONS += -DCMAKE_C_COMPILER=$(CC)
@@ -149,7 +151,7 @@ remove:
 
 .PHONY: run-examples
 run-examples:
-	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_EXAMPLES=ON -DCONSTEIG_BUILD_TESTS=OFF -DCONSTEIG_BUILD_PROFILING=OFF
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_EXAMPLES=ON -DCONSTEIG_BUILD_TESTS=OFF -DCONSTEIG_BUILD_PROFILING=OFF -DCMAKE_CXX_STANDARD=$(CXX_STANDARD)
 	@set -e; \
 	cmake --build $(BUILD_PREFIX) --target examples -- $(JOB_FLAG); \
 	for ex in matrix.main decomp.main eigen.main population.main butterworth.main; do \
@@ -162,7 +164,7 @@ run-examples:
 
 .PHONY: test-dc-motor-fail
 test-dc-motor-fail:
-	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_EXAMPLES=ON -DCONSTEIG_BUILD_TESTS=OFF -DCONSTEIG_BUILD_PROFILING=OFF
+	cmake -S . -B $(BUILD_PREFIX) $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_EXAMPLES=ON -DCONSTEIG_BUILD_TESTS=OFF -DCONSTEIG_BUILD_PROFILING=OFF -DCMAKE_CXX_STANDARD=$(CXX_STANDARD)
 	@echo "========================================"; \
 	echo "Building dc_motor_control.main (expected to fail)"; \
 	echo "========================================"; \
@@ -249,7 +251,7 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	# run CMake to generate and configure the build scripts
 	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json && \
 	cd $(BUILD_PREFIX) && \
-	cmake .. $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=ON; \
+	cmake .. $(CMAKE_OPTIONS) -DCONSTEIG_BUILD_TESTS=ON -DCMAKE_CXX_STANDARD=$(CXX_STANDARD); \
 
 # Other (custom) targets are passed through to the cmake-generated $(BUILD_FILE)
 # Note: when no targets are passed from the commanding the special variable $@
@@ -288,6 +290,7 @@ build.gcc:
 	cmake -S . -B $(BUILD_PREFIX)-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_TESTS=ON
 	cmake --build $(BUILD_PREFIX)-gcc --target all -- $(JOB_FLAG)
 
@@ -300,6 +303,7 @@ examples.gcc:
 	cmake -S . -B $(BUILD_PREFIX)-gcc -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_EXAMPLES=ON \
 		-DCONSTEIG_BUILD_TESTS=OFF \
 		-DCONSTEIG_BUILD_PROFILING=OFF
@@ -319,6 +323,7 @@ build.clang:
 	cmake -S . -B $(BUILD_PREFIX)-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
 		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_TESTS=ON
 	cmake --build $(BUILD_PREFIX)-clang --target all -- $(JOB_FLAG)
 
@@ -331,6 +336,7 @@ examples.clang:
 	cmake -S . -B $(BUILD_PREFIX)-clang -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
 		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_EXAMPLES=ON \
 		-DCONSTEIG_BUILD_TESTS=OFF \
 		-DCONSTEIG_BUILD_PROFILING=OFF
@@ -354,6 +360,7 @@ build.gcc.gcem:
 	cmake -S . -B $(BUILD_PREFIX)-gcc-gcem -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_USE_GCEM=ON
 	cmake --build $(BUILD_PREFIX)-gcc-gcem --target all -- $(JOB_FLAG)
@@ -368,6 +375,7 @@ build.gcc.gcem-stdlib:
 	cmake -S . -B $(BUILD_PREFIX)-gcc-gcem-stdlib -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_USE_GCEM=ON \
 		-DCONSTEIG_GCEM_USE_STDLIB=ON
@@ -383,6 +391,7 @@ build.clang.gcem:
 	cmake -S . -B $(BUILD_PREFIX)-clang-gcem -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
 		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_USE_GCEM=ON
 	cmake --build $(BUILD_PREFIX)-clang-gcem --target all -- $(JOB_FLAG)
@@ -397,6 +406,7 @@ build.clang.gcem-stdlib:
 	cmake -S . -B $(BUILD_PREFIX)-clang-gcem-stdlib -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=clang \
 		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_USE_GCEM=ON \
 		-DCONSTEIG_GCEM_USE_STDLIB=ON
@@ -415,6 +425,7 @@ coverage.gcc:
 	cmake -S . -B $(BUILD_PREFIX)-coverage -G $(CMAKE_GENERATOR) \
 		-DCMAKE_C_COMPILER=gcc \
 		-DCMAKE_CXX_COMPILER=g++ \
+		-DCMAKE_CXX_STANDARD=$(CXX_STANDARD) \
 		-DCONSTEIG_BUILD_TESTS=ON \
 		-DCONSTEIG_COVERAGE=ON \
 		-DCMAKE_BUILD_TYPE=Debug
@@ -465,4 +476,4 @@ cross.arm-clang.gcem:
 	cmake --build $(BUILD_PREFIX)-arm-clang-gcem --target all -- $(JOB_FLAG)
 
 container.make.%:
-	docker compose -f docker-compose.yml run --rm dev_env 'make CC=$(CC) CXX=$(CXX) $*'
+	docker compose -f docker-compose.yml run --rm dev_env 'make CC=$(CC) CXX=$(CXX) CXX_STANDARD=$(CXX_STANDARD) $*'

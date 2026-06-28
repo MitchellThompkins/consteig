@@ -95,7 +95,7 @@ jobs:
               run: make check-format
 
     build-and-test:
-        name: ${{ matrix.compiler }}-${{ matrix.mode }}${{ matrix.math != 'builtin' && format('-{0}', matrix.math) || '' }}
+        name: ${{ matrix.compiler }}-${{ matrix.mode }}-cpp${{ matrix.cxx_standard }}${{ matrix.math != 'builtin' && format('-{0}', matrix.math) || '' }}
         needs: build-and-publish-container
         if: needs.build-and-publish-container.result == 'success'
         runs-on: ubuntu-latest
@@ -108,6 +108,7 @@ jobs:
             compiler: [gcc, clang]
             mode: [test, examples]
             math: [builtin, gcem, gcem-stdlib]
+            cxx_standard: [17, 20]
             exclude:
               # Examples are tested with builtin only — gcem variants exercise
               # the same code paths and would only add CI cost without coverage.
@@ -123,19 +124,19 @@ jobs:
 
             - name: Build and test (builtin)
               if: matrix.mode == 'test' && matrix.math == 'builtin'
-              run: make test.${{ matrix.compiler }}
+              run: make test.${{ matrix.compiler }} CXX_STANDARD=${{ matrix.cxx_standard }}
 
             - name: Build and test (gcem)
               if: matrix.mode == 'test' && matrix.math == 'gcem'
-              run: make test.${{ matrix.compiler }}.gcem
+              run: make test.${{ matrix.compiler }}.gcem CXX_STANDARD=${{ matrix.cxx_standard }}
 
             - name: Build and test (gcem-stdlib)
               if: matrix.mode == 'test' && matrix.math == 'gcem-stdlib'
-              run: make test.${{ matrix.compiler }}.gcem-stdlib
+              run: make test.${{ matrix.compiler }}.gcem-stdlib CXX_STANDARD=${{ matrix.cxx_standard }}
 
             - name: Build and run examples
               if: matrix.mode == 'examples'
-              run: make examples.${{ matrix.compiler }}
+              run: make examples.${{ matrix.compiler }} CXX_STANDARD=${{ matrix.cxx_standard }}
 
     cross-compile:
         name: cross-${{ matrix.target }}${{ matrix.math != 'builtin' && format('-{0}', matrix.math) || '' }}
