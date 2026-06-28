@@ -135,8 +135,36 @@ static constexpr bool sym2 = A.isSymmetric(1e-6);          // explicit tolerance
 static constexpr bool sq = A.isSquare();
 ```
 
+## Characteristic Polynomial
+
+`char_poly(A)` computes the monic characteristic polynomial of a square matrix
+using the Faddeev-LeVerrier algorithm [^1]. It returns a column vector of N+1
+coefficients in descending power order, where the polynomial is:
+
+```text
+det(lam*I - A) = lam^N + c_1*lam^(N-1) + ... + c_N
+```
+
+```cpp
+static constexpr consteig::Matrix<double, 3, 3> A{{
+    {1.0, 0.0, 0.0},
+    {0.0, 2.0, 0.0},
+    {0.0, 0.0, 3.0}
+}};
+
+// coeffs(0,0) = 1, coeffs(1,0) = -6, coeffs(2,0) = 11, coeffs(3,0) = -6
+// represents: lam^3 - 6*lam^2 + 11*lam - 6 = (lam-1)(lam-2)(lam-3)
+static constexpr auto coeffs = consteig::char_poly(A);
+```
+
+The algorithm uses only matrix multiplications and traces, with no eigenvalue
+computation or complex arithmetic. Note that it is susceptible to catastrophic
+cancellation for matrices with near-repeated eigenvalues.
+
 ## Element-Wise Square Root
 
 ```cpp
 static constexpr auto sqrtA = consteig::sqrt(A);  // applies sqrt to each element
 ```
+
+[^1]: Wilson, J. (2024). [Derivation of the Faddeev-LeVerrier algorithm](https://jollywatt.github.io/notes/flv-derivation.pdf).

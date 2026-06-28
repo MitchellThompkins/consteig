@@ -69,6 +69,13 @@ tailored for a `constexpr` context.
   (O(n!)) and is only practical for very small matrices. This is a known
   trade-off for implementation simplicity.
 
+* Characteristic Polynomial: `char_poly(A)` uses the Faddeev-LeVerrier
+  algorithm [^4] to compute the monic characteristic polynomial of a square
+  matrix. The algorithm iterates N steps, each requiring one NxN matrix
+  multiply and a trace, giving O(N^4) total work. It uses no eigenvalue
+  computation or complex arithmetic. The main limitation is susceptibility
+  to catastrophic cancellation for matrices with near-repeated eigenvalues.
+
 ## Comparison with LAPACK/Eigen
 
 While consteig uses the same fundamental Francis QR algorithm as LAPACK
@@ -95,3 +102,4 @@ matrices. This difference stems from several factors:
 [^1]: Golub, G. H., & Van Loan, C. F. (2013). Matrix computations (4th ed.). Johns Hopkins University Press.
 [^2]: Parlett, B. N., & Reinsch, C. (1969). Balancing a matrix for calculation of eigenvalues and eigenvectors. Numerische Mathematik, 13. Springer.
 [^3]: LAPACK. [DGEBAL: Balance a general real matrix](https://netlib.org/lapack/explore-html/df/df3/group__gebal_ga999e2b7075625a2b5ce75e0241ecdb19.html)
+[^4]: Wilson, J. (2024). [Derivation of the Faddeev-LeVerrier algorithm](https://jollywatt.github.io/notes/flv-derivation.pdf).

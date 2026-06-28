@@ -379,6 +379,36 @@ constexpr T trace(const Matrix<T, R, C> &mat)
     return result;
 }
 
+/// @brief Monic characteristic polynomial via the Faddeev-LeVerrier algorithm.
+///
+/// Computes det(lam*I - A) = lam^N + c_1*lam^(N-1) + ... + c_N using only
+/// matrix multiplications and traces; no eigenvalues, no complex arithmetic.
+/// Susceptible to catastrophic cancellation for near-repeated eigenvalues.
+///
+/// @tparam T  Scalar type.
+/// @tparam N  Matrix dimension.
+/// @param  A  Square NxN matrix.
+/// @return Column vector of N+1 coefficients in descending power order,
+///         with result(0,0) = 1 (monic leading term).
+template <typename T, Size N>
+constexpr Matrix<T, N + 1u, 1u> char_poly(const Matrix<T, N, N> &A)
+{
+    Matrix<T, N + 1u, 1u> coeffs{};
+    coeffs(0u, 0u) = static_cast<T>(1);
+
+    Matrix<T, N, N> M = eye<T, N>();
+
+    for (Size k = 1u; k <= N; ++k)
+    {
+        const Matrix<T, N, N> B = A * M;
+        const T ck = -trace(B) / static_cast<T>(k);
+        coeffs(k, 0u) = ck;
+        M = B + ck * eye<T, N>();
+    }
+
+    return coeffs;
+}
+
 /// @brief Element-wise approximate equality within an absolute tolerance.
 ///
 /// Returns `true` if every element satisfies
