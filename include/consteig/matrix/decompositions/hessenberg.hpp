@@ -28,6 +28,12 @@ template <typename T, Size S> struct PHMatrix
 {
     Matrix<T, S, S> _p;
     Matrix<T, S, S> _h;
+
+    constexpr PHMatrix() = default;
+    constexpr PHMatrix(const PHMatrix &) = default;
+    constexpr PHMatrix(PHMatrix &&) = default;
+    constexpr PHMatrix &operator=(const PHMatrix &) = default;
+    constexpr PHMatrix &operator=(PHMatrix &&) = default;
 };
 
 /// @brief Reduce a square matrix to upper Hessenberg form.

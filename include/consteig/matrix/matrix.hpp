@@ -198,6 +198,12 @@ template <typename T, Size R, Size C> class Matrix
         return result;
     }
 
+    constexpr Matrix() = default;
+    constexpr Matrix(const Matrix &) = default;
+    constexpr Matrix(Matrix &&) = default;
+    constexpr Matrix &operator=(const Matrix &) = default;
+    constexpr Matrix &operator=(Matrix &&) = default;
+
     /// @brief Overwrite row `n` with the contents of `mat`.
     /// @param mat  1×C source matrix.
     /// @param n    Zero-based target row index.
